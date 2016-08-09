@@ -1,0 +1,50 @@
+[
+{
+    "model": "company.company",
+    "pk": 1,
+    "fields": {
+        "profile": 8,
+        "name": "Google",
+        "corporate_code": "11111111111",
+        "details": "",
+        "website": "https://www.google.com",
+        "photo": ""
+    }
+},
+{
+    "model": "company.company",
+    "pk": 2,
+    "fields": {
+        "profile": 9,
+        "name": "Apple Inc.",
+        "corporate_code": "22222222222",
+        "details": "",
+        "website": "https://www.apple.com",
+        "photo": ""
+    }
+},
+{
+    "model": "company.company",
+    "pk": 3,
+    "fields": {
+        "profile": 10,
+        "name": "Amazon",
+        "corporate_code": "33333333333",
+        "details": "",
+        "website": "https://www.amazon.in",
+        "photo": ""
+    }
+},
+{
+    "model": "company.company",
+    "pk": 4,
+    "fields": {
+        "profile": 11,
+        "name": "Facebook",
+        "corporate_code": "44444444444",
+        "details": "",
+        "website": "https://www.facebook.com",
+        "photo": ""
+    }
+}
+]

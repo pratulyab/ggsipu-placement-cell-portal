@@ -1,0 +1,183 @@
+[
+{
+    "model": "college.programme",
+    "pk": 1,
+    "fields": {
+        "name": "B.Tech. (Dual Degree)",
+        "desc": "Bachelors in Technology (Dual Degree)",
+        "years": "4"
+    }
+},
+{
+    "model": "college.programme",
+    "pk": 2,
+    "fields": {
+        "name": "M.Tech. (Dual Degree)",
+        "desc": "Masters in Technology (Dual Degree)",
+        "years": "1"
+    }
+},
+{
+    "model": "college.programme",
+    "pk": 3,
+    "fields": {
+        "name": "MCA",
+        "desc": "",
+        "years": "2"
+    }
+},
+{
+    "model": "college.programme",
+    "pk": 4,
+    "fields": {
+        "name": "B.Tech.",
+        "desc": "Bachelor of Technology",
+        "years": "4"
+    }
+},
+{
+    "model": "college.stream",
+    "pk": 1,
+    "fields": {
+        "programme": 1,
+        "name": "Information Technology",
+        "code": "015",
+        "desc": ""
+    }
+},
+{
+    "model": "college.stream",
+    "pk": 2,
+    "fields": {
+        "programme": 1,
+        "name": "Computer Science",
+        "code": "032",
+        "desc": ""
+    }
+},
+{
+    "model": "college.stream",
+    "pk": 3,
+    "fields": {
+        "programme": 1,
+        "name": "Electronics and Communication",
+        "code": "128",
+        "desc": ""
+    }
+},
+{
+    "model": "college.stream",
+    "pk": 4,
+    "fields": {
+        "programme": 2,
+        "name": "Electronics and Communication",
+        "code": "142",
+        "desc": ""
+    }
+},
+{
+    "model": "college.stream",
+    "pk": 5,
+    "fields": {
+        "programme": 3,
+        "name": "SE",
+        "code": "045",
+        "desc": ""
+    }
+},
+{
+    "model": "college.stream",
+    "pk": 6,
+    "fields": {
+        "programme": 4,
+        "name": "Information Technology",
+        "code": "031",
+        "desc": ""
+    }
+},
+{
+    "model": "college.stream",
+    "pk": 7,
+    "fields": {
+        "programme": 4,
+        "name": "Computer Science and Engineering",
+        "code": "027",
+        "desc": ""
+    }
+},
+{
+    "model": "college.college",
+    "pk": 1,
+    "fields": {
+        "profile": 4,
+        "name": "University School Of Information And Communication Technology",
+        "code": "164",
+        "address": "",
+        "details": "",
+        "contact": "",
+        "website": "",
+        "photo": "",
+        "streams": [
+            1,
+            2,
+            3,
+            4,
+            5
+        ]
+    }
+},
+{
+    "model": "college.college",
+    "pk": 2,
+    "fields": {
+        "profile": 5,
+        "name": "Maharaja Agrasen Institute of Technology",
+        "code": "148",
+        "address": "",
+        "details": "",
+        "contact": "",
+        "website": "",
+        "photo": "",
+        "streams": [
+            6,
+            7
+        ]
+    }
+},
+{
+    "model": "college.college",
+    "pk": 3,
+    "fields": {
+        "profile": 6,
+        "name": "Amity Institute of Technology",
+        "code": "104",
+        "address": "",
+        "details": "",
+        "contact": "",
+        "website": "",
+        "photo": "",
+        "streams": [
+            6,
+            7
+        ]
+    }
+},
+{
+    "model": "college.college",
+    "pk": 4,
+    "fields": {
+        "profile": 7,
+        "name": "Bharati Vidyapeeth College of Engineering",
+        "code": "115",
+        "address": "",
+        "details": "",
+        "contact": "",
+        "website": "",
+        "photo": "",
+        "streams": [
+            6,
+            7
+        ]
+    }
+}
+]

@@ -1,0 +1,8 @@
+Django==1.9
+django-material==0.8.0
+djangorestframework==3.4.1
+Markdown==2.6.6
+Pillow==3.1.0
+PyMySQL==0.6.6
+requests==2.10.0
+six==1.10.0
