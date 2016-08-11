@@ -1,0 +1,10 @@
+{% extends 'account/base.html' %}
+{% block title %} Complete Signup {% endblock title %}
+{% block content %}
+	<p>An account activation link has been set to your registered email id {{ email }} .</p>
+	<p>To activate your account, click on the activation link sent.</p>
+	<hr />
+	<a href="{{ profile_creation }}">Complete Signup</a>
+	<br />
+	<a href="{% url 'logout' %}">Logout</a>
+{% endblock content %}

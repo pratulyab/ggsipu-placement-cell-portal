@@ -1,0 +1,23 @@
+{% extends 'account/base.html' %}
+{% load staticfiles %}
+{% load material_form %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+		<div class="row">
+			<div class="col s6 m12">
+			<h4> Edit Profile </h4>
+			<br><br>
+			<form enctype="multipart/form-data" action="{% url 'edit_create_faculty' %}" method='POST' id='edit-create-faculty'>
+				{% csrf_token %}
+				{% form form=faculty_edit_create_form %}{% endform %}
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s6 m12">
+				<button type="submit" name="student_profile" class="btn waves-effect waves-light"> Update Profile </button>
+			</div>
+		</div>
+		</form>
+		<br />
+		<p> <a href="{% url 'faculty_home' %}"> Go Home </a></p>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'account/base.html' %}
+{% block title %} Edit Account {% endblock title %}
+{% block content %}
+    {% if update %} 
+        <p> Your account has been updated.</p> 
+    {% endif %}
+    <form action="{% url 'edit_account' %}" method = 'POST' id='edit-account-form'>
+        {% csrf_token %}
+        {{ edit_account_form.as_p }}
+        <input type="submit" name="editaccount" value="Update Account" />
+    </form>
+    <br />
+	<p> <a href="{{ url }} "> Go Home </a></p>
+{% endblock content %}

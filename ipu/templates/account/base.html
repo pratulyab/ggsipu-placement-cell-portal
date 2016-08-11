@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	{% load staticfiles %}
+	<head>
+		<title>
+			{% block title %}{% endblock title %}
+		</title>
+		<link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome.min.css' %}" />
+		<link type="text/css" rel="stylesheet" href="{% static 'account/css/base.css' %}" />
+		{% include 'material/includes/material_css.html' %}
+		{% block head %}{% endblock head %}
+	</head>
+	<body>
+		<header class="navbar-fixed">
+			{% block header %}{% endblock header %}
+		</header>
+		<main>
+			{% block content %}{% endblock content %}
+		</main>
+		<footer>
+			{% block footer %}{% endblock footer %}
+		</footer>
+		<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+		<!--
+		<script src="{% static 'material/js/materialize.js' %}"></script>
+		<script src="{% static 'material/js/material_init.js' %}"></script>
+		-->
+		{% include 'material/includes/material_js.html' %}
+		{% block scripts %}{% endblock scripts %}
+	</body>
+</html>

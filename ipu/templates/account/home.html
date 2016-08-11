@@ -1,0 +1,58 @@
+{% extends 'account/base_bootstrap3.html' %}
+{% load bootstrap3 %}
+{% block bootstrap3_content %}
+
+{% block head %}
+	{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+{% endblock head %}
+
+{% block header %}
+{% load staticfiles %}
+	<nav id="nav_bar" class="navbar navbar-inverse">
+		  <div class="container-fluid">
+			    <div class="navbar-header">
+			      	<a class="navbar-brand" href="#">TPC</a>
+			    </div>
+			    <ul class="nav navbar-nav">
+				      <li class="active"><a href="#">Home</a></li>
+			    </ul>
+			    <ul class="nav navbar-nav navbar-right">
+				      <li><a href={{ notif_url }}><span class="glyphicon glyphicon-globe"></span></a></li>
+				      <li>
+				      	<ul class="nav navbar-nav">
+					        <li class="dropdown">
+					          <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-asterisk"></span></a>
+					          <ul class="dropdown-menu">
+						          	<li><a href="">Account Settings</a></li>
+						          	<li><a href="">Profile Settings</a></li>
+						            <li><a href="{% url 'logout' %}">Sign Out <span class="caret"></span></a></li>
+						          </ul>
+					        </li>
+					      </ul>
+				      </li>
+			    </ul>
+		  </div>
+	</nav>
+{% endblock header %}
+{% block content %}
+<div id="wrapper">
+        <div id="sidebar-wrapper">
+            {% block leftpanel %}{% endblock leftpanel %}
+        </div>
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        {% block mainpanel %}{% endblock mainpanel %}
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+{% endblock content %}
+{% autoescape off %}{% bootstrap_messages %}{% endautoescape %}
+     
+
+{% endblock bootstrap3_content %}

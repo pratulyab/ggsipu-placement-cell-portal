@@ -1,0 +1,9 @@
+{% extends 'account/base.html' %}
+{% block title %} Create Placement Session {% endblock title %}
+{% block content %}
+	<form method='POST' action="{% url 'createsession' %}" id="create-session-form">
+		{% csrf_token %}
+		{{ session_creation_form.as_p }}
+		<input type="submit" value="Start Session" />
+	</form>
+{% endblock content %}

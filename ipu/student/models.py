@@ -41,7 +41,7 @@ class Student(models.Model):
 	current_year = models.CharField(_('Current Year'), max_length=1, validators=[validators.RegexValidator(r'[1-6]')])
 	is_sub_back = models.BooleanField(_('Any Subject Back(s)'), default=False)
 	is_verified = models.NullBooleanField(default=None)
-	verified_by = models.ForeignKey(CustomUser, blank=True, related_name="profiles_verified")
+	verified_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name="profiles_verified")
 
 # Placement Specific
 	resume = models.FileField(upload_to='student/resume', blank=True)
@@ -55,15 +55,15 @@ class Student(models.Model):
 	def get_absolute_url(self):
 		return "/%s/" % self.profile.username
 
-
 class Qualification(models.Model):
 	student = models.OneToOneField(Student, related_name="qualifications")
 	tenth = models.DecimalField(_('Xth Percentage'), max_digits=4, decimal_places=2)
 	twelfth = models.DecimalField(_('XIIth Percentage'), max_digits=4, decimal_places=2)
-	graduation = models.DecimalField(_('Graduation Percentage'), max_digits=4, decimal_places=2)
-	post_graduation = models.DecimalField(_('Post Graduation Percentage'), max_digits=4, decimal_places=2)
-	doctorate = models.DecimalField(_('Doctorate Percentage'), max_digits=4, decimal_places=2)
-
+	graduation = models.DecimalField(_('Graduation Percentage'), max_digits=4, decimal_places=2, blank=True)
+	post_graduation = models.DecimalField(_('Post Graduation Percentage'), max_digits=4, decimal_places=2, blank=True)
+	doctorate = models.DecimalField(_('Doctorate Percentage'), max_digits=4, decimal_places=2, blank=True)
+	is_verified = models.NullBooleanField(default=None)
+	verified_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name="qualifications_verified")
 
 class TechProfile(models.Model):
 	student = models.OneToOneField(Student, related_name="tech")
@@ -79,6 +79,6 @@ class TechProfile(models.Model):
 					raise ValidationError( {field.name: _('Domain name error. Please provide the correct URL.')} )
 	
 	def save(self, *args, **kwargs):
-		self.full_clean()
+#		self.full_clean()
 		profile = super(SocialProfile, self).save()
 		return profile

@@ -1,0 +1,9 @@
+{% extends 'account/base.html' %}
+{% block title %} Dissociate {% endblock %}
+{% block content %}
+	<form method='POST' action="{% url 'dissociate' %}" id="dissociate-form">
+		{% csrf_token %}
+		{{ dissociation_form.as_p }}
+		<input type="submit" value="Dissociate" />
+	</form>
+{% endblock content %}

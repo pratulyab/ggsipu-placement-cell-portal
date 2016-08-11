@@ -10,15 +10,14 @@ from college.models import College
 
 class Faculty(models.Model):
 	profile = models.OneToOneField(CustomUser, related_name="faculty")
-	firstname = models.CharField(_('First name'), max_length=128)
+	firstname = models.CharField(_('First name'), max_length=128, null=True)
 	lastname = models.CharField(_('Last name'), max_length=128, blank=True)
 	employee_id = models.CharField(_('Employee ID'), max_length=64, blank=True)
 	college = models.ForeignKey(College, related_name="faculties")
 	phone_number = models.CharField(_('Mobile Number'), max_length=10, help_text='Enter 10 Digit IN Mobile Number', 
 			validators=[validators.RegexValidator(r'[7-9]\d{9}')], 
 			error_messages={'invalid_number': _('Invalid IN Phone Number. Don\'t Prefix The Number With +91 or 0.')},
-			unique=True,
-			blank=False
+			null=True
 	)
 	photo = models.ImageField(_('Photo'),upload_to='faculty/photo', blank=True)
 

@@ -1,0 +1,10 @@
+{% extends 'account/base.html' %}
+{% block title %} {{ comapny.profile.username }}  {% endblock title %}
+{% block content %}
+	<ul>
+		<li> {{ company.name }} <li>
+		<li> {{ college.details }} </li>
+		<li> {{ college.website }} </li>
+	</ul>
+	<p><a href="{{ url }}" >Go Home </a></p>
+{% endblock content %}

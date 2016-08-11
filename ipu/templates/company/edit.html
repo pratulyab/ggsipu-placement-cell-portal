@@ -1,0 +1,14 @@
+{% extends 'account/base.html' %}
+{% block title %} Edit Profile {% endblock title %}
+{% block content %}
+    {% if update %}
+        <p>Your profile has been updated.</p>
+    {% endif %}
+    <form enctype="multipart/form-data" action="{% url 'edit_company_profile' %}" method='POST' id='company-profile-edit'>
+        {% csrf_token %}
+        {{ company_edit_form.as_p }}
+        <input type="submit" name="company_profile" value="Update Profile" />
+    </form>
+    <br />
+	<p> <a href="{% url 'company_home' %}"> Go Home </a></p>
+{% endblock content %}

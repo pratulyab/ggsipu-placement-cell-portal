@@ -1,0 +1,12 @@
+{% extends 'account/base.html' %}
+{% block title %} {{ student.profile.username }} -- {{ student.firstname }} &nbsp; {{ student.lastname }} {% endblock title %}
+{% block content %}
+	<ul>
+		<li> {{ student.firstname }} &nbsp; {{ student.lastname }} </li>
+		<li> <a href="{{ student.college.get_absolute_url }}">{{ student.college }} </a>&nbsp;&lt;&nbsp; {{ student.stream }} &nbsp;&lt;&nbsp; {{ student.subjecy }} </li>
+		<li> {{ student.profile_pic }} </li>
+		<li> {{ student.resume }} </li>
+	</ul>
+	<hr />
+	<p> <a href="{{ url }}" > Go Home </a></p>
+{% endblock content %}

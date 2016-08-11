@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+        <title>Home</title>
+        <link type="text/css" rel="stylesheet" href="{% static 'css/Font Awesome/css/font-awesome.min.css' %}" />
+        <link type="text/css" rel="stylesheet" href="{% static 'common/index.css' %}" />
+        <script type="application/ecmascript" src="{% static 'common/index.js' %}"></script>
+    </head>
+    
+    <body class="wrapper">
+        <header class="header-wrapper">
+            <ul>
+                <li class="mobile-toggle"><i class="fa fa-bars" aria-hidden="true"></i></li>
+                <li class="brand"><a href="#">Training &amp; Placement Cell</a></li>
+                <li class="search">
+                    <input type="text" placeholder="Search for students, colleges, and companies..." />
+                    <i class="fa fa-times-circle" aria-hidden="true" id="search-close"></i>
+                </li>
+                <li class="nav-links">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                    <a href="{% url 'student_home' %}">Home</a>
+                    <i class="fa fa-cogs" aria-hidden="true" id="settings"></i>
+                    <ul id="settings-list">
+                        <li><a href="{% block edit_profile_url %}{% endblock %}"><span>Profile Settings</span></a></li>
+                        <li><a href="{% url 'edit_account' %}"><span>Account Settings</span></a></li>
+                        <li><a href="{% url 'logout' %}"><span>Logout</span></a></li>
+                    </ul>
+                </li>
+            </ul>
+            
+        </header>
+        
+        <main class="main-wrapper">
+            <div class="left-panel">
+                <div class="profile-card">
+                <div id="dp"><img src="{% block photo %}{% endblock %}" alt="Display Picture" /></div>
+                    <ul class="card-details">
+                        <li><h2>{% block name %}{% endblock %}</h2></li>
+                        <li><h5></h5></li>
+                    </ul>
+                    <ul class="social-links">
+					{% block sociallinks %}
+                        <li><a href="#"><span><i class="fa fa-link"></i>&nbsp;Website</span></a></li>
+					{% endblock %}
+                    </ul>
+                </div>
+                
+                <ul class="links">
+				{% block leftpanellinks %}
+					<li><a href="#"><span><span class="fa fa-rss"></span>My Current Sessions</span></a></li>
+				{% endblock %}
+                </ul>
+            </div>
+            
+            <div class="main-panel">
+                <div class="tabs-bar">
+                    <ul class="tabs">
+                        <li class="tab">
+                            <input type="radio" id="tab1" name="tab-group-1" checked/>
+                            <label for="tab1">{% block tab_one_title %}{% endblock %}</label>													
+                            <div class="tab-content">
+                                {% block tab_one_content %}<p>Content DIV for tab <b>one</b>.</p>{% endblock %}
+                            </div>
+                        </li>
+                        <li class="tab">
+                            <input type="radio" id="tab2" name="tab-group-1" />
+							
+                            <label for="tab2">{% block tab_two_title %}{% endblock %}</label>
+							
+                            <div class="tab-content">
+{% block tab_two_content %}<p>Content DIV for tab <b>two</b>.</p>{% endblock %}
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <div id="current-tab-selector"></div>
+                </div> 
+            </div>
+            
+            <div id="search-full">
+                <i class="fa fa-close fa-4x" aria-hidden="true"></i>
+                <input type="text" placeholder="Search for students, colleges, and companies..." />
+                <p class="search-label"></p>
+                <div id="search-results-full"></div>
+            </div>
+        </main>
+        
+        <footer class="footer-wrapper">
+        
+        </footer>
+    </body>
+    
+    <script>
+        function init(){
+            HomePage.init();
+        }
+        window.addEventListener('load', init);
+    </script>
+    
+</html>

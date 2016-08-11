@@ -27,12 +27,23 @@ class CustomUser(AbstractUser):
 	)
 	type = models.CharField(_('Type'), choices=USER_TYPES, max_length=2, default=USER_TYPES[2][0])
 
+	def clean(self, *args, **kwargs):
+		super(CustomUser, self).clean()
+		roll = bool(re.match(r'^\d{11}$', self.username))
+		if roll:
+			if self.type != 'S':
+				raise ValidationError(_('Sorry! You cannot assume this type of username.'))
+		else:
+			if self.type == 'S' and not self.is_superuser:
+				raise ValidationError(_('As a student you are required to enter your enrollment number as username.'))
+	
 	def save(self, *args, **kwargs):
-		if not self.is_superuser and self.type == 'S':
-				if not re.match(r'^\d{11}$', self.username):
-					raise ValidationError(_('As a student you are required to enter your enrollment number as username.'))
+		self.full_clean()
 		user = super(CustomUser, self).save()
 		return user
+
+	def get_absolute_url(self):
+		return "/%s/" % self.username
 
 class SocialProfile(models.Model):
 	user = models.OneToOneField(CustomUser, related_name="social")

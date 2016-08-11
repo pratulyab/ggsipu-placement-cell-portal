@@ -1,0 +1,40 @@
+{% extends 'index.html' %}
+
+{% block edit_profile_url %}
+	{% url 'edit_student_profile' %}
+{% endblock %}
+
+{% block photo %}
+	{% if student.display_picture %}
+		{{ student.display_picture.url }}
+	{% endif %}
+{% endblock %}
+
+{% block name %}
+	{{ student.firstname }}&nbsp;{{ student.lastname }}
+{% endblock %}
+
+{% block sociallinks %}
+	{{ block.super }}
+	<li><a href="#"><span><i class="fa fa-facebook-official"></i>&nbsp;Facebook</span></a></li>
+	<li><a href="#"><span><i class="fa fa-github-square"></i>&nbsp;Github</span></a></li>
+	<li><a href="#"><span><i class="fa fa-linkedin-square"></i>&nbsp;Linked In</span></a></li>
+	<li><a href="#"><span><i class="fa fa-bitbucket-square"></i>&nbsp;Bitbucket</span></a></li>
+{% endblock %}
+
+{% block leftpanellinks %}
+	{{ block.super }}
+	{% if student.resume %}
+		<li><a href="{{ student.resume.url }}"><span><span class="fa fa-file-pdf-o"></span>Resume</span></a></li>
+	{% endif %}
+		<li><a href="{% url 'edit_student_profile' %}"><span><span class="fa fa-cog"></span>Settings</span></a></li>
+         <li><a href="{% url 'logout' %}"><span><span class="fa fa-sign-out"></span>Logout</span></a></li>
+{% endblock %}
+
+{% block tab_one_title %}
+	Companies Visiting My College
+{% endblock %}
+
+{% block tab_two_title %}
+	Application Status
+{% endblock %}

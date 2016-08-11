@@ -1,0 +1,26 @@
+{% extends 'account/base.html' %}
+{% load material_form %}
+{% block title %} Sign Up {% endblock title %}
+{% block content %}
+	<div class="row">
+		<div class="col s12 m8 l6 offset-m2 offset-l3">
+			<div class="card-panel">
+				<h4> Create Account </h4>
+				<form action="{% url 'college_signup' %}" method = 'POST' id = 'college-signup-form'>
+					{% csrf_token %}
+					{% form form=college_signup_form %}{% endform %}
+					<div class="row">
+						<div class="col s12">
+							<button type = "submit" name = "signup" class="btn waves-effect waves-light">Sign Up<i class="material-icons right">send</i></button>
+					</div>
+					<br>
+					<div class="row">
+						<div class="col s12">
+							<p><a href = "{% url 'login' %}"> Existing User? </a></p>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{% endblock content %}

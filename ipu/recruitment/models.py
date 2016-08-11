@@ -39,11 +39,11 @@ class PlacementSession(models.Model):
 	
 	recent_deadline = models.DateField(_('Deadline'), 
 			null=True, blank=False, 
-			help_text="Choose the deadline date for an event. Eg. Last date for applying"
+			help_text=_("Choose the deadline date for an event. Eg. Last date for applying. If no event is scheduled for now, choose an arbitrary date.")
 	)
 	ended = models.BooleanField(
 			_('Has the placement session has ended'), 
-			help_text='This would mean that the student currently in the session are selected.', 
+			help_text=_('Setting it to true would mean that the students currently in the session are selected.'), 
 			default=False
 	)
 
@@ -56,10 +56,10 @@ class Dissociation(models.Model):
 			('C', 'College'),
 			('CO', 'Company'),
 		)
-	company = models.ForeignKey(Company, related_name="disassociations")
-	college = models.ForeignKey(College, related_name="disassociations")
+	company = models.ForeignKey(Company, related_name="dissociations")
+	college = models.ForeignKey(College, related_name="dissociations")
 	duration = models.DateField(null=True, blank=True,
-			help_text = "Choose the date till when you want to block the associations with this user."
+			help_text = "Choose the date till when you want to block this user from associating with you."
 	)
 	initiator = models.CharField(_('Who caused it'), choices=SOURCE, max_length=2, default=SOURCE[0][0])
 

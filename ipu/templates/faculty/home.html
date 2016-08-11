@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Faculty Home</title>
+	</head>
+	<body>
+		<p> Hi {{ faculty.firstname }}! Welcome to home. </p>
+		<p><a href="{% url 'edit_create_faculty' %}">Edit Profile</a></p>
+		<p>Click <a href="{% url 'logout' %}">here</a> to logout</p>
+	</body>
+</html>

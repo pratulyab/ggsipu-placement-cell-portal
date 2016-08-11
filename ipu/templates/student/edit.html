@@ -1,0 +1,26 @@
+{% extends 'account/base.html' %}
+{% load material_form %}
+{% block title %} Edit Profile {% endblock title %}
+{% block content %}
+    {% if update %}
+        <p><span style="color: lightgreen">Your profile has been updated.</span></p>
+    {% endif %}
+	<div class="row">
+		<div class="col s6 m12">
+		<h4> Edit Profile </h4>
+		<br><br>
+		<form enctype="multipart/form-data" action="{% url 'edit_student_profile' %}" method='POST' id='student-profile-edit'>
+			{% csrf_token %}
+			{% form form=student_edit_form %}
+			{% endform %}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col s6 m12">
+	        <button type="submit" name="student_profile" class="btn waves-effect waves-light"> Update Profile </button>
+		</div>
+	</div>
+    </form>
+    <br />
+	<p> <a href="{% url 'student_home' %}"> Go Home </a></p>
+{% endblock content %}

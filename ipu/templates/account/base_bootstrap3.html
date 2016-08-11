@@ -1,0 +1,23 @@
+{% extends 'bootstrap3/bootstrap3.html' %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title> {% block title %} Account {% endblock title %} </title>
+		{% block head %} {% endblock head %}
+	</head>
+	<body>
+		<header>
+			{% block header %}{% endblock header %}
+		</header>
+		
+		<main class="container">
+			{% block content %}{% endblock content %}
+		</main>
+		
+		<footer>
+			{% block footer %}{% endblock footer %}
+		</footer>
+
+		{% block scripts %} {% endblock scripts %}
+	</body>
+</html>

@@ -1,0 +1,9 @@
+{% extends 'account/base.html' %}
+{% block title %} Associate {% endblock %}
+{% block content %}
+	<form method='POST' action="{% url 'associate' %}" id="associate-form">
+		{% csrf_token %}
+		{{ association_form.as_p }}
+		<input type="submit" value="Associate" />
+	</form>
+{% endblock content %}

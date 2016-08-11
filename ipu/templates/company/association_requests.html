@@ -1,0 +1,15 @@
+{% extends 'account/base.html' %}
+{% block title %} Association Requests {% endblock title %}
+{% block content %}
+	{% for ass in associations %}
+		<p> {{ ass.obj }} </p>
+		<ul>
+			<li><a href=" {{ ass.url.session_url }} ">Accept</a></li>
+			<li><a href=" {{ ass.url.dissoci_url }} ">Decline</a></li>
+		</ul>
+		<hr />
+		{% empty %}
+			<p>No requests at the moment.</p>
+			{# Add link to create requests #}
+	{% endfor %}
+{% endblock content %}
