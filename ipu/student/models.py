@@ -44,13 +44,16 @@ class Student(models.Model):
 	verified_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name="profiles_verified")
 
 # Placement Specific
-	resume = models.FileField(upload_to='student/resume', blank=True)
+	resume = models.FileField(_('Resume'), upload_to='student/resume', blank=True)
+
+	def get_enrollment_no(self):
+		return self.profile.username
 	
 	def get_full_name(self):
 		return (self.firstname + " " + self.lastname).title()
 
 	def __str__(self):
-		return get_full_name()
+		return self.get_full_name()
 	
 	def get_absolute_url(self):
 		return "/%s/" % self.profile.username
@@ -59,11 +62,14 @@ class Qualification(models.Model):
 	student = models.OneToOneField(Student, related_name="qualifications")
 	tenth = models.DecimalField(_('Xth Percentage'), max_digits=4, decimal_places=2)
 	twelfth = models.DecimalField(_('XIIth Percentage'), max_digits=4, decimal_places=2)
-	graduation = models.DecimalField(_('Graduation Percentage'), max_digits=4, decimal_places=2, blank=True)
-	post_graduation = models.DecimalField(_('Post Graduation Percentage'), max_digits=4, decimal_places=2, blank=True)
-	doctorate = models.DecimalField(_('Doctorate Percentage'), max_digits=4, decimal_places=2, blank=True)
+	graduation = models.DecimalField(_('Graduation Percentage'), max_digits=4, decimal_places=2, blank=True, null=True)
+	post_graduation = models.DecimalField(_('Post Graduation Percentage'), max_digits=4, decimal_places=2, blank=True, null=True)
+	doctorate = models.DecimalField(_('Doctorate Percentage'), max_digits=4, decimal_places=2, blank=True, null=True)
 	is_verified = models.NullBooleanField(default=None)
 	verified_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name="qualifications_verified")
+
+	def __str__(self):
+		return self.student.get_full_name()
 
 class TechProfile(models.Model):
 	student = models.OneToOneField(Student, related_name="tech")
@@ -82,3 +88,6 @@ class TechProfile(models.Model):
 #		self.full_clean()
 		profile = super(SocialProfile, self).save()
 		return profile
+
+	def __str__(self):
+		return self.student.get_full_name()

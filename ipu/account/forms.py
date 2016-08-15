@@ -53,8 +53,8 @@ class SignupForm(forms.ModelForm):
 
 	def clean(self, *args, **kwargs):
 		super(SignupForm, self).clean(*args, **kwargs)
-		pwd1 = self.cleaned_data['password1']
-		pwd2 = self.cleaned_data['password2']
+		pwd1 = self.cleaned_data.get('password1')
+		pwd2 = self.cleaned_data.get('password2')
 		if pwd1 and pwd2 and pwd1!=pwd2:
 			raise forms.ValidationError(_('Passwords do not match.'))
 		return self.cleaned_data
@@ -62,7 +62,7 @@ class SignupForm(forms.ModelForm):
 	def save(self, commit=True, *args, **kwargs):
 		self.user_type = kwargs.pop('user_type', None)
 		user = super(SignupForm, self).save(commit=False)
-		user.set_password(self.cleaned_data['password2'])
+		user.set_password(self.cleaned_data.get('password2'))
 		user.is_active = False
 		user.type = self.user_type
 		if commit:
@@ -194,8 +194,8 @@ class SetPasswordForm(forms.Form):
 	password1 = forms.CharField(label=_('Password'), widget = forms.PasswordInput)
 	password2 = forms.CharField(label=_('Confirm Password'), widget = forms.PasswordInput, help_text = _('Enter same as above'))
 	def clean_password2(self):
-		data_password1 = self.cleaned_data['password1']
-		data_password2 = self.cleaned_data['password2']
+		data_password1 = self.cleaned_data.get('password1')
+		data_password2 = self.cleaned_data.get('password2')
 		if data_password1 and data_password2 and data_password1 != data_password2:
 			raise forms.ValidationError(_("Passwords don't match"))
 		if data_password1 and data_password2:

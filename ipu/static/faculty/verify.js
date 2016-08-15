@@ -1,0 +1,128 @@
+var VerifyStu = (function() {
+	'use strict';
+	
+	function clearErrors(el){
+		$(el + ' .non-field-errors').remove();
+		$(el + ' .errors').remove();
+		$(el + ' .input-field').removeClass('has-error');
+		$(el + ' .input-field input').removeClass('invalid');
+	}
+	function addErrors(form_errors, el){
+		var form = $(el);
+		if(!form || !form_errors)
+			return;
+		
+		if ('__all__' in form_errors){
+			var non_field_errors = form_errors['__all__'];
+			var div = $('<div class="non-field-errors"/>');
+			for (var i=0; i<non_field_errors.length; i++){
+				div.append($('<small class="error">' + non_field_errors[i] + '</small>'));
+			}
+			$(form).prepend(div);
+			delete form_errors['__all__'];
+		}
+		for(var field_name in form_errors){
+			$(el + ' #id_'+field_name+'_container').addClass('has-error');
+			$(el + ' #id_'+field_name).addClass('invalid');
+			var div = $('<div class="errors"/>');
+			for(var i=0; i<form_errors[field_name].length; i++){
+				div.append($('<small class="error">' + form_errors[field_name][i] + '</small>'));
+			}
+			$(el + ' #id_'+field_name+'_container').append(div);
+		}
+	}
+
+	function getEnrollment(e) {
+		e.preventDefault();
+		clearErrors('#enrollment-div');
+		var form = $(this);
+		var url = form.attr('action');
+		var form_data = new FormData(form[0]);
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: form_data, 
+			processData: false,
+			contentType: false,
+			success: function(data, status, xhr){
+				data = data.split('<<<>>>');
+				$('#profile-div').append(data[0]);
+				$('#qual-div').append(data[1]);
+				$('#id_enroll').on('input', function(e){
+					$('#profile-form').remove();
+					$('#qual-form').remove();
+					$('#id_enroll').off('input');
+				});
+				$('#profile-form').on('submit', updateProfile);
+				$('#qual-form').on('submit', updateQual);
+			},
+			error: function(xhr, status, error){
+				var form_errors = xhr.responseJSON['errors'];
+				addErrors(form_errors, '#enroll-form');
+			}
+		});
+	}
+
+	function updateProfile(e) {
+		e.preventDefault();
+		clearErrors('#profile-div');
+		$('#profile-div .success').remove();
+		var form = $(this);
+		var url = form.attr('action');
+		var form_data = new FormData(form[0]);
+		$.ajax({
+			type: 'POST',
+			url: url,
+			data: form_data,
+			processData: false,
+			contentType: false,
+			success: function(data, status, xhr){
+				$('#profile-div').html(data);
+				// because new html has been added
+				$('#profile-form').on('submit', updateProfile);
+			},
+			error: function(xhr, status, error){
+				var error_msg = xhr.responseJSON['error']
+				if(error_msg){
+					$('#profile-div').prepend($('<small class="error">' + error_msg + '</small>'));
+					alert(error_msg);
+				}
+				var form_errors = xhr.responseJSON['errors'];
+				addErrors(form_errors, '#profile-form');
+			}
+		});
+	}
+
+	function updateQual(e) {
+		e.preventDefault();
+		clearErrors('#qual-div');
+		var form = $(this);
+		var url = form.attr('action');
+		var form_data = new FormData(form[0]);
+		$.ajax({
+			url: url,
+			method: 'POST',
+			data: form_data,
+			contentType: false,
+			processData: false,
+			success: function(data, status, xhr){
+				$('#qual-div').html(data);
+				$('#qual-form').on('submit', updateQual);
+			},
+			error: function(xhr, status, error){
+				var error_msg = xhr.responseJSON['error']
+				if(error_msg){
+					$('#profile-div').prepend($('<small class="error">' + error_msg + '</small>'));
+					alert(error_msg);
+				}
+				var form_errors = xhr.responseJSON['errors'];
+				addErrors(form_errors, '#qual-form');
+			}
+		});
+	}
+	return {
+		init: function(){
+			$('#enroll-form').submit(getEnrollment);
+		}
+	};
+})();

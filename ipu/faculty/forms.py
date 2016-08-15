@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser
 from faculty.models import Faculty
+import re
 
 class FacultySignupForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -23,7 +24,7 @@ class FacultySignupForm(forms.ModelForm):
 
 	def save(self, commit=True, *args, **kwargs):
 		faculty = super(FacultySignupForm, self).save(commit=False)
-		faculty.set_password(self.cleaned_data['password2'])
+		faculty.set_password(self.cleaned_data.get('password2'))
 		faculty.is_active = False
 		faculty.type = 'F'
 		if commit:
@@ -50,8 +51,8 @@ class FacultyFormset(forms.BaseModelFormSet):
 		super(FacultyFormset, self).clean()
 
 		for form in self.forms:
-			pwd1 = form.cleaned_data['password1']
-			pwd2 = form.cleaned_data['password2']
+			pwd1 = form.cleaned_data.get('password1')
+			pwd2 = form.cleaned_data.get('password2')
 			if pwd1 and pwd2 and pwd1!=pwd2:
 				raise forms.ValidationError(_('Passwords do not match'))
 # save conditions to be added in views
@@ -78,3 +79,32 @@ class FacultyProfileForm(forms.ModelForm):
 		help_texts = {
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
 		}
+
+class EnrollmentForm(forms.Form):
+	enroll = forms.CharField(label=_('Enter Enrollment Number'), widget=forms.TextInput(attrs={'maxlength': 11}), required=True, help_text="The retrieved forms will vanish once you change this field.")
+
+	def __init__(self, *args, **kwargs):
+		self.verifier = kwargs.pop('faculty', None)
+		super(EnrollmentForm, self).__init__(*args, **kwargs)
+
+	def clean(self, *args, **kwargs):
+		super(EnrollmentForm, self).clean(*args, **kwargs)
+		enrollno = self.cleaned_data.get('enroll')
+		if enrollno:
+			exp = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', enrollno)
+			if not exp:
+				raise forms.ValidationError(_('Invalid enrollment number format'))
+			coll = exp.groups()[1]
+			if self.verifier.college.code != coll:
+				raise forms.ValidationError(_('You can verify students of your institution only.'))
+			try:
+				user = CustomUser.objects.get(username=enrollno)
+			except CustomUser.DoesNotExist:
+				raise forms.ValidationError(_('Student does not exist'))
+			if not user.is_active:
+				raise forms.ValidationError(_('Student hasn\'t verified his email address. Ask him to do so.'))
+			try:
+				student = user.student
+			except:
+				raise forms.ValidationError(_('Student hasn\'t created his profile. Ask him to create one by logging in from his account.'))
+		return self.cleaned_data

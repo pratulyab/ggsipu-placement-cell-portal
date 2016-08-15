@@ -21,11 +21,11 @@ class Faculty(models.Model):
 	)
 	photo = models.ImageField(_('Photo'),upload_to='faculty/photo', blank=True)
 
-	def full_name(self):
+	def get_full_name(self):
 		return (self.firstname + " " + self.lastname).title()
 
 	def __str__(self):
-		return get_full_name()
+		return self.get_full_name()
 
 	def get_absolute_url(self):
 		return "/%s/" % self.profile.username

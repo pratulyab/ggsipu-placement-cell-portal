@@ -241,6 +241,7 @@ def view_profile(request, username):
 # Methods for facilitation. No 'request' requirement
 
 def send_activation_email(user, domain):
+
 	email_body_context = {
 		'username': user.username,
 		'token': urlsafe_base64_encode(force_bytes(user.username)),
@@ -250,7 +251,8 @@ def send_activation_email(user, domain):
 	}
 	body = loader.render_to_string('account/activation_email_body.html', email_body_context)
 	email_message = EmailMultiAlternatives('Activate Account', body, settings.DEFAULT_FROM_EMAIL, [user.email])
-#	email_message.send()
+	print(settings.DEFAULT_FROM_EMAIL)
+	email_message.send()
 
 
 def get_type_created(user):

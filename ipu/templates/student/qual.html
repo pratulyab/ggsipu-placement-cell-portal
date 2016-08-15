@@ -1,0 +1,21 @@
+{% extends 'account/base.html' %}
+{% load staticfiles %}
+{% load material_form %}
+{% block title %} Qualifications {% endblock %}
+{% block content %}
+	<div class="row">
+		<div class="col s6 m12">
+			<h4> My Qualifications </h4>
+			<br><br>
+			<form enctype="multipart/form-data" action="{% url 'student_qual' %}" method='POST' id='qual'>
+				{% csrf_token %}
+				{% form form=qual_form %}{% endform %}
+				<div class="row">
+					<div class="col s12" style="width: 100%">
+						<button class="btn btn-waves blue" name="qual-btn">Update</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock %}

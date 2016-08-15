@@ -73,8 +73,8 @@ class StudentSignupForm(forms.ModelForm):
 
 	def clean(self, *args, **kwargs):
 		super(StudentSignupForm, self).clean(*args, **kwargs)
-		pwd1 = self.cleaned_data['password1']
-		pwd2 = self.cleaned_data['password2']
+		pwd1 = self.cleaned_data.get('password1')
+		pwd2 = self.cleaned_data.get('password2')
 		if pwd1 and pwd2 and pwd1!=pwd2:
 			raise forms.ValidationError(_('Passwords must match.'))
 		return self.cleaned_data
@@ -177,53 +177,60 @@ class StudentCreationForm(forms.ModelForm):
 
 class StudentEditForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
-		self.coll = kwargs.pop('coll', None)
-		self.strm = kwargs.pop('strm', None)
 		super(StudentEditForm, self).__init__(*args, **kwargs)
-		self.fields['phone_number'].required = False
-		self.initial['college'] = self.coll
-		self.initial['stream'] = self.strm
-		self.initial['programme'] = Stream.objects.get(pk=self.strm).programme.pk
+		self.initial['college'] = self.instance.college.pk
 		self.fields['college'].widget.attrs['disabled'] = 'disabled'
-		self.fields['stream'].widget.attrs['disabled'] = 'disabled'
+		self.initial['programme'] = self.instance.programme.pk
 		self.fields['programme'].widget.attrs['disabled'] = 'disabled'
+		self.initial['stream'] = self.instance.stream.pk
+		self.fields['stream'].widget.attrs['disabled'] = 'disabled'
 
 	def clean_college(self):
-		college = self.cleaned_data['college']
-		if college and college.pk != self.coll:
-			raise forms.ValidationError(_('Error. College field changed.'))
-		return college
+		clg = self.cleaned_data['college']
+		if clg and self.instance.college != clg:
+			print('---')
+			raise forms.ValidationError(_('Error. College has been changed'))
+		return clg
 
 	def clean_programme(self):
-		programme = self.cleaned_data['programme']
-		if programme and programme.pk != Stream.objects.get(pk=self.strm).programme.pk:
-			raise forms.ValidationError(_('Error. Programme field changed.'))
-		return programme
+		prog = self.cleaned_data['programme']
+		if prog and self.instance.programme != prog:
+			print('---')
+			raise forms.ValidationError(_('Error. Programme has been changed'))
+		return prog
 
 	def clean_stream(self):
-		stream = self.cleaned_data['stream']
-		if stream and stream.pk != self.strm:
-			raise forms.ValidationError(_('Error. Stream field changed.'))
-		return stream
+		strm = self.cleaned_data['stream']
+		if strm and self.instance.stream != strm:
+			print('---')
+			raise forms.ValidationError(_('Error. Stream has been changed'))
+		return strm
 	
 	def clean_photo(self):
 		photo = self.cleaned_data['photo']
+		print(photo)
 		if photo:
-			if photo.content_type in settings.IMAGE_CONTENT_TYPE:
-				if photo._size > settings.IMAGE_MAX_SIZE:
-					raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
-			else:
-				raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
+			try:
+				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
+					if photo._size > settings.IMAGE_MAX_SIZE:
+						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
+				else:
+					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
+			except:
+				pass
 		return photo
 
 	def clean_resume(self):
 		cv = self.cleaned_data['resume']
 		if cv:
-			if cv.content_type in settings.FILE_CONTENT_TYPE:
-				if cv._size > settings.FILE_MAX_SIZE:
-					raise forms.ValidationError(_('Resume too large (>%sMB)' % (settings.FILE_MAX_SIZE/(1024*1024))))
-			else:
-				raise forms.ValidationError(_('Please upload resume in .pdf, .doc or .docx format'))
+			try:
+				if cv.content_type in settings.FILE_CONTENT_TYPE:
+					if cv._size > settings.FILE_MAX_SIZE:
+						raise forms.ValidationError(_('Resume too large (>%sMB)' % (settings.FILE_MAX_SIZE/(1024*1024))))
+				else:
+					raise forms.ValidationError(_('Please upload resume in .pdf, .doc or .docx format'))
+			except:
+				pass
 		return cv
 	
 	def save(self, commit=True, *args, **kwargs):
@@ -238,7 +245,7 @@ class StudentEditForm(forms.ModelForm):
 			except ValidationError as error:
 				raise forms.ValidationError(error)
 		return student
-	
+
 	class Meta:
 		model = Student
 		exclude = ['profile', 'is_verified', 'verified_by']
@@ -248,21 +255,28 @@ class StudentEditForm(forms.ModelForm):
 		}
 
 class QualificationForm(forms.ModelForm):
+	"""
+	Manipulating this form for both creation as well as editing. If the qualifications are being created for the first time, don\'t forget to pass the student instance to the save method. Updating the student field only if student is passed. Hence, if you don\'t pass the student object while creation, "" NULL not allowed " error will be raised. \m/
+	"""
 	def __init__(self, *args, **kwargs):
-		self.student_profile = kwargs.pop('student', None)
 		super(QualificationForm, self).__init__(*args, **kwargs)
 
 	def save(self, commit=True, *args, **kwargs):
 		qual = super(QualificationForm, self).save(commit=False)
-		qual.student = self.student_profile
+		student = kwargs.pop('student', None)
+		if student:
+			qual.student = student
+		qual.is_verified = kwargs.pop('verified', None)
+		qual.verified_by = kwargs.pop('verifier', None)
 		if commit:
 			qual.save()
 		return qual
 
 	class Meta:
 		model = Qualification
-		exclude = ['student']
-
+		fields = ['tenth', 'twelfth', 'graduation', 'post_graduation', 'doctorate']
+		help_texts = {field: 'in percentage (%), upto 2 places of decimal' for field in fields}
+"""
 class QualificationEditForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(QualificationEditForm, self).__init__(*args, **kwargs)
@@ -277,8 +291,8 @@ class QualificationEditForm(forms.ModelForm):
 
 	class Meta:
 		model = Qualification
-		exclude = ['student']
-
+		fields = ['tenth', 'twelfth', 'graduation', 'post_graduation', 'doctorate']
+"""
 class TechProfileForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		self.student_profile = kwargs.pop('student', None)
@@ -290,6 +304,7 @@ class TechProfileForm(forms.ModelForm):
 			if self.fields[field].__class__.__name__ == 'URLField' and self.cleaned_data[field]:
 				if not field in urlparse( self.cleaned_data[field] ).netloc:
 					raise forms.ValidationError({field:_('Please provide correct URL')})
+		return self.cleaned_data
 	
 	def save(self, commit=True, *args, **kwargs):
 		tech = super(TechProfileForm, self).save(commit=False)

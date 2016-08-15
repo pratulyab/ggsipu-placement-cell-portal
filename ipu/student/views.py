@@ -3,16 +3,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from account.models import CustomUser
 from account.views import handle_user_type, send_activation_email
 from college.models import College, Stream
-from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm
+from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm
 from student.models import Student
 
 import re
+from bs4 import BeautifulSoup
 
 # Create your views here.
 
@@ -97,7 +100,7 @@ def student_home(request):
 		try:
 			context['student'] = request.user.student
 			return render(request, 'student/home.html', context)
-		except Student.DoesNotExist:
+		except:
 			return redirect('create_student')
 	else:
 		return handle_user_type(request, redirect_request=True)
@@ -110,49 +113,149 @@ def edit_student(request):
 		try:
 			roll, coll, strm, year = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', username).groups()
 		except AttributeError:
-#			pass
 			raise Http404(_('Enrollment number should contain only digits'))
 		except ValueError:
-#			pass
 			raise Http404(_('Enrollment number should be 11 digits long'))
 		coll = College.objects.get(code=coll).pk
 		strm = Stream.objects.get(code=strm).pk
 		try:
 			context = {}
 			student = request.user.student
-			if student.is_verified == True:
+			if student.is_verified != None:
 				#Message
-				return redirect('student_home')
-			elif student.is_verified == False and student.verified_by == None:
 				return redirect('student_home')
 			
 			if request.method == 'GET':
-				f = StudentEditForm(coll=coll, strm=strm, instance=student)
+				f = StudentEditForm(instance=student)
 			else:
 				POST = request.POST.copy()
-				POST['college'] = coll
-				POST['stream'] = strm
-				POST['programme'] = Stream.objects.get(pk=strm).programme.pk
-				f = StudentEditForm(POST, request.FILES, coll=coll, strm=strm, instance=student)
+				POST['college'] = student.college.pk
+				POST['programme'] = student.programme.pk
+				POST['stream'] = student.stream.pk
+				f = StudentEditForm(POST, request.FILES, instance=student)
 				if f.is_valid():
-					f.save()
+					f.save(is_verified=False)
 					if f.has_changed():
 						context['update'] = True
 						# Instead use message
 			context['student_edit_form'] = f
-			return render(request, 'student/edit.html', context)
-		except Student.DoesNotExist:
+			return redirect('student_home')
+#			return render(request, 'student/edit.html', context)
+		except:
 			user_profile = request.user
 			try:
 				roll, coll, strm, year = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', user_profile.username).groups()
 			except AttributeError:
-#				pass
 				raise Http404(_('Enrollment number should contain only digits'))
 			except ValueError:
-#				pass
 				raise Http404(_('Enrollment number should be 11 digits long'))
 			coll = College.objects.get(code=coll).pk
 			strm = Stream.objects.get(code=strm).pk
 			return render(request, 'student/create.html', {'student_creation_form': StudentCreationForm(profile=user_profile, coll=coll, strm=strm)})
+		
+	elif request.user.type == 'F' and request.is_ajax() and request.method == 'POST':
+		enroll = request.session['enrollmentno']
+		if not enroll:
+			Http404(_('Cookie has been deleted'))
+		try:
+			student = CustomUser.objects.get(username=enroll)
+			student = student.student
+		except:
+			return JsonResponse(status=400, data={'error': 'Student with this enrollment number does not exist'})
+		POST = request.POST.copy()
+		POST['college'] = student.college.pk
+		POST['programme'] = student.programme.pk
+		POST['stream'] = student.stream.pk
+		f = StudentEditForm(POST, request.FILES, instance=student)
+		verdict = False
+		if 'continue' == request.POST.get('true', ''):
+			verdict = True
+		elif 'leave' == request.POST.get('none', ''):
+			verdict = None
+		else:
+		 	return JsonResponse(status=400, data={'error': 'Button name or value changed. Refresh page and continue.'})
+		if f.is_valid():
+			student = f.save(verifier=request.user, verified=verdict)
+			context = {'profile_form': StudentEditForm(instance=student), 'success_msg': 'Student profile has been updated successfully!'}
+#			html = render(request, 'faculty/verify_profile_form.html', context).content.decode('utf-8')
+#			form_html = BeautifulSoup(html, "html.parser")
+#			print(form_html)
+#			return HttpResponse(form_html)
+			return HttpResponse(render(request, 'faculty/verify_profile_form.html', context).content) # for RequestContext() to set csrf value in form
+#			return HttpResponse(render_to_string('faculty/verify_profile_form.html', context))
+		else:
+			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+
 	else:
 		return handle_user_type(request)
+
+@require_http_methods(['GET','POST'])
+@login_required
+def edit_qualifications(request):
+	if request.user.type == 'S':
+		try:
+			student = request.user.student
+		except:
+			redirect('create_student')
+		try:
+			qual = student.qualifications
+			if qual.is_verified != None:
+				return redirect('student_home')
+		except:
+			qual = None
+
+		if request.method == 'GET':
+			if qual:
+				f = QualificationForm(instance=qual)
+			else:
+				f = QualificationForm()
+		else:
+			if qual:
+				f = QualificationForm(request.POST, instance=qual)
+			else:
+				f = QualificationForm(request.POST)
+			if f.is_valid():
+				if qual:
+					f.save(verified=False)
+				else:
+					f.save(student=student, verified=False)
+				return redirect('student_home')
+#				return render(request, 'student/qual.html', {'qual_form': f})
+		return render(request, 'student/qual.html', {'qual_form': f})
+
+	elif request.user.type == 'F' and request.method == 'POST' and request.is_ajax():
+		enroll = request.session['enrollmentno']
+		if not enroll:
+			Http404(_('Cookie has been deleted'))
+		try:
+			student = CustomUser.objects.get(username=enroll)
+			student = student.student
+		except:
+			return JsonResponse(status=400, data={'error': 'Student with this enrollment number does not exist'})
+		verdict = False
+		if 'continue' == request.POST.get('true', ''):
+			verdict = True
+		elif 'leave' == request.POST.get('none', ''):
+			verdict = None
+		else:
+		 	return JsonResponse(status=400, data={'error': 'Button name or value changed. Refresh page and continue.'})
+		try:
+			qual = student.qualifications
+			f = QualificationForm(request.POST, instance=qual)
+		except:
+			qual = None
+			f = QualificationForm(request.POST)
+		if f.is_valid():
+			verifier = request.user
+			verified = verdict
+			if qual:
+				student = f.save(verifier=verifier, verified=verified)
+			else:
+				student = f.save(student=student, verifier=verifier, verified=verified)
+			form_html = render(request, 'faculty/verify_qual_form.html', {'qual_form': f}).content.decode('utf-8')
+#			form_html = BeautifulSoup(html, "html.parser").find('form').extract
+			return HttpResponse(form_html)
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+	
+	else:
+		handle_user_type(request, redirect_request=True)

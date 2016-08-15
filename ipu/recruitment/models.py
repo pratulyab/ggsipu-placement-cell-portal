@@ -23,6 +23,7 @@ class Association(models.Model):
 			blank=True
 	)
 	initiator = models.CharField(_('Who initiated it'), max_length=2, choices=SOURCE, default=SOURCE[0][0])
+	approved = models.NullBooleanField(default=None)
 
 	def __str__(self):
 		return self.company.name + " for placement in " + self.college.name
