@@ -34,14 +34,14 @@
 		<div class="col s12 m10 offset-m1 card-panel" id="qual-div">	
 		</div>
 		<div class="row">
-			<div class="col s12">
-				<br>
-				<form action="{% url 'verify' %}"> <!-- Delete -->
-					<div class="row">
-						<button type="submit" class="btn btn-waves red right" style="width: 100%">Delete Student</button>
-						<small class="center-align">Careful, the student's account will be deleted forever. Your action will be logged for reference purposes.</small>
-					</div>
+			<div class="col s12" id="delete-div">
+				<form>
+					{% csrf_token %}
+					<button type="submit" class="btn btn-waves red" style="width: 100%" id="delete-btn">Delete Student</button>
 				</form>
+			</div>
+			<div class="col s12">
+				<small class="center-align">Careful, the student's account will be deleted forever. Your action will be logged for reference purposes.</small>
 			</div>
 		</div>
 	</div>

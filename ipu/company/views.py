@@ -12,26 +12,22 @@ from company.models import Company
 
 # Create your views here.
 
-@require_http_methods(['GET','POST'])
+@require_POST
 def company_signup(request):
 	if request.user.is_authenticated():
-		return handle_user_type(request, redirect_response=True)
-	if request.method == 'GET':
-		f = SignupForm()
+		return handle_user_type(request, redirect_request=True)
+	f = SignupForm(request.POST)
+	f.instance.type = 'CO'
+	if f.is_valid():
+		user = f.save(user_type='CO')
+		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
+		auth_login(request, user)
+		send_activation_email(user, get_current_site(request).domain)
+		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse('create_student'))}
+		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')
+		return JsonResponse(data = {'success': True, 'render': html})
 	else:
-		f = SignupForm(request.POST)
-		f.instance.type = 'CO'
-		if f.is_valid():
-			company = f.save(user_type='CO')
-			company = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
-			context = {}
-			if company:
-				auth_login(request, company)
-				context['email'] = company.email
-				context['profile_creation'] = request.build_absolute_uri(reverse('create_company'))
-				send_activation_email(company, get_current_site(request).domain)
-				return render(request, 'account/post_signup.html', context)
-	return render(request, 'company/signup.html', {'company_signup_form': f})
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
 @require_http_methods(['GET','POST'])
 @login_required

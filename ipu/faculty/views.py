@@ -106,7 +106,11 @@ def get_enrollment_number(request):
 #				profile_form = render_to_string('faculty/verify_profile_form.html', {'profile_form': StudentEditForm(instance=student)})
 #				qual_form = render_to_string('faculty/verify_qual_form.html', {'qual_form': QualificationEditForm(instance=student)})
 				profile_form = render(request, 'faculty/verify_profile_form.html', {'profile_form': StudentEditForm(instance=student)}).content.decode('utf-8')
-				qual_form = render(request, 'faculty/verify_qual_form.html', {'qual_form': QualificationForm(instance=student.qualifications)}).content.decode('utf-8')
+				try:
+					q = QualificationForm(instance=student.qualifications)
+				except:
+					q = QualificationForm()
+				qual_form = render(request, 'faculty/verify_qual_form.html', {'qual_form': q}).content.decode('utf-8')
 				return HttpResponse(profile_form+"<<<>>>"+qual_form)
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})

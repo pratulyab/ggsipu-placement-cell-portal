@@ -5,7 +5,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
 from django.utils.encoding import force_bytes, force_text
@@ -20,27 +20,30 @@ from company.forms import CompanyCreationForm
 from company.models import Company
 from faculty.forms import FacultyProfileForm
 from faculty.models import Faculty
-from student.forms import StudentCreationForm
+from student.forms import StudentCreationForm, StudentSignupForm, StudentLoginForm
 from student.models import Student
 import re
 
 # Create your views here
 
-@require_http_methods(['GET', 'POST'])
+@require_GET
+def landing(request):
+	if request.user.is_authenticated():
+		return handle_user_type(request, redirect_request=True)
+	context = {'login_form': LoginForm(prefix='l'), 'signup_form': SignupForm(prefix='s'), 'student_login_form': StudentLoginForm(prefix='sl'), 'student_signup_form': StudentSignupForm(prefix='ss')}
+	return render(request, 'account/landing.html', context)
+
+@require_POST
 def login(request):
 	if request.user.is_authenticated():
-		return handle_user_type(request)
-	if request.method == 'GET':
-		f = LoginForm()
+		return handle_user_type(request, redirect_request=True)
+	f = LoginForm(request.POST)
+	if f.is_valid():
+		user = f.get_user()
+		auth_login(request, user)
+		return JsonResponse(data = {'success': True, 'location': get_relevant_reversed_url(request)})
 	else:
-		f = LoginForm(request.POST)
-		if f.is_valid():
-			user = f.get_user()
-			user = auth_login(request, user)
-			return handle_user_type(request, redirect_request=True)
-		else:
-			return render(request, 'account/login.html', {'login_form': f})
-	return render(request, 'account/login.html', {'login_form': f})
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
 @require_GET
 def activate(request, uid=None, token=None):
@@ -145,12 +148,8 @@ def home(request):
 @require_GET
 @login_required
 def logout(request):
-	if request.user.type == 'S':
-		auth_logout(request)
-		return redirect('student_login')
-	else:
-		auth_logout(request)
-		return redirect('login')
+	auth_logout(request)
+	return redirect('landing')
 
 # Methods that aren't mapped to any URL
 
@@ -162,7 +161,7 @@ def handle_user_type(request, redirect_request=False):
 	if data:
 #		if request.method == 'GET':
 #			print(request.GET.get('next'))
-#		Yet to implemented
+#		Yet to be implemented
 		return redirect(get_home_url(user_type))
 	else:
 		if redirect_request:
@@ -238,10 +237,19 @@ def view_profile(request, username):
 			context['company'] = profile
 			return render(request, 'company/pub_profile.html', context)
 
+@require_http_methods(['GET','POST'])
+@login_required
+def get_relevant_reversed_url(request):
+	data = get_type_created(request.user)
+	user_type = data.pop('user_type')
+	if data:
+		return reverse(get_home_url(user_type))
+	else:
+		return reverse(get_creation_url(user_type))
+
 # Methods for facilitation. No 'request' requirement
 
 def send_activation_email(user, domain):
-
 	email_body_context = {
 		'username': user.username,
 		'token': urlsafe_base64_encode(force_bytes(user.username)),
@@ -252,7 +260,7 @@ def send_activation_email(user, domain):
 	body = loader.render_to_string('account/activation_email_body.html', email_body_context)
 	email_message = EmailMultiAlternatives('Activate Account', body, settings.DEFAULT_FROM_EMAIL, [user.email])
 	print(settings.DEFAULT_FROM_EMAIL)
-	email_message.send()
+#	email_message.send()
 
 
 def get_type_created(user):
@@ -293,3 +301,13 @@ def get_home_url(user_type):
 		return 'student_home'
 	else:
 		return 'company_home'
+
+def get_creation_url(user_type):
+	if user_type == 'C':
+		return 'create_college'
+	elif user_type == 'F':
+		return 'edit_create_faculty'
+	elif user_type == 'S':
+		return 'create_student'
+	else:
+		return 'create_company'

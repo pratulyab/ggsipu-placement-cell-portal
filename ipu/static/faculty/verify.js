@@ -7,6 +7,7 @@ var VerifyStu = (function() {
 		$(el + ' .input-field').removeClass('has-error');
 		$(el + ' .input-field input').removeClass('invalid');
 	}
+
 	function addErrors(form_errors, el){
 		var form = $(el);
 		if(!form || !form_errors)
@@ -52,9 +53,13 @@ var VerifyStu = (function() {
 					$('#profile-form').remove();
 					$('#qual-form').remove();
 					$('#id_enroll').off('input');
+//					$('#delete-btn').off('click');
+					$('#delete-div form').off('submit');
 				});
 				$('#profile-form').on('submit', updateProfile);
 				$('#qual-form').on('submit', updateQual);
+//				$('#delete-btn').on('click', delete_button);
+				$('#delete-div form').on('submit', delete_button);
 			},
 			error: function(xhr, status, error){
 				var form_errors = xhr.responseJSON['errors'];
@@ -101,7 +106,7 @@ var VerifyStu = (function() {
 		var form_data = new FormData(form[0]);
 		$.ajax({
 			url: url,
-			method: 'POST',
+			type: 'POST',
 			data: form_data,
 			contentType: false,
 			processData: false,
@@ -117,6 +122,34 @@ var VerifyStu = (function() {
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrors(form_errors, '#qual-form');
+			}
+		});
+	}
+
+	function delete_button(e) {
+		e.preventDefault();
+//		var btn = $(this);
+		var form = $(this);
+		var form_data = new FormData(form[0]);
+		var verdict = confirm('Are you sure you want to delete the student?');
+		if(!verdict)
+			return;
+//		$(this).off('click');
+		$(this).off('submit');
+		$.ajax({
+			url: '/student/delete/',
+//			type: 'DELETE',  REST
+			type: 'POST',
+			data: form_data,
+			contentType: false,
+			processData: false,
+			success: function(data, xhr, status){
+				location.href = '/faculty/verify/';
+			},
+			error: function(xhr, status, error){
+				addErrors(xhr.responseJSON('error'), '#delete-div');
+//				btn.on('click', delete_button);
+				form.on('submit', delete_button);
 			}
 		});
 	}

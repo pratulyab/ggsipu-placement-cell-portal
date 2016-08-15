@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from account.models import CustomUser
-from account.views import handle_user_type, send_activation_email
+from account.views import handle_user_type, send_activation_email, get_relevant_reversed_url
 from college.models import College, Stream
 from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm
 from student.models import Student
@@ -19,41 +19,33 @@ from bs4 import BeautifulSoup
 
 # Create your views here.
 
-@require_http_methods(['GET','POST'])
+@require_POST
 def student_login(request):
 	if request.user.is_authenticated():
-		return handle_user_type(request)
-	if request.method == 'GET':
-		f = StudentLoginForm()
+		return handle_user_type(request, redirect_request=True)
+	f = StudentLoginForm(request.POST)
+	if f.is_valid():
+		user = f.get_user()
+		auth_login(request, user)
+		return JsonResponse(data = {'success': True, 'location': get_relevant_reversed_url(request)})
 	else:
-		f = StudentLoginForm(request.POST)
-		if f.is_valid():
-			user = f.get_user()
-			user = auth_login(request, user)
-			return handle_user_type(request)
-		else:
-			return render(request, 'student/login.html', {'student_login_form': f})
-	return render(request, 'student/login.html', {'student_login_form': f})
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
-@require_http_methods(['GET','POST'])
+@require_POST
 def student_signup(request):
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_request=True)
-	if request.method == 'GET':
-		f = StudentSignupForm()
+	f = StudentSignupForm(request.POST)
+	if f.is_valid():
+		user = f.save()
+		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
+		auth_login(request, user)
+		send_activation_email(user, get_current_site(request).domain)
+		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse('create_student'))}
+		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')
+		return JsonResponse(data = {'success': True, 'render': html})
 	else:
-		f = StudentSignupForm(request.POST)
-		if f.is_valid():
-			student = f.save()
-			student = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
-			context = {}
-			if student:
-				auth_login(request, student)
-				context['email'] = student.email
-				context['profile_creation'] = request.build_absolute_uri(reverse('create_student'))
-				send_activation_email(student, get_current_site(request).domain)
-				return render(request, 'account/post_signup.html', context)
-	return render(request, 'student/signup.html', {'student_signup_form': f})
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
 @require_http_methods(['GET','POST'])
 @login_required
@@ -259,3 +251,27 @@ def edit_qualifications(request):
 	
 	else:
 		handle_user_type(request, redirect_request=True)
+
+#@require_http_methods(['DELETE'])
+@require_POST
+@login_required
+def delete_student(request):
+	if request.user.type == 'F' and request.is_ajax():
+		try:
+			faculty = request.user.faculty
+		except:
+			return redirect('edit_create_faculty')
+		enroll = request.session['enrollmentno']
+		if not enroll:
+			return JsonResponse(status=403, data={'error': 'Cookie Error. Couldn\'t complete request'})
+		try:
+			user = CustomUser.objects.get(username=enroll)
+		except:
+			return JsonResponse(status=400, data={'error': 'Student with this enrollment number does not exist'})
+		try:
+			user.delete()
+			return redirect('verify')
+		except:
+			return JsonResponse(status=500, data={'error': 'Error occurred while deleting student'})
+	else:
+		return handle_user_type(request, redirect_request=True)
