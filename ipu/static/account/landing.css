@@ -1,6 +1,14 @@
-body
-{
-	background-image: url("images/main-bg.jpg");
+html {
+    height: 100%;
+    background: url("images/2.jpg") no-repeat center fixed;
+    background-size: cover;
+}
+
+
+body {
+    min-height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 50px;
 }
 
 .navbar-fixed
@@ -10,16 +18,20 @@ body
 
 main
 {
-  align-items: center;
+    align-items: center;
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
-	margin-top: 50px;
-  padding: 10px;
+    padding: 10px;
 }
 main img
 {
-	margin-bottom: 9px;
+	margin-bottom: 0px;
+}
+
+#heading
+{
+  color: white;
 }
 
 #form-box
@@ -27,9 +39,36 @@ main img
 	background-color: white;
 	display: flex;
 	flex-direction: column;
-	height: 445px;
+  transition: box-shadow .25s;
+	height: 355px;
   border-radius: 7px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
+
+#student-signup-mainbox
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#student-signup-box
+{
+  width: 100%;
+}
+
+#recruiter-signup-mainbox
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#recruiter-signup-box
+{
+  width: 100%;
+}
+
 
 .tabs .tab a {
     color: #26a69a;
@@ -41,12 +80,25 @@ main img
     width: 50%;  
 }
 
+.card-panel
+{
+  box-shadow: none;
+  margin: 0;
+    
+
+   
+}
+
 #corner-buttons {
     position: absolute;
-    top: 2em;
-    right: 2em;
+    top: 1em;
+    right: 1em;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
+    left: 5%;
+    width: 90%;
+
 }
 
 #corner-buttons-small {
@@ -57,11 +109,37 @@ main img
     justify-content: space-between;
     left: 5%;
     width: 90%;
+    
 }
 
 #corner-buttons a{
     margin: 4px;
+
 }
+
+#corner-buttons-small a{
+    margin: 4px;
+    font-size: 10px;
+    line-height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+#student-login-btn
+{
+  width: 100%;
+  font-weight: bold;
+}
+
+#login-btn
+{
+  width: 100%;
+  font-weight: bold;
+}
+
+
 
 
 
@@ -92,6 +170,7 @@ main img
       z-index:1002;
       overflow: auto;
       color: black;
+      border-radius: 2%;
     }
 .white_content #cross
     {
