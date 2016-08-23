@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+    {% load staticfiles %}
+    <head>
+      
+      <!--Import Google Icon Font-->
+      <link type="text/css" rel="stylesheet" href="{% static 'css/font-awesome/css/font-awesome.min.css' %}" />
+      <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <!--Import materialize.css-->
+      <link type="text/css" rel="stylesheet" href="{% static 'css/materialize/css/materialize.min.css' %}"  media="screen,projection"/>
+      <link type="text/css" rel="stylesheet" href="{% static 'account/css/base_home_layout.css'%}"  media="screen,projection"/>
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+
+    <body>
+<!--Dropdown menu for user icon in navbar-->
+      <ul id="dropdown1" class="dropdown-content">
+         
+        
+        <li>
+               
+            <a href="" id="img-box">
+                <img src="{% block user_photo %}{% endblock %}" class="circle" height="90" width="90">
+                <span class="black-text">{% block user_name_card %}{% endblock %}</span>
+                <span class="grey-text lighten-1">{% block user_email_id %}{% endblock %}</span>
+            </a>
+            
+        </li>
+        <li class="divider"></li>
+        <li><a href="#!"><i class="fa fa-sliders"></i>Account settings</a></li>
+        <li class="divider"></li>
+        <li><a href="#!"><i class="fa fa-bell"></i>Notifications</a></li>
+        <li class="divider"></li>
+        <li class="divider"></li>
+        <li><a href="{% url 'logout' %}"<i class="fa fa-sign-out"></i>Sign out</a></li>
+      </ul>
+<!--Dropdown menu for menu in navbar-->
+      <ul id="dropdown2" class="dropdown-content">
+       {% block menu_icon_dropdown %}
+        <li><a href="#!">wrgwearg</a></li>
+        <li class="divider"></li>
+       {% endblock %} 
+      </ul>
+<!--Dropdown menu for notifications icon in navbar-->
+      <ul class="collapsible dropdown-content" data-collapsible="accordion" id="dropdown3">
+          <div id="noti-head">Notifications</div>
+           {% block notifications_dropdown %}
+           <!--every li here represents a notifcations. header anf body for notifications repectively-->
+          <li>
+            <div class="collapsible-header">First</div>
+            <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+          </li>
+          <li>
+            <div class="collapsible-header">Second</div>
+            <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+          </li>
+          <li>
+            <div class="collapsible-header">Third</div>
+            <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+          </li>
+          <li>
+            <div class="collapsible-header">Fourth</div>
+            <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+          </li>
+           {% endblock %}
+      </ul>
+<!--Search box for tab and mobile view-->
+      <div id="light" class="white_content"> 
+              <form id="box-search">
+                      <input id="search" type="search" required placeholder="Search...">
+                      <a class="waves-effect waves-light btn">Go</a>
+              </form> 
+          <a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-2x"></i>
+          </a></div>
+      <div id="fade" class="black_overlay"></div>
+
+
+     
+
+<!--materialize fixed main navbar-->
+      <div class="navbar-fixed">
+        <nav id="nav-bar">
+        
+          <div class="nav-wrapper teal darken-3">
+            <a href="#!" class="brand-logo left hide-on-small-only">Training and placement cell</a>
+            <a href="#!" class="brand-logo left hide-on-large-only hide-on-med-only">TPC</a>
+              <ul class="right">
+                  <li class="center hide-on-med-and-down">
+                    <!--materialize search-bar-->
+                      <form>
+                        <div class="input-field">
+                            <input id="search" type="search" required placeholder="Search..">
+                            <label for="search"><i class="material-icons">search</i></label>
+                            <i class="material-icons">close</i>
+                        </div>
+                    </form>
+                  </li>
+                  <li class="hide-on-large-only"><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
+                  </li>
+                  <li>
+                    <a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown3"><i class="material-icons">add_alert</i></a>
+                  </li>
+
+                  <li>
+                    <a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown2"><i class="material-icons">menu</i></a>
+                  </li>   
+                  <li>
+                    <a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown1"><img src="{% block user_photo2 %}{% endblock %}" class="circle" id="img-corner"></a>
+                  </li>
+                    
+              </ul>
+           
+            </div>
+        </nav>
+      </div> 
+<!--navbar ends-->
+
+<!--second navbar-->
+      <div id="post-navbar" class="teal lighten-4">
+          	<h5>{% block user_type%}{% endblock %}</h5><!--Teacher, students or company-->
+          	<h5><i class="material-icons">trending_flat</i></h5>
+          	<h5>{%block user_name%}{% endblock %}</h5><!--name of current user-->   
+      </div>
+<!--second navbar ends-->
+       <main>
+           
+         <!--Tabs bar begins--> 
+       	<div id="tab-bar">
+       	    <div class="row">
+          		<div class="col s8">
+            		   <ul class="tabs">
+            		        <!--naming for tabs-->
+            		        {% block tabs %}
+            		        <!--each li  represents a new tab with the name-->
+                      			<li class="tab col s2"><a class="active" href="#test1">Test 1</a></li>
+                  			{% endblock %}
+            			</ul>
+          		</div>
+      		    	 <div id="tabs-data-div">	
+      		    		{% block tabs_content %}
+      		    		{% endblock %}
+      		    	 </div>
+        		</div>
+       	
+       	</div>
+         
+
+       </main>
+            
+      
+
+    
+
+
+
+      
+      <script type="text/javascript" src="{% static 'css/jquery.js' %}"></script>
+      <script type="text/javascript" src="{% static 'css/materialize/js/materialize.min.js' %}"></script>
+      <script type="text/javascript">
+
+      var box = $('#dropdown3');
+
+      box.click(function(e) {
+            e.stopPropagation();
+        });
+
+
+
+      </script>
+      {% block JS %}{% endblock %}
+   </body>
+</html>

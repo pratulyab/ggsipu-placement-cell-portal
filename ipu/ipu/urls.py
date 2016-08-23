@@ -25,6 +25,7 @@ urlpatterns = [
 	url(r'^login/$', login, name='login'),
 	url(r'^account/', include('account.urls')),
 	url(r'^college/', include('college.urls')),
+	url(r'^notification/', include('notification.urls')),
 	url(r'^company/', include('company.urls')),
 	url(r'^faculty/', include('faculty.urls')),
 	url(r'^recruitment/', include('recruitment.urls')),

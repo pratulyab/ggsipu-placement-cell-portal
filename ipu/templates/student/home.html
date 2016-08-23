@@ -1,40 +1,49 @@
-{% extends 'index.html' %}
+{% extends 'account/base_home_layout.html' %}
 
-{% block edit_profile_url %}
-	{% url 'edit_student_profile' %}
-{% endblock %}
 
-{% block photo %}
-	{% if student.display_picture %}
-		{{ student.display_picture.url }}
+{% block user_photo %}
+	{% if student.photo %}
+		{{ student.photo.url }}
 	{% endif %}
 {% endblock %}
 
-{% block name %}
+{% block user_name_card %}
 	{{ student.firstname }}&nbsp;{{ student.lastname }}
 {% endblock %}
 
-{% block sociallinks %}
-	{{ block.super }}
-	<li><a href="#"><span><i class="fa fa-facebook-official"></i>&nbsp;Facebook</span></a></li>
-	<li><a href="#"><span><i class="fa fa-github-square"></i>&nbsp;Github</span></a></li>
-	<li><a href="#"><span><i class="fa fa-linkedin-square"></i>&nbsp;Linked In</span></a></li>
-	<li><a href="#"><span><i class="fa fa-bitbucket-square"></i>&nbsp;Bitbucket</span></a></li>
+{% block user_email_id %}
+	{{ student.profile.email }}
 {% endblock %}
 
-{% block leftpanellinks %}
-	{{ block.super }}
-	{% if student.resume %}
-		<li><a href="{{ student.resume.url }}"><span><span class="fa fa-file-pdf-o"></span>Resume</span></a></li>
+{% block menu_icon_dropdown %}
+	<li><a href="#">wrgwearg</a></li>
+    <li class="divider"></li>
+{% endblock %}
+
+{% block user_type %}
+	Student
+{% endblock %}
+
+{% block user_name %}
+	{{ student.firstname }}&nbsp;{{ student.lastname }}	
+{% endblock %}
+
+{% block user_photo2 %}
+	{% if student.photo %}
+		{{ student.photo.url }}
 	{% endif %}
-		<li><a href="{% url 'edit_student_profile' %}"><span><span class="fa fa-cog"></span>Settings</span></a></li>
-         <li><a href="{% url 'logout' %}"><span><span class="fa fa-sign-out"></span>Logout</span></a></li>
 {% endblock %}
 
-{% block tab_one_title %}
-	Companies Visiting My College
+{% block tabs%}
+	<li class="tab col s2"><a class="active" href="#tab1">Companies Visiting</a></li>
+	<li class="tab col s2"><a href="#tab2">Status</a></li>
+	<li class="tab col s2"><a href="#tab3">Qualifications</a></li>
+	<li class="tab col s2"><a href="#tab4">Settings</a></li>
 {% endblock %}
 
-{% block tab_two_title %}
-	Application Status
+{% block tabs_content %}
+	<div id="tab1" class="col s12">Data 1</div>
+	<div id="tab2" class="col s12">Data 2</div>
+	<div id="tab3" class="col s12">Data 3</div>
+	<div id="tab4" class="col s12">Data 4</div>
 {% endblock %}

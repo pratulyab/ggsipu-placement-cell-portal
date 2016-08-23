@@ -1,37 +1,66 @@
-{% extends 'index.html' %}
-{% block edit_profile_url %}
-	{% url 'edit_college_profile' %}
-{% endblock %}
+{% extends 'account/base_home_layout.html' %}
+{% load staticfiles %}
 
-{% block photo %}
-	{% if college.profile_pic %}
-		{{ college.profile_pic.url }}
+
+{% block user_photo %}
+	{% if college.photo %}
+		{{ college.photo.url }}
 	{% endif %}
 {% endblock %}
 
-{% block sociallinks %}
-	{{ block.super }}
-	<li><a href="#"><span><i class="fa fa-facebook-official"></i>&nbsp;Facebook</span></a></li>
+{% block user_name_card %}
+	{{ college.name }}
 {% endblock %}
 
-{% block leftpanellinks %}
-	{{ block.super }}
-	<li><a href="{% url 'edit_college_profile' %}"><span><span class="fa fa-cog"></span>Settings</span></a></li>
-    <li><a href="{% url 'logout' %}"><span><span class="fa fa-sign-out"></span>Logout</span></a></li>
+{% block user_email_id %}
+	{{ college.profile.email }}
 {% endblock %}
 
-{% block tab_one_title %}
-	Association Requests
+{% block menu_icon_dropdown %}
+	<li><a href="#">wrgwearg</a></li>
+    <li class="divider"></li>
 {% endblock %}
 
-{% block tab_two_title %}
-	Associate With Companies
+{% block user_type %}
+	College
 {% endblock %}
 
-{% block tab_one_content %}
-	<p> <a href="{% url 'college_association_requests' %}">View Association Requests</a></p>
+{% block user_name %}
+	{{ college.name }}
 {% endblock %}
 
-{% block tab_two_content %}
-	<p> <a href="{% url 'associate' %}"> Associate With Companies </a></p>
+{% block user_photo2 %}
+	{% if college.photo %}
+		{{ college.photo.url }}
+	{% endif %}
 {% endblock %}
+
+{% block tabs%}
+	<li class="tab col s2"><a class="active" href="#tab1">Companies Visiting</a></li>
+	<li class="tab col s2"><a href="#tab2">Status</a></li>
+	<li id = "notification" class="tab col s2" url="{% url 'generate_notifications' %}"><a href="#tab3">Notification</a></li>
+	<li class="tab col s2"><a href="#tab4">Settings</a></li>
+{% endblock %}
+
+{% block tabs_content %}
+	<div id="tab1" class="col s12">Data 1</div>
+	<div id="tab2" class="col s12">Data 2</div>
+	<div id="tab3" class="col s12">Data 3</div>
+	<div id="tab4" class="col s12">Data 4</div>
+{% endblock %}
+
+
+{% block JS %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript" src="{% static 'college/notification.js' %}"></script>
+	<script>
+	$(document).ready(function () {
+		Notification.init();
+	});
+	</script>
+	
+{% endblock %}
+
+
+
+

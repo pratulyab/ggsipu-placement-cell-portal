@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 	'material',
 	'rest_framework',
 	'markdown',
+    'notification',
 ]
 
 MIDDLEWARE_CLASSES = [
