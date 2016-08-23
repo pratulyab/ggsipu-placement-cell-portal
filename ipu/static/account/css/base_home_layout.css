@@ -130,7 +130,7 @@ input {
 #search {
     position: relative;
     margin: 0 auto;
-    margin-right: 320px;
+    margin-right: 380px;
     width: 370px;
 }
 
@@ -342,8 +342,8 @@ input {
 .tooltiptext
 {
   position: absolute;
-  top: 2px;
-  left: 80%;
+  top: 0px;
+  left: 96%;
 }
 
 

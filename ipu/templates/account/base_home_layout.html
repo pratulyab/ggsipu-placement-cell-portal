@@ -88,13 +88,78 @@
               <ul class="right">
                   <li class="center hide-on-med-and-down">
                     <!--materialize search-bar-->
-                      <form>
-                        <div class="input-field">
-                            <input id="search" type="search" required placeholder="Search..">
-                            <label for="search"><i class="material-icons">search</i></label>
-                            <i class="material-icons">close</i>
-                        </div>
-                    </form>
+                      <form id="search" method="post" action="index.html" >
+                         <input type="text" name="q" placeholder="Search..." />
+                         <ul id="results">
+                           <li class="tooltip"><a href="index.html">Search Result #1<br /></a>
+                               <span class="tooltiptext">
+                                 <div class="row">
+                                  <div class="col s12 m12 l12">
+                                    <div class="card blue-grey darken-1" id="ss">
+                                      <div class="card-content white-text" id="rr">
+                                        <div id="top-box">
+                                          <img class=class="responsive-img circle" src="{% static 'images/ipu-logo.png' %}" height="70x" width="80px">
+                                          <div id="top-side-box">
+                                            <h5>Name :</h5>
+                                            <h5>Info :</h5>
+                                          </div>
+                                        </div>
+                                        <hr>
+                                        <p>I am a very simple card. I am good at containing small bits of information.
+                                        I am convenient because I require little markup to use effectively.</p>
+                                      </div>
+                                      <hr>
+                                      <div>
+                                         <h5>Technical links</h5>
+                                          <ul class="collapsible" data-collapsible="accordion" id="tech">
+                                            <li>
+                                              <div class="collapsible-header">Code-Chef</div>
+                                              <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                                            </li>
+                                            <li>
+                                              <div class="collapsible-header">Code-forces</div>
+                                              <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                                            </li>
+                                            <li>
+                                              <div class="collapsible-header">SPOJ</div>
+                                              <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                                            </li>
+                                          </ul>
+        
+                                      </div>
+                                      <div id="ff">
+                                        <div class="fixed-action-btn horizontal" id="main-btn">
+                                            <a class="btn-floating btn-large red">
+                                              <i class="large material-icons">supervisor_account</i>
+                                            </a>
+                                            <ul id="jj">
+                                              
+                                              
+                                              <li><a class="btn-floating"><i class="fa fa-github" id="github-icon" aria-hidden="true"></i>
+                                              </a></li>
+                                              <li><a class="btn-floating"><i class="fa fa-google-plus" aria-hidden="true" id="googleplus-icon"></i>
+
+                                              <li><a class="btn-floating"><i class="fa fa-linkedin-square" id="linkedin-icon" aria-hidden="true"></i>
+                                              </a></li>
+                                              <li><a class="btn-floating"><i class="fa fa-facebook-official"  id="fb-icon" aria-hidden="true"></i>
+                                              </a></li>
+
+                                              
+                                              </a></li>
+                                            </ul>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                              </div>
+                             </span>
+                           </li>
+                           <hr>
+                           <li><a href="index.html">Search Result #2</a></li><hr>
+                           <li><a href="index.html">Search Result #3</a></li><hr>
+                               <li><a href="index.html">Search Result #4</a></li>
+                         </ul>
+                      </form>
                   </li>
                   <li class="hide-on-large-only"><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
                   </li>
@@ -118,32 +183,32 @@
 
 <!--second navbar-->
       <div id="post-navbar" class="teal lighten-4">
-          	<h5>{% block user_type%}{% endblock %}</h5><!--Teacher, students or company-->
-          	<h5><i class="material-icons">trending_flat</i></h5>
-          	<h5>{%block user_name%}{% endblock %}</h5><!--name of current user-->   
+            <h5>{% block user_type%}{% endblock %}</h5><!--Teacher, students or company-->
+            <h5><i class="material-icons">trending_flat</i></h5>
+            <h5>{%block user_name%}{% endblock %}</h5><!--name of current user-->   
       </div>
 <!--second navbar ends-->
        <main>
            
          <!--Tabs bar begins--> 
-       	<div id="tab-bar">
-       	    <div class="row">
-          		<div class="col s8">
-            		   <ul class="tabs">
-            		        <!--naming for tabs-->
-            		        {% block tabs %}
-            		        <!--each li  represents a new tab with the name-->
-                      			<li class="tab col s2"><a class="active" href="#test1">Test 1</a></li>
-                  			{% endblock %}
-            			</ul>
-          		</div>
-      		    	 <div id="tabs-data-div">	
-      		    		{% block tabs_content %}
-      		    		{% endblock %}
-      		    	 </div>
-        		</div>
-       	
-       	</div>
+        <div id="tab-bar">
+            <div class="row">
+              <div class="col s8">
+                   <ul class="tabs">
+                        <!--naming for tabs-->
+                        {% block tabs %}
+                        <!--each li  represents a new tab with the name-->
+                            <li class="tab col s2"><a class="active" href="#test1">Test 1</a></li>
+                        {% endblock %}
+                  </ul>
+              </div>
+                 <div id="tabs-data-div"> 
+                  {% block tabs_content %}
+                  {% endblock %}
+                 </div>
+            </div>
+        
+        </div>
          
 
        </main>
@@ -165,9 +230,9 @@
             e.stopPropagation();
         });
 
+     
 
 
       </script>
-      {% block JS %}{% endblock %}
    </body>
 </html>

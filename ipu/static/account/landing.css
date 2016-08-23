@@ -9,6 +9,7 @@ body {
     min-height: 100%;
     background: rgba(0, 0, 0, 0.7);
     padding: 50px;
+    padding-bottom: 0px;
 }
 
 .navbar-fixed
@@ -39,10 +40,10 @@ main img
 	background-color: white;
 	display: flex;
 	flex-direction: column;
-  transition: box-shadow .25s;
-	height: 355px;
-  border-radius: 7px;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    transition: box-shadow .25s;
+	height: 366px;
+    border-radius: 7px;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
 #student-signup-mainbox
