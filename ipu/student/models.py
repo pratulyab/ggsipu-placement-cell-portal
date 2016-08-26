@@ -75,10 +75,13 @@ class TechProfile(models.Model):
 	student = models.OneToOneField(Student, related_name="tech")
 	github = models.URLField(blank=True)
 	bitbucket = models.URLField(blank=True)
-	coding = models.TextField(_('Miscellaneous Profile Links'), help_text="Eg. Code Chef, SPOJ, Code Forces, Hacker Earth", blank=True)
+	codechef = models.CharField(max_length=14, blank=True, help_text='Please provide your Codechef username.', validators=[validators.RegexValidator(r'^[a-z]{1}[a-z0-9_]{3,13}$')])
+	codeforces = models.CharField(max_length=24, blank=True, help_text='Please provide your Codeforces username.')
+	spoj = models.CharField(max_length=14, blank=True, help_text='Please provide your SPOJ username.')
+#	coding = models.TextField(_('Miscellaneous Coding Platform Links'), help_text="Eg. Hacker Earth", blank=True)
 
 	def clean(self, *args, **kwargs):
-		super(SocialProfile, self).clean()
+		super(TechProfile, self).clean()
 		for field in self._meta.fields:
 			if field.__class__.__name__ == 'URLField' and getattr(self, field.name):
 				if not field.name in urlparse( getattr(self, field.name) ).netloc:
@@ -86,7 +89,7 @@ class TechProfile(models.Model):
 	
 	def save(self, *args, **kwargs):
 #		self.full_clean()
-		profile = super(SocialProfile, self).save()
+		profile = super(TechProfile, self).save()
 		return profile
 
 	def __str__(self):

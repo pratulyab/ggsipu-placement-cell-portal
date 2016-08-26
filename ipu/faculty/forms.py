@@ -105,6 +105,6 @@ class EnrollmentForm(forms.Form):
 				raise forms.ValidationError(_('Student hasn\'t verified his email address. Ask him to do so.'))
 			try:
 				student = user.student
-			except:
+			except Student.DoesNotExist:
 				raise forms.ValidationError(_('Student hasn\'t created his profile. Ask him to create one by logging in from his account.'))
 		return self.cleaned_data

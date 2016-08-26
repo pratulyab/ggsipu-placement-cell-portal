@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import url, include, static
 from django.contrib import admin
-from account.views import landing, login, view_profile, logout
+from account.views import landing, login, view_profile, logout, search
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -31,5 +31,6 @@ urlpatterns = [
 	url(r'^recruitment/', include('recruitment.urls')),
 	url(r'^student/', include('student.urls')),
 	url(r'^logout/$', logout, name='logout'),
-#	url(r'^(?P<username>[\w.+=]+)/$', view_profile, name='view_profile'),
+	url(r'^search/$', search, name='search'),
+	url(r'^(?P<username>[\w.+=]+)/$', view_profile, name='view_profile'),
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

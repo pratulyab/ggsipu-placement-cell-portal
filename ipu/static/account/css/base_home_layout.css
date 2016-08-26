@@ -1,5 +1,6 @@
 nav .brand-logo { 
-
+	font-family: "Times New Roman"; /* New */
+	text-transform: capitalize; /* New */
     font-size: 1.6rem;
     margin-left: 20px;
 }
@@ -61,7 +62,7 @@ span.badge {
     color: white;
     font-size: 20px;
     font-family: bold;
-    background: #00695c;
+    background: #2e3d49;
 }
 
 nav ul a {
@@ -233,9 +234,7 @@ input {
     position: relative;
     margin: 0 -1px;
     padding: 6px 40px 6px 10px;
-    color: #808394;
     font-weight: 500;
-    text-shadow: 0 1px #fff;
     border: 1px solid transparent;
     border-radius: 3px;
 }
@@ -281,15 +280,7 @@ input {
 #search #results>li>a:hover {
     text-decoration: none;
     color: #fff;
-    text-shadow: 0 -1px rgba(0, 0, 0, 0.3);
-    border-color: #2380dd #2179d5 #1a60aa;
-    background-color: #338cdf;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #59aaf4), color-stop(100%, #338cdf));
-    background-image: -webkit-linear-gradient(top, #59aaf4, #338cdf);
-    background-image: -moz-linear-gradient(top, #59aaf4, #338cdf);
-    background-image: -ms-linear-gradient(top, #59aaf4, #338cdf);
-    background-image: -o-linear-gradient(top, #59aaf4, #338cdf);
-    background-image: linear-gradient(top, #59aaf4, #338cdf);
+    background-color: rgba(51, 122, 183, 0.15); /* New */
     -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px rgba(0, 0, 0, 0.08);
     -moz-box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px rgba(0, 0, 0, 0.08);
     -ms-box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px rgba(0, 0, 0, 0.08);
@@ -492,6 +483,72 @@ hr {
   bottom: 10px;
   right: 10px;
 }
+
+/* New */
+
+#nav-bar a:hover {
+	color: lightsteelblue;
+	font-weight: normal;
+}
+
+#tab-bar ul.tabs {
+	box-shadow: 0 2px 5px 0 rgba(0,0,0,0.12);
+}
+
+#tab-bar .tab a:hover {
+	font-weight: bolder;
+	background-color: rgba(51, 122, 183, 0.26);
+	transition: background-color ease-in 0.25s;
+}
+
+form#search input {
+	color: #337ab7 !important;
+}
+
+#results a {
+	color: #337ab7 !important;
+}
+
+#results a:hover {
+	color: coral !important;
+	font-weight: bolder;
+}
+
+#ss {
+/*    background-color: #7d97ad; */
+    background-color: #2e3d49;
+}
+
+.tab-content{
+	margin-top: 20px;
+}
+
+.vertical-tabs .tabs{
+	display: flex;
+	flex-direction: column;
+	height: 50%;
+	box-shadow: none !important;
+}
+
+.vertical-tabs .indicator{
+	display: none;
+}
+
+.vertical-tabs .tabs .active {
+	color: goldenrod !important;
+}
+
+.vertical-tabs ul.tabs li.tab a:hover {
+	color: deepskyblue !important;
+	background: none !important;
+	opacity: 0.5;
+}
+
+#tabs-data-div > div {
+	margin-top: 5%;
+}
+
+/* */
 
   @media screen and (max-width : 600px){
 

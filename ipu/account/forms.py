@@ -108,7 +108,11 @@ class SocialProfileForm(forms.ModelForm):
 	
 	class Meta:
 		model = SocialProfile
-		exclude = ['user']
+		fields = ['facebook', 'linkedin', 'google']
+		labels = {
+			'linkedin' : 'LinkedIN',
+			'google': 'Google Plus',
+		}
 
 class AccountForm(forms.ModelForm):
 	current_password = forms.CharField(label=_('Current Password'), widget=forms.PasswordInput(attrs={'placeholder': _('Enter Current Password')}), required=False)
@@ -156,7 +160,7 @@ class AccountForm(forms.ModelForm):
 				raise forms.ValidationError(_('New password shouldn\'t be same as current one'))
 			else:
 				try:
-					password_validation.validate_password(data_password2)
+					password_validation.validate_password(new2)
 				except ValidationError as error:
 					raise forms.ValidationError(error)
 		else:

@@ -1,0 +1,47 @@
+{% load staticfiles %}
+{% load material_form %}
+<div class="vertical-tabs">
+	<div class="row">
+		<div class="col s4">
+			<ul class="tabs">
+				<li class="tab col s12"><a class="active" href="#account-settings">Account Settings</a></li>
+				<li class="tab col s12"><a href="#social-settings">Social Profile Settings</a></li>
+				<li class="tab col s12"><a href="#tech-settings">Technical Profile Settings</a></li>
+			</ul>
+		</div>
+		<div class=" col s8">
+			<div id="account-settings" class="col s12" id="edit-account-form">
+			<!--	{% include 'account/edit_account.html' %} -->
+				<form method="POST" action="{% url 'edit_account' %}">
+					{% csrf_token %}
+					{% form form=edit_account_form %}{% endform %}
+					<button class="btn btn-waves" type="submit">Update Account</button>
+				</form>
+			</div>
+			<div id="social-settings" class="col s12" id="social-profile-form">
+			<!--	{% include 'account/social_profile.html' %} -->
+				<form method="POST" action="{% url 'social_profile' %}">
+					{% csrf_token %}
+					{% form form=social_profile_form %}{% endform %}
+					<button class="btn btn-waves" type="submit">Update</button>
+				</form>
+			</div>
+			<div id="tech-settings" class="col s12" id="tech-profile-form">
+			<!--	{% include 'student/tech_profile.html' %} -->
+				<form method="POST" action="{% url 'tech_profile' %}">
+					{% csrf_token %}
+					{% form form=tech_profile_form %}{% endform %}
+					<button class="btn btn-waves" type="submit">Update</button>
+				</form>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
+<script>
+	$(document).ready(function(){
+		Settings.init(['account-settings', 'social-settings', 'tech-settings']);
+	});
+</script>

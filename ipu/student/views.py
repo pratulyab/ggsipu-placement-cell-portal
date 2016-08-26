@@ -8,11 +8,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from account.models import CustomUser
+from account.models import CustomUser, SocialProfile
+from account.forms import AccountForm, SocialProfileForm
 from account.views import handle_user_type, send_activation_email, get_relevant_reversed_url
 from college.models import College, Stream
-from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm
-from student.models import Student
+from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm
+from student.models import Student, TechProfile
 
 import re
 from bs4 import BeautifulSoup
@@ -87,12 +88,30 @@ def create_student(request):
 @login_required
 def student_home(request):
 	if request.user.type == 'S':
+		"""
+		import openpyxl as excel
+		workbook = excel.Workbook()
+		worksheet = workbook.active
+		worksheet['A1']='hello';worksheet['A2']='world!'
+		response = HttpResponse(content=excel.writer.excel.save_virtual_workbook(workbook), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+		response['Content-Disposition'] = 'attachment; filename=myexport.xlsx'
+		return response
+		"""
 		context = {}
 		context['user'] = request.user
 		try:
 			context['student'] = request.user.student
+			context['edit_account_form'] = AccountForm(instance=request.user)
+			try:
+				context['social_profile_form'] = SocialProfileForm(instance=request.user.social)
+			except SocialProfile.DoesNotExist:
+				context['social_profile_form'] = SocialProfileForm()
+			try:
+				context['tech_profile_form'] = TechProfileForm(instance=request.user.student.tech, student=request.user.student)
+			except:
+				context['tech_profile_form'] = TechProfileForm(student=request.user.student)
 			return render(request, 'student/home.html', context)
-		except:
+		except Student.DoesNotExist:
 			return redirect('create_student')
 	else:
 		return handle_user_type(request, redirect_request=True)
@@ -133,7 +152,7 @@ def edit_student(request):
 			context['student_edit_form'] = f
 			return redirect('student_home')
 #			return render(request, 'student/edit.html', context)
-		except:
+		except Student.DoesNotExist:
 			user_profile = request.user
 			try:
 				roll, coll, strm, year = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', user_profile.username).groups()
@@ -152,7 +171,7 @@ def edit_student(request):
 		try:
 			student = CustomUser.objects.get(username=enroll)
 			student = student.student
-		except:
+		except Student.DoesNotExist:
 			return JsonResponse(status=400, data={'error': 'Student with this enrollment number does not exist'})
 		POST = request.POST.copy()
 		POST['college'] = student.college.pk
@@ -187,13 +206,13 @@ def edit_qualifications(request):
 	if request.user.type == 'S':
 		try:
 			student = request.user.student
-		except:
+		except Student.DoesNotExist:
 			redirect('create_student')
 		try:
 			qual = student.qualifications
 			if qual.is_verified != None:
 				return redirect('student_home')
-		except:
+		except Qualification.DoesNotExist:
 			qual = None
 
 		if request.method == 'GET':
@@ -222,7 +241,7 @@ def edit_qualifications(request):
 		try:
 			student = CustomUser.objects.get(username=enroll)
 			student = student.student
-		except:
+		except Student.DoesNotExist:
 			return JsonResponse(status=400, data={'error': 'Student with this enrollment number does not exist'})
 		verdict = False
 		if 'continue' == request.POST.get('true', ''):
@@ -234,7 +253,7 @@ def edit_qualifications(request):
 		try:
 			qual = student.qualifications
 			f = QualificationForm(request.POST, instance=qual)
-		except:
+		except Qualification.DoesNotExist:
 			qual = None
 			f = QualificationForm(request.POST)
 		if f.is_valid():
@@ -259,19 +278,92 @@ def delete_student(request):
 	if request.user.type == 'F' and request.is_ajax():
 		try:
 			faculty = request.user.faculty
-		except:
+		except Faculty.DoesNotExist:
 			return redirect('edit_create_faculty')
 		enroll = request.session['enrollmentno']
 		if not enroll:
 			return JsonResponse(status=403, data={'error': 'Cookie Error. Couldn\'t complete request'})
 		try:
 			user = CustomUser.objects.get(username=enroll)
-		except:
+		except CustomUser.DoesNotExist:
 			return JsonResponse(status=400, data={'error': 'Student with this enrollment number does not exist'})
 		try:
 			user.delete()
 			return redirect('verify')
 		except:
 			return JsonResponse(status=500, data={'error': 'Error occurred while deleting student'})
+	else:
+		return handle_user_type(request, redirect_request=True)
+
+# ----+----=----+----=----+----=----+----=----+----=----+---- #
+def get_student_public_profile(user, requester_type):
+	try:
+		student = Student.objects.get(id=user.student.id)
+	except Student.DoesNotExist:
+		return '<div class="valign-wrapper"><p class="valign">Student hasn\'t created his/her profile. Stay tuned!</p></div>'
+
+	context = {'name': student.get_full_name(), 'college': student.college.name.title(), 'stream': '%s - %s'%(student.programme.name,student.stream.name), 'year': student.current_year, 'type': requester_type, 'student': student}
+	try:
+		social = user.social
+		for field in social._meta.get_fields():
+			if not field.__class__.__name__ == 'URLField':
+				continue
+			field = field.name
+			if getattr(social, field):
+				context[field] = getattr(social, field)
+	except SocialProfile.DoesNotExist:
+		pass
+	
+	try:
+		tech = student.tech
+		for field in tech._meta.get_fields():
+			if not field.__class__.__name__ == 'URLField':
+				continue
+			field = field.name
+			if getattr(tech, field):
+				context[field] = getattr(tech, field)
+	except TechProfile.DoesNotExist:
+		pass
+	
+	sessions = student.sessions.all()
+	associations = [s.association for s in sessions[:3]]
+	companies = ', '.join([ass.company.name.title() for ass in associations])
+	context['sessions'] = sessions.count()
+	if len(sessions) > 3:
+		companies = companies + ' and others'
+	context['companies'] = companies
+	return render_to_string('student/pub_profile.html', context)
+
+@require_http_methods(['GET', 'POST'])
+@login_required
+def tech_profile(request):
+	if request.is_ajax():
+		if request.user.type == 'S':
+			if request.method == 'GET':
+				try:
+					student = request.user.student
+					try:
+						f = TechProfileForm(student=student, instance=student.tech)
+					except TechProfile.DoesNotExist:
+						f = TechProfileForm(student=student)
+					return HttpResponse(render(request, 'student/tech_profile.html', {'tech_profile_form': f}).content.decode('utf-8'))
+				except Student.DoesNotExist:
+					return JsonResponse(status=400, data={'location': get_creation_url('S')})
+			else:
+				student = request.user.student
+				try:
+					f = TechProfileForm(request.POST, student=student, instance=student.tech)
+				except:
+					f = TechProfileForm(request.POST, student=student)
+				if f.is_valid():
+					f.save()
+					context = {}
+					context['tech_profile_form'] = f
+					context['success_msg'] = "Your profile has been updated successfully!"
+					return HttpResponse(render(request, 'student/tech_profile.html', context).content.decode('utf-8'))
+				else:
+					return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		else:
+			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request, redirect_request=True)

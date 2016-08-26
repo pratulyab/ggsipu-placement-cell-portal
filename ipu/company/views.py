@@ -4,11 +4,13 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from account.forms import SignupForm
 from account.views import handle_user_type, send_activation_email
 from company.forms import CompanyCreationForm, CompanyEditForm
 from company.models import Company
+from recruitment.models import PlacementSession
 
 # Create your views here.
 
@@ -84,3 +86,14 @@ def edit_company(request):
 			return render(request, 'company/create.html', {'company_creation_form': CompanyCreationForm()})
 	else:
 		return handle_user_type(request)
+
+def get_company_public_profile(user, requester_type):
+	try:
+		company = Company.objects.get(id=user.company.id)
+	except Company.DoesNotExist:
+		return '<div class="valign-wrapper"><p class="valign">Company doesn\'t have a profile yet. Stay tuned!</p></div>'
+	context = {'name': company.name.title(), 'associations': PlacementSession.objects.filter(association__company=company).count(), 'website': company.website, 'type': requester_type, 'company': company}
+	if company.photo:
+		context['photo'] = company.photo.url
+	print(context)
+	return render_to_string('company/pub_profile.html', context)

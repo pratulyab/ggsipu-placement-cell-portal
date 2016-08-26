@@ -1,6 +1,7 @@
 {% extends 'account/base_home_layout.html' %}
-
-
+{% load staticfiles %}
+{% load material_form %}
+{% block head %}<link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" /> {% endblock %}
 {% block user_photo %}
 	{% if student.photo %}
 		{{ student.photo.url }}
@@ -45,5 +46,51 @@
 	<div id="tab1" class="col s12">Data 1</div>
 	<div id="tab2" class="col s12">Data 2</div>
 	<div id="tab3" class="col s12">Data 3</div>
-	<div id="tab4" class="col s12">Data 4</div>
+	<div id="tab4" class="col s12">
+		<div class="vertical-tabs">
+			<div class="row">
+				<div class="col s3">
+					<ul class="tabs">
+						<li class="tab col s12"><a class="active" href="#account-settings">Account Settings</a></li>
+						<li class="tab col s12"><a href="#social-settings">Social Profile Settings</a></li>
+						<li class="tab col s12"><a href="#tech-settings">Technical Profile Settings</a></li>
+					</ul>
+				</div>
+				<div class=" col s8 offset-s1">
+					<div id="account-settings" class="col s12">
+						<form method="POST" action="{% url 'edit_account' %}" id="edit-account-form">
+							{% csrf_token %}
+							{% form form=edit_account_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update Account</button>
+						</form>
+					</div>
+					<div id="social-settings" class="col s12">
+						<form method="POST" action="{% url 'social_profile' %}" id="social-profile-form">
+							{% csrf_token %}
+							{% form form=social_profile_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update</button>
+						</form>
+					</div>
+					<div id="tech-settings" class="col s12">
+						<form method="POST" action="{% url 'tech_profile' %}" id="tech-profile-form">
+							{% csrf_token %}
+							{% form form=tech_profile_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}
+
+{% block scripts %}
+	<script type="text/javascript" src="{% static 'student/home.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
+	<script>
+		$(document).ready(function() {
+			Search.init();
+			Settings.init(['edit-account-form', 'social-profile-form', 'tech-profile-form']);
+		});
+	</script>
+{% endblock scripts %}

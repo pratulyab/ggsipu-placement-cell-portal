@@ -1,12 +1,75 @@
-{% extends 'account/base.html' %}
-{% block title %} {{ student.profile.username }} -- {{ student.firstname }} &nbsp; {{ student.lastname }} {% endblock title %}
-{% block content %}
-	<ul>
-		<li> {{ student.firstname }} &nbsp; {{ student.lastname }} </li>
-		<li> <a href="{{ student.college.get_absolute_url }}">{{ student.college }} </a>&nbsp;&lt;&nbsp; {{ student.stream }} &nbsp;&lt;&nbsp; {{ student.subjecy }} </li>
-		<li> {{ student.profile_pic }} </li>
-		<li> {{ student.resume }} </li>
-	</ul>
-	<hr />
-	<p> <a href="{{ url }}" > Go Home </a></p>
-{% endblock content %}
+{% load staticfiles %}
+{% include 'material/includes/material_js.html' %}
+<div class="row">
+	<div class="col s12 m12 l12">
+		<div class="card" id="ss">
+			<div class="card-content white-text" id="rr">
+				<div id="top-box">
+					<img class="responsive-img circle" src="{% if photo %}{{ photo }} {% else %}{% static 'images/ipu-logo.png' %}{% endif %}" height="70px" width="80px" >
+					<div id="top-side-box">
+						<h4>{{ name }}</h4>
+						<h5>{{ college }}</h5>
+						<h6>{{ stream }} &nbsp; ({{ year }} year)</h5>
+					</div>
+				</div>
+				<hr>
+				<p>Currently in placement session  with {{ sessions }} compan{{ sessions|pluralize:"y,ies" }} <br> {{ companies }}</p>
+			</div>
+			<hr>
+			{% if student.tech %}
+			<div>
+				<h5>Technical Profiles</h5>
+				<ul class="collapsible" data-collapsible="accordion" id="tech">
+					{% if student.tech.codechef %}
+					<li>
+						<div class="collapsible-header">Codechef</div>
+						<div class="collapsible-body" id="codechef"></div>
+					</li>
+					{% endif %}
+					{% if student.tech.codeforces %}
+					<li>
+						<div class="collapsible-header">Codeforces</div>
+						<div class="collapsible-body" id="codeforces"></div>
+					</li>
+					{% endif %}
+					{% if student.tech.spoj %}
+					<li>
+						<div class="collapsible-header">SPOJ</div>
+						<div class="collapsible-body" id="spoj"></div>
+					</li>
+					{% endif %}
+				</ul>
+			</div>
+			{% endif %}
+			<hr>
+			<div id="ff">
+				<div class="fixed-action-btn horizontal" id="main-btn">
+					<a class="btn-floating btn-large red"><i class="large material-icons">supervisor_account</i></a>
+					{% if student.profile.social or student.tech %}
+					<ul id="jj">
+						{% if student.tech %}
+							{% if github %}
+							<li><a class="btn-floating" target="_blank" href="{{ github }}"><i class="fa fa-github" id="github-icon" aria-hidden="true"></i></a></li>
+							{% endif %}
+							{% if bitbucket %}
+							<li><a class="btn-floating" target="_blank" href="{{ bitbucket }}"><i class="fa fa-bitbucket" id="bitbucket-icon" aria-hidden="true"></i></a></li>
+							{% endif %}
+						{% endif %}
+						{% if student.profile.social %}
+							{% if google %}
+							<li><a class="btn-floating" target="_blank" href="{{ google }}"><i class="fa fa-google-plus" id="googleplus-icon" aria-hidden="true"></i></a></li>
+							{% endif %}
+							{% if linkedin %}
+							<li><a class="btn-floating" target="_blank" href="{{ linkedin }}"><i class="fa fa-linkedin-square" id="linkedin-icon" aria-hidden="true"></i></a></li>
+							{% endif %}
+							{% if facebook %}
+							<li><a class="btn-floating" target="_blank" href="{{ facebook }}"><i class="fa fa-facebook-official" id="fb-icon" aria-hidden="true"></i></a></li>
+							{% endif %}
+						{% endif %}
+					</ul>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

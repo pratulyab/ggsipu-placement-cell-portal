@@ -108,7 +108,7 @@ def get_enrollment_number(request):
 				profile_form = render(request, 'faculty/verify_profile_form.html', {'profile_form': StudentEditForm(instance=student)}).content.decode('utf-8')
 				try:
 					q = QualificationForm(instance=student.qualifications)
-				except:
+				except Qualification.DoesNotExist:
 					q = QualificationForm()
 				qual_form = render(request, 'faculty/verify_qual_form.html', {'qual_form': q}).content.decode('utf-8')
 				return HttpResponse(profile_form+"<<<>>>"+qual_form)

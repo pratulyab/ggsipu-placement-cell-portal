@@ -1,12 +1,42 @@
-{% extends 'account/base.html' %}
-{% block title %} {{ college.profile.username }}  {% endblock title %}
-{% block content %}
-	<ul>
-		<li> {{ college.name }} <li>
-		<li> {{ college.country }} &nbsp;&lt;&nbsp; {{ college.state }} </li>
-		<li> {{ college.desc }} </li>
-		<li> {{ college.website }} </li>
-	</ul>
-	<hr />
-	<p><a href="{{ url }}" >Go Home </a></p>
-{% endblock content %}
+{% load staticfiles %}
+<div class="row">
+	<div class="col s12 m12 l12">
+		<div class="card" id="ss">
+			<div class="card-content white-text" id="rr">
+				<div id="top-box">
+					<img class="responsive-img circle" src="{% if photo %}{{ photo }} {% else %}{% static 'images/ipu-logo.png' %}{% endif %}" height="70px" width="80px" >
+					<div id="top-side-box">
+						<h4>{{ name }}</h4>
+						<h5>Offers {{ streams }} different programmes and streams</h5>
+						<h6>Has more than {{ students }} student{{ students|pluralize }} active on this platform)</h5>
+					</div>
+				</div>
+				<hr>
+				<p>Currently in association  with {{ associations }} compan{{ associations|pluralize:"y,ies" }}.<br> {% if website %}<a target="_blank" href="{{ website }}" class="waves-effect waves-teal btn-flat">Website</a>{% endif %}</p>
+			</div>
+			<hr>
+			<div id="ff">
+				<div class="fixed-action-btn horizontal" id="main-btn">
+					<a class="btn-floating btn-large red"><i class="large material-icons">supervisor_account</i></a>
+					{% if college.social %}
+					{% with college.social as cs %}
+					<ul id="jj">
+						{% if cs.google %}
+						<li><a class="btn-floating" target="_blank" href="{{ cs.google }}"><i class="fa fa-google-plus" id="googleplus-icon" aria-hidden="true"></i></a></li>
+						{% endif %}
+						{% if cs.linkedin %}
+						<li><a class="btn-floating" target="_blank" href="{{ cs.linkedin }}"><i class="fa fa-linkedin-square" id="linkedin-icon" aria-hidden="true"></i></a></li>
+						{% endif %}
+						{% if cs.facebook %}
+						<li><a class="btn-floating" target="_blank" href="{{ cs.facebook }}"><i class="fa fa-facebook-official" id="fb-icon" aria-hidden="true"></i></a></li>
+						{% endif %}
+					</ul>
+					{% endwith %}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+<!--{% include 'material/includes/material_js.html' %}-->

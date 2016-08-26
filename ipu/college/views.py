@@ -2,11 +2,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from account.forms import SignupForm
 from account.views import handle_user_type, send_activation_email
 from college.forms import CollegeCreationForm, CollegeEditForm
 from college.models import College
+from recruitment.models import PlacementSession
 
 # Create your views here.
 
@@ -88,3 +90,15 @@ def edit_college(request):
 			return render(request, 'college/create.html', {'college_creation_form': CollegeCreationForm()})
 	else:
 		return handle_user_type(request)
+
+def get_college_public_profile(user, requester_type):
+	try:
+		college = College.objects.get(id = user.college.id)
+	except College.DoesNotExist:
+		return '<div class="valign-wrapper"><p class="valign">College doesn\'t have a profile yet. Stay tuned!</p></div>'
+	context = {'name': college.name.title(), 'streams': college.streams.count(), 'students': college.students.count(), 'website': college.website, 'type': requester_type, 'college': college}
+	if college.photo:
+		context['photo'] = college.photo.url
+	context['associations'] = PlacementSession.objects.filter(association__college=college).count(),
+# Add queryset to filter out mass recruiters
+	return render_to_string ('college/pub_profile.html', context)

@@ -36,7 +36,7 @@ class StudentLoginForm(forms.Form):
 				try:
 					queryset.get(username=username)
 				except CustomUser.DoesNotExist:
-					raise forms.ValidationError(_('Invalid enrollment number'))
+					raise forms.ValidationError(_('Invalid enrollment number. Student doesn\'t exist.'))
 			self.user_cache = authenticate(username=username, password=password)
 			if self.user_cache is None:
 				raise forms.ValidationError(_('Invalid enrollment number or password'))
@@ -297,9 +297,16 @@ class TechProfileForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		self.student_profile = kwargs.pop('student', None)
 		super(TechProfileForm, self).__init__(*args, **kwargs)
+
+	def clean_codechef(self):
+		codechef = self.cleaned_data['codechef']
+		if codechef:
+			if not re.match(r'^[a-z]{1}[a-z0-9_]{3,13}$', codechef):
+				raise forms.ValidationError(_('Invalid codechef username'))
+		return codechef
 	
 	def clean(self, *args, **kwargs):
-		super(SocialProfileForm, self).clean(*args, **kwargs)
+		super(TechProfileForm, self).clean(*args, **kwargs)
 		for field in self._meta.fields:
 			if self.fields[field].__class__.__name__ == 'URLField' and self.cleaned_data[field]:
 				if not field in urlparse( self.cleaned_data[field] ).netloc:
@@ -315,4 +322,4 @@ class TechProfileForm(forms.ModelForm):
 
 	class Meta:
 		model = TechProfile
-		exclude = ['student']
+		fields = ['github', 'bitbucket', 'codechef', 'codeforces', 'spoj']

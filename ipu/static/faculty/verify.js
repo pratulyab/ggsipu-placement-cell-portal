@@ -60,6 +60,7 @@ var VerifyStu = (function() {
 				$('#qual-form').on('submit', updateQual);
 //				$('#delete-btn').on('click', delete_button);
 				$('#delete-div form').on('submit', delete_button);
+				console.log($('body').find('ul'));
 			},
 			error: function(xhr, status, error){
 				var form_errors = xhr.responseJSON['errors'];

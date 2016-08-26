@@ -1,0 +1,14 @@
+{% load staticfiles %}
+{% load material_form %}
+
+{% include 'material/includes/material_js.html' %}
+{% if success_msg %}<div class="card green accent-1 center success"><p>{{ success_msg }}</p></div>{% endif %}
+<form action="{% url 'edit_account' %}" method='POST' id="edit-account-form">
+	{% csrf_token %}
+	{% form form=edit_account_form %}{% endform %}
+	<div class="row">
+		<div class="col s6 offset-s2">
+			<button class="btn btn-waves" type="submit">Update</button>
+		</div>
+	</div>
+</form>

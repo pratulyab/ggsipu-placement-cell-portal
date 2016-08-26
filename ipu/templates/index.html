@@ -16,6 +16,7 @@
                 <li class="search">
                     <input type="text" placeholder="Search for students, colleges, and companies..." />
                     <i class="fa fa-times-circle" aria-hidden="true" id="search-close"></i>
+					<div class="search-results" style="width: 100%; left: 0; top: 100%;position: absolute; display: none; background-color:#fff; z-index: 2;"i></div>
                 </li>
                 <li class="nav-links">
                     <i class="fa fa-search" aria-hidden="true"></i>
@@ -89,13 +90,14 @@
         <footer class="footer-wrapper">
         
         </footer>
-    </body>
     
+	<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
     <script>
         function init(){
             HomePage.init();
         }
         window.addEventListener('load', init);
     </script>
-    
+	{% block scripts %}{% endblock %}
+    </body>
 </html>

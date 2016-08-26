@@ -5,6 +5,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
@@ -115,7 +116,7 @@ def reset_password(request, uid = None, token=None):
 			return redirect('login')
 	context = { 'validlink' : True, 'form' : f}
 	return render(request, 'account/set_password.html', context)
-
+"""
 @require_http_methods(['GET','POST'])
 @login_required
 def edit_account(request):
@@ -139,6 +140,92 @@ def edit_account(request):
 	context['edit_account_form'] = f
 	context['url'] = reverse(get_home_url(request.user.type))
 	return render(request, 'account/edit.html', context)
+"""
+
+@require_http_methods(['GET', 'POST'])
+@login_required
+def edit_account(request):
+	if request.is_ajax():
+		if request.method == 'GET':
+			f = AccountForm(instance=request.user)
+			return HttpResponse(render(request, 'account/edit_account.html', {'edit_account_form': f}).content.decode('utf-8'))
+		else:
+			f = AccountForm(request.POST, instance=request.user)
+			if f.is_valid():
+				f.save()
+				context = {}
+				context['edit_account_form'] = f
+				context['success_msg'] = "Your account has been updated successfully"
+				return HttpResponse(render(request, 'account/edit_account.html', context).content.decode('utf-8'))
+			else:
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+	else:
+		return handle_user_type(request, redirect_request=True)
+
+@require_GET
+@login_required
+def search(request):
+	if not request.is_ajax():
+		return render(request, '404.html')
+	
+	data = get_type_created(request.user)
+	user_type = data.pop('user_type')
+	if not data:
+		return JsonResponse({ 'location': reverse(get_creation_url(user_type)) })
+	profile = data.pop('profile')
+	query = request.GET.get('query')
+# If 'location' key is not passed in JSON, then 'username' and 'name' of the relevant results will be passed
+# If no matching queries, then success will be false and 'message' will be provided. Otherwise, success will be True
+	if not query:
+		return JsonResponse({'success': False, 'message': "No results found."})
+	result = []
+
+# To refine the results on the basis of user searching
+# Student => Batchmates (if nav-bar search)    all (if tab search)
+# Faculty => all
+# College => all
+# Company => Limit search to colleges, other companies and students enrolled in current sessions with the company
+	print(query)
+	students = Student.objects.filter( Q(firstname__istartswith=query) | Q(lastname__istartswith=query) )
+	queryset = students.filter(stream=profile.stream)
+	for q in queryset:
+		result.append({'name': q.get_full_name(), 'url': request.build_absolute_uri(q.get_absolute_url())})
+	colleges = College.objects.filter(name__icontains=query)
+	for c in colleges:
+		result.append({'name': c.name.title(), 'url': request.build_absolute_uri(c.get_absolute_url())})
+	companies = Company.objects.filter(name__icontains=query)
+	for co in companies:
+		result.append({'name': co.name.title(), 'url': request.build_absolute_uri(co.get_absolute_url())})
+	if result:
+		return JsonResponse({'success': True, 'result': result})
+	else:
+		return JsonResponse({'success': False, 'message': 'No results found.'})
+
+@require_http_methods(['GET', 'POST'])
+@login_required
+def social_profile(request):
+	if request.is_ajax():
+		if request.method == 'GET':
+			try:
+				f = SocialProfileForm(instance=request.user.social)
+			except SocialProfile.DoesNotExist:
+				f = SocialProfileForm()
+			return HttpResponse(render(request, 'account/social_profile.html', {'social_profile_form': f}).content.decode('utf-8'))
+		else:
+			try:
+				f = SocialProfileForm(request.POST, instance=request.user.social)
+			except SocialProfile.DoesNotExist:
+				f = SocialProfileForm(request.POST)
+			if f.is_valid():
+				f.save(user=request.user)
+				context = {}
+				context['social_profile_form'] = f
+				context['success_msg'] = "Your profile has been successfully updated"
+				return HttpResponse(render(request, 'account/social_profile.html', context).content.decode('utf-8'))
+			else:
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+	else:
+		return handle_user_type(request, redirect_request=True)
 
 @require_GET
 @login_required
@@ -207,35 +294,29 @@ def redirect_profile_creation(request, user_type):
 @require_GET
 @login_required
 def view_profile(request, username):
+	if not request.is_ajax() or not CustomUser.objects.filter(username=username).exists():
+		print('-----------')
+		print('Received hit at view_profile')
+		print('-----------')
+		return render(request, '404.html')
+	
 	data = get_type_created(request.user)
 	user_type = data.pop('user_type')
 	if not data:
-		return render_profile_creation(request, user_type)
-	if request.user.username == username:
-		return redirect(get_home_url(user_type))
-	user = get_object_or_404(CustomUser, username=username)
-	
+		return JsonResponse({ 'location': reverse(get_creation_url(user_type)) })
+#	if request.user.username == username:
+#		return redirect(get_home_url(user_type))
+	user = CustomUser.objects.get(username=username)
 	requested_data = get_type_created(user)
 	requested_user_type = requested_data.pop('user_type')
 	if not requested_data:
-		raise Http404(_('User hasn\'t created the profile yet. Stay tuned.'))
+		return JsonResponse({'success':False, 'message': 'User hasn\'t created profile. Stay tuned!'})
+	if requested_user_type == 'C':
+		return JsonResponse({'success':True, 'card-html':get_college_public_profile(user, user_type)})
+	elif requested_user_type == 'S':
+		return JsonResponse({'success':True, 'card-html':get_student_public_profile(user, user_type)})
 	else:
-		context = {}
-		profile = requested_data.pop('profile')
-		context['url'] = reverse(get_home_url(user_type))
-		print(context['url'])
-		if requested_user_type == 'C':
-			context['college'] = profile
-			return render(request, 'college/pub_profile.html', context)
-		elif requested_user_type == 'F':
-			context['faculty'] = profile
-			return render(request, 'faculty/pub_profile.html', context)
-		elif requested_user_type == 'S':
-			context['student'] = profile
-			return render(request, 'student/pub_profile.html', context)
-		else:
-			context['company'] = profile
-			return render(request, 'company/pub_profile.html', context)
+		return JsonResponse({'success':True, 'card-html':get_company_public_profile(user, user_type)})
 
 @require_http_methods(['GET','POST'])
 @login_required
@@ -269,7 +350,7 @@ def get_type_created(user):
 		try:
 			college = CustomUser.objects.get(username = user.username).college
 			return ({'profile': college, 'user_type': user_type})
-		except:
+		except College.DoesNotExist:
 			return ({'user_type': user_type})
 	elif user_type == 'F':
 		try:
@@ -277,19 +358,19 @@ def get_type_created(user):
 			if not faculty.firstname:
 				return ({'user_type': user_type})
 			return ({'profile': faculty, 'user_type': user_type})
-		except:
+		except Faculty.DoesNotExist:
 			return ({'user_type': user_type})
 	elif user_type == 'S':
 		try:
 			student = CustomUser.objects.get(username = user.username).student
 			return ({'profile': student, 'user_type': user_type})
-		except:
+		except Student.DoesNotExist:
 			return ({'user_type': user_type})
 	else:
 		try:
 			company = CustomUser.objects.get(username = user.username).company
 			return ({'profile': company, 'user_type': user_type})
-		except:
+		except Company.DoesNotExist:
 			return ({'user_type': user_type})
 
 def get_home_url(user_type):
@@ -311,3 +392,7 @@ def get_creation_url(user_type):
 		return 'create_student'
 	else:
 		return 'create_company'
+
+from college.views import get_college_public_profile
+from company.views import get_company_public_profile
+from student.views import get_student_public_profile
