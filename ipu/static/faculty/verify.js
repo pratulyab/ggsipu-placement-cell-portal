@@ -50,8 +50,8 @@ var VerifyStu = (function() {
 				$('#profile-div').append(data[0]);
 				$('#qual-div').append(data[1]);
 				$('#id_enroll').on('input', function(e){
-					$('#profile-form').remove();
-					$('#qual-form').remove();
+					$('#profile-div').empty();
+					$('#qual-div').empty();
 					$('#id_enroll').off('input');
 //					$('#delete-btn').off('click');
 					$('#delete-div form').off('submit');

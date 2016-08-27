@@ -15,16 +15,16 @@
     <body>
         <ul id="dropdown1" class="dropdown-content">
             <li>
-                <a href="" id="img-box">
+                <a href="#!" data-links="settings" id="img-box">
                     <img src="{% block user_photo %}{% endblock %}" class="circle" height="90" width="90">
                     <span class="black-text">{% block user_name_card %}{% endblock %}</span>
                     <span class="grey-text lighten-1">{% block user_email_id %}{% endblock %}</span>
                 </a>
             </li>
             <li class="divider"></li>
-            <li><a href="#!"><i class="fa fa-sliders"></i>Account settings</a></li>
+            <li><a href="#!" data-links="settings"><i class="fa fa-sliders"></i>Account settings</a></li>
             <li class="divider"></li>
-            <li><a href="#!"><i class="fa fa-bell"></i>Notifications</a></li>
+            <li><a href="#!" data-links="notifications"><i class="fa fa-bell"></i>Notifications</a></li>
             <li class="divider"></li>
             <li class="divider"></li>
             <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Sign out</a></li>
@@ -123,10 +123,23 @@
         <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
         {% include 'material/includes/material_js.html' %}
         <script type="text/javascript">
-            $('#dropdown3').on('click', function(e){e.stopPropagation();});
-            $('.dropdown-button').on('click', function(e){e.preventDefault()});
-			$('nav .brand-logo').on('click', function(e){location.href='';});
-            
+			$(document).ready(function(e) {
+	            $('#dropdown3').on('click', function(e){e.stopPropagation();});
+    	        $('.dropdown-button').on('click', function(e){e.preventDefault()});
+				$('nav .brand-logo').on('click', function(e){location.href='';});
+			});
+		
+		// Mapping dropdown links to tabs
+		$('#dropdown1 a').each(function(i, a){
+			var el = $(a);
+			var target = el.data('links');
+			if (!target)
+				return true;
+			var target_el = $('#tab-bar').find("[href='#" + target + "']");
+			if(!target_el.length)
+				return true;
+			el.on('click', function(e){e.preventDefault();target_el[0].click();});
+		});
         </script>
         {% block scripts %}{% endblock %}
     </body>

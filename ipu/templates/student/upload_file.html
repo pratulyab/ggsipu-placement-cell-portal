@@ -1,0 +1,16 @@
+{% load staticfiles %}
+{% load material_form %}
+<!--
+<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+{% include 'material/includes/material_js.html' %}
+-->
+{% if success_msg %}<div class="card green accent-1 center success"><p>{{ success_msg }}</p></div>{% endif %}
+<form action="{% url 'upload_file' %}" method='POST' id="upload-file-form" enctype="multipart/form-data">
+	{% csrf_token %}
+	{% form form=upload_file_form %}{% endform %}
+	<div class="row">
+		<div class="col s6 offset-s2">
+			<button class="btn btn-waves" type="submit">Upload</button>
+		</div>
+	</div>
+</form>

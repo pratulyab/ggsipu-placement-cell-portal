@@ -23,7 +23,7 @@ def company_signup(request):
 	if f.is_valid():
 		user = f.save(user_type='CO')
 		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
-		auth_login(request, user)
+#		auth_login(request, user)
 		send_activation_email(user, get_current_site(request).domain)
 		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse('create_company'))}
 		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')

@@ -36,22 +36,45 @@
 {% endblock %}
 
 {% block tabs%}
+	{% if edit_profile_form %}
+		<li class="tab col s2"><a href="#profile" style="color: #9c27b0 !important">Update Profile*</a></li>
+	{% endif %}
+	{% if edit_qual_form %}
+		<li class="tab col s2"><a href="#qualifications" style="color: #9c27b0 !important">Update Qualifications*</a></li>
+	{% endif %}
 	<li class="tab col s2"><a class="active" href="#tab1">Companies Visiting</a></li>
 	<li class="tab col s2"><a href="#tab2">Status</a></li>
-	<li class="tab col s2"><a href="#tab3">Qualifications</a></li>
-	<li class="tab col s2"><a href="#tab4">Settings</a></li>
+	<li class="tab col s2"><a href="#settings">Settings</a></li>
 {% endblock %}
 
 {% block tabs_content %}
 	<div id="tab1" class="col s12">Data 1</div>
 	<div id="tab2" class="col s12">Data 2</div>
-	<div id="tab3" class="col s12">Data 3</div>
-	<div id="tab4" class="col s12">
+	{% if edit_qual_form %}
+		<div id="qualifications" class="col s12">
+			<form method="POST" action="{% url 'student_qual' %}" id="edit-qual-form">
+				{% csrf_token %}
+				{% form form=edit_qual_form %}{% endform %}
+				<button class="btn btn-waves" type="submit">Update Qualifications</button>
+			</form>
+		</div>
+	{% endif %}
+	{% if edit_profile_form %}
+		<div id="profile" class="col s12">
+			<form method="POST" action="{% url 'edit_student_profile' %}" id="edit-student-form" enctype="multipart/form-data">
+				{% csrf_token %}
+				{% form form=edit_profile_form %}{% endform %}
+				<button class="btn btn-waves" type="submit">Update Profile</button>
+			</form>
+		</div>
+	{% endif %}
+	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">
 				<div class="col s3">
 					<ul class="tabs">
 						<li class="tab col s12"><a class="active" href="#account-settings">Account Settings</a></li>
+						<li class="tab col s12"><a  href="#upload-settings">Upload Image/Resume</a></li>
 						<li class="tab col s12"><a href="#social-settings">Social Profile Settings</a></li>
 						<li class="tab col s12"><a href="#tech-settings">Technical Profile Settings</a></li>
 					</ul>
@@ -62,6 +85,13 @@
 							{% csrf_token %}
 							{% form form=edit_account_form %}{% endform %}
 							<button class="btn btn-waves" type="submit">Update Account</button>
+						</form>
+					</div>
+					<div id="upload-settings" class="col s12">
+						<form method="POST" action="{% url 'upload_file' %}" id="upload-file-form" enctype="multipart/form-data">
+							{% csrf_token %}
+							{% form form=upload_file_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Upload</button>
 						</form>
 					</div>
 					<div id="social-settings" class="col s12">
@@ -87,10 +117,12 @@
 {% block scripts %}
 	<script type="text/javascript" src="{% static 'student/home.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
+	<script type="text/javascript" src="{% static 'student/update.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();
-			Settings.init(['edit-account-form', 'social-profile-form', 'tech-profile-form']);
+			Settings.init(['edit-account-form', 'upload-file-form', 'social-profile-form', 'tech-profile-form']);
+			Update.init(['edit-student-form', 'edit-qual-form']);
 		});
 	</script>
 {% endblock scripts %}

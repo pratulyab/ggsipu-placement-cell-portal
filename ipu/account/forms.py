@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 import re
 
 class LoginForm(forms.Form):
-	username = forms.CharField(label=_('Username'), max_length=32, widget=forms.TextInput(attrs={'placeholder': _('or Email Address'), 'auto_focus':''}))
+	username = forms.CharField(label=_('Username'), max_length=32, widget=forms.TextInput(attrs={'placeholder': _('or email address'), 'auto_focus':''}))
 	password = forms.CharField(label=_('Password'), widget=forms.PasswordInput({'placeholder': _('Enter password')}))
 
 	def __init__(self, *args, **kwargs):

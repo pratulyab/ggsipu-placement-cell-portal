@@ -1,4 +1,5 @@
-var Settings = (function() {
+var Update = (function() {
+	
 	"use strict";
 
 	function clearErrors(el){
@@ -45,13 +46,9 @@ var Settings = (function() {
 			processData: false,
 			contentType: false,
 			success: function(data, status, xhr){
-				if (data['location']){
-					location.href = data['location'];
-					return;
-				}
-				var form_div = $(form).parent();
-				form_div.html(data['render']);
-				$(form_id).on('submit', submitForm);
+				//location.href=data['location']
+				location.href = ''
+				// Initialize a toast for info
 			},
 			error: function(xhr, status, error){
 				var loc = xhr.responseJSON['location'];
@@ -71,9 +68,12 @@ var Settings = (function() {
 	}
 
 	return {
-		init: function(forms){
-			for(var i=0; i<forms.length; i++){
-				$('#' + forms[i]).on('submit', submitForm);
+		init: function(update_forms) {
+			for (var i=0; i<update_forms.length; i++){
+				var el = $('#' + update_forms[i]);
+				if (! el.length)
+					continue;
+				el.on('submit', submitForm);
 			}
 		}
 	};

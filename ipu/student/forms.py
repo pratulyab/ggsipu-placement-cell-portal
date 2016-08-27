@@ -14,7 +14,7 @@ import re
 
 class StudentLoginForm(forms.Form):
 	username = forms.CharField(label=_('Enrollment Number'), max_length=11, widget=forms.TextInput(attrs={'placeholder': _('or email address'), 'auto_focus':''}))
-	password = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder':_('Enter Password')}))
+	password = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder':_('Enter password')}))
 
 	def __init__(self, *args, **kwargs):
 		self.user_cache = None
@@ -137,21 +137,27 @@ class StudentCreationForm(forms.ModelForm):
 	def clean_photo(self):
 		photo = self.cleaned_data['photo']
 		if photo:
-			if photo.content_type in settings.IMAGE_CONTENT_TYPE:
-				if photo._size > settings.IMAGE_MAX_SIZE:
-					raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
-			else:
-				raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
+			try:
+				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
+					if photo._size > settings.IMAGE_MAX_SIZE:
+						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
+				else:
+					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
+			except AttributeError:
+				pass
 		return photo
 
 	def clean_resume(self):
 		cv = self.cleaned_data['resume']
 		if cv:
-			if cv.content_type in settings.FILE_CONTENT_TYPE:
-				if cv._size > settings.FILE_MAX_SIZE:
-					raise forms.ValidationError(_('Resume too large (>%sMB)' % (settings.FILE_MAX_SIZE/(1024*1024))))
-			else:
-				raise forms.ValidationError(_('Please upload resume in .pdf, .doc or .docx format'))
+			try:
+				if cv.content_type in settings.FILE_CONTENT_TYPE:
+					if cv._size > settings.FILE_MAX_SIZE:
+						raise forms.ValidationError(_('Resume too large (>%sMB)' % (settings.FILE_MAX_SIZE/(1024*1024))))
+				else:
+					raise forms.ValidationError(_('Please upload resume in .pdf, .doc or .docx format'))
+			except AttributeError:
+				pass
 		return cv
 	
 	def save(self, commit=True, *args, **kwargs):
@@ -208,7 +214,6 @@ class StudentEditForm(forms.ModelForm):
 	
 	def clean_photo(self):
 		photo = self.cleaned_data['photo']
-		print(photo)
 		if photo:
 			try:
 				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
@@ -216,7 +221,7 @@ class StudentEditForm(forms.ModelForm):
 						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
 				else:
 					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
-			except:
+			except AttributeError:
 				pass
 		return photo
 
@@ -229,7 +234,7 @@ class StudentEditForm(forms.ModelForm):
 						raise forms.ValidationError(_('Resume too large (>%sMB)' % (settings.FILE_MAX_SIZE/(1024*1024))))
 				else:
 					raise forms.ValidationError(_('Please upload resume in .pdf, .doc or .docx format'))
-			except:
+			except AttributeError:
 				pass
 		return cv
 	
@@ -243,7 +248,8 @@ class StudentEditForm(forms.ModelForm):
 			except IntegrityError:
 				raise forms.ValidationError(_('Verification error.'))
 			except ValidationError as error:
-				raise forms.ValidationError(error)
+				print(error)
+				raise forms.ValidationError(_('Error Occcurred'))
 		return student
 
 	class Meta:
@@ -323,3 +329,43 @@ class TechProfileForm(forms.ModelForm):
 	class Meta:
 		model = TechProfile
 		fields = ['github', 'bitbucket', 'codechef', 'codeforces', 'spoj']
+
+class FileUploadForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(FileUploadForm, self).__init__(*args, **kwargs)
+	
+	def clean_photo(self):
+		photo = self.cleaned_data['photo']
+		if photo:
+			try:
+				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
+					if photo._size > settings.IMAGE_MAX_SIZE:
+						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
+				else:
+					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
+			except AttributeError:
+				pass
+		return photo
+
+	def clean_resume(self):
+		cv = self.cleaned_data['resume']
+		if cv:
+			try:
+				print(cv.content_type)
+				if cv.content_type in settings.FILE_CONTENT_TYPE:
+					print(settings.FILE_CONTENT_TYPE)
+					if cv._size > settings.FILE_MAX_SIZE:
+						raise forms.ValidationError(_('Resume too large (>%sMB)' % (settings.FILE_MAX_SIZE/(1024*1024))))
+				else:
+					raise forms.ValidationError(_('Please upload resume in .pdf, .doc or .docx format'))
+			except AttributeError:
+				pass
+		return cv
+	
+	class Meta:
+		model = Student
+		fields = ['photo', 'resume']
+		help_texts = {
+			'resume': _('Please upload resume in either pdf, doc or docx format, < %sMB' % str(settings.FILE_MAX_SIZE/(1024*1024))),
+			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
+		}

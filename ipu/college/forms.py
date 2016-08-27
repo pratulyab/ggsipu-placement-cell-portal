@@ -15,7 +15,7 @@ class CollegeCreationForm(forms.ModelForm):
 						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
 				else:
 					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
-			except:
+			except AttributeError:
 				pass
 		return photo
 	
@@ -49,7 +49,7 @@ class CollegeEditForm(forms.ModelForm):
 						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
 				else:
 					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
-			except:
+			except AttributeError:
 				pass
 		return photo
 	

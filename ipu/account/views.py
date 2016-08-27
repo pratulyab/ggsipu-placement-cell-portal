@@ -41,6 +41,8 @@ def login(request):
 	f = LoginForm(request.POST)
 	if f.is_valid():
 		user = f.get_user()
+		if not user.is_active:
+			return JsonResponse(data={'success': True, 'render': loader.render_to_string('account/inactive.html', {'user': user})})
 		auth_login(request, user)
 		return JsonResponse(data = {'success': True, 'location': get_relevant_reversed_url(request)})
 	else:
@@ -156,7 +158,7 @@ def edit_account(request):
 				context = {}
 				context['edit_account_form'] = f
 				context['success_msg'] = "Your account has been updated successfully"
-				return HttpResponse(render(request, 'account/edit_account.html', context).content.decode('utf-8'))
+				return JsonResponse(status=200, data={'render': render(request, 'account/edit_account.html', context).content.decode('utf-8')})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 	else:
@@ -221,7 +223,7 @@ def social_profile(request):
 				context = {}
 				context['social_profile_form'] = f
 				context['success_msg'] = "Your profile has been successfully updated"
-				return HttpResponse(render(request, 'account/social_profile.html', context).content.decode('utf-8'))
+				return JsonResponse(status=200, data={'render': render(request, 'account/social_profile.html', context).content.decode('utf-8')})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 	else:

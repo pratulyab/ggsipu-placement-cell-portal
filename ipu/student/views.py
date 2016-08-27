@@ -10,10 +10,10 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from account.models import CustomUser, SocialProfile
 from account.forms import AccountForm, SocialProfileForm
-from account.views import handle_user_type, send_activation_email, get_relevant_reversed_url
+from account.views import handle_user_type, send_activation_email, get_relevant_reversed_url, get_creation_url, get_home_url
 from college.models import College, Stream
-from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm
-from student.models import Student, TechProfile
+from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm, FileUploadForm
+from student.models import Student, TechProfile, Qualification
 
 import re
 from bs4 import BeautifulSoup
@@ -27,6 +27,8 @@ def student_login(request):
 	f = StudentLoginForm(request.POST)
 	if f.is_valid():
 		user = f.get_user()
+		if not user.is_active:
+			return JsonResponse(data={'success': True, 'render': render_to_string('account/inactive.html', {'user': user})})
 		auth_login(request, user)
 		return JsonResponse(data = {'success': True, 'location': get_relevant_reversed_url(request)})
 	else:
@@ -40,7 +42,7 @@ def student_signup(request):
 	if f.is_valid():
 		user = f.save()
 		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
-		auth_login(request, user)
+#		auth_login(request, user)
 		send_activation_email(user, get_current_site(request).domain)
 		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse('create_student'))}
 		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')
@@ -98,27 +100,45 @@ def student_home(request):
 		return response
 		"""
 		context = {}
-		context['user'] = request.user
+		user = request.user
+		context['user'] = user
 		try:
-			context['student'] = request.user.student
-			context['edit_account_form'] = AccountForm(instance=request.user)
-			try:
-				context['social_profile_form'] = SocialProfileForm(instance=request.user.social)
-			except SocialProfile.DoesNotExist:
-				context['social_profile_form'] = SocialProfileForm()
-			try:
-				context['tech_profile_form'] = TechProfileForm(instance=request.user.student.tech, student=request.user.student)
-			except:
-				context['tech_profile_form'] = TechProfileForm(student=request.user.student)
-			return render(request, 'student/home.html', context)
+			student = request.user.student
 		except Student.DoesNotExist:
 			return redirect('create_student')
+		context['student'] = student
+		if student.is_verified == False and student.verified_by == None:
+			try:
+				student.qualifications
+			except Qualification.DoesNotExist:
+				context['qual_form'] = QualificationForm()
+			return render(request, 'student/unverified.html', context)
+		context['edit_account_form'] = AccountForm(instance=user)
+		context['upload_file_form'] = FileUploadForm(instance=student)
+		if student.is_verified is None:
+			context['edit_profile_form'] = StudentEditForm(instance=student)
+		try:
+			qual = student.qualifications
+			if qual.is_verified is None:
+				context['edit_qual_form'] = QualificationForm(instance=qual)
+		except Qualification.DoesNotExist:
+			context['edit_qual_form'] = QualificationForm()
+		try:
+			context['social_profile_form'] = SocialProfileForm(instance=user.social)
+		except SocialProfile.DoesNotExist:
+			context['social_profile_form'] = SocialProfileForm()
+		try:
+			context['tech_profile_form'] = TechProfileForm(instance=student.tech, student=student)
+		except:
+			context['tech_profile_form'] = TechProfileForm(student=student)
+		return render(request, 'student/home.html', context)
 	else:
 		return handle_user_type(request, redirect_request=True)
 
 @require_http_methods(['GET','POST'])
 @login_required
 def edit_student(request):
+	"""
 	if request.user.type == 'S':
 		username = request.user.username
 		try:
@@ -163,11 +183,40 @@ def edit_student(request):
 			coll = College.objects.get(code=coll).pk
 			strm = Stream.objects.get(code=strm).pk
 			return render(request, 'student/create.html', {'student_creation_form': StudentCreationForm(profile=user_profile, coll=coll, strm=strm)})
+	"""
+	if request.user.type == 'S' and request.is_ajax() and request.method == 'POST':
+		username = request.user.username
+		try:
+			roll, coll, strm, year = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', username).groups()
+		except:
+			print("KAAABOOOOOOM ~~~~")
+			return JsonResponse(status=403, data={'location': get_relevant_reversed_url('S')})
+		coll = College.objects.get(code=coll).pk
+		strm = Stream.objects.get(code=strm).pk
+		try:
+			student = request.user.student
+		except Student.DoesNotExist:
+			return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
+		POST = request.POST.copy()
+		POST['college'] = student.college.pk
+		POST['programme'] = student.programme.pk
+		POST['stream'] = student.stream.pk
+		f = StudentEditForm(POST, request.FILES, instance=student)
+		if f.is_valid():
+			f.save(verified=False, verifier=student.verified_by)
+#			context = {}
+#			context['message'] = "Your profile has been updated. Please contact your college's TPC faculty for verification."
+#			return JsonResponse(status=200, data={'render': render(request, 'student/home.html', context).content.decode('utf-8')})
+			toast_msg = "Your profile has been updated successfully! Contact your college's TPC faculty for verification."
+			return JsonResponse(status=200, data={'location': reverse(get_home_url('S')), 'toast_msg': toast_msg})
+		else:
+			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 		
 	elif request.user.type == 'F' and request.is_ajax() and request.method == 'POST':
 		enroll = request.session['enrollmentno']
 		if not enroll:
-			Http404(_('Cookie has been deleted'))
+			Http404(_('Please make sure cookies are enabled. Refresh the page.'))
+#			Http404(_('Cookie has been deleted'))
 		try:
 			student = CustomUser.objects.get(username=enroll)
 			student = student.student
@@ -184,7 +233,8 @@ def edit_student(request):
 		elif 'leave' == request.POST.get('none', ''):
 			verdict = None
 		else:
-		 	return JsonResponse(status=400, data={'error': 'Button name or value changed. Refresh page and continue.'})
+		 	# Button names/values changed
+		 	return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
 		if f.is_valid():
 			student = f.save(verifier=request.user, verified=verdict)
 			context = {'profile_form': StudentEditForm(instance=student), 'success_msg': 'Student profile has been updated successfully!'}
@@ -203,6 +253,7 @@ def edit_student(request):
 @require_http_methods(['GET','POST'])
 @login_required
 def edit_qualifications(request):
+	"""
 	if request.user.type == 'S':
 		try:
 			student = request.user.student
@@ -226,14 +277,31 @@ def edit_qualifications(request):
 			else:
 				f = QualificationForm(request.POST)
 			if f.is_valid():
-				if qual:
-					f.save(verified=False)
-				else:
-					f.save(student=student, verified=False)
+#				if qual:
+#					f.save(verified=False)
+#				else:
+				f.save(student=student, verified=False, verifier=student.verified_by)
 				return redirect('student_home')
 #				return render(request, 'student/qual.html', {'qual_form': f})
 		return render(request, 'student/qual.html', {'qual_form': f})
-
+	"""
+	if request.user.type == 'S' and request.method == 'POST' and request.is_ajax():
+		try:
+			student = request.user.student
+		except Student.DoesNotExist:
+			return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
+		try:
+			qual = student.qualifications
+			f = QualificationForm(request.POST, instance=qual)
+		except Qualification.DoesNotExist:
+			f = QualificationForm(request.POST)
+		if f.is_valid():
+			f.save(student=student, verified=False, verifier=student.verified_by)
+			toast_msg = "Qualifications have been updated successfully! Contact your college's TPC faculty for verification."
+			return JsonResponse(status=200, data={'location': reverse(get_home_url('S')), 'toast_msg': toast_msg})
+		else:
+			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+	
 	elif request.user.type == 'F' and request.method == 'POST' and request.is_ajax():
 		enroll = request.session['enrollmentno']
 		if not enroll:
@@ -249,7 +317,8 @@ def edit_qualifications(request):
 		elif 'leave' == request.POST.get('none', ''):
 			verdict = None
 		else:
-		 	return JsonResponse(status=400, data={'error': 'Button name or value changed. Refresh page and continue.'})
+		 	# Button names/values changed
+		 	return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
 		try:
 			qual = student.qualifications
 			f = QualificationForm(request.POST, instance=qual)
@@ -339,6 +408,7 @@ def get_student_public_profile(user, requester_type):
 def tech_profile(request):
 	if request.is_ajax():
 		if request.user.type == 'S':
+			"""
 			if request.method == 'GET':
 				try:
 					student = request.user.student
@@ -348,8 +418,10 @@ def tech_profile(request):
 						f = TechProfileForm(student=student)
 					return HttpResponse(render(request, 'student/tech_profile.html', {'tech_profile_form': f}).content.decode('utf-8'))
 				except Student.DoesNotExist:
-					return JsonResponse(status=400, data={'location': get_creation_url('S')})
+					return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
 			else:
+			"""
+			if request.method == 'POST':
 				student = request.user.student
 				try:
 					f = TechProfileForm(request.POST, student=student, instance=student.tech)
@@ -360,10 +432,27 @@ def tech_profile(request):
 					context = {}
 					context['tech_profile_form'] = f
 					context['success_msg'] = "Your profile has been updated successfully!"
-					return HttpResponse(render(request, 'student/tech_profile.html', context).content.decode('utf-8'))
+					return JsonResponse(status=200, data={ 'render': render(request, 'student/tech_profile.html', context).content.decode('utf-8') })
 				else:
 					return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 		else:
 			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request, redirect_request=True)
+
+@require_POST
+@login_required
+def upload_file(request):
+	if request.user.type == 'S' and request.is_ajax():
+		try:
+			student = request.user.student
+		except Student.DoesNotExist:
+			return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
+		f = FileUploadForm(request.POST, request.FILES, instance=student)
+		if f.is_valid():
+			f.save()
+			context = {}
+			context['upload_file_form'] = FileUploadForm(instance=student)
+			context['success_msg'] = "Upload success!"
+			return JsonResponse(status=200, data={'location': reverse(get_home_url('S'))})
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
