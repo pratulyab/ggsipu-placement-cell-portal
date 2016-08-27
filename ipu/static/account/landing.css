@@ -40,10 +40,11 @@ main img
 	background-color: white;
 	display: flex;
 	flex-direction: column;
-    transition: box-shadow .25s;
+  transition: box-shadow .25s;
 	height: 366px;
-    border-radius: 7px;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  border-radius: 7px;
+  width: 40%;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
 #student-signup-mainbox

@@ -5,11 +5,11 @@
 		<div class="card" id="ss">
 			<div class="card-content white-text" id="rr">
 				<div id="top-box">
-					<img class="responsive-img circle" src="{% if photo %}{{ photo }} {% else %}{% static 'images/ipu-logo.png' %}{% endif %}" height="70px" width="80px" >
+					<img class="responsive-img circle" src="{% if student.photo %}{{ student.photo.url }} {% else %}{% static 'images/ipu-logo.png' %}{% endif %}" height="80px" width="80px" >
 					<div id="top-side-box">
-						<h4>{{ name }}</h4>
-						<h5>{{ college }}</h5>
-						<h6>{{ stream }} &nbsp; ({{ year }} year)</h5>
+						<h5>{{ name }}</h5>
+						<h6>{{ college }}</h6>
+						<h6>{{ stream }} &nbsp; ({{ year }} year)</h6>
 					</div>
 				</div>
 				<hr>
@@ -40,8 +40,9 @@
 					{% endif %}
 				</ul>
 			</div>
-			{% endif %}
 			<hr>
+			{% endif %}
+			
 			<div id="ff">
 				<div class="fixed-action-btn horizontal" id="main-btn">
 					<a class="btn-floating btn-large red"><i class="large material-icons">supervisor_account</i></a>

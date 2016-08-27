@@ -59,7 +59,7 @@ def company_home(request):
 		context['user'] = request.user
 		try:
 			context['company'] = request.user.company
-			return render(request, 'company/home.html', context)
+			return render(request, 'company/new_home.html', context)
 		except Company.DoesNotExist:
 			return redirect('create_company')
 	else:

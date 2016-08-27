@@ -372,6 +372,7 @@ input {
 }
 
 
+
 hr {
    display: block;
    position: relative;
@@ -459,16 +460,27 @@ hr {
 
 #top-box
 {
-   display: flex;
-   padding-left: 20px;
-   align-items: center;
-   width: 50%;
-   justify-content: flex-start;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
 }
 
 #top-side-box
 {
-   margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+#top-side-box h6
+{
+  font-size: 19px;
+}
+
+#top-side-box h6
+{
+  font-size: 15px;
 }
 
 #tech 

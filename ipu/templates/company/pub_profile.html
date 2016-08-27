@@ -4,9 +4,9 @@
 		<div class="card" id="ss">
 			<div class="card-content white-text" id="rr">
 				<div id="top-box">
-					<img class="responsive-img circle" src="{% if photo %}{{ photo }} {% else %}{% static 'images/ipu-logo.png' %}{% endif %}" height="70px" width="80px" >
+					<img class="responsive-img circle" src="{% if company.photo %}{{ company.photo.url }} {% else %}{% static 'images/ipu-logo.png' %}{% endif %}" height="70px" width="80px" >
 					<div id="top-side-box">
-						<h4>{{ name }}</h4>
+						<h5>{{ name }}</h5>
 					</div>
 				</div>
 				<hr>

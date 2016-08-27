@@ -70,7 +70,7 @@ def faculty_home(request):
 		context = {}
 		context['user'] = request.user
 		context['faculty'] = request.user.faculty
-		return render(request, 'faculty/home.html', context)
+		return render(request, 'faculty/new_home.html', context)
 	else:
 		return handle_user_type(request, redirect_request=True)
 
