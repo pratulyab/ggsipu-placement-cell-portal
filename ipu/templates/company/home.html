@@ -1,37 +1,97 @@
-{% extends 'index.html' %}
-{% block edit_profile_url %}
-	{% url 'edit_company_profile' %}
-{% endblock %}
-
-{% block photo %}
+{% extends 'account/base_home_layout.html' %}
+{% load staticfiles %}
+{% load material_form %}
+{% block user_photo %}
 	{% if company.photo %}
 		{{ company.photo.url }}
 	{% endif %}
 {% endblock %}
 
-{% block sociallinks %}
-	{{ block.super }}
-	<li><a href="#"><span><i class="fa fa-facebook-official"></i>&nbsp;Facebook</span></a></li>
+{% block user_name_card %}
+	{{ company.name }}
 {% endblock %}
 
-{% block leftpanellinks %}
-	{{ block.super }}
-	<li><a href="{% url 'edit_company_profile' %}"><span><span class="fa fa-cog"></span>Settings</span></a></li>
-    <li><a href="{% url 'logout' %}"><span><span class="fa fa-sign-out"></span>Logout</span></a></li>
+{% block user_email_id %}
+	{{ company.profile.email }}
 {% endblock %}
 
-{% block tab_one_title %}
-	Association Requests
+{% block edit_profile_url %}
+	{% url 'edit_company_profile' %}
 {% endblock %}
 
-{% block tab_two_title %}
-	Associate With Colleges
+{% block menu_icon_dropdown %}
+	<li><a href="#">wrgwearg</a></li>
+    <li class="divider"></li>
 {% endblock %}
 
-{% block tab_one_content %}
-	<p> <a href="{% url 'company_association_requests' %}">View Association Requests</a></p>
+{% block user_type %}
+	Company
 {% endblock %}
 
-{% block tab_two_content %}
-	<p> <a href="{% url 'associate' %}"> Associate With Colleges </a></p>
+{% block user_name %}
+	{{ company.name }}
 {% endblock %}
+
+{% block user_photo2 %}
+	{% if company.photo %}
+		{{ company.photo.url }}
+	{% endif %}
+{% endblock %}
+
+{% block tabs%}
+	<li class="tab col s2"><a class="active" href="#tab1">Association Requests</a></li>
+	<li class="tab col s2"><a href="#tab2">Associate with colleges</a></li>
+	<li class="tab col s2"><a href="#settings">Settings</a></li>
+{% endblock %}
+
+{% block tabs_content %}
+	<div id="tab1" class="col s12">Data 1</div>
+	<div id="tab2" class="col s12">Data 2</div>
+	<div id="settings" class="col s12">
+		<div class="vertical-tabs">
+			<div class="row">
+				<div class="col s3">
+					<ul class="tabs">
+						<li class="tab col s12"><a class="active" href="#account-settings">Account Settings</a></li>
+						<li class="tab col s12"><a href="#profile-settings">Profile Settings</a></li>
+						<li class="tab col s12"><a href="#social-settings">Social Profile Settings</a></li>
+					</ul>
+				</div>
+				<div class=" col s8 offset-s1">
+					<div id="account-settings" class="col s12">
+						<form method="POST" action="{% url 'edit_account' %}" id="edit-account-form">
+							{% csrf_token %}
+							{% form form=edit_account_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update Account</button>
+						</form>
+					</div>
+					<div id="profile-settings" class="col s12">
+						<form method="POST" action="{% url 'edit_company_profile' %}" id="edit-profile-form">
+							{% csrf_token %}
+							{% form form=edit_company_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update Profile</button>
+						</form>
+					</div>
+					<div id="social-settings" class="col s12">
+						<form method="POST" action="{% url 'social_profile' %}" id="social-profile-form">
+							{% csrf_token %}
+							{% form form=social_profile_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
+	<script>
+		$(document).ready(function() {
+			Search.init();
+			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form']);
+		});
+	</script>
+{% endblock scripts %}

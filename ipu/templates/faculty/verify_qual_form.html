@@ -1,8 +1,7 @@
 {% load staticfiles %}
 {% load material_form %}
 
-<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
-{% include 'material/includes/material_js.html' %}
+{% if success_msg %}<div class="card green accent-1 center success"><p>{{ success_msg }}</p></div>{% endif %}
 
 <form action="{% url 'student_qual' %}" method='POST' id="qual-form" enctype="multipart/form-data">
 	{% csrf_token %}

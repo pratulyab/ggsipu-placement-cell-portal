@@ -118,31 +118,6 @@ def reset_password(request, uid = None, token=None):
 			return redirect('login')
 	context = { 'validlink' : True, 'form' : f}
 	return render(request, 'account/set_password.html', context)
-"""
-@require_http_methods(['GET','POST'])
-@login_required
-def edit_account(request):
-#	if not request.user.is_active:
-	data = get_type_created(request.user)
-	if data.get('profile') is None:
-		return render_profile_creation(request, data.get('user_type'))
-	context = {}
-	if request.method == 'GET':
-		f = AccountForm(instance=request.user)
-	else:
-		f = AccountForm(request.POST, instance=request.user)
-		if f.is_valid():
-			if f.has_changed:
-				context['update'] = True
-			f.save()
-			if f.password_changed:
-				user = authenticate(username=f.cleaned_data.get('username'), password=f.cleaned_data.get('new_password'))
-				if user:
-					auth_login(request, user)
-	context['edit_account_form'] = f
-	context['url'] = reverse(get_home_url(request.user.type))
-	return render(request, 'account/edit.html', context)
-"""
 
 @require_http_methods(['GET', 'POST'])
 @login_required

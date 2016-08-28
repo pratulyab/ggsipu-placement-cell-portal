@@ -1,19 +1,24 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
-from django.http import HttpResponse
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from account.forms import SignupForm
-from account.views import handle_user_type, send_activation_email
+from account.forms import SignupForm, AccountForm, SocialProfileForm
+from account.models import CustomUser, SocialProfile
+from account.views import handle_user_type, send_activation_email, get_creation_url, get_home_url, get_relevant_reversed_url
 from college.forms import CollegeCreationForm, CollegeEditForm
 from college.models import College
+from faculty.forms import FacultySignupForm
 from recruitment.models import PlacementSession
 
 # Create your views here.
 
 @require_http_methods(['GET','POST'])
 def college_signup(request):
+	if request.user.is_anonymous:
+		return redirect('landing')
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_response=True)
 	if request.method == 'GET':
@@ -59,37 +64,47 @@ def create_college(request):
 def college_home(request):
 	if request.user.type == 'C':
 		context = {}
-		context['user'] = request.user
+		user = request.user
 		try:
-			context['college'] = request.user.college
-			return render(request, 'college/home.html', context)
+			college = request.user.college
 		except College.DoesNotExist:
 			return redirect('create_college')
+		context['user'] = user
+		context['college'] = college
+		context['edit_account_form'] = AccountForm(instance=user)
+		context['edit_college_form'] = CollegeEditForm(instance=college)
+		context['create_faculty_form'] = FacultySignupForm()
+		try:
+			context['social_profile_form'] = SocialProfileForm(instance=user.social)
+		except SocialProfile.DoesNotExist:
+			context['social_profile_form'] = SocialProfileForm()
+		return render(request, 'college/home.html', context)
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_http_methods(['GET','POST'])
+@require_POST
 @login_required
 def edit_college(request):
-	if request.user.type == 'C':
-		try:
-			context = {}
-			college = request.user.college
-			if request.method == 'GET':
-				f = CollegeEditForm(instance = college)
+	if request.is_ajax():
+		if request.user.type == 'C':
+			try:
+				college = request.user.college
+			except College.DoesNotExist:
+				return JsonResponse(status=400, data={'location': reverse(get_creation_url('C'))})
+			f = CollegeEditForm(request.POST, request.FILES, instance=college)
+			if f.is_valid():
+				f.save()
+				context = {}
+				context['edit_college_form'] = CollegeEditForm(instance=college)
+				if f.has_changed():
+					context['success_msg'] = "Profile has been updated successfully!"
+				return JsonResponse(status=200, data={'render': render(request, 'college/edit.html', context).content.decode('utf-8')})
 			else:
-				f = CollegeEditForm(request.POST, request.FILES, instance=college)
-				if f.is_valid():
-					f.save()
-					f.save_m2m()
-					if f.has_changed():
-						context['update'] = True
-			context['college_edit_form'] = f
-			return render(request, 'college/edit.html', context)
-		except College.DoesNotExist:
-			return render(request, 'college/create.html', {'college_creation_form': CollegeCreationForm()})
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		else:
+			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
-		return handle_user_type(request)
+		return handle_user_type(request, redirect_request=True)
 
 def get_college_public_profile(user, requester_type):
 	try:
