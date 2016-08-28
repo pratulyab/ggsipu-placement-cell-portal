@@ -11,7 +11,6 @@ from .models import Notification
 from django.core import serializers
 from recruitment.models import PlacementSession
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 import itertools
 import json
 
@@ -22,7 +21,6 @@ import json
 
 @require_http_methods(['GET','POST'])
 @login_required
-@csrf_exempt
 def select_streams(request):
 	if request.user.type == 'F' or request.user.type == 'C':
 		if request.method == 'GET':
@@ -41,7 +39,6 @@ def select_streams(request):
 			else:
 				college = request.user.college	
 			students_of_streams = list()
-			print(request.POST)
 			streams_selected = request.POST.getlist('stream_list[]')
 			indices = request.POST.getlist('indices[]')			
 			
@@ -53,7 +50,6 @@ def select_streams(request):
 			
 
 			students_of_streams = list(itertools.chain.from_iterable(students_of_streams))
-			print(students_of_streams)
 			send_list = list()
 			for_list = list()
 			for idx , element in enumerate(students_of_streams):
@@ -72,7 +68,6 @@ def select_streams(request):
 
 @require_http_methods(['GET','POST'])
 @login_required
-@csrf_exempt
 def create_notification(request):
 	if request.user.type == 'C' or request.user.type == 'F':
 		if request.method == 'POST':

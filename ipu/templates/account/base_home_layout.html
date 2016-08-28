@@ -193,8 +193,10 @@
 
         </main>
 
+
         <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
         {% include 'material/includes/material_js.html' %}
+        {% block scripts %}{% endblock %}
         <script type="text/javascript">
       			$(document).ready(function(e) {
       	            $('#dropdown3').on('click', function(e){e.stopPropagation();});
@@ -222,6 +224,6 @@
         </script>
 
 
-        {% block scripts %}{% endblock %}
+        
     </body>
 </html>

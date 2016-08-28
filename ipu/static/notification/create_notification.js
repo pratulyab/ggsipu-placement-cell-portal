@@ -19,10 +19,12 @@ var Notification = (function() {
 
     function getStudentForm(stream_list, indices) {
         var url = "http://127.0.0.1:8000/notification/select_streams/"
+        var token = $('input[name = csrfmiddlewaretoken]').val();
         $.ajax({
             url : url,
             type : 'POST',
-            data : { 'stream_list' : stream_list,
+            data : { 'csrfmiddlewaretoken' : token,
+                     'stream_list' : stream_list,
                      'indices' : indices,
              },
             success : function(data , status , xhr){
@@ -35,12 +37,13 @@ var Notification = (function() {
     function submitForm(student_list) {
     	var url = $('#create_notification-form').attr('action')
     	var message = $('#id_message').val();
-
+        var token = $('input[name = csrfmiddlewaretoken]').val();
     	student_list.shift();
     	$.ajax({
     		url : url,
     		type : 'POST',
     		data : { 
+                'csrfmiddlewaretoken' : token , 
                 'student_list' :student_list,
                 'message' : message ,
             },
