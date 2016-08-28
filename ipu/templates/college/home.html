@@ -38,21 +38,20 @@
 {% block tabs%}
 	<li class="tab col s2"><a class="active" href="#tab1">Companies Visiting</a></li>
 	<li class="tab col s2"><a href="#tab2">Status</a></li>
-	<li id = "notification" class="tab col s2" url="{% url 'generate_notifications' %}"><a href="#tab3">Notification</a></li>
+	<li id = "notification" class="tab col s2" url="{% url 'select_streams' %}"><a href="#tab3">Notification</a></li>
 	<li class="tab col s2"><a href="#tab4">Settings</a></li>
 {% endblock %}
 
 {% block tabs_content %}
 	<div id="tab1" class="col s12">Data 1</div>
 	<div id="tab2" class="col s12">Data 2</div>
-	<div id="tab3" class="col s12">Data 3</div>
-	<div id="tab4" class="col s12">Data 4</div>
+	<div id="tab3" class="col s12"></div>
+	<div id="tab4" class="col s12"></div>
 {% endblock %}
 
 
-{% block JS %}
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script type="text/javascript" src="{% static 'college/notification.js' %}"></script>
+{% block scripts %}
+	<script type="text/javascript" src="{% static 'notification/create_notification.js' %}"></script>
 	<script>
 	$(document).ready(function () {
 		Notification.init();
