@@ -29,6 +29,7 @@ var Notification = (function() {
              },
             success : function(data , status , xhr){
                 $('#tab3').html(data);
+                $('#id_stream').on('change' , getStreamsSelected);
                 $('#create_notification-form').on('submit' , getStudentsSelected)
             }
         });
