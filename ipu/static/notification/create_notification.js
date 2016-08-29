@@ -1,7 +1,22 @@
 var Notification = (function() {
 	'use strict'
-    var test;
-    var test1;
+	
+	function handleMultipleJquery(){
+		$('a').unbind('click'); // to prevent multiple fires because of reloading of jquery in the rendered template.
+		$('#dropdown3').on('click', function(e){e.stopPropagation();});
+		$('.dropdown-button').on('click', function(e){e.preventDefault()});
+		$('nav .brand-logo').on('click', function(e){location.href='';});
+		$('#dropdown1 a').each(function(i, a){
+			var el = $(a);
+			var target = el.data('links');
+			if (!target)
+				return true;
+			var target_el = $('#tab-bar').find("[href='#" + target + "']");
+			if(!target_el.length)
+				return true;
+			el.on('click', function(e){e.preventDefault();target_el[0].click();});
+		});
+	}
 
 	function getForm() {
     	var url = $('#notification').attr('url');
@@ -10,7 +25,8 @@ var Notification = (function() {
     		type : 'GET',
     		async : true,
     		success : function(data, status, xhr){
-           		$("#tab3").html(data); 
+				handleMultipleJquery();
+           		$("#notifications").html(data); 
                 $('#generate-streams-form').on('submit' , getStreamsSelected);	
     		}
     	});
@@ -28,7 +44,8 @@ var Notification = (function() {
                      'indices' : indices,
              },
             success : function(data , status , xhr){
-                $('#tab3').html(data);
+				handleMultipleJquery();
+                $('#notifications').html(data);
                 $('#id_stream').on('change' , getStreamsSelected);
                 $('#create_notification-form').on('submit' , getStudentsSelected)
             }

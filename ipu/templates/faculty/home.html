@@ -42,7 +42,7 @@
 	<li class="tab col s2"><a class="active" href="#verify">Verify students</a></li>
 	<li class="tab col s2"><a href="#tab2">College Associations</a></li>
 	<li class="tab col s2"><a href="#tab3">Association Requests</a></li>
-	<li class="tab col s2"><a href="#tab4">Notifications</a></li>
+	<li class="tab col s2"><a href="#notifications">Notifications</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 {% endblock %}
 
@@ -53,33 +53,30 @@
 				<p {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
 			{% endfor %}
 		{% endif %}
-		<div class="row" id="enrollment-div">
-			<div class="col s12">
-				<h4 class="row center" style="color: goldenrod">Verify Student</h4>
-				<div class="card-panel">
-					<form action="{% url 'verify' %}" id="enroll-form">
-						{% csrf_token %}
-						{% form form=enrollment_form %}{% endform %}
-						<div class="row">
-							<div class="col s8 offset-s2 center">
-								<button type="submit" class="btn waves-effect" style="width: 100%">Get Student</button>
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>
-		</div>
 		<div class="row" id="student-div">
 			<div class="vertical-tabs">
 				<div class="row">
 					<div class="col s3">
 						<ul class="tabs">
-							<li class="tab col s12"><a class="active" href="#profile-div">Student Profile</a></li>
+							<li class="tab col s12"><a href="#enrollment-div">Get Student</a></li>
+							<li class="tab col s12"><a href="#profile-div">Student Profile</a></li>
 							<li class="tab col s12"><a href="#qual-div">Student Qualifications</a></li>
 							<li class="tab col s12"><a href="#delete-div">Delete Student</a></li>
 						</ul>
 					</div>
 					<div class=" col s8 offset-s1">
+						<div class="col s12 m10 offset-s1 card-panel" id="enrollment-div">
+							<h4 class="row center" style="color: goldenrod">Verify Student</h4>
+								<form action="{% url 'verify' %}" id="enroll-form">
+									{% csrf_token %}
+									{% form form=enrollment_form %}{% endform %}
+									<div class="row">
+										<div class="col s8 offset-s2 center">
+											<button type="submit" class="btn waves-effect" style="width: 100%">Get Student</button>
+										</div>
+									</div>
+								</form>
+						</div>
 						<div class="col s12 m10 offset-m1 card-panel" id="profile-div">
 							<h4 class="center-align" style="color: goldenrod">Student Profile</h4>
 						</div>
@@ -102,7 +99,7 @@
 	</div>
 	<div id="tab2" class="col s12">Data 2</div>
 	<div id="tab3" class="col s12">Data 3</div>
-	<div id="tab4" class="col s12">Data 4</div>
+	<div id="notifications" class="col s12">Data 4</div>
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">

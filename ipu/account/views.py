@@ -130,6 +130,10 @@ def edit_account(request):
 			f = AccountForm(request.POST, instance=request.user)
 			if f.is_valid():
 				f.save()
+				if f.password_changed:
+					user = authenticate(username=f.cleaned_data.get('username'), password=f.cleaned_data.get('new_password2'))
+					if user:
+						auth_login(request, user)
 				context = {}
 				context['edit_account_form'] = f
 				context['success_msg'] = "Your account has been updated successfully"
