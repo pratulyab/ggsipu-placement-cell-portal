@@ -2,8 +2,8 @@
 {% load staticfiles %}
 {% load material_form %}
 {% block title %} Unverified Student {% endblock %}
+{% block head %} <link type="text/css" rel="stylesheet" href="{% static 'student/unverified.css'%}"  media="screen,projection"/> {% endblock %}
 {% block content %}
-	<div class="container">
 		<div class="row blue-text">
 			<h4 class="col s6 offset-s3">You're Almost There, {{ student.firstname | title }}!</h4>
 			<br>
@@ -13,7 +13,7 @@
 		{% if qual_form %}
 			<div class="row">
 				<div class="col s6 offset-s3">
-					<p class="purple-text">Meanwhile, you can fill your qualifications truely to speed up your verification process.</p>
+					<p>Meanwhile, you can fill your qualifications truely to speed up your verification process.</p>
 				</div>
 				<div class="col s12" id="qual-form-div">
 					<form method="POST" action="{% url 'student_qual' %}" id="qual-form">
@@ -30,7 +30,7 @@
 		{% endif %}
 		<br><br>
 		<div class="row">
-			<a href="{% url 'logout' %}"> Logout </a>
+			<a href="{% url 'logout' %}" class="waves-effect waves-light btn" id="logout-button"> Logout </a>
 		</div>
 	</div>
 {% endblock %}

@@ -1,13 +1,14 @@
 {% extends 'account/base.html' %}
 {% load staticfiles %}
 {% block title %}Account Activation{% endblock title %}
+{% block head %} <link type="text/css" rel="stylesheet" href="{% static 'account/post_signup.css'%}"  media="screen,projection"/> {% endblock %}
 {% block content %}
 	<div class="container blue-text">
 		<div class="row">
 			<div class="col s8 offset-s2">
-				<h3 class="purple-text"> OOPS! </h3>
+				<h3> OOPS! </h3>
 				<br>
-				<p> An account activation link has been sent to your registered email address {{ user.email }}.</p>
+				<p> An account activation links has been sent to your registered email address {{ user.email }}.</p>
 				<p> Click on the activation link in the email. </p>
 				<p> Please check your SPAM folder also incase you didn't receive the email. </p>
 			</div>

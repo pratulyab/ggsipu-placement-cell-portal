@@ -133,17 +133,18 @@ input {
     margin: 0 auto;
     margin-right: 380px;
     width: 370px;
+
 }
 
 #search input {
-    height: 26px;
+    height: 30px;
     width: 100%;
     padding: 0 12px 0 25px;
     background: white url("http://cssdeck.com/uploads/media/items/5/5JuDgOa.png") 8px 6px no-repeat;
     border-width: 1px;
     border-style: solid;
     border-color: #a8acbc #babdcc #c0c3d2;
-    border-radius: 13px;
+    border-radius: 1px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     -ms-box-sizing: border-box;
