@@ -19,8 +19,8 @@ class LoginForm(forms.Form):
 
 	def clean(self):
 		super(LoginForm, self).clean()
-		username = self.cleaned_data.get('username')
-		password = self.cleaned_data.get('password')
+		username = self.cleaned_data.get('username', None)
+		password = self.cleaned_data.get('password', None)
 
 		if username and password:
 #			queryset = CustomUser.objects.filter(~Q(type='S') | Q(is_superuser=True))
@@ -53,8 +53,8 @@ class SignupForm(forms.ModelForm):
 
 	def clean(self, *args, **kwargs):
 		super(SignupForm, self).clean(*args, **kwargs)
-		pwd1 = self.cleaned_data.get('password1')
-		pwd2 = self.cleaned_data.get('password2')
+		pwd1 = self.cleaned_data.get('password1', None)
+		pwd2 = self.cleaned_data.get('password2', None)
 		if pwd1 and pwd2 and pwd1!=pwd2:
 			raise forms.ValidationError(_('Passwords do not match.'))
 		return self.cleaned_data
@@ -87,9 +87,10 @@ class SocialProfileForm(forms.ModelForm):
 	def clean(self, *args, **kwargs):
 		super(SocialProfileForm, self).clean(*args, **kwargs)
 		for field in self._meta.fields:
-			if self.fields[field].__class__.__name__ == 'URLField' and self.cleaned_data[field]:
+			if self.fields[field].__class__.__name__ == 'URLField' and self.cleaned_data.get(field,None):
 				if not field in urlparse( self.cleaned_data[field] ).netloc:
 					raise forms.ValidationError({field:_('Please provide correct URL')})
+		return self.cleaned_data
 	
 	def save(self, commit=True, *args, **kwargs):
 		user = kwargs.pop('user', None)
@@ -113,6 +114,7 @@ class SocialProfileForm(forms.ModelForm):
 			'linkedin' : 'LinkedIN',
 			'google': 'Google Plus',
 		}
+		help_texts = {field: 'Please provide the URL of public profile' for field in fields}
 
 class AccountForm(forms.ModelForm):
 	current_password = forms.CharField(label=_('Current Password'), widget=forms.PasswordInput(attrs={'placeholder': _('Enter Current Password')}), required=False)
@@ -126,28 +128,28 @@ class AccountForm(forms.ModelForm):
 		self.fields['email'].widget.attrs['readonly'] = True
 	
 	def clean_current_password(self):
-		current = self.cleaned_data.get('current_password')
+		current = self.cleaned_data.get('current_password', None)
 		if current and not self.instance.check_password(current):
 			raise forms.ValidationError(_('Please enter your existing password correctly'))
 		return current
 	
 	def clean_username(self):
-		data_username = self.cleaned_data.get('username')
+		data_username = self.cleaned_data.get('username', None)
 		if data_username != self.instance.username:
 			raise forms.ValidationError(_('Incorrect username'))
 		return data_username
 	
 	def clean_email(self):
-		data_email = self.cleaned_data.get('email')
+		data_email = self.cleaned_data.get('email', None)
 		if data_email != self.instance.email:
 			raise forms.ValidationError(_('Incorrect email'))
 		return data_email
 	
 	def clean(self, *args, **kwargs):
 		super(AccountForm, self).clean(*args, **kwargs)
-		old = self.cleaned_data['current_password']
-		new1 = self.cleaned_data['new_password1']
-		new2 = self.cleaned_data['new_password2']
+		old = self.cleaned_data.get('current_password', None)
+		new1 = self.cleaned_data.get('new_password1', None)
+		new2 = self.cleaned_data.get('new_password2', None)
 		
 		if old:
 			if not new1:
@@ -170,7 +172,7 @@ class AccountForm(forms.ModelForm):
 	
 	def save(self, commit=True):
 		user = super(AccountForm, self).save(commit=False)
-		if self.cleaned_data['new_password2']:
+		if self.cleaned_data.get('new_password2', None):
 			user.set_password(self.cleaned_data['new_password2'])
 			self.password_changed = True
 		if commit:
@@ -189,7 +191,7 @@ class AccountForm(forms.ModelForm):
 class ForgotPasswordForm(forms.Form):
 	email = forms.EmailField(max_length = 254, help_text=_('Enter your registered email address'))
 	def clean_email(self):
-		data_email = self.cleaned_data.get('email')
+		data_email = self.cleaned_data.get('email', None)
 		if data_email and CustomUser.objects.filter(email = data_email).count() == 0:
 			raise forms.ValidationError(_("We cannot find user with this email address. Please verify email address and try again"))
 		return data_email
@@ -198,8 +200,8 @@ class SetPasswordForm(forms.Form):
 	password1 = forms.CharField(label=_('Password'), widget = forms.PasswordInput)
 	password2 = forms.CharField(label=_('Confirm Password'), widget = forms.PasswordInput, help_text = _('Enter same as above'))
 	def clean_password2(self):
-		data_password1 = self.cleaned_data.get('password1')
-		data_password2 = self.cleaned_data.get('password2')
+		data_password1 = self.cleaned_data.get('password1', None)
+		data_password2 = self.cleaned_data.get('password2', None)
 		if data_password1 and data_password2 and data_password1 != data_password2:
 			raise forms.ValidationError(_("Passwords don't match"))
 		if data_password1 and data_password2:

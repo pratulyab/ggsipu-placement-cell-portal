@@ -6,8 +6,9 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from account.forms import SignupForm
-from account.views import handle_user_type, send_activation_email
+from account.forms import SignupForm, AccountForm, SocialProfileForm
+from account.models import CustomUser, SocialProfile
+from account.views import handle_user_type, send_activation_email, get_creation_url, get_home_url, get_relevant_reversed_url
 from company.forms import CompanyCreationForm, CompanyEditForm
 from company.models import Company
 from recruitment.models import PlacementSession
@@ -56,15 +57,23 @@ def create_company(request):
 def company_home(request):
 	if request.user.type == 'CO':
 		context = {}
-		context['user'] = request.user
+		user = request.user
 		try:
-			context['company'] = request.user.company
-			return render(request, 'company/new_home.html', context)
+			company = request.user.company
 		except Company.DoesNotExist:
 			return redirect('create_company')
+		context['user'] = user
+		context['company'] = company
+		context['edit_account_form'] = AccountForm(instance=user)
+		context['edit_company_form'] = CompanyEditForm(instance=company)
+		try:
+			context['social_profile_form'] = SocialProfileForm(instance=user.social)
+		except SocialProfile.DoesNotExist:
+			context['social_profile_form'] = SocialProfileForm()
+		return render(request, 'company/home.html', context)
 	else:
 		return handle_user_type(request, redirect_request=True)
-
+"""
 @require_http_methods(['GET','POST'])
 @login_required
 def edit_company(request):
@@ -86,6 +95,30 @@ def edit_company(request):
 			return render(request, 'company/create.html', {'company_creation_form': CompanyCreationForm()})
 	else:
 		return handle_user_type(request)
+"""
+@require_POST
+@login_required
+def edit_company(request):
+	if request.is_ajax():
+		if request.user.type == 'CO':
+			try:
+				company = request.user.company
+			except Company.DoesNotExist:
+				return JsonResponse(status=400, data={'location': reverse(get_creation_url('CO'))})
+			f = CompanyEditForm(request.POST, request.FILES, instance=company)
+			if f.is_valid():
+				f.save()
+				context = {}
+				context['company_edit_form'] = CompanyEditForm(instance=company)
+				if f.has_changed():
+					context['success_msg'] = "Profile has been updated successfully!"
+				return JsonResponse(status=200, data={'render': render(request, 'company/edit.html', context).content.decode('utf-8')})
+			else:
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		else:
+			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+	else:
+		return handle_user_type(request, redirect_request=True)
 
 def get_company_public_profile(user, requester_type):
 	try:

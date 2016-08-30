@@ -2,12 +2,14 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from account.models import CustomUser
-from account.views import handle_user_type, send_activation_email
+from account.models import CustomUser, SocialProfile
+from account.forms import AccountForm, SocialProfileForm
+from account.views import handle_user_type, send_activation_email, get_relevant_reversed_url, get_home_url
 from college.models import College
 from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm
 from faculty.models import Faculty
@@ -16,50 +18,60 @@ import re
 
 # Create your views here.
 
-@require_http_methods(['GET','POST'])
+@require_POST
 @login_required
 def faculty_signup(request):
-	if request.user.type == 'C':
-		try:
-			request.user.college
-		except College.DoesNotExist:
-			return redirect('create_college')
-		if request.method == 'GET':
-			f = FacultySignupForm()
-		else:
+	user = request.user
+	if request.is_ajax():
+		if user.type == 'C':
 			f = FacultySignupForm(request.POST)
 			f.instance.type = 'F'
 			if f.is_valid():
 				faculty = f.save()
-				f.save_m2m()
-				try:
-					Faculty.objects.create(profile=faculty, college=request.user.college)
-				except ValidationError:
-					raise Http404(_('Faculty couldn\'t be created.'))
+				Faculty.objects.create(profile=faculty, college=user.college)
 				faculty = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 				send_activation_email(faculty, get_current_site(request).domain)
-				return redirect('college_home')
-		return render(request, 'faculty/signup.html', {'faculty_signup_form':f})
+				return JsonResponse(status=200, data={'location': reverse(get_home_url('C'))})
+			else:
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		else:
+			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request, redirect_request=True)
 
 @require_http_methods(['GET','POST'])
 @login_required
 def edit_create_faculty(request):
-	if request.user.type == 'F':
-		context = {}
-		if request.method == 'GET':
-			f = FacultyProfileForm(instance=request.user.faculty)
-		else:
-			f = FacultyProfileForm(request.POST, request.FILES, instance=request.user.faculty)
+	if request.is_ajax():
+		if request.user.type == 'F' and request.method == 'POST':
+			faculty = request.user.faculty
+			f = FacultyProfileForm(request.POST, request.FILES, instance=faculty)
 			if f.is_valid():
 				f.save()
+				context = {}
+				context['faculty_edit_form'] = FacultyProfileForm(instance=faculty)
 				if f.has_changed():
-					context['update'] = True
-		context['faculty_edit_create_form'] = f
-		return render(request, 'faculty/edit_create.html', context)
+					context['success_msg'] = "Profile has been updated successfully!"
+				return JsonResponse(status=200, data={'render': render(request, 'faculty/profile_form.html', context).content.decode('utf-8')})
+			else:
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		else:
+			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
-		return handle_user_type(request, redirect_request=True)
+		if request.user.type == 'F':
+			context = {}
+			if request.method == 'GET':
+				f = FacultyProfileForm(instance=request.user.faculty)
+			else:
+				f = FacultyProfileForm(request.POST, request.FILES, instance=request.user.faculty)
+				if f.is_valid():
+					f.save()
+					if f.has_changed():
+						context['update'] = True
+			context['faculty_edit_create_form'] = f
+			return render(request, 'faculty/edit_create.html', context)
+		else:
+			return handle_user_type(request, redirect_request=True)
 
 @require_GET
 @login_required
@@ -67,27 +79,29 @@ def faculty_home(request):
 	if request.user.type == 'F':
 		if not request.user.faculty.firstname:
 			return redirect('edit_create_faculty')
+		user = request.user
+		faculty = user.faculty
 		context = {}
-		context['user'] = request.user
-		context['faculty'] = request.user.faculty
-		return render(request, 'faculty/new_home.html', context)
+		context['user'] = user
+		context['faculty'] = faculty
+		context['edit_account_form'] = AccountForm(instance=user)
+		context['edit_faculty_form'] = FacultyProfileForm(instance=faculty)
+		context['enrollment_form'] = EnrollmentForm(faculty=faculty)
+		try:
+			context['social_profile_form'] = SocialProfileForm(instance=user.social)
+		except SocialProfile.DoesNotExist:
+			context['social_profile_form'] = SocialProfileForm()
+		return render(request, 'faculty/home.html', context)
 	else:
 		return handle_user_type(request, redirect_request=True)
-
-#@require_http_methods(['GET','POST','DELETE'])
-#def cookies_enabled(request):
-#	if request.session.test_cookie_worked():
-#		request.session.delete_test_cookie()
-#		return True
-#	else:
-#		return False
 
 @require_http_methods(['GET','POST'])
 @login_required
 def get_enrollment_number(request):
+	if not request.is_ajax():
+		return handle_user_type(request)
 	if request.user.type == 'F':
 		if request.method == 'GET':
-#		request.session.set_test_cookie()
 			try:
 				del request.session['enrollmentno']
 			except KeyError:
@@ -95,16 +109,10 @@ def get_enrollment_number(request):
 			return render(request, 'faculty/verify.html', {'enroll_form': EnrollmentForm(faculty=request.user.faculty)})
 			
 		else:
-#		if not cookies_enabled(request):
-#			messages.error(request, 'Cookies are disabled in your browser. Please enable cookies and try again.')
-#			return HttpResponse('')
-#		
 			f = EnrollmentForm(request.POST, faculty=request.user.faculty)
 			if f.is_valid():
 				request.session['enrollmentno'] = f.cleaned_data['enroll']
 				student = CustomUser.objects.get(username=request.session['enrollmentno']).student
-#				profile_form = render_to_string('faculty/verify_profile_form.html', {'profile_form': StudentEditForm(instance=student)})
-#				qual_form = render_to_string('faculty/verify_qual_form.html', {'qual_form': QualificationEditForm(instance=student)})
 				profile_form = render(request, 'faculty/verify_profile_form.html', {'profile_form': StudentEditForm(instance=student)}).content.decode('utf-8')
 				try:
 					q = QualificationForm(instance=student.qualifications)
@@ -115,30 +123,4 @@ def get_enrollment_number(request):
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 	else:
-		return handle_user_type(request, redirect_request = True)
-
-@require_http_methods(['GET', 'POST'])
-@login_required
-def verify(request, enroll=None, verified=None):
-	return render(request, 'faculty/verify.html', {'enroll_form': EnrollmentForm()})
-	"""
-	if request.user.type == 'F':
-		if not request.user.faculty.firstname:
-			return redirect('edit_create_faculty')
-		if not enroll:
-			return render(request, 'faculty/verify.html')
-		user = get_object_or_404(CustomUser, username=enroll)
-		context = {}
-		if request.method == 'GET':
-			f = StudentEditForm(instance=user.student)
-		else:
-			f = StudentEditForm(request.POST, request.FILES, instance=user.student)
-			if f.is_valid():
-				student = f.save()
-				student.is_verified = verified
-				student.verified_by = request.user
-				return redirect('verify')
-		context['student_edit_form'] = f
-		context['enroll'] = enroll
-		return render(request, 'faculty/verify.html', context)
-	"""
+		return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})

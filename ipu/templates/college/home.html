@@ -1,6 +1,6 @@
 {% extends 'account/base_home_layout.html' %}
 {% load staticfiles %}
-
+{% load material_form %}
 
 {% block user_photo %}
 	{% if college.photo %}
@@ -38,29 +38,73 @@
 {% block tabs%}
 	<li class="tab col s2"><a class="active" href="#tab1">Companies Visiting</a></li>
 	<li class="tab col s2"><a href="#tab2">Status</a></li>
-	<li id = "notification" class="tab col s2" url="{% url 'generate_notifications' %}"><a href="#tab3">Notification</a></li>
-	<li class="tab col s2"><a href="#tab4">Settings</a></li>
+	<li id = "notification" class="tab col s2" url="{% url 'select_streams' %}"><a href="#notifications">Notification</a></li>
+	<li class="tab col s2"><a href="#create-faculty">Create Faculty</a></li>
+	<li class="tab col s2"><a href="#settings">Settings</a></li>
 {% endblock %}
 
 {% block tabs_content %}
 	<div id="tab1" class="col s12">Data 1</div>
 	<div id="tab2" class="col s12">Data 2</div>
-	<div id="tab3" class="col s12">Data 3</div>
-	<div id="tab4" class="col s12">Data 4</div>
+	<div id="notifications" class="col s12">Data 3</div>
+	<div id="create-faculty" class="col s8 offset-s2">
+		<h4 class="row center" style="color: goldenrod">Create Faculty</h4>
+		<form method='POST' action="{% url 'faculty_signup' %}" id='create-faculty-form' class="card-panel">
+			{% csrf_token %}
+			{% form form=create_faculty_form %}{% endform %}
+			<div class="row center">
+				<button class="btn btn-waves" style="width: 100%">Add Faculty</button>
+			</div>
+		</form>
+	</div>
+	<!-- -->
+	<div id="settings" class="col s12">
+		<div class="vertical-tabs">
+			<div class="row">
+				<div class="col s3">
+					<ul class="tabs">
+						<li class="tab col s12"><a class="active" href="#account-settings">Account Settings</a></li>
+						<li class="tab col s12"><a href="#profile-settings">Profile Settings</a></li>
+						<li class="tab col s12"><a href="#social-settings">Social Profile Settings</a></li>
+					</ul>
+				</div>
+				<div class=" col s8 offset-s1">
+					<div id="account-settings" class="col s12">
+						<form method="POST" action="{% url 'edit_account' %}" id="edit-account-form">
+							{% csrf_token %}
+							{% form form=edit_account_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update Account</button>
+						</form>
+					</div>
+					<div id="profile-settings" class="col s12">
+						<form method="POST" action="{% url 'edit_college_profile' %}" id="edit-profile-form">
+							{% csrf_token %}
+							{% form form=edit_college_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update Profile</button>
+						</form>
+					</div>
+					<div id="social-settings" class="col s12">
+						<form method="POST" action="{% url 'social_profile' %}" id="social-profile-form">
+							{% csrf_token %}
+							{% form form=social_profile_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}
 
-
-{% block JS %}
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script type="text/javascript" src="{% static 'college/notification.js' %}"></script>
+{% block scripts %}
+	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
+	<script type="text/javascript" src="{% static 'notification/create_notification.js' %}"></script>
 	<script>
-	$(document).ready(function () {
-		Notification.init();
-	});
+		$(document).ready(function() {
+			Search.init();
+			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form', 'create-faculty-form']);
+		});
+			Notification.init();
 	</script>
-	
-{% endblock %}
-
-
-
-
+{% endblock scripts %}

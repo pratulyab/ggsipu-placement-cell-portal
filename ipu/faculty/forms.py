@@ -16,8 +16,8 @@ class FacultySignupForm(forms.ModelForm):
 
 	def clean(self, *args, **kwargs):
 		super(FacultySignupForm, self).clean(*args, **kwargs)
-		pwd1 = self.cleaned_data.get('password1')
-		pwd2 = self.cleaned_data.get('password2')
+		pwd1 = self.cleaned_data.get('password1', None)
+		pwd2 = self.cleaned_data.get('password2', None)
 		if pwd1 and pwd2 and pwd1!=pwd2:
 			raise forms.ValidationError(_('Passwords do not match.'))
 		return self.cleaned_data
@@ -51,8 +51,8 @@ class FacultyFormset(forms.BaseModelFormSet):
 		super(FacultyFormset, self).clean()
 
 		for form in self.forms:
-			pwd1 = form.cleaned_data.get('password1')
-			pwd2 = form.cleaned_data.get('password2')
+			pwd1 = form.cleaned_data.get('password1', None)
+			pwd2 = form.cleaned_data.get('password2', None)
 			if pwd1 and pwd2 and pwd1!=pwd2:
 				raise forms.ValidationError(_('Passwords do not match'))
 # save conditions to be added in views
@@ -89,7 +89,7 @@ class EnrollmentForm(forms.Form):
 
 	def clean(self, *args, **kwargs):
 		super(EnrollmentForm, self).clean(*args, **kwargs)
-		enrollno = self.cleaned_data.get('enroll')
+		enrollno = self.cleaned_data.get('enroll', None)
 		if enrollno:
 			exp = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', enrollno)
 			if not exp:

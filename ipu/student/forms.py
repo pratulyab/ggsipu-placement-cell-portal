@@ -22,8 +22,8 @@ class StudentLoginForm(forms.Form):
 
 	def clean(self, *args, **kwargs):
 		super(StudentLoginForm, self).clean(*args, **kwargs)
-		username = self.cleaned_data.get('username')
-		password = self.cleaned_data.get('password')
+		username = self.cleaned_data.get('username', None)
+		password = self.cleaned_data.get('password', None)
 		if username and password:
 			queryset = CustomUser.objects.filter(type='S').filter(is_superuser=False)
 			if '@' in username:
@@ -56,7 +56,7 @@ class StudentSignupForm(forms.ModelForm):
 	password2 = forms.CharField(label=_('Re-enter Password'), widget=forms.PasswordInput(attrs={'placeholder': _('Confirm password')}))
 
 	def clean_username(self):
-		username = self.cleaned_data['username']
+		username = self.cleaned_data.get('username', None)
 		try:
 			roll, coll, strm, year = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', username).groups()
 		except AttributeError:
@@ -73,8 +73,8 @@ class StudentSignupForm(forms.ModelForm):
 
 	def clean(self, *args, **kwargs):
 		super(StudentSignupForm, self).clean(*args, **kwargs)
-		pwd1 = self.cleaned_data.get('password1')
-		pwd2 = self.cleaned_data.get('password2')
+		pwd1 = self.cleaned_data.get('password1', None)
+		pwd2 = self.cleaned_data.get('password2', None)
 		if pwd1 and pwd2 and pwd1!=pwd2:
 			raise forms.ValidationError(_('Passwords must match.'))
 		return self.cleaned_data
@@ -117,25 +117,25 @@ class StudentCreationForm(forms.ModelForm):
 		self.fields['programme'].widget.attrs['disabled'] = 'disabled'
 
 	def clean_college(self):
-		college = self.cleaned_data['college']
+		college = self.cleaned_data.get('college', None)
 		if college and college.pk != self.coll:
 			raise forms.ValidationError(_('Error. College field changed.'))
 		return college
 
 	def clean_programme(self):
-		programme = self.cleaned_data['programme']
+		programme = self.cleaned_data.get('programme', None)
 		if programme and programme.pk != Stream.objects.get(pk=self.strm).programme.pk:
 			raise forms.ValidationError(_('Error. Programme field changed.'))
 		return programme
 
 	def clean_stream(self):
-		stream = self.cleaned_data['stream']
+		stream = self.cleaned_data.get('stream', None)
 		if stream and stream.pk != self.strm:
 			raise forms.ValidationError(_('Error. Stream field changed.'))
 		return stream
 	
 	def clean_photo(self):
-		photo = self.cleaned_data['photo']
+		photo = self.cleaned_data.get('photo', None)
 		if photo:
 			try:
 				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
@@ -148,7 +148,7 @@ class StudentCreationForm(forms.ModelForm):
 		return photo
 
 	def clean_resume(self):
-		cv = self.cleaned_data['resume']
+		cv = self.cleaned_data.get('resume', None)
 		if cv:
 			try:
 				if cv.content_type in settings.FILE_CONTENT_TYPE:
@@ -192,28 +192,28 @@ class StudentEditForm(forms.ModelForm):
 		self.fields['stream'].widget.attrs['disabled'] = 'disabled'
 
 	def clean_college(self):
-		clg = self.cleaned_data['college']
+		clg = self.cleaned_data.get('college', None)
 		if clg and self.instance.college != clg:
 			print('---')
 			raise forms.ValidationError(_('Error. College has been changed'))
 		return clg
 
 	def clean_programme(self):
-		prog = self.cleaned_data['programme']
+		prog = self.cleaned_data.get('programme', None)
 		if prog and self.instance.programme != prog:
 			print('---')
 			raise forms.ValidationError(_('Error. Programme has been changed'))
 		return prog
 
 	def clean_stream(self):
-		strm = self.cleaned_data['stream']
+		strm = self.cleaned_data.get('stream', None)
 		if strm and self.instance.stream != strm:
 			print('---')
 			raise forms.ValidationError(_('Error. Stream has been changed'))
 		return strm
 	
 	def clean_photo(self):
-		photo = self.cleaned_data['photo']
+		photo = self.cleaned_data.get('photo', None)
 		if photo:
 			try:
 				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
@@ -226,7 +226,7 @@ class StudentEditForm(forms.ModelForm):
 		return photo
 
 	def clean_resume(self):
-		cv = self.cleaned_data['resume']
+		cv = self.cleaned_data.get('resume', None)
 		if cv:
 			try:
 				if cv.content_type in settings.FILE_CONTENT_TYPE:
@@ -305,7 +305,7 @@ class TechProfileForm(forms.ModelForm):
 		super(TechProfileForm, self).__init__(*args, **kwargs)
 
 	def clean_codechef(self):
-		codechef = self.cleaned_data['codechef']
+		codechef = self.cleaned_data.get('codechef', None)
 		if codechef:
 			if not re.match(r'^[a-z]{1}[a-z0-9_]{3,13}$', codechef):
 				raise forms.ValidationError(_('Invalid codechef username'))
@@ -314,7 +314,7 @@ class TechProfileForm(forms.ModelForm):
 	def clean(self, *args, **kwargs):
 		super(TechProfileForm, self).clean(*args, **kwargs)
 		for field in self._meta.fields:
-			if self.fields[field].__class__.__name__ == 'URLField' and self.cleaned_data[field]:
+			if self.fields[field].__class__.__name__ == 'URLField' and self.cleaned_data.get(field,None):
 				if not field in urlparse( self.cleaned_data[field] ).netloc:
 					raise forms.ValidationError({field:_('Please provide correct URL')})
 		return self.cleaned_data
@@ -329,13 +329,17 @@ class TechProfileForm(forms.ModelForm):
 	class Meta:
 		model = TechProfile
 		fields = ['github', 'bitbucket', 'codechef', 'codeforces', 'spoj']
+		help_texts = {
+			'github': _('Please provide the URL of public profile'),
+			'bitbucket': _('Please provide the URL of public profile'),
+		}
 
 class FileUploadForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(FileUploadForm, self).__init__(*args, **kwargs)
 	
 	def clean_photo(self):
-		photo = self.cleaned_data['photo']
+		photo = self.cleaned_data.get('photo', None)
 		if photo:
 			try:
 				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
@@ -348,7 +352,7 @@ class FileUploadForm(forms.ModelForm):
 		return photo
 
 	def clean_resume(self):
-		cv = self.cleaned_data['resume']
+		cv = self.cleaned_data.get('resume', None)
 		if cv:
 			try:
 				print(cv.content_type)

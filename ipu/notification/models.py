@@ -11,7 +11,7 @@ class Notification(models.Model):
 	creation_time = models.DateTimeField(auto_now=False, auto_now_add=True, null = False)
 
 	def __str__(self):
-		return (self.target + "to" + self.actor)
+		return (" To " + self.target.username + "  From  " + self.actor.username)
 
 
 	class Meta:

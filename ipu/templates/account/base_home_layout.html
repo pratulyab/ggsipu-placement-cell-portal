@@ -76,27 +76,30 @@
                     <ul class="right">
                     <li class="center hide-on-med-and-down">
                     <!--materialize search-bar-->
-                        <form id="search">
+					    <form id="search">
                             <input type="text" name="q" placeholder="Search for Students, Colleges, and Companies..." />
                             <ul id="results"></ul>
                         </form>
                     </li>
-                    <li class="hide-on-large-only">
-                        <a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
-                    </li>
-                    <li>
-                        <a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown3"><i class="material-icons">add_alert</i></a>
-                    </li>
-                    <li>
-                        <a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown2"><i class="material-icons">menu</i></a>
-                    </li>   
-                    <li>
-                        <a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown1"><img src="{% block user_photo2 %}{% endblock %}" class="circle" id="img-corner"></a>
-                    </li>
-                </ul>
-                </div>
-            </nav>
-        </div> 
+                   	<li class="hide-on-large-only"><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
+                  	</li>
+                  	<li>
+                    	<a id = 'notification_button' class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3"><i class="material-icons">add_alert</i></a>
+                  </li>
+
+                  <li>
+                  		<a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown2"><i class="material-icons">menu</i></a>
+                  </li>   
+                  <li>
+                    	<a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown1"><img src="{% block user_photo2 %}{% endblock %}" class="circle" id="img-corner"></a>
+                  </li>
+                    
+              </ul>
+           
+            </div>
+        </nav>
+      </div> 
+
 <!--navbar ends-->
 
         <main>
@@ -108,7 +111,7 @@
                             <!--naming for tabs-->
                             {% block tabs %}
                             <!--each li  represents a new tab with the name-->
-                            <li class="tab col s2"><a class="active" href="#test1">Test 1</a></li>
+<!--                            <li class="tab col s2"><a class="active" href="#test1">Test 1</a></li> -->
                             {% endblock %}
                         </ul>
                     </div>
@@ -118,29 +121,36 @@
                     </div>
                 </div>
             </div>
+
         </main>
+
 
         <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
         {% include 'material/includes/material_js.html' %}
+        {% block scripts %}{% endblock %}
+        <script type="text/javascript" src="{% static 'notification/get_notification.js' %}"></script>
         <script type="text/javascript">
-			$(document).ready(function(e) {
-	            $('#dropdown3').on('click', function(e){e.stopPropagation();});
-    	        $('.dropdown-button').on('click', function(e){e.preventDefault()});
-				$('nav .brand-logo').on('click', function(e){location.href='';});
-			});
+      			$(document).ready(function(e) {
+      	            $('#dropdown3').on('click', function(e){e.stopPropagation();});
+          	        $('.dropdown-button').on('click', function(e){e.preventDefault()});
+      				$('nav .brand-logo').on('click', function(e){location.href='';});
+            		GetNotification.init();
+      			});
 		
 		// Mapping dropdown links to tabs
-		$('#dropdown1 a').each(function(i, a){
-			var el = $(a);
-			var target = el.data('links');
-			if (!target)
-				return true;
-			var target_el = $('#tab-bar').find("[href='#" + target + "']");
-			if(!target_el.length)
-				return true;
-			el.on('click', function(e){e.preventDefault();target_el[0].click();});
-		});
+		    $('#dropdown1 a').each(function(i, a){
+      			var el = $(a);
+      			var target = el.data('links');
+      			if (!target)
+      				return true;
+      			var target_el = $('#tab-bar').find("[href='#" + target + "']");
+      			if(!target_el.length)
+      				return true;
+      			el.on('click', function(e){e.preventDefault();target_el[0].click();});
+      		});
         </script>
-        {% block scripts %}{% endblock %}
+
+
+        
     </body>
 </html>

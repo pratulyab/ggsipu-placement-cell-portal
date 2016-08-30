@@ -1,11 +1,152 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>Faculty Home</title>
-	</head>
-	<body>
-		<p> Hi {{ faculty.firstname }}! Welcome to home. </p>
-		<p><a href="{% url 'edit_create_faculty' %}">Edit Profile</a></p>
-		<p>Click <a href="{% url 'logout' %}">here</a> to logout</p>
-	</body>
-</html>
+{% extends 'account/base_home_layout.html' %}
+{% load staticfiles %}
+{% load material_form %}
+{% block user_photo %}
+	{% if faculty.photo %}
+		{{ faculty.photo.url }}
+	{% endif %}
+{% endblock %}
+
+{% block user_name_card %}
+	{{ faculty.firstname }}&nbsp;{{ faculty.lastname }}
+{% endblock %}
+
+{% block user_email_id %}
+	{{ faculty.profile.email }}
+{% endblock %}
+
+{% block edit_profile_url %}
+	{% url 'edit_create_faculty' %}
+{% endblock %}
+
+{% block menu_icon_dropdown %}
+	<li><a href="#">wrgwearg</a></li>
+    <li class="divider"></li>
+{% endblock %}
+
+{% block user_type %}
+	Faculty
+{% endblock %}
+
+{% block user_name %}
+	{{ faculty.firstname }}&nbsp;{{ faculty.lastname }}	
+{% endblock %}
+
+{% block user_photo2 %}
+	{% if faculty.photo %}
+		{{ faculty.photo.url }}
+	{% endif %}
+{% endblock %}
+
+{% block tabs%}
+	<li class="tab col s2"><a class="active" href="#verify">Verify students</a></li>
+	<li class="tab col s2"><a href="#tab2">College Associations</a></li>
+	<li class="tab col s2"><a href="#tab3">Association Requests</a></li>
+	<li class="tab col s2"><a href="#notifications">Notifications</a></li>
+	<li class="tab col s2"><a href="#settings">Settings</a></li>
+{% endblock %}
+
+{% block tabs_content %}
+	<div id="verify" class="col s12">
+		{% if messages %}
+			{% for message in messages %}
+				<p {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+			{% endfor %}
+		{% endif %}
+		<div class="row" id="student-div">
+			<div class="vertical-tabs">
+				<div class="row">
+					<div class="col s3">
+						<ul class="tabs">
+							<li class="tab col s12"><a href="#enrollment-div">Get Student</a></li>
+							<li class="tab col s12"><a href="#profile-div">Student Profile</a></li>
+							<li class="tab col s12"><a href="#qual-div">Student Qualifications</a></li>
+							<li class="tab col s12"><a href="#delete-div">Delete Student</a></li>
+						</ul>
+					</div>
+					<div class=" col s8 offset-s1">
+						<div class="col s12 m10 offset-s1 card-panel" id="enrollment-div">
+							<h4 class="row center" style="color: goldenrod">Verify Student</h4>
+								<form action="{% url 'verify' %}" id="enroll-form">
+									{% csrf_token %}
+									{% form form=enrollment_form %}{% endform %}
+									<div class="row">
+										<div class="col s8 offset-s2 center">
+											<button type="submit" class="btn waves-effect" style="width: 100%">Get Student</button>
+										</div>
+									</div>
+								</form>
+						</div>
+						<div class="col s12 m10 offset-m1 card-panel" id="profile-div">
+							<h4 class="center-align" style="color: goldenrod">Student Profile</h4>
+						</div>
+						<div class="col s12 m10 offset-m1 card-panel" id="qual-div">
+							<h4 class="center-align" style="color: goldenrod">Student Qualifications</h4>
+						</div>			
+						<div class="col s12 m10 offset-m1 card-panel" id="delete-div">
+							<form class="row">
+								{% csrf_token %}
+								<button type="submit" class="btn btn-waves red" style="width: 100%" id="delete-btn">Delete Student Forever</button>
+							</form>
+							<div class="row center">
+								<h6 class="red-text">Careful, the student will be deleted forever. Your action will be logged for reference purposes.</h6>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="tab2" class="col s12">Data 2</div>
+	<div id="tab3" class="col s12">Data 3</div>
+	<div id="notifications" class="col s12">Data 4</div>
+	<div id="settings" class="col s12">
+		<div class="vertical-tabs">
+			<div class="row">
+				<div class="col s3">
+					<ul class="tabs">
+						<li class="tab col s12"><a class="active" href="#account-settings">Account Settings</a></li>
+						<li class="tab col s12"><a href="#profile-settings">Profile Settings</a></li>
+						<li class="tab col s12"><a href="#social-settings">Social Profile Settings</a></li>
+					</ul>
+				</div>
+				<div class=" col s8 offset-s1">
+					<div id="account-settings" class="col s12">
+						<form method="POST" action="{% url 'edit_account' %}" id="edit-account-form">
+							{% csrf_token %}
+							{% form form=edit_account_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update Account</button>
+						</form>
+					</div>
+					<div id="profile-settings" class="col s12">
+						<form method="POST" action="{% url 'edit_create_faculty' %}" id="edit-profile-form">
+							{% csrf_token %}
+							{% form form=edit_faculty_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update Profile</button>
+						</form>
+					</div>
+					<div id="social-settings" class="col s12">
+						<form method="POST" action="{% url 'social_profile' %}" id="social-profile-form">
+							{% csrf_token %}
+							{% form form=social_profile_form %}{% endform %}
+							<button class="btn btn-waves" type="submit">Update</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
+	<script type="text/javascript" src="{% static 'faculty/verify.js' %}"></script>
+	<script>
+		$(document).ready(function() {
+			Search.init();
+			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form']);
+			VerifyStu.init();
+		});
+	</script>
+{% endblock scripts %}

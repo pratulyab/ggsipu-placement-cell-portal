@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+{% load staticfiles %}
+{% load material_form %}
+<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+{% include 'material/includes/material_js.html' %}
+
+<head>
+    <title>Title</title>
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+</head>
+<body>
+    <form method = 'POST' id = "generate-streams-form" action="{% url 'select_streams' %}">
+        {% csrf_token %}
+        {% form form=select_streams %}{% endform %}                 
+        <button type="submit" id="getstudents" name="login" data-id="false" class="btn waves-effect waves-light-right">Get Students</button>
+    </form>
+</body>
+</html>

@@ -55,7 +55,7 @@ class CollegeEditForm(forms.ModelForm):
 	
 	class Meta:
 		model = College
-		exclude = ['profile']
+		exclude = ['profile', 'code']
 		help_texts = {
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
 		}
