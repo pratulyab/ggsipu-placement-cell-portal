@@ -33,7 +33,6 @@ var Search = (function() {
 		$('span.tooltiptext').remove();
 		var url = a.attr('href');
 		var span = $('<span class="tooltiptext"/>');
-		span.css('overflow-y','scroll');
 		$.ajax({
 			url: url,
 			type: 'GET',

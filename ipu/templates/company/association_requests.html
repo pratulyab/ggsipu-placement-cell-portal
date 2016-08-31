@@ -1,21 +1,60 @@
 {% load staticfiles %}
 <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
 {% include 'material/includes/material_js.html' %}
+<style type="text/css">
+	#card-main
+	{
+		background-color: #7d97ad;
+		height: 300px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		border-style: solid;
+		border-color: #1c262f; 
+		padding: 10px;
+	}
+
+	.card-action a
+	{
+       margin: 10px;
+	}
+
+	#heading
+	{
+		color: #1c262f;
+		font-size: 25px;
+		font-weight: bold;
+	}
+
+	#content p
+	{
+		font-size: 16px;
+	}
+
+	#content #package
+	{
+		color: #fbc02d;
+	}
+	
+</style>
+
+
 <div class="container">
 	<div class="col s8 offset-s2 request-content">
 		{% for ass in associations %}
-			<div class="col s12 card-panel blue-grey darken-1">
-				<div class="card-content white-text">
-					<span class="card-title">Association Request</span>
+			<div class="col s12 card-panel" id="card-main">
+				<div class="card-content white-text center" id="content">
+					<span class="card-title" id="heading">Association Request</span>
 					<p> {{ ass.obj }} </p>
-					<p> {{ ass.obj.salary }} </p>
+					<p id="package"> Minimum-Package :{{ ass.obj.salary }} LPA</p>
 				</div>
-				<hr />
+	
 				<div class="card-action yellow-text">
-					<a href=" {{ ass.url.session_url }} ">Accept</a>
-					<a href=" {{ ass.url.dissoci_url }} ">Decline</a>
+					<a class="waves-effect waves-light btn" href=" {{ ass.url.session_url }} ">Accept</a>
+					<a class="waves-effect waves-light btn" href=" {{ ass.url.dissoci_url }} ">Decline</a>
 				</div>
-				<hr />
+	
 			</div>
 			{% empty %}
 				<p>No requests at the moment.</p>
