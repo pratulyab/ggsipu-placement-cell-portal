@@ -2,6 +2,11 @@
 {% load staticfiles %}
 {% load material_form %}
 
+{% block head %}
+<link type="text/css" rel="stylesheet" href="{% static 'college/home.css' %}" /> 
+
+{% endblock %}
+
 {% block user_photo %}
 	{% if college.photo %}
 		{{ college.photo.url }}
@@ -16,8 +21,24 @@
 	{{ college.profile.email }}
 {% endblock %}
 
+{% block lightbox_data %}
+        <div id="light3" class="white_content3">
+            <h4 style="color: goldenrod;">Create Faculty</h4>
+				<form method='POST' action="{% url 'faculty_signup' %}" id='create-faculty-form'>
+					{% csrf_token %}
+					{% form form=create_faculty_form %}{% endform %}
+					<div class="row center">
+						<button class="btn btn-waves" style="width: 100%">Add Faculty</button>
+					</div>
+				</form>
+            <a href = "javascript:void(0)" onclick = "document.getElementById('light3').style.display='none'; document.getElementById('fade3').style.display='none'; "><i class="fa fa-times fa-2x"></i></a>
+        </div>
+        <div id="fade3" class="black_overlay3"></div>
+
+ {% endblock %}
+
 {% block menu_icon_dropdown %}
-	<li><a href="#">Add faculty</a></li>
+	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light3').style.display='flex';document.getElementById('fade3').style.display='flex'">Add Faculty</a></li>
     <li class="divider"></li>
 {% endblock %}
 
@@ -39,7 +60,6 @@
 	<li class="tab col s2"><a class="active" href="#tab1">Companies Visiting</a></li>
 	<li class="tab col s2"><a href="#tab2">Status</a></li>
 	<li id = "notification" class="tab col s2" url="{% url 'select_streams' %}"><a href="#notifications">Notification</a></li>
-	<li class="tab col s2"><a href="#create-faculty">Create Faculty</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 {% endblock %}
 
@@ -47,16 +67,6 @@
 	<div id="tab1" class="col s12">Data 1</div>
 	<div id="tab2" class="col s12">Data 2</div>
 	<div id="notifications" class="col s12">Data 3</div>
-	<div id="create-faculty" class="col s8 offset-s2">
-		<h4 class="row center" style="color: goldenrod">Create Faculty</h4>
-		<form method='POST' action="{% url 'faculty_signup' %}" id='create-faculty-form' class="card-panel">
-			{% csrf_token %}
-			{% form form=create_faculty_form %}{% endform %}
-			<div class="row center">
-				<button class="btn btn-waves" style="width: 100%">Add Faculty</button>
-			</div>
-		</form>
-	</div>
 	<!-- -->
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">

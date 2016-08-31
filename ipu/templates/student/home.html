@@ -1,7 +1,10 @@
 {% extends 'account/base_home_layout.html' %}
 {% load staticfiles %}
 {% load material_form %}
-{% block head %}<link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" /> {% endblock %}
+{% block head %}<link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
+<link type="text/css" rel="stylesheet" href="{% static 'student/home.css' %}" /> 
+
+{% endblock %}
 {% block user_photo %}
 	{% if student.photo %}
 		{{ student.photo.url }}
@@ -14,12 +17,37 @@
 
 {% block user_email_id %}
 	{{ student.profile.email }}
-{% endblock %}
+{% endblock %} 
+
+ {% block lightbox_data %}
+        <div id="light3" class="white_content3">
+            <!--Type your form here-->
+            <a href = "javascript:void(0)" onclick = "document.getElementById('light3').style.display='none'; document.getElementById('fade3').style.display='none'; "><i class="fa fa-times fa-2x"></i></a>
+        </div>
+        <div id="fade3" class="black_overlay3"></div>
+
+ {% endblock %}
+
+ {% block lightbox_data2 %}
+        <div id="light4" class="white_content4">
+        {% if student.resume %}
+            <embed src="{{ student.resume.url }}" width="100%" height="1200px"/>
+        {% endif %}    
+            <a href = "javascript:void(0)" onclick = "document.getElementById('light4').style.display='none'; document.getElementById('fade4').style.display='none'; "><i class="fa fa-times fa-2x"></i></a>
+        </div>
+        <div id="fade4" class="black_overlay4"></div>
+
+ {% endblock %}
 
 {% block menu_icon_dropdown %}
-	<li><a href="#">wrgwearg</a></li>
+	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light3').style.display='flex';document.getElementById('fade3').style.display='flex'">Contact College</a></li>
     <li class="divider"></li>
+    {% if student.resume %}
+    <li><a href = "javascript:void(0)" onclick = "document.getElementById('light4').style.display='flex';document.getElementById('fade4').style.display='flex'">Uploaded resume</a></li>
+    <li class="divider"></li>
+    {% endif %}
 {% endblock %}
+
 
 {% block user_type %}
 	Student

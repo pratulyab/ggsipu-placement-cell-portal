@@ -12,13 +12,36 @@
             {% block head %}{% endblock %}
     </head>
 
+    <style type="text/css">
+
+      #dropdown1
+      {
+        width: 250px;
+      }
+
+      #corner_name
+      {
+        white-space: pre-wrap;
+        text-align: center;
+        margin-top: -15px;
+
+      }
+      #corner_email
+      {
+        text-align: center;
+
+      }
+
+
+    </style>
+
     <body>
         <ul id="dropdown1" class="dropdown-content">
-            <li>
+            <li id="corner_dropdown">
                 <a href="#!" data-links="settings" id="img-box">
                     <img src="{% block user_photo %}{% endblock %}" class="circle" height="90" width="90">
-                    <span class="black-text">{% block user_name_card %}{% endblock %}</span>
-                    <span class="grey-text lighten-1">{% block user_email_id %}{% endblock %}</span>
+                    <span id="corner_name" class="black-text">{% block user_name_card %}{% endblock %}</span>
+                    <span id="corner_email" class="grey-text lighten-1">{% block user_email_id %}{% endblock %}</span>
                 </a>
             </li>
             <li class="divider"></li>
@@ -149,8 +172,13 @@
       			el.on('click', function(e){e.preventDefault();target_el[0].click();});
       		});
         </script>
+        
+         
 
-
+       {% block lightbox_data %}
+       {% endblock %}
+       {% block lightbox_data2 %}
+       {% endblock %}
         
     </body>
 </html>
