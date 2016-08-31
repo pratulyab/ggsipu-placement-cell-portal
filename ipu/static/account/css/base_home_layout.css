@@ -15,7 +15,7 @@ nav .brand-logo {
 
 #notifications_badge
 {
-  position: absolute;
+  position: fixed;
   right: 98px;
   top: 7px;
   z-index: 999;
