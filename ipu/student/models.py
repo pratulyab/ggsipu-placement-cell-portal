@@ -1,18 +1,17 @@
 from django.core import validators
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser
 from college.models import (College, Programme, Stream)
 from urllib.parse import urlparse
 
+from decimal import Decimal
+
 # Create your models here.
 
 class Student(models.Model):
-	"""
-	def __init__(self, *args, **kwargs):
-		self._meta.get_field('username').validators = [validators.RegexValidator(r'^\d{11}$')]
-		super(Student, self).__init__(*args, **kwargs)
-	"""
 	
 # General Details
 	profile = models.OneToOneField(CustomUser, related_name="student")
@@ -32,7 +31,7 @@ class Student(models.Model):
 			error_messages={'invalid_number': _('Invalid IN Phone Number. Don\'t Prefix The Number With +91 or 0.')},
 			unique=True,
 			blank=False
-			)
+		)
 
 # College Specific
 	college = models.ForeignKey(College, related_name="students")
@@ -44,7 +43,13 @@ class Student(models.Model):
 	verified_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name="profiles_verified")
 
 # Placement Specific
+	SALARY_CHOICES = tuple( ( (i, "%s and above" % i) for i in range(2,14,2) ) )
 	resume = models.FileField(_('Resume'), upload_to='student/resume', blank=True)
+	is_intern = models.BooleanField(_('Currently Intern'), default=False)
+	is_placed = models.BooleanField(_('Currently Placed'), default=False)
+	salary_expected = models.PositiveSmallIntegerField(_('Minimum salary expected (Lakhs P.A.)'), blank=False, null=True, choices=SALARY_CHOICES, 
+			help_text = _('Caution: You won\'t be able to appear for companies offering salary less than the minimum you choose. Also, you won\'t be able to change this again.'),
+		)
 
 	def get_enrollment_no(self):
 		return self.profile.username
@@ -60,11 +65,11 @@ class Student(models.Model):
 
 class Qualification(models.Model):
 	student = models.OneToOneField(Student, related_name="qualifications")
-	tenth = models.DecimalField(_('Xth Percentage'), max_digits=4, decimal_places=2)
-	twelfth = models.DecimalField(_('XIIth Percentage'), max_digits=4, decimal_places=2)
-	graduation = models.DecimalField(_('Graduation Percentage'), max_digits=4, decimal_places=2, blank=True, null=True)
-	post_graduation = models.DecimalField(_('Post Graduation Percentage'), max_digits=4, decimal_places=2, blank=True, null=True)
-	doctorate = models.DecimalField(_('Doctorate Percentage'), max_digits=4, decimal_places=2, blank=True, null=True)
+	tenth = models.DecimalField(_('Xth Percentage'), max_digits=4, decimal_places=2, validators=[validators.MinValueValidator(Decimal('33'))])
+	twelfth = models.DecimalField(_('XIIth Percentage'), max_digits=4, decimal_places=2, validators=[validators.MinValueValidator(Decimal('33'))])
+	graduation = models.DecimalField(_('Graduation Percentage'), max_digits=4, decimal_places=2, blank=True, null=True, validators=[validators.MinValueValidator(Decimal('33'))])
+	post_graduation = models.DecimalField(_('Post Graduation Percentage'), max_digits=4, decimal_places=2, blank=True, null=True, validators=[validators.MinValueValidator(Decimal('33'))])
+	doctorate = models.DecimalField(_('Doctorate Percentage'), max_digits=4, decimal_places=2, blank=True, null=True, validators=[validators.MinValueValidator(Decimal('33'))])
 	is_verified = models.NullBooleanField(default=None)
 	verified_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name="qualifications_verified")
 
@@ -94,3 +99,15 @@ class TechProfile(models.Model):
 
 	def __str__(self):
 		return self.student.get_full_name()
+
+@receiver(post_delete, sender=Student)
+def delete_photo_resume(sender, **kwargs):
+	student = kwargs['instance']
+	try:
+		student.photo.delete(False)
+	except:
+		pass
+	try:
+		student.resume.delete(False)
+	except:
+		pass

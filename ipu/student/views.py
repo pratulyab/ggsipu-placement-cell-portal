@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
@@ -13,10 +14,11 @@ from account.models import CustomUser, SocialProfile
 from account.forms import AccountForm, SocialProfileForm
 from account.views import handle_user_type, send_activation_email, get_relevant_reversed_url, get_creation_url, get_home_url
 from college.models import College, Stream
-from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm, FileUploadForm
+from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm, FileUploadForm, PaygradeForm
 from student.models import Student, TechProfile, Qualification
+from . import scrape
 
-import re
+import os, re
 from bs4 import BeautifulSoup
 
 # Create your views here.
@@ -132,6 +134,8 @@ def student_home(request):
 			context['tech_profile_form'] = TechProfileForm(instance=student.tech, student=student)
 		except:
 			context['tech_profile_form'] = TechProfileForm(student=student)
+		if not student.salary_expected:
+			context['paygrade_form'] = PaygradeForm()
 		return render(request, 'student/home.html', context)
 	else:
 		return handle_user_type(request, redirect_request=True)
@@ -171,8 +175,8 @@ def edit_student(request):
 		elif request.user.type == 'F' and request.is_ajax():
 			enroll = request.session['enrollmentno']
 			if not enroll:
-				Http404(_('Please make sure cookies are enabled. Refresh the page.'))
 #				Http404(_('Cookie has been deleted'))
+				return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
 			try:
 				student = CustomUser.objects.get(username=enroll)
 				student = student.student
@@ -191,8 +195,12 @@ def edit_student(request):
 			else:
 				# Button names/values changed
 				return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
+			photo, resume = student.photo, student.resume
 			if f.is_valid():
 				student = f.save(verifier=request.user, verified=verdict)
+				# Removing old files
+				delete_old_filefield(photo, student.photo)
+				delete_old_filefield(resume, student.resume)
 				context = {'profile_form': StudentEditForm(instance=student), 'success_msg': 'Student profile has been updated successfully!'}
 				return HttpResponse(render(request, 'faculty/verify_profile_form.html', context).content) # for RequestContext() to set csrf value in form
 #			return HttpResponse(render_to_string('faculty/verify_profile_form.html', context))
@@ -227,7 +235,8 @@ def edit_qualifications(request):
 		elif request.user.type == 'F' and request.is_ajax():
 			enroll = request.session['enrollmentno']
 			if not enroll:
-				Http404(_('Cookie has been deleted'))
+#				Http404(_('Cookie has been deleted'))
+				return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
 			try:
 				student = CustomUser.objects.get(username=enroll)
 				student = student.student
@@ -285,6 +294,40 @@ def delete_student(request):
 			return JsonResponse(status=500, data={'error': 'Error occurred while deleting student'})
 	else:
 		return handle_user_type(request, redirect_request=True)
+
+@require_POST
+@login_required
+def paygrade(request):
+	if request.is_ajax() and request.user.type == 'S':
+		try:
+			student = request.user.student
+		except:
+			return JsonResponse(status=400, data={'location': reverse('create_student')})
+		f = PaygradeForm(request.POST, instance=student)
+		if f.is_valid():
+			f.save()
+			return JsonResponse(status=200, data={'location': reverse('student_home')})
+		else:
+			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+
+@require_GET
+@login_required
+def coder(request):
+	try:
+		platform = request.GET.get('platform').strip().lower()
+		username = request.GET.get('username').strip()
+		username = getattr(Student.objects.get(profile__username=username).tech,platform)
+		data = {}
+		result = getattr(scrape, platform)(username)
+		for k,v in result.items():
+			newkey = k.strip().lower().replace(' ','')
+			if newkey != k:
+				result[newkey] = result.pop(k)
+		result['username'] = username
+		html = render_to_string('student/%s.html'%(platform), result)
+		return JsonResponse(status=200, data={'html': html})
+	except:
+		return JsonResponse(status=400, data={})
 
 # ----+----=----+----=----+----=----+----=----+----=----+---- #
 def get_student_public_profile(user, requester_type):
@@ -358,8 +401,12 @@ def upload_file(request):
 			except Student.DoesNotExist:
 				return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
 			f = FileUploadForm(request.POST, request.FILES, instance=student)
+			photo, resume = student.photo, student.resume
 			if f.is_valid():
 				f.save()
+				# Removing old files
+				delete_old_filefield(photo, student.photo)
+				delete_old_filefield(resume, student.resume)
 				context = {}
 				context['upload_file_form'] = FileUploadForm(instance=student)
 				context['success_msg'] = "Upload success!"
@@ -369,3 +416,12 @@ def upload_file(request):
 			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request)
+
+""""""
+def delete_old_filefield(old, new):
+	# old and new are FileField objects
+	if old and old != new:
+		try:
+			os.remove(os.path.join(settings.BASE_DIR, old.url[1:])) #[1:] to avoid //
+		except:
+			pass

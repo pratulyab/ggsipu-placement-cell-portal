@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
@@ -12,6 +13,7 @@ from account.views import handle_user_type, send_activation_email, get_creation_
 from company.forms import CompanyCreationForm, CompanyEditForm
 from company.models import Company
 from recruitment.models import PlacementSession
+from recruitment.forms import AssActorsOnlyForm
 
 # Create your views here.
 
@@ -66,6 +68,7 @@ def company_home(request):
 		context['company'] = company
 		context['edit_account_form'] = AccountForm(instance=user)
 		context['edit_company_form'] = CompanyEditForm(instance=company)
+		context['associate_actors_only_form'] = AssActorsOnlyForm(initiator_profile=company)
 		try:
 			context['social_profile_form'] = SocialProfileForm(instance=user.social)
 		except SocialProfile.DoesNotExist:
@@ -73,29 +76,7 @@ def company_home(request):
 		return render(request, 'company/home.html', context)
 	else:
 		return handle_user_type(request, redirect_request=True)
-"""
-@require_http_methods(['GET','POST'])
-@login_required
-def edit_company(request):
-	if request.user.type == 'CO':
-		try:
-			context = {}
-			company = request.user.company
-			if request.method == 'GET':
-				f = CompanyEditForm(instance = company)
-			else:
-				f = CompanyEditForm(request.POST, request.FILES, instance=company)
-				if f.is_valid():
-					f.save()
-					if f.has_changed():
-						context['update'] = True
-			context['company_edit_form'] = f
-			return render(request, 'company/edit.html', context)
-		except Company.DoesNotExist:
-			return render(request, 'company/create.html', {'company_creation_form': CompanyCreationForm()})
-	else:
-		return handle_user_type(request)
-"""
+
 @require_POST
 @login_required
 def edit_company(request):
@@ -106,8 +87,14 @@ def edit_company(request):
 			except Company.DoesNotExist:
 				return JsonResponse(status=400, data={'location': reverse(get_creation_url('CO'))})
 			f = CompanyEditForm(request.POST, request.FILES, instance=company)
+			photo = company.photo
 			if f.is_valid():
 				f.save()
+				if photo and photo != company.photo:
+					try:
+						os.remove(os.path.join(settings.BASE_DIR, photo.url[1:]))
+					except:
+						pass
 				context = {}
 				context['company_edit_form'] = CompanyEditForm(instance=company)
 				if f.has_changed():

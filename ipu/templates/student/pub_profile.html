@@ -5,7 +5,7 @@
 	.collapsible-header
 	{
 		color: #DAA520;
-		background-color: #1c262f;
+		background-color: #2e3d49;
 		border-left: solid;
 		border-color: white;
 		border-right: solid;
@@ -16,7 +16,8 @@
     
     h5
     {
-    	color: #DAA520;
+    	color: #1c262f;
+		font-weight: 800;
     }
 
     .collapsible-body
@@ -27,7 +28,6 @@
 		border-color: white;
 		border-left-width: 1px;
 		border-right-width: 1px;
-
     }
     
 
@@ -51,21 +51,21 @@
 			{% if student.tech %}
 			<ul class="collapsible" data-collapsible="accordion">
 			        {% if student.tech.codechef %}
-					<li>
+					<li id="codechef">
 						<div class="collapsible-header">Codechef</div>
-						<div class="collapsible-body" id="codechef">Name :<br>Rank :<br>URL :</div>
+						<div class="collapsible-body"></div>
 					</li>
 					{% endif %}
 					{% if student.tech.codeforces %}
-					<li>
+					<li id="codeforces">
 						<div class="collapsible-header">Codeforces</div>
-						<div class="collapsible-body" id="codeforces">Name :<br>Rank :<br>URL :</div>
+						<div class="collapsible-body"></div>
 					</li>
 					{% endif %}
 					{% if student.tech.spoj %}
-					<li>
+					<li id="spoj">
 						<div class="collapsible-header">SPOJ</div>
-						<div class="collapsible-body" id="spoj">Name :<br>Rank :<br>URL :</div>
+						<div class="collapsible-body"></div>
 					</li>
 				   {% endif %}
 			</ul>

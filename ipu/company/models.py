@@ -1,5 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from account.models import CustomUser
 
 # Create your models here.
@@ -20,3 +22,11 @@ class Company(models.Model):
 
 	class Meta:
 		verbose_name_plural = _("Companies")
+
+@receiver(post_delete, sender=Company)
+def delete_photo(sender, **kwargs):
+	company = kwargs['instance']
+	try:
+		company.photo.delete(False)
+	except:
+		pass

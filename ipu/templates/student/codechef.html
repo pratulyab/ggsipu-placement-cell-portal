@@ -1,0 +1,36 @@
+{% if success %}
+	{% if name %}
+		<h5>{{ name }} ({{ username }})</h5>
+	{% endif %}
+	{% if institution %}
+		<h6>{{ institution }}</h6>
+	{% endif %}
+	{% if pic %}
+		<img height=20 width=40 src="{{ pic }}" />
+	{% endif %}
+	{% if url %}
+		<a target="_blank" href="{{ url }}">Codechef Profile <i class="fa fa-external-link" aria-hidden="true"></i></a>
+	{% endif %}
+	{% if ranking %}
+		<table>
+		<tr>
+			<th>Contest</th>
+			<th>Rank</th>
+			<th>Rating</th>
+		</tr>
+		{% for type, data in ranking.items %}
+			<tr>
+				<td>{{ type }}</td>
+				{% for k,d in data.items %}
+					<td>{{ d }}</td>
+				{% endfor %}
+			</tr>
+		{% endfor %}
+		</table>
+	{% endif %}
+{% else %}
+	<p>Sorry, couldn't retrieve the student's codechef profile.</p>
+	{% if url %}
+		<a target="_blank" href="{{ url }}">Codechef Profile <i class="fa fa-external-link" aria-hidden="true"></i></a>
+	{% endif %}
+{% endif %}

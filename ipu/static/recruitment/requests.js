@@ -1,5 +1,5 @@
-var Settings = (function() {
-	"use strict";
+var Request = (function() {
+		"use strict";
 
 	function handleMultipleJquery(){
 		$('a').unbind('click'); // to prevent multiple fires because of reloading of jquery in the rendered template.
@@ -29,6 +29,7 @@ var Settings = (function() {
 		var form = $(el);
 		if(!form || !form_errors)
 			return;
+		console.log(form);
 		
 		if ('__all__' in form_errors){
 			var non_field_errors = form_errors['__all__'];
@@ -77,6 +78,10 @@ var Settings = (function() {
 					location.href = loc;
 					return;
 				}
+				if (xhr.responseJSON['error']){
+					var div = $('<div class="non-field-errors"/>')
+					$(form_id).prepend(div.append("<small class='error'>"+xhr.responseJSON['error']+"</small?"));
+				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
 			}
@@ -88,11 +93,48 @@ var Settings = (function() {
 		handleAJAX($(this), '#' + $(this).attr('id'));
 	}
 
-	return {
-		init: function(forms){
-			for(var i=0; i<forms.length; i++){
-				$('#' + forms[i]).on('submit', submitForm);
+	function implementRequests(e) {
+		e.preventDefault();
+		var a = $(this);
+		var url = a.attr('href').trim().split('/').slice(3).join('/');
+		var group = url.split('?');
+		var data = group[group.length-1].split('=')[1];
+		url = '/' + group[0];
+		$.ajax({
+			url: url,
+			type: 'GET',
+			data: {'ass': data},
+			success: function(data, status, xhr){
+				handleMultipleJquery();
+				var div = a.parents('.request-content');
+				div.html(data['html']);
+				div.find('form').on('submit', submitForm);
 			}
+		});
+	}
+	
+	function getRequests(e) {
+		var li = $(this);
+		$.ajax({
+			url: li.data('url'),
+			type: 'GET',
+			data: {},
+			processData: false,
+			contentType: false,
+			success: function(data, status, xhr){
+				handleMultipleJquery();
+				$('#requests').html(data['html']);
+				$('#requests .card-action a').on('click', implementRequests);
+			},
+			error: function(xhr, status, error){
+				$('#requests').html('Error Occurred');
+			}
+		});
+	}
+
+	return {
+		init: function(){
+			$("#request").on('click', getRequests);
 		}
 	};
 })();

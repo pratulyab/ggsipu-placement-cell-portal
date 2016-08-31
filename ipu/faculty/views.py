@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
@@ -46,8 +47,14 @@ def edit_create_faculty(request):
 		if request.user.type == 'F' and request.method == 'POST':
 			faculty = request.user.faculty
 			f = FacultyProfileForm(request.POST, request.FILES, instance=faculty)
+			photo = faculty.photo
 			if f.is_valid():
 				f.save()
+				if photo and photo != faculty.photo:
+					try:
+						os.remove(os.path.join(settings.BASE_DIR, photo.url[1:]))
+					except:
+						pass
 				context = {}
 				context['faculty_edit_form'] = FacultyProfileForm(instance=faculty)
 				if f.has_changed():
@@ -58,6 +65,7 @@ def edit_create_faculty(request):
 		else:
 			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
+# To handle initial creation form
 		if request.user.type == 'F':
 			context = {}
 			if request.method == 'GET':

@@ -115,7 +115,8 @@ var VerifyStu = (function() {
 				$('#profile-div').html(data);
 				// because new html has been added
 				$('#profile-form').on('submit', updateProfile);
-				tabs[2].click();
+				window.scrollTo(0);
+//				tabs[2].click();
 			},
 			error: function(xhr, status, error){
 				var error_msg = xhr.responseJSON['error']
@@ -143,7 +144,8 @@ var VerifyStu = (function() {
 			success: function(data, status, xhr){
 				$('#qual-div').html(data);
 				$('#qual-form').on('submit', updateQual);
-				tabs[1].click();
+				window.scrollTo(0);
+//				tabs[1].click();
 			},
 			error: function(xhr, status, error){
 				var error_msg = xhr.responseJSON['error']

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import hashids
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -166,3 +167,6 @@ FILE_MAX_SIZE = 2*1024*1024 #2MB
 #IMAGE UPLOAD CONSTRAINTS
 IMAGE_CONTENT_TYPE = ['image/jpeg', 'image/png']
 IMAGE_MAX_SIZE = 1*1024*1024 #1MB
+
+#HASHIDS
+HASHID_ASSOCIATION = hashids.Hashids(salt="Sammelan", min_length=10)

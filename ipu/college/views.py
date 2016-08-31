@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
@@ -12,6 +13,9 @@ from college.forms import CollegeCreationForm, CollegeEditForm
 from college.models import College
 from faculty.forms import FacultySignupForm
 from recruitment.models import PlacementSession
+from recruitment.forms import AssActorsOnlyForm
+
+import os
 
 # Create your views here.
 
@@ -74,6 +78,7 @@ def college_home(request):
 		context['edit_account_form'] = AccountForm(instance=user)
 		context['edit_college_form'] = CollegeEditForm(instance=college)
 		context['create_faculty_form'] = FacultySignupForm()
+		context['associate_actors_only_form'] = AssActorsOnlyForm(initiator_profile=college)
 		try:
 			context['social_profile_form'] = SocialProfileForm(instance=user.social)
 		except SocialProfile.DoesNotExist:
@@ -92,8 +97,14 @@ def edit_college(request):
 			except College.DoesNotExist:
 				return JsonResponse(status=400, data={'location': reverse(get_creation_url('C'))})
 			f = CollegeEditForm(request.POST, request.FILES, instance=college)
+			photo = college.photo
 			if f.is_valid():
 				f.save()
+				if photo and photo != college.photo:
+					try:
+						os.remove(os.path.join(settings.BASE_DIR, photo.url[1:]))
+					except:
+						pass
 				context = {}
 				context['edit_college_form'] = CollegeEditForm(instance=college)
 				if f.has_changed():

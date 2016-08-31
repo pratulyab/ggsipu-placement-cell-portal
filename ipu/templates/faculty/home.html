@@ -41,7 +41,7 @@
 {% block tabs%}
 	<li class="tab col s2"><a class="active" href="#verify">Verify students</a></li>
 	<li class="tab col s2"><a href="#tab2">College Associations</a></li>
-	<li class="tab col s2"><a href="#tab3">Association Requests</a></li>
+	<li id="request" class="tab col s2" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
 	<li class="tab col s2"><a href="#notifications">Notifications</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 {% endblock %}
@@ -98,7 +98,7 @@
 		</div>
 	</div>
 	<div id="tab2" class="col s12">Data 2</div>
-	<div id="tab3" class="col s12">Data 3</div>
+	<div id="requests" class="col s12">Data 3</div>
 	<div id="notifications" class="col s12">Data 4</div>
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
@@ -142,11 +142,13 @@
 	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
 	<script type="text/javascript" src="{% static 'faculty/verify.js' %}"></script>
+	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();
 			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form']);
 			VerifyStu.init();
+			Request.init();
 		});
 	</script>
 {% endblock scripts %}

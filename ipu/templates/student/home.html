@@ -76,7 +76,15 @@
 {% endblock %}
 
 {% block tabs_content %}
-	<div id="tab1" class="col s12">Data 1</div>
+	<div id="tab1" class="col s12">
+		{% if paygrade_form %}
+			<form method="POST" action="{% url 'paygrade' %}" id='paygrade-form'>
+				{% csrf_token %}
+				{% form form=paygrade_form %}{% endform %}
+				<button class="btn btn-waves" type="submit">Choose</button>
+			</form>
+		{% endif %}
+	</div>
 	<div id="tab2" class="col s12">Data 2</div>
 	{% if edit_qual_form %}
 		<div id="qualifications" class="col s12">
@@ -149,7 +157,11 @@
 	<script>
 		$(document).ready(function() {
 			Search.init();
-			Settings.init(['edit-account-form', 'upload-file-form', 'social-profile-form', 'tech-profile-form']);
+			{% if paygrade_form %}
+				Settings.init(['edit-account-form', 'upload-file-form', 'social-profile-form', 'tech-profile-form', 'paygrade-form']);
+			{% else %}
+				Settings.init(['edit-account-form', 'upload-file-form', 'social-profile-form', 'tech-profile-form']);
+			{% endif %}
 			Update.init(['edit-student-form', 'edit-qual-form']);
 		});
 	</script>

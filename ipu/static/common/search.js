@@ -1,6 +1,31 @@
 var Search = (function() {
 	'use strict';
 
+	function handleTechProfiles(span, username){
+		var accordion = $(span).find('ul.collapsible li');
+		if (!accordion.length)
+			return;
+		$(accordion).each(function(i, li){
+			li = $(li);
+			li.find('.collapsible-header').on('click', function(){
+				var platform = li.attr('id');
+				var body = li.find('.collapsible-body');
+				body.html("Fetching student's profile...");
+				$.ajax({
+					url: '/student/coder/',
+					type: 'GET',
+					data: {'platform': platform, 'username': username},
+					success: function(data, status, xhr){
+						body.html(data['html']);
+					},
+					error: function(status, xhr, error){
+						body.html('Error Occurred.');
+					}
+				})
+			});
+		});
+	}
+
 	function displayProfile(e){
 		var a = $(this);
 		var li = a.parent();
@@ -8,12 +33,16 @@ var Search = (function() {
 		$('span.tooltiptext').remove();
 		var url = a.attr('href');
 		var span = $('<span class="tooltiptext"/>');
+		span.css('overflow-y','scroll');
 		$.ajax({
 			url: url,
 			type: 'GET',
 			success: function(data, status, xhr){
 				li.addClass('tooltip');
 				span.html(data['card-html']);
+				var username = url.split('/');
+				username = username[username.length-2];
+				handleTechProfiles(span, username);
 				li.append(span);
 				span.on('mouseleave', function(e){
 					span.remove();

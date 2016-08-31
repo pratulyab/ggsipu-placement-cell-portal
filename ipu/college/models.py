@@ -1,10 +1,11 @@
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser
 
 # Create your models here.
-
 
 class Programme(models.Model):
 	YEAR_CHOICES = (
@@ -56,3 +57,11 @@ class College(models.Model):
 
 	def get_absolute_url(self):
 		return "/%s/" % self.profile.username
+
+@receiver(post_delete, sender=College)
+def delete_photo(sender, **kwargs):
+	college = kwargs['instance']
+	try:
+		college.photo.delete(False)
+	except:
+		pass

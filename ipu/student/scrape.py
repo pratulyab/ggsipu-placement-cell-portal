@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from pprint import pprint
+#from pprint import pprint
 
 def cook_soup(url):
 	try:
@@ -50,15 +50,16 @@ def codechef(username):
 			rating = cols[-1].text.strip().replace('\xa0(?)', '')
 			ranking[rtype] = {'rank': rank, 'rating': rating}
 		result['ranking'] = ranking
+		result['success'] = True
 	except:
 		result['success'] = False
 	finally:
-		pprint(result)
+#		pprint(result)
 		return result
 
 def codeforces(username):
 	result = {}
-	url = "https://www.codeforces.com/profile/" + username
+	url = "http://www.codeforces.com/profile/" + username
 	result['url'] = url
 	try:
 		soup = cook_soup(url)
@@ -82,10 +83,11 @@ def codeforces(username):
 			if len(text) != 2:
 				continue
 			result[text[0].strip()] = text[1].strip()
+		result['success'] = True
 	except:
 		result['success'] = False
 	finally:
-		pprint(result)
+#		pprint(result)
 		return result
 
 def spoj(username):
@@ -111,10 +113,11 @@ def spoj(username):
 		dd = stats.find_all('dd')
 		result['solved'] = dd[0].text.strip()
 		result['submitted'] = dd[1].text.strip()
+		result['success'] = True
 	except:
 		result['success'] = False
 	finally:
-		pprint(result)
+#		pprint(result)
 		return result
 
 if __name__ == '__main__':

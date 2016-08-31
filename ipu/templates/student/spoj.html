@@ -1,0 +1,27 @@
+{% if success %}
+	{% if name %}
+		<h5>{{ name }} ({{ username }})</h5>
+	{% endif %}
+	{% if info %}
+		{% for i in info %}
+			<h6>{{ i }}</h6>
+		{% endfor %}
+	{% endif %}
+	{% if pic %}
+		<img height=20 width=40 src="{{ pic }}" />
+	{% endif %}
+	{% if url %}
+		<a target="_blank" href="{{ url }}">SPOJ Profile <i class="fa fa-external-link" aria-hidden="true"></i></a>
+	{% endif %}
+	{% if solved %}
+		<h5>Solved: {{solved}}</h5>
+	{% endif %}
+	{% if submitted %}
+		<h5>Submitted: {{submitted}}</h5>
+	{% endif %}
+{% else %}
+	<p>Sorry, couldn't retrieve the student's SPOJ profile.</p>
+	{% if url %}
+		<a target="_blank" href="{{ url }}">SPOJ Profile <i class="fa fa-external-link" aria-hidden="true"></i></a>
+	{% endif %}
+{% endif %}

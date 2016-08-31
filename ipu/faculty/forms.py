@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser
 from faculty.models import Faculty
+from student.models import Student
 import re
 
 class FacultySignupForm(forms.ModelForm):

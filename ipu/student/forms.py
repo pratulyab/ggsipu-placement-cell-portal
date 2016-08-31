@@ -373,3 +373,8 @@ class FileUploadForm(forms.ModelForm):
 			'resume': _('Please upload resume in either pdf, doc or docx format, < %sMB' % str(settings.FILE_MAX_SIZE/(1024*1024))),
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
 		}
+
+class PaygradeForm(forms.ModelForm):
+	class Meta:
+		model = Student
+		fields = ['salary_expected']

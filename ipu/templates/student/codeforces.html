@@ -1,0 +1,39 @@
+{% if success %}
+	{% if username %}
+		<h5>{{ username }}</h5>
+	{% endif %}
+	{% if info %}
+		<h6>{{ info }}</h6>
+	{% endif %}
+	{% if pic %}
+		<img height=20 width=40 src="{{ pic }}" />
+	{% endif %}
+	{% if url %}
+		<a target="_blank" href="{{ url }}">Codeforces Profile <i class="fa fa-external-link" aria-hidden="true"></i></a>
+	{% endif %}
+	{% if rank %}
+		<h5>Rank: {{ rank }}</h5>	
+	{% endif %}
+	{% if contestrating %}
+		<h5>Contest Rating: {{ contestrating }}</h5>
+	{% endif %}
+	<ul>
+		{% if contribution %}
+			<li>Contribution: {{contribution}}</li>
+		{% endif %}
+		{% if friendof %}
+			<li>Friend Of: {{friendof}}</li>
+		{% endif %}
+		{% if lastvisit %}
+			<li>Last Visit: {{lastvisit}}</li>
+		{% endif %}
+		{% if registered %}
+			<li>Registered: {{registered}}</li>
+		{% endif %}
+	</ul>
+{% else %}
+	<p>Sorry, couldn't retrieve the student's codeforces profile.</p>
+	{% if url %}
+		<a target="_blank" href="{{ url }}">Codeforces Profile <i class="fa fa-external-link" aria-hidden="true"></i></a>
+	{% endif %}
+{% endif %}

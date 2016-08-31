@@ -2,6 +2,8 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core import validators
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser
 from college.models import College
@@ -32,6 +34,14 @@ class Faculty(models.Model):
 	
 	class Meta:
 		verbose_name_plural = _('Faculties')
+
+@receiver(post_delete, sender=Faculty)
+def delete_photo(sender, **kwargs):
+	faculty = kwargs['instance']
+	try:
+		faculty.photo.delete(False)
+	except:
+		pass
 
 """
 account_permissions = (ContentType.objects.get(app_label='account', model='CustomUser'))

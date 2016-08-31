@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver
@@ -7,6 +8,8 @@ from company.models import Company
 from student.models import Student
 from django.utils.translation import ugettext_lazy as _
 
+from decimal import Decimal
+
 # Create your models here.
 
 class Association(models.Model):
@@ -14,12 +17,19 @@ class Association(models.Model):
 			('C', _('College')),
 			('CO', _('Company')),
 		)
+	PLACEMENT_TYPE = (
+			('I', _('Internship')),
+			('J', _('Job')),
+		)
 	company = models.ForeignKey(Company, related_name="associations")
 	college = models.ForeignKey(College, related_name="associations")
 	programme = models.ForeignKey(Programme, related_name="associations")
-	streams = models.ManyToManyField(Stream, help_text='Choose particular subject(s).', related_name="associations")
-	desc = models.TextField(_('Placement details'), 
-			help_text='You can add job details, some specific skills you are looking for. Eg. iOS Developer', 
+	streams = models.ManyToManyField(Stream, help_text='Choose particular stream(s).', related_name="associations")
+	type = models.CharField(_('Type'), max_length=1, choices=PLACEMENT_TYPE, default=PLACEMENT_TYPE[1][0])
+	salary = models.DecimalField(_('Salary (Lakhs P.A.)'), max_digits=4, decimal_places=2, default=0, validators=[MinValueValidator(Decimal('0'))], 
+		help_text=_("Salary to be offered in LPA."),
+	)
+	desc = models.TextField(_('Placement details you\'d want to mention'),
 			blank=True
 	)
 	initiator = models.CharField(_('Who initiated it'), max_length=2, choices=SOURCE, default=SOURCE[0][0])
@@ -60,7 +70,7 @@ class Dissociation(models.Model):
 	company = models.ForeignKey(Company, related_name="dissociations")
 	college = models.ForeignKey(College, related_name="dissociations")
 	duration = models.DateField(null=True, blank=True,
-			help_text = "Choose the date till when you want to block this user from associating with you."
+			help_text = "Choose the date till when you want to block this user from contacting you."
 	)
 	initiator = models.CharField(_('Who caused it'), choices=SOURCE, max_length=2, default=SOURCE[0][0])
 

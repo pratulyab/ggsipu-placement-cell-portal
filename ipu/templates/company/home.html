@@ -39,14 +39,22 @@
 {% endblock %}
 
 {% block tabs%}
-	<li class="tab col s2"><a class="active" href="#tab1">Association Requests</a></li>
-	<li class="tab col s2"><a href="#tab2">Associate with colleges</a></li>
+	<li class="tab col s2"><a class="active" href="#associate">Associate with colleges</a></li>
+	<li id = "request" class="tab col s2" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 {% endblock %}
 
 {% block tabs_content %}
-	<div id="tab1" class="col s12">Data 1</div>
-	<div id="tab2" class="col s12">Data 2</div>
+	<div id="associate" class="col s12">
+		<form method="POST" action={% url 'with_prog' %} id="associate-form" class="col s8 offset-s2">
+			{% csrf_token %}
+			{% form form=associate_actors_only_form%}{% endform %}
+			<div class="col s8 offset-s2">
+				<button type="submit" class="btn btn-waves" style="width: 100%">Get Programmes</button>
+			</div>
+		</form>
+	</div>
+	<div id="requests" class="col s12">Data 2</div>
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">
@@ -88,10 +96,12 @@
 {% block scripts %}
 	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
+	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();
-			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form']);
+			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form', 'associate-form']);
+			Request.init();
 		});
 	</script>
 {% endblock scripts %}
