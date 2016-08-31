@@ -1,8 +1,8 @@
 nav .brand-logo { 
 	font-family: "Times New Roman"; /* New */
 	text-transform: capitalize; /* New */
-    font-size: 1.6rem;
-    margin-left: 20px;
+  font-size: 1.6rem;
+  margin-left: 20px;
 }
 
 
@@ -13,6 +13,17 @@ nav .brand-logo {
     margin-bottom: -9px;
 }
 
+#notifications_badge
+{
+  position: absolute;
+  right: 98px;
+  top: 7px;
+  z-index: 999;
+  background-color: #02b3e4;
+  color: white;
+  border-radius: 3px;
+  height: 20px;
+}
 
 
 #dropdown1
@@ -53,7 +64,7 @@ nav .brand-logo {
 
 
 span.badge {
-    min-width: 2rem;
+    min-width: .71rem;
     cursor: default;
 }
 
@@ -82,7 +93,7 @@ nav ul a {
       background-color: black;
       z-index:1001;
       -moz-opacity: 0.8;
-      opacity:.80;
+      opacity: .8;
       filter: alpha(opacity=80);
     }
     .white_content {
@@ -90,26 +101,43 @@ nav ul a {
       justify-content: center;
       align-items: center;
       position: absolute;
-      top: 25%;
-      left: 25%;
-      width: 50%;
-      height: 50%;
+      top: 20%;
+      left: 20%;
+      width: 60%;
+      height: 60%;
       padding: 16px;
       border: 1px solid white;
-      background-color: #00695c;
+      background-color: #1c262f;
       z-index:1002;
       overflow: auto;
       color: white;
     }
-
     
-
+    
     .white_content i
     {
         position: absolute;
         right: 10px;
         top: 10px;
         color: white;
+    }
+
+    #box-search
+    {
+
+      display: flex;
+      padding: 10px;
+      justify-content: center;
+      align-items: center;
+
+
+    }
+
+    #box-search #search
+    {
+
+      margin-right: 0px;
+
     }
 
    
@@ -139,6 +167,7 @@ input {
     margin: 0 auto;
     margin-right: 380px;
     width: 370px;
+
 
 }
 

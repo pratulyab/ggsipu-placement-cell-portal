@@ -82,10 +82,11 @@
         </ul>
 <!--Search box for tab and mobile view-->
         <div id="light" class="white_content"> 
-            <form id="box-search">
-                <input id="search" type="search" required placeholder="Search...">
-                <a class="waves-effect waves-light btn">Go</a>
-            </form> 
+         <div id="box-search">
+            <form id="search">
+                            <input type="text" name="q" placeholder="Search for Students, Colleges, and Companies..." />
+            </form>
+         </div>   
             <a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='none'; document.getElementById('fade').style.display='none'; "><i class="fa fa-times fa-2x"></i></a>
         </div>
         <div id="fade" class="black_overlay"></div>
@@ -95,7 +96,7 @@
             <nav id="nav-bar">
                 <div class="nav-wrapper">
                     <a href="#!" class="brand-logo left hide-on-small-only">Training & Placement Cell</a>
-                    <a href="#!" class="brand-logo left hide-on-large-only hide-on-med-only">Training & Placement Cell</a>
+                    <a href="#!" class="brand-logo left hide-on-large-only hide-on-med-only">TPC</a>
                     <ul class="right">
                     <li class="center hide-on-med-and-down">
                     <!--materialize search-bar-->
@@ -173,7 +174,7 @@
       		});
         </script>
         
-         
+         <span class="badge" id="notifications_badge">4</span>
 
        {% block lightbox_data %}
        {% endblock %}
