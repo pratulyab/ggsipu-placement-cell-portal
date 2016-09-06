@@ -14,11 +14,13 @@ from account.models import CustomUser, SocialProfile
 from account.forms import AccountForm, SocialProfileForm
 from account.views import handle_user_type, send_activation_email, get_relevant_reversed_url, get_creation_url, get_home_url
 from college.models import College, Stream
+from notification.models import Notification
 from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm, FileUploadForm, PaygradeForm
+from recruitment.models import Association, PlacementSession
 from student.models import Student, TechProfile, Qualification
 from . import scrape
 
-import os, re
+import os, re, datetime
 from bs4 import BeautifulSoup
 
 # Create your views here.
@@ -93,15 +95,6 @@ def create_student(request):
 @login_required
 def student_home(request):
 	if request.user.type == 'S':
-		"""
-		import openpyxl as excel
-		workbook = excel.Workbook()
-		worksheet = workbook.active
-		worksheet['A1']='hello';worksheet['A2']='world!'
-		response = HttpResponse(content=excel.writer.excel.save_virtual_workbook(workbook), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-		response['Content-Disposition'] = 'attachment; filename=myexport.xlsx'
-		return response
-		"""
 		context = {}
 		user = request.user
 		context['user'] = user
@@ -136,6 +129,7 @@ def student_home(request):
 			context['tech_profile_form'] = TechProfileForm(student=student)
 		if not student.salary_expected:
 			context['paygrade_form'] = PaygradeForm()
+		context['badge'] = student.profile.notification_target.filter(is_read=False).count()
 		return render(request, 'student/home.html', context)
 	else:
 		return handle_user_type(request, redirect_request=True)
@@ -328,6 +322,86 @@ def coder(request):
 		return JsonResponse(status=200, data={'html': html})
 	except:
 		return JsonResponse(status=400, data={})
+
+@require_GET
+@login_required
+def companies_in_my_college(request):
+	if request.is_ajax():
+		if request.user.type == 'S':
+			try:
+				student = request.user.student
+			except Student.DoesNotExist:
+				return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
+			if not student.salary_expected:
+				html = render(request, 'student/paygrade.html', {'paygrade_form': PaygradeForm()}).content.decode('utf-8')
+				return JsonResponse(status=200, data={'form': html})
+			
+			associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(salary__gte=student.salary_expected).filter(session__application_deadline__gte=datetime.date.today())
+			placement_sessions_assoc = [a['association'] for a in student.sessions.filter( Q(application_deadline__lt=datetime.date.today()) | Q(ended=True)).values('association')]
+			associations = associations.exclude(pk__in=placement_sessions_assoc)
+			jobs = associations.filter(type='J')
+			enrolled_jobs = jobs.filter(session__students__pk__in = [student.pk])
+			unenrolled_jobs = jobs.exclude(pk__in = enrolled_jobs.values('pk'))
+			internships = associations.filter(type='I')
+			enrolled_internships = internships.filter(session__students__pk__in = [student.pk])
+			unenrolled_internships = internships.exclude(pk__in = enrolled_internships.values('pk'))
+			render_data = {}; context = {}
+			context['htmlid'] = 'jobs'
+			data = []
+			for j in enrolled_jobs:
+				sess = settings.HASHID_PLACEMENTSESSION.encode(j.session.pk)
+				data.append({'sessid':sess, 'assoc':j})
+			context['on'] = data
+			data = []
+			for j in unenrolled_jobs:
+				sess = settings.HASHID_PLACEMENTSESSION.encode(j.session.pk)
+				data.append({'sessid':sess, 'assoc':j})
+			context['off'] = data
+			render_data['jobs'] = render(request, 'student/companies_in_my_college.html', context).content.decode('utf-8')
+			context['htmlid'] = 'internships'
+			data = []
+			for i in enrolled_internships:
+				sess = settings.HASHID_PLACEMENTSESSION.encode(i.session.pk)
+				data.append({'sessid':sess, 'assoc':i})
+			context['on'] = data
+			data = []
+			for i in unenrolled_internships:
+				sess = settings.HASHID_PLACEMENTSESSION.encode(i.session.pk)
+				data.append({'sessid':sess, 'assoc':i})
+			context['off'] = data
+			render_data['internships'] = render(request, 'student/companies_in_my_college.html', context).content.decode('utf-8')
+			return JsonResponse(status=200, data=render_data)
+		else:
+			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+	else:
+		return handle_user_type(request, redirect_request=True)
+
+@require_GET
+@login_required
+def apply_to_company(request, sess): # handling withdrawl as well
+	if request.is_ajax():
+		if request.user.type == 'S':
+			try:
+				student = request.user.student
+			except Student.DoesNotExist:
+				return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
+			try:
+#				sess = request.GET.get('psid')
+				session = PlacementSession.objects.get(pk=settings.HASHID_PLACEMENTSESSION.decode(sess)[0])
+			except:
+				return JsonResponse(status=400, data={'error': 'Invalid request'})
+			sessions_students = session.students.all()
+			if student not in sessions_students:
+				session.students.add(student)
+				return JsonResponse(status=200, data={'enrolled': True})
+			else:
+				session.students.remove(student)
+				return JsonResponse(status=200, data={'enrolled': False})
+#				return JsonResponse(status=400, data={'error': 'You have already applied to this company'})
+		else:
+			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+	else:
+		return handle_user_type(request)
 
 # ----+----=----+----=----+----=----+----=----+----=----+---- #
 def get_student_public_profile(user, requester_type):

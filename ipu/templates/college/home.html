@@ -61,6 +61,7 @@
 	<li id = "request" class="tab col s2" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
 	<li id = "notification" class="tab col s2" url="{% url 'select_streams' %}"><a href="#notifications">Notification</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
+	<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
 {% endblock %}
 
 {% block tabs_content %}
@@ -112,18 +113,27 @@
 			</div>
 		</div>
 	</div>
+	<div id="sessions" class="col s12"></div>
+
+	{% if badge %}
+		<span class="badge" id="notifications_badge">{{ badge }}</span>
+	{% endif %}
 {% endblock %}
 
 {% block scripts %}
 	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/sessions.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
 	<script type="text/javascript" src="{% static 'notification/create_notification.js' %}"></script>
+	<script type="text/javascript" src="{% static 'recruitment/associate.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();
-			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form', 'create-faculty-form', 'associate-form']);
+			Session.init();
+			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form', 'create-faculty-form']);
 			Notification.init();
+			Associate.init(['associate-form']);
 			Request.init();
 		});
 	</script>

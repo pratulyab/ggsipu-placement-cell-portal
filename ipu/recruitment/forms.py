@@ -1,5 +1,7 @@
 from django import forms
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from college.models import College, Programme, Stream
 from company.models import Company
@@ -132,13 +134,19 @@ class AssociationForm(forms.ModelForm):
 			association.initiator = 'CO'
 		
 		if commit:
-			association.save()
+			try:
+				association.save()
+			except IntegrityError as error:
+				raise forms.ValidationError(_('The desired association already exists.'))
+			except ValidationError as error:
+				raise forms.ValidationError(_('The desired association already exists.'))
 		return association
 	
 	class Meta:
 		model = Association
 		fields = ['college', 'company', 'programme', 'streams', 'type', 'salary', 'desc']
 
+"""
 class PlacementSessionForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		self.association = kwargs.pop('association')
@@ -152,12 +160,55 @@ class PlacementSessionForm(forms.ModelForm):
 		session = super(PlacementSessionForm, self).save(commit=False)
 		session.association = self.association
 		if commit:
-			session.save()
+			try:
+				session.save()
+			except IntegrityError as error:
+				raise forms.ValidationError(_('Error occurred.'))
+			except ValidationError as error:
+				raise forms.ValidationError(_('Error occurred.'))
 		return session
 	
 	class Meta:
 		model = PlacementSession
-		fields = ['students', 'status', 'recent_deadline', 'ended']
+		fields = ['students', 'status', 'application_deadline', 'ended']
+"""
+
+class SessionEditForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(SessionEditForm, self).__init__(*args, **kwargs)
+		self.fields['students'].queryset = Student.objects.filter(college=self.instance.association.college, stream__in=self.instance.association.streams.all())
+		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.instance.pk)
+	
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': 'True'}))
+	
+	class Meta:
+		model = PlacementSession
+		fields = ['students', 'status', 'application_deadline', 'ended']
+	
+
+class DeadlineForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		self.association = kwargs.pop('association')
+		super(DeadlineForm, self).__init__(*args, **kwargs)
+		self.initial['token'] = settings.HASHID_ASSOCIATION.encode(self.association.pk)
+	
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': 'True'}))
+	
+	def save(self, commit=True):
+		session = super(DeadlineForm, self).save(commit=False)
+		session.association = self.association
+		if commit:
+			try:
+				session.save()
+			except IntegrityError as error:
+				raise forms.ValidationError(_('Error occurred.'))
+			except ValidationError as error:
+				raise forms.ValidationError(_('Error occurred.'))
+		return session
+	
+	class Meta:
+		model = PlacementSession
+		fields = ['application_deadline']
 
 class DissociationForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -197,7 +248,12 @@ class DissociationForm(forms.ModelForm):
 		else:
 			dissociation.company = self.association.company
 		if commit:
-			dissociation.save()
+			try:
+				dissociation.save()
+			except IntegrityError as error:
+				raise forms.ValidationError(_('Error occurred.'))
+			except ValidationError as error:
+				raise forms.ValidationError(_('Error occurred.'))
 		return dissociation
 	
 	class Meta:

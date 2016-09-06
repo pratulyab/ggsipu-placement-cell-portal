@@ -106,7 +106,7 @@ def get_notifications(request):
 	for notification_object in notification_object_queryset:
 		if notification_object.is_read == False:
 			notification_object.is_read = True
-			notification_object.save()
+#			notification_object.save()
 			message = notification_object.message
 			if notification_object.actor.type == 'C':
 				actor_name = notification_object.actor.college

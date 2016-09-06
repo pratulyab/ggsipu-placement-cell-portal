@@ -12,6 +12,7 @@ from account.models import CustomUser, SocialProfile
 from account.views import handle_user_type, send_activation_email, get_creation_url, get_home_url, get_relevant_reversed_url
 from company.forms import CompanyCreationForm, CompanyEditForm
 from company.models import Company
+from notification.models import Notification
 from recruitment.models import PlacementSession
 from recruitment.forms import AssActorsOnlyForm
 
@@ -73,6 +74,7 @@ def company_home(request):
 			context['social_profile_form'] = SocialProfileForm(instance=user.social)
 		except SocialProfile.DoesNotExist:
 			context['social_profile_form'] = SocialProfileForm()
+		context['badge'] = company.profile.notification_target.filter(is_read=False).count()
 		return render(request, 'company/home.html', context)
 	else:
 		return handle_user_type(request, redirect_request=True)

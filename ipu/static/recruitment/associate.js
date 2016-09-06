@@ -1,6 +1,31 @@
 var Associate = (function() {
 	"use strict";
 
+	function handleMultipleJquery(){
+		$('a').unbind('click'); // to prevent multiple fires because of reloading of jquery in the rendered template.
+		$('#dropdown3').on('click', function(e){e.stopPropagation();});
+		$('.dropdown-button').on('click', function(e){e.preventDefault()});
+		$('nav .brand-logo').on('click', function(e){location.href='';});
+		$('#dropdown1 a').each(function(i, a){
+			var el = $(a);
+			var target = el.data('links');
+			if (!target)
+				return true;
+			var target_el = $('#tab-bar').find("[href='#" + target + "']");
+			if(!target_el.length)
+				return true;
+			el.on('click', function(e){e.preventDefault();target_el[0].click();});
+		});
+	}
+
+	function reloadProgrammes(){
+
+	}
+
+	function reloadStreams(){
+
+	}
+
 	function clearErrors(el){
 		$(el + ' .non-field-errors').remove();
 		$(el + ' .errors').remove();
@@ -49,9 +74,22 @@ var Associate = (function() {
 					location.href = data['location'];
 					return;
 				}
+				handleMultipleJquery();
 				var form_div = $(form).parent();
 				form_div.html(data['render']);
 				$(form_id).on('submit', submitForm);
+//				$(form_id).find('select').material_select();
+				var prog = $(form_id).find('#id_programme');
+				if (prog.length)
+					prog.on('change', getStreams);
+				var streams = $(form_id).find('#id_streams');
+				if (streams.length){
+					$(document).on('click', function(e){
+						var target = $(e.target);
+						if(!target.closest('#id_streams_container').length)
+							getP
+					});
+				}
 			},
 			error: function(xhr, status, error){
 				var loc = xhr.responseJSON['location'];

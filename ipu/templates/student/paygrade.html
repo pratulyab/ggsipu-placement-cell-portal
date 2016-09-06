@@ -1,0 +1,20 @@
+{% load staticfiles %}
+{% load material_form %}
+<script type="text/javascript" src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+<script type="text/javascript" src="{% static 'material/js/materialize.js' %}"></script>
+{% if success_msg %}<div class="card green accent-1 center success"><p>{{ success_msg }}</p></div>{% endif %}
+<form method="POST" action="{% url 'paygrade' %}" id='paygrade-form'>
+	{% csrf_token %}
+	{% form form=paygrade_form %}{% endform %}
+	<div class="row">
+		<div class="col s6 offset-s3">
+			<button class="btn btn-waves" type="submit" style="width: 100%">Choose</button>
+		</div>
+	</div>
+</form>
+
+<script>
+	$(document).ready(function() {
+		Settings.init(['paygrade-form']);
+	});
+</script>

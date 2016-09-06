@@ -23,6 +23,8 @@ var Settings = (function() {
 		$(el + ' .errors').remove();
 		$(el + ' .input-field').removeClass('has-error');
 		$(el + ' .input-field input').removeClass('invalid');
+		// for 'error'
+		var form_div = $(el).parent().find('.error').remove();
 	}
 	
 	function addErrorsToForm(form_errors, el){
@@ -76,6 +78,9 @@ var Settings = (function() {
 				if (loc){
 					location.href = loc;
 					return;
+				}
+				if (xhr.responseJSON['error']){
+					$(form).parent().prepend($('<small class="error">'+xhr.responseJSON['error']+'</small>'))
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);

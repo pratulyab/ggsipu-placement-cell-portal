@@ -14,6 +14,7 @@ from account.views import handle_user_type, send_activation_email, get_relevant_
 from college.models import College
 from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm
 from faculty.models import Faculty
+from notification.models import Notification
 from student.forms import StudentEditForm, QualificationForm
 import re
 
@@ -100,6 +101,7 @@ def faculty_home(request):
 		except SocialProfile.DoesNotExist:
 			context['social_profile_form'] = SocialProfileForm()
 		return render(request, 'faculty/home.html', context)
+		context['badge'] = (faculty.college.profile.notification_target.filter(is_read=False).count() + faculty.profile.notification_target.filter(is_read=False).count())
 	else:
 		return handle_user_type(request, redirect_request=True)
 

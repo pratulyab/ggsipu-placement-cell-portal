@@ -1,0 +1,28 @@
+{% load staticfiles %}
+<!--
+<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+<script src="{% static 'material/js/materialize.js' %}"></script>
+-->
+{% if sessions %}
+<ul class="collection">
+	{% for session in sessions %}
+		<li class="collection-item avatar">
+			{% if session.photo %}
+				<img src="{{ session.photo.url }}" alt="Recruiter" class="circle" />
+			{% endif %}
+			<span class="title">{{ session.company }} for {{ session.type|title }} </span>
+			<p>
+				{{ session.salary }}
+				<br>
+				<p>
+					{{ session.streams }}
+				</p>
+				<br>
+					{{ session.students }} student{{ session.students|pluralize }} in the session
+			</p>
+		</li>
+	{% endfor %}
+</ul>
+{% else %}
+	<p>You are currently not enrolled in any sessions.</p>
+{% endif %}

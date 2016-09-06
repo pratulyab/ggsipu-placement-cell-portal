@@ -12,6 +12,7 @@ from account.views import handle_user_type, send_activation_email, get_creation_
 from college.forms import CollegeCreationForm, CollegeEditForm
 from college.models import College
 from faculty.forms import FacultySignupForm
+from notification.models import Notification
 from recruitment.models import PlacementSession
 from recruitment.forms import AssActorsOnlyForm
 
@@ -83,6 +84,7 @@ def college_home(request):
 			context['social_profile_form'] = SocialProfileForm(instance=user.social)
 		except SocialProfile.DoesNotExist:
 			context['social_profile_form'] = SocialProfileForm()
+		context['badge'] = college.profile.notification_target.filter(is_read=False).count()
 		return render(request, 'college/home.html', context)
 	else:
 		return handle_user_type(request, redirect_request=True)

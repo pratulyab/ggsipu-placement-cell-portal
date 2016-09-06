@@ -1,0 +1,33 @@
+{% load staticfiles %}
+<!--
+<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+<script src="{% static 'material/js/materialize.js' %}"></script>
+-->
+{% if sessions %}
+<ul class="collection col s8 offset-s2">
+	{% for session in sessions %}
+		<li class="collection-item avatar" data-sess="{{ session.sessid }}">
+			{% if session.photo %}
+				<img src="{{ session.photo.url }}" alt="College" class="circle" />
+			{% endif %}
+			<span class="title">{{ session.type|title }} at {{ session.college }}</span>
+			<p>
+				{{ session.salary }}
+				<br>
+				<p>
+					{{ session.streams }}
+				</p>
+				<br>
+					{{ session.students }} student{{ session.students|pluralize }} in the session
+			</p>
+			<span class="secondary-content">
+				<a href="{% url 'edit_session' session.sessid %}"><i class="fa fa-2x fa-pencil"></i></a>
+				<a href="{% url 'excel' session.sessid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
+			</span>
+			
+		</li>
+	{% endfor %}
+</ul>
+{% else %}
+	<p>You are currently not enrolled in any sessions.</p>
+{% endif %}
