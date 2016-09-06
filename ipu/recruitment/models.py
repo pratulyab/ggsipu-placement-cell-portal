@@ -50,9 +50,9 @@ class PlacementSession(models.Model):
 			blank=True, max_length=256
 	)
 	
-	application_deadline = models.DateField(_('Application Deadline'), 
+	application_deadline = models.DateField(_('Application Deadline (Due By Midnight)'), 
 			null=True, blank=False, 
-			help_text=_("Choose last date for students to apply. If no event is scheduled for now, choose an arbitrary future date.")
+			help_text=_("Choose last date before which students can apply. If no event is scheduled for now, choose an arbitrary future date.")
 	)
 	ended = models.BooleanField(
 			_('Has the placement session ended'), 

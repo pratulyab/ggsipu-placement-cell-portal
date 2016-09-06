@@ -18,13 +18,24 @@ var Apply = (function() {
 				var now_enrolled = data['enrolled'];
 				a.html(now_enrolled ? "Withdraw Application" : "Apply");
 			},
-			error: function(status, xhr, error){
+			error: function(xhr, status, error){
 				var loc = xhr.responseJSON['location'];
 				if (loc){
 					location.href = loc;
 					return;
 				}
-				div.append($('<p class="error">' + "Error occurred. Please try again later." + '</p>'))
+				var p = $('<p class="error"/>')
+				var error = xhr.responseJSON['error'];
+				if (error){
+					p.html('<b>' + error + '</b>');
+					a.html(p);
+				}
+				else{
+					p.html("<b>Error occurred. Please try again later.</b>");
+					a.html(p);
+				}
+				a.off();
+				a.on('click', function(e){e.preventDefault();});
 			}
 		});
 	}
@@ -58,7 +69,7 @@ var Apply = (function() {
 				$(render_div).find('img.activator').removeAttr('src');
 				$(render_div).find('a.change-enrollment').on('click', changeEnrollment);
 			},
-			error: function(status, xhr, error) {
+			error: function(xhr, status, error) {
 				var loc = xhr.responseJSON['location'];
 				if (loc){
 					location.href = loc;

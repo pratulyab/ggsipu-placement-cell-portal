@@ -336,8 +336,8 @@ def companies_in_my_college(request):
 				html = render(request, 'student/paygrade.html', {'paygrade_form': PaygradeForm()}).content.decode('utf-8')
 				return JsonResponse(status=200, data={'form': html})
 			
-			associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(salary__gte=student.salary_expected).filter(session__application_deadline__gte=datetime.date.today())
-			placement_sessions_assoc = [a['association'] for a in student.sessions.filter( Q(application_deadline__lt=datetime.date.today()) | Q(ended=True)).values('association')]
+			associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(salary__gte=student.salary_expected).filter(session__application_deadline__gt=datetime.date.today())
+			placement_sessions_assoc = [a['association'] for a in student.sessions.filter( Q(application_deadline__lte=datetime.date.today()) | Q(ended=True)).values('association')]
 			associations = associations.exclude(pk__in=placement_sessions_assoc)
 			jobs = associations.filter(type='J')
 			enrolled_jobs = jobs.filter(session__students__pk__in = [student.pk])
@@ -390,7 +390,7 @@ def apply_to_company(request, sess): # handling withdrawl as well
 				session = PlacementSession.objects.get(pk=settings.HASHID_PLACEMENTSESSION.decode(sess)[0])
 			except:
 				return JsonResponse(status=400, data={'error': 'Invalid request'})
-			if student.college != session.association.college or student.stream not in session.streams.all() or session.application_deadline < datetime.date.today():
+			if student.college != session.association.college or student.stream not in session.association.streams.all() or session.application_deadline <= datetime.date.today():
 				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
 			students_sessions = student.sessions.all()
 			"""
