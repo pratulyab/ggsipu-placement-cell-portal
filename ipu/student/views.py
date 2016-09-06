@@ -390,6 +390,10 @@ def apply_to_company(request, sess): # handling withdrawl as well
 				session = PlacementSession.objects.get(pk=settings.HASHID_PLACEMENTSESSION.decode(sess)[0])
 			except:
 				return JsonResponse(status=400, data={'error': 'Invalid request'})
+			if student.college != session.association.college or student.stream not in session.streams.all() or session.application_deadline < datetime.date.today():
+				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
+			students_sessions = student.sessions.all()
+			"""
 			sessions_students = session.students.all()
 			if student not in sessions_students:
 				session.students.add(student)
@@ -398,6 +402,14 @@ def apply_to_company(request, sess): # handling withdrawl as well
 				session.students.remove(student)
 				return JsonResponse(status=200, data={'enrolled': False})
 #				return JsonResponse(status=400, data={'error': 'You have already applied to this company'})
+			"""
+#			Better! => 1. Complexity 2. m2m changed signal discrepancy handled because implementing below code will cause reverse=True :D
+			if session not in students_sessions:
+				student.sessions.add(session)
+				return JsonResponse(status=200, data={'enrolled': True})
+			else:
+				student.sessions.remove(session)
+				return JsonResponse(status=200, data={'enrolled': False})
 		else:
 			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:

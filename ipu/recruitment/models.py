@@ -94,14 +94,14 @@ def verify_assoc_stream_uniqueness(sender, **kwargs):
 		for stream in streams:
 			if Association.objects.filter(company=association.company, college=association.college).filter(streams=stream):
 				raise IntegrityError(_('Association between (%s, %s) already exists for stream %s' % (association.college, association.company, stream,)))
-"""
+
 @receiver(m2m_changed, sender=PlacementSession.students.through)
 def notify_college_student_list_changed(sender, **kwargs):
 	session = kwargs.get('instance', None)
 	action = kwargs.get('action', None)
 	students = kwargs.get('pk_set', None)
-	reverse = kwargs.get('reverse', True) # want the logic to be implemented when reverse = False i.e. Forward relation, when change has been made in the PlacementSession object and not in Student object
-	if action in ['post_add', 'post_delete'] and not reverse:
+	reverse = kwargs.get('reverse', True) # don't want the parties to be notified  when reverse = True i.e. Reverse relation, when student is applying or withdrawing; Otherwise, Forward relation
+	if action in ['post_add', 'post_remove'] and not reverse:
 		association = session.association
 		message = ''
 		if association.type == 'J':
@@ -118,7 +118,7 @@ def notify_college_student_list_changed(sender, **kwargs):
 		target = association.company if session.last_modified_by == 'C' else association.college
 		# Creating notification
 		Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
-"""
+
 @receiver(post_save, sender=PlacementSession)
 def request_accepted_notification(sender, **kwargs):
 	if not kwargs.get('created'):

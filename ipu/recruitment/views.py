@@ -188,6 +188,7 @@ def create_session(request):
 				session = f.save(commit=False)
 				session.last_modified_by = type
 				session.save()
+				f.save_m2m()
 				association.approved = True
 				association.save()
 				return JsonResponse(status=200, data={'location': reverse(get_home_url(type))})
@@ -213,35 +214,13 @@ def edit_session(request, sess):
 				session = PlacementSession.objects.get(pk=session_id)
 			except:
 				return JsonResponse(status=400, data={'error': 'Unexpected error occurred. Please refresh the page and try again.'})
-			pk_changed = request.POST['students']
-			old_len = session.objects.count()
-			new_len = len(pk_changed)
+			print(request.POST.getlist('students'))
 			f = SessionEditForm(request.POST, instance=session)
 			if f.is_valid():
-				session = f.save()
+				session = f.save(commit=False)
 				session.last_modified_by = type
 				session.save()
-				# Notifying other party about change in students' list
-				if old_len != new_len:
-					changed_students = []
-					for s in [Student.objects.get(p) for p in pk_changed if p not in session.students.all().values('pk')]:
-						changed_students.append(s)
-					message = ''
-					if association.type == 'J':
-						message = 'Job'
-					else:
-						message = 'Internship'
-					association = session.association
-					message = message + ' Session: %s - {%s}\t' % (association.programme.__str__(), ', '.join([s.name.title() for s in association.streams.all()]) )
-					usernames = '\n'.join([s.profile.username for s in changed_students])
-					if new_len > old_len:
-						message = '%d student%s added to the session\n%s' % (len(changed_students), '' if len(changed_students)==1 else 's', usernames)
-					else:
-						message = '%d student%s removed from the session\n%s' % (len(changed_students), '' if len(changed_students)==1 else 's', usernames)
-					actor = association.college if type=='C' else association.company
-					target = association.company if type=='C' else association.college
-					# Creating notification
-					Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
+				f.save_m2m()
 				return JsonResponse(status=200, data={'location': reverse(get_home_url(type))})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
