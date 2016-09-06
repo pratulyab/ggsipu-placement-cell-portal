@@ -6,7 +6,7 @@
     <form method = 'POST' id = "create_notification-form" action="{% url 'create_notification' %}">
         {% csrf_token %}
         {% form form=create_notification %}{% endform %}                 
-    	<button type = 'input' id = "notifyall">Notify All</button>
+    	<button type = 'input' id = "notifyall" data-id="false" class="btn waves-effect waves-light-right">Notify All</button>
     </form>
 
 

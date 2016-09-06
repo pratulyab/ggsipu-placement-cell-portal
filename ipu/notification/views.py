@@ -104,20 +104,21 @@ def get_notifications(request):
 	notification_object_queryset = Notification.objects.filter(target = user)
 	notifications = serializers.serialize("json", notification_object_queryset, indent = 4)
 	for notification_object in notification_object_queryset:
+		data_dict = dict()
+		data_dict['read'] = notification_object.is_read
 		if notification_object.is_read == False:
 			notification_object.is_read = True
-#			notification_object.save()
-			message = notification_object.message
-			if notification_object.actor.type == 'C':
-				actor_name = notification_object.actor.college
-			elif notification_object.actor.type =='F':
-				actor_name = notification_object.actor.faulty.college
-			else:
-				actor_name = notification_object.actor.company
-			data_dict = dict()
-			data_dict['message'] = message
-			data_dict['actor'] = str(actor_name)
-			data_list.append(data_dict)
+			notification_object.save()
+		message = notification_object.message
+		if notification_object.actor.type == 'C':
+			actor_name = notification_object.actor.college
+		elif notification_object.actor.type =='F':
+			actor_name = notification_object.actor.faulty.college
+		else:
+			actor_name = notification_object.actor.company
+		data_dict['message'] = message
+		data_dict['actor'] = str(actor_name)
+		data_list.append(data_dict)
 
 	return JsonResponse(data_list , safe = False)
 

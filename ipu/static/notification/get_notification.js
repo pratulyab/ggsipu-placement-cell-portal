@@ -2,8 +2,7 @@ var GetNotification = (function()  {
 
 	function populateNotifications(data) {
 		raw_html = '';
-
-		for(var i = 0; i < data.length; i++){
+		for(var i = 0; i < ( (data.length < 5) ? data.length : 5 ) ; i++){
 			raw_html += '<div id="noti-head">Notifications' +'</div>' + '<li>' +
             '<div class="collapsible-header">From : ' + data[i].actor + '</div>' +
             '<div class="collapsible-body"><p>' + data[i].message + '</p></div>' + 

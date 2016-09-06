@@ -75,7 +75,32 @@
 		</form>
 	</div>
 	<div id="requests" class="col s12">Data 2</div>
-	<div id="notifications" class="col s12">Data 3</div>
+
+	<div id="notifications" class="col s12">
+		<div class="vertical-tabs">
+			<div class="row">
+				<div class="col s3">
+					<ul class="tabs">
+						<li class="tab col s12"><a id = "your-notifications" class="active" href="#your-notifications-div">Your Notifications</a></li>
+						<li class="tab col s12"><a id = "create-notifications" href="#notify-students-div">Notify Students</a></li>
+					</ul>
+				</div>
+				<div class=" col s8 offset-s1">
+					<div id="your-notifications-div" class="col s12">
+						
+							  <ul id = "your-notifications-div-ul" class="collection">
+							   
+
+							  </ul>
+            
+					</div>
+					<div id="notify-students-div" class="col s12">
+					</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<!-- -->
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
@@ -131,8 +156,8 @@
 		$(document).ready(function() {
 			Search.init();
 			Session.init();
-			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form', 'create-faculty-form']);
 			Notification.init();
+			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form', 'create-faculty-form']);
 			Associate.init(['associate-form']);
 			Request.init();
 		});
