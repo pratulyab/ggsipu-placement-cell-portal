@@ -60,8 +60,26 @@
         </ul>
 
         <ul class="collapsible dropdown-content" data-collapsible="accordion" id="dropdown3">
-            <!--every li here represents a notifcations. header and body for notifications repectively-->     
-    
+            <div id="noti-head">Notifications</div>
+            {% block notifications_dropdown %}
+            <!--every li here represents a notifcations. header and body for notifications repectively-->
+                <li>
+                    <div class="collapsible-header">First</div>
+                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                </li>
+                <li>
+                    <div class="collapsible-header">Second</div>
+                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                </li>
+                <li>
+                    <div class="collapsible-header">Third</div>
+                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                </li>
+                <li>
+                    <div class="collapsible-header">Fourth</div>
+                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                </li>
+            {% endblock %}
         </ul>
 <!--Search box for tab and mobile view-->
         <div id="light" class="white_content"> 
@@ -90,6 +108,13 @@
                     </li>
                    	<li class="hide-on-large-only"><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
                   	</li>
+
+                    <li>
+                      <a class="waves-effect waves-light btn">Home</a>
+                  </li>
+
+
+
                   	<li>
                     	<a id = 'notification_button' class="dropdown-button tooltipped" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3" data-position="left" data-delay="20" data-tooltip="Notifications"><i class="material-icons">add_alert</i></a>
                   </li>
@@ -110,25 +135,7 @@
 <!--navbar ends-->
 
         <main>
-            <!--Tabs bar begins--> 
-            <div id="tab-bar">
-                <div class="row">
-                    <div class="col s12">
-                        <ul class="tabs">
-                            <!--naming for tabs-->
-                            {% block tabs %}
-                            <!--each li  represents a new tab with the name-->
-<!--                            <li class="tab col s2"><a class="active" href="#test1">Test 1</a></li> -->
-                            {% endblock %}
-                        </ul>
-                    </div>
-                    <div id="tabs-data-div" class="row"> 
-                        {% block tabs_content %}
-                        {% endblock %}
-                    </div>
-                </div>
-            </div>
-
+           
         </main>
 
 
