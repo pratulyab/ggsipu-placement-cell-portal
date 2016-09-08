@@ -60,14 +60,19 @@ var Apply = (function() {
 					$(div).find('select').material_select();
 					return;
 				}
-				var render_div = $('<div id="opportunities"/>');
-				render_div.html($('<h4 class="center" style="color: #1c262f;">' + "Jobs" + '</h4>'));
+				var render_div = $('<div id="opportunities" class="col s12 m9 l10"/>');
 				render_div.append(data['jobs']);
-				render_div.append('<h4 class="center" style="color: #1c262f;">' + "Internships" + '</h4>');
 				render_div.append(data['internships']);
 				div.html(render_div);
-				$(render_div).find('img.activator').removeAttr('src');
+				$(render_div).find('img.activator[src="#"]').removeAttr('src');
 				$(render_div).find('a.change-enrollment').on('click', changeEnrollment);
+				var pushpin = '<div class="col hide-on-small-only m3 l2"><div class="toc-wrapper"><ul class="table-of-contents"><li><a href="#jobs">Jobs</a><ul class="nested-pushpin"><li><a href="#enrolled-jobs">Enrolled</a></li><li><a href="#unenrolled-jobs">Un-enrolled</a></li></ul></li><li><a href="#internships">Internships</a><ul class="nested-pushpin"><li><a href="#enrolled-internships">Enrolled</a></li><li><a href="#unenrolled-internships">Un-enrolled</a></li></ul></li></ul></div>';
+				var parsedPushpin = $.parseHTML(pushpin);
+				div.append(parsedPushpin);
+				var top = div.offset().top;
+				$('.toc-wrapper').pushpin({top: top, offset:top});
+				$('.scrollspy').scrollSpy();
+				$('.nested-scrollspy').scrollSpy();
 			},
 			error: function(xhr, status, error) {
 				var loc = xhr.responseJSON['location'];

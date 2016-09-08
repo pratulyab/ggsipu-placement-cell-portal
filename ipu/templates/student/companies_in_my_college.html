@@ -1,6 +1,7 @@
 {% load staticfiles %}
-<div id="{{ htmlid }}">
-	<div class="enrolled col s12 m5 offset-m1">
+<div id="{{ htmlid }}" class="scrollspy">
+	<h4 class="center" style="color: #337ab7; font-weight: 600">{{ htmlid|title }}</h4>
+	<div id="enrolled-{{htmlid}}" class="enrolled nested-scrollspy">
 		{% for e in on %}
 			{% with e.assoc as enrolled %}
 				<div class="card sticky-action">
@@ -17,7 +18,7 @@
 							<i class="material-icons right">more_vert</i>
 						</span>
 						<h6>{{ htmlid|slice:":-1"|title }} offering <b>&#8377;{{ enrolled.salary }} LPA</b></h6>
-						<p><b>{{ enrolled.session.application_deadline|timeuntil }}</b> left to withdraw application</p>
+						<p><b>{{ e.date|timeuntil }}</b> left to withdraw application</p>
 					</div>
 					<div class="card-action">
 						<a class="change-enrollment" href="{% url 'apply' e.sessid %}">Withdraw Application</a>
@@ -44,7 +45,7 @@
 			{% endwith %}
 		{% endfor %}
 	</div>
-	<div class="unenrolled col s12 m5 offset-m1">
+	<div id="unenrolled-{{htmlid}}" class="unenrolled nested-scrollspy">
 		{% for u in off %}
 			{% with u.assoc as unenrolled %}
 				<div class="card sticky-action">
@@ -61,13 +62,13 @@
 							<i class="material-icons right">more_vert</i>
 						</span>
 						<h6>{{ htmlid|slice:":-1"|title }} offering <b>&#8377;{{ unenrolled.salary }} LPA</b></h6>
-						<p><b>{{ unenrolled.session.application_deadline|timeuntil }}</b> left to apply</p>
+						<p><b>{{ u.date|timeuntil }}</b> left to apply</p>
 					</div>
 					<div class="card-action">
 						<a class="change-enrollment" href="{% url 'apply' u.sessid %}">Apply</a>
 					</div>
 					<div class="card-reveal">
-						<span class="card-title grey-text text-darken-4">Details<i class="material-icons right">close</i></span>
+						<span class="card-title grey-text text-darken-4"><b>Details</b><i class="material-icons right">close</i></span>
 						<p>Programme: {{ unenrolled.programme.name }}</p>
 						<p>
 							Streams: 

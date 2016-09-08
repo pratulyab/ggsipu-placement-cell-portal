@@ -79,3 +79,16 @@
         top: 10px;
         color: #02b3e4;
     }
+
+/* Scrollspy */
+.nested-pushpin {
+	margin-left: 22px;
+}
+
+.toc-wrapper .table-of-contents .nested-pushpin a.active {
+	border-left: 2px solid #02b3e4;
+}
+
+.toc-wrapper .table-of-contents a.active {
+	border-left: 2px solid lightcoral;
+}
