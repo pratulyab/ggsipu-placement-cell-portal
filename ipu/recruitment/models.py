@@ -40,10 +40,20 @@ class Association(models.Model):
 	def __str__(self):
 		return self.company.name + " for placement in " + self.college.name
 
+class SelectionCriteria(models.Model):
+# Don't forget to typecast the fields (except current_year) of this class's objects to int before comparing them with the students' quals
+	PERCENTAGE_CHOICES = tuple((("%s"%i, "%s and above" % i) for i in range(50,100,10)))
+	current_year = models.CharField(_('Which year students may apply'), max_length=1, blank=True, choices=tuple((("%s"%i, "%s and above" % i) for i in range(1,5))))
+	is_sub_back = models.BooleanField(_('Are student with any subject back(s) allowed'), default=False)
+	tenth = models.CharField(_('Xth Percentage'), max_length=2, blank=True, choices=PERCENTAGE_CHOICES)
+	twelfth = models.CharField(_('XIIth Percentage'), max_length=2, blank=True, choices=PERCENTAGE_CHOICES)
+	graduation = models.CharField(_('Graduation Percentage'), max_length=2, blank=True, choices=PERCENTAGE_CHOICES)
+	post_graduation = models.CharField(_('Post Graduation Percentage'), max_length=2, blank=True, choices=PERCENTAGE_CHOICES)
+	doctorate = models.CharField(_('Doctorate Percentage'), max_length=2, blank=True, choices=PERCENTAGE_CHOICES)
+
 
 class PlacementSession(models.Model):
 	association = models.OneToOneField(Association, related_name="session")
-
 	students = models.ManyToManyField(Student, related_name="sessions", blank=True)
 	status = models.CharField(_('Current status'), 
 			help_text="Mention this placement session's current status for shortlisted students' knowledge. Eg. Resume Submission, Final Round, HR Round, Personal Interview Round", 
@@ -60,10 +70,10 @@ class PlacementSession(models.Model):
 			default=False
 	)
 	last_modified_by = models.CharField(max_length=2, choices=SOURCE, default=SOURCE[0][0])
+	selection_criteria = models.ForeignKey(SelectionCriteria, related_name="sessions")
 
 	def __str__(self):
 		return self.association.company.__str__() + ' placement session in ' + self.association.college.__str__()
-
 
 class Dissociation(models.Model):
 	company = models.ForeignKey(Company, related_name="dissociations")

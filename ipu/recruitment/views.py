@@ -6,12 +6,12 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
-from account.views import handle_user_type, get_relevant_reversed_url, get_creation_url, get_home_url
+from account.views import handle_user_type, get_relevant_reversed_url, get_creation_url, get_home_url, get_type_created
 from college.models import College
 from company.models import Company
 from faculty.models import Faculty
-from recruitment.forms import AssActorsOnlyForm, AssWithProgrammeForm, AssociationForm, SessionEditForm, DissociationForm, DeadlineForm
-from recruitment.models import Association, PlacementSession, Dissociation
+from recruitment.forms import AssActorsOnlyForm, AssWithProgrammeForm, AssociationForm, SessionEditForm, DissociationForm, CreateCriteriaForm, CriteriaEditForm
+from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
 from student.models import Student, Programme, Stream
 
 import openpyxl as excel, time
@@ -172,8 +172,15 @@ def create_session(request):
 				association_id = settings.HASHID_ASSOCIATION.decode(request.GET.get('ass'))[0]
 				association = Association.objects.get(pk=association_id)
 			except: #To account for both KeyError as well as Association.DoesNotExist
-				return JsonResponse(status=400, data={'error': 'Unexpected error occurred. Please refresh the page and try again'})
-			f = DeadlineForm(association=association)
+				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+			# validating whether the college/company is making request for its own association
+			requester = validate_associator(request, association)
+			creation = requester.get('creation', False)
+			if creation:
+				return JsonResponse(status=400, data={'location': creation})
+			if not requester.get('authorized', True):
+				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
+			f = CreateCriteriaForm(association=association)
 			html = render(request, 'recruitment/create_session.html', {'session_creation_form': f}).content.decode('utf-8')
 			return JsonResponse(status=200, data={'html':html})
 		
@@ -182,13 +189,25 @@ def create_session(request):
 				association_id = settings.HASHID_ASSOCIATION.decode(request.POST.get('token'))[0]
 				association = Association.objects.get(pk=association_id)
 			except:
-				return JsonResponse(status=400, data={'error': 'Unexpected error occurred. Please refresh the page and try again'})
-			f = DeadlineForm(request.POST, association=association)
+				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+			# validating whether the college/company is making request for its own association
+			requester = validate_associator(request, association)
+			creation = requester.get('creation', False)
+			if creation:
+				return JsonResponse(status=400, data={'location': creation})
+			if not requester.get('authorized', True):
+				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
+			try:
+				association.session
+				return JsonResponse(status=400, data={'error': 'Session already exists'})
+			except PlacementSession.DoesNotExist:
+				pass
+			f = CreateCriteriaForm(request.POST, association=association)
 			if f.is_valid():
-				session = f.save(commit=False)
-				session.last_modified_by = type
-				session.save()
-				f.save_m2m()
+				data = f.cleaned_data
+				print(f.fields)
+				criterion,created = SelectionCriteria.objects.get_or_create(current_year=data['current_year'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
+				session = PlacementSession.objects.create(association=association,application_deadline=data['application_deadline'],last_modified_by=type, selection_criteria=criterion)
 				association.approved = True
 				association.save()
 				return JsonResponse(status=200, data={'location': reverse(get_home_url(type))})
@@ -208,13 +227,20 @@ def edit_session(request, sess):
 		if request.method == 'POST':
 			sess_post = request.POST.get('token')
 			if sess != sess_post:
-				return JsonResponse(status=400, data={'error': 'Invalid placement session'})
+				return JsonResponse(status=400, data={'error': 'Invalid session requested'})
 			try:
 				session_id = settings.HASHID_PLACEMENTSESSION.decode(sess)[0]
 				session = PlacementSession.objects.get(pk=session_id)
 			except:
-				return JsonResponse(status=400, data={'error': 'Unexpected error occurred. Please refresh the page and try again.'})
+				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
 			print(request.POST.getlist('students'))
+			# validating whether the college/company is making request for its own association
+			requester = validate_associator(request, session.association)
+			creation = requester.get('creation', False)
+			if creation:
+				return JsonResponse(status=400, data={'location': creation})
+			if not requester.get('authorized', True):
+				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
 			f = SessionEditForm(request.POST, instance=session)
 			if f.is_valid():
 				session = f.save(commit=False)
@@ -233,9 +259,70 @@ def edit_session(request, sess):
 				session_id = settings.HASHID_PLACEMENTSESSION.decode(sess)[0]
 				session = PlacementSession.objects.get(pk=session_id)
 			except: #To account for both KeyError as well as PlacementSession.DoesNotExist
-				return JsonResponse(status=400, data={'error': 'Unexpected error occurred. Please refresh the page and try again.'})
+				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+			# validating whether the college/company is making request for its own association
+			requester = validate_associator(request, session.association)
+			creation = requester.get('creation', False)
+			if creation:
+				return redirect(creation)
+			if not requester.get('authorized', True):
+				return redirect(reverse(get_home_url(requester['type'])))
 			f = SessionEditForm(instance=session)
 			return render(request, 'recruitment/edit_session.html', {'session_edit_form': f, 'sessid': sess})
+		else:
+			return handle_user_type(request)
+
+@require_http_methods(['GET','POST'])
+@login_required
+def edit_criteria(request, sess):
+	if request.is_ajax():
+		type = request.user.type
+		if type not in ['F', 'C', 'CO']:
+			return JsonResponse(status=403, data={'location': get_relevant_reversed_url(request)})
+		if request.method == 'POST':
+			sess_post = request.POST.get('token')
+			if sess != sess_post:
+				return JsonResponse(status=400, data={'error': 'Invalid session requested'})
+			try:
+				session_id = settings.HASHID_PLACEMENTSESSION.decode(sess)[0]
+				session = PlacementSession.objects.get(pk=session_id)
+			except:
+				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+			# validating whether the college/company is making request for its own association
+			requester = validate_associator(request, session.association)
+			creation = requester.get('creation', False)
+			if creation:
+				return JsonResponse(status=400, data={'location': creation})
+			if not requester.get('authorized', True):
+				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
+			f = CriteriaEditForm(request.POST, session=session, instance=session.selection_criteria)
+			if f.is_valid():
+				data = f.cleaned_data
+				criterion,created = SelectionCriteria.objects.get_or_create(current_year=data['current_year'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
+				session.selection_criteria = criterion
+#				session.last_modified_by = type
+				session.save()
+				return JsonResponse(status=200, data={'location': reverse(get_home_url(type))})
+			else:
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		else:
+			return JsonResponse(status=405, data={'error': 'Method Not Allowed'})
+	else:
+		if request.method == 'GET':
+			try:
+				session_id = settings.HASHID_PLACEMENTSESSION.decode(sess)[0]
+				session = PlacementSession.objects.get(pk=session_id)
+			except: #To account for both KeyError as well as PlacementSession.DoesNotExist
+				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+			# validating whether the college/company is making request for its own association
+			requester = validate_associator(request, session.association)
+			creation = requester.get('creation', False)
+			if creation:
+				return redirect(creation)
+			if not requester.get('authorized', True):
+				return redirect(reverse(get_home_url(requester['type'])))
+			f = CriteriaEditForm(session=session, instance=session.selection_criteria)
+			return render(request, 'recruitment/edit_criteria.html', {'criteria_edit_form': f, 'sessid': sess})
 		else:
 			return handle_user_type(request)
 
@@ -453,3 +540,30 @@ def generate_excel(request, sess):
 		return response
 #	else:
 #		return HttpResponse('')
+
+
+# -------------------------------
+def validate_associator(request, association):
+	data = {}
+	requester = get_type_created(request.user)
+	type = requester.pop('user_type')
+	data['type'] = type
+	if not requester: # requester dict empty i.e. no profile
+		data['creation'] = reverse(get_creation_url(type))
+		return data
+	if type == 'CO':
+		company = requester.pop('profile')
+		if company != association.company:
+			data['authorized'] = False
+	elif type in ['F','C']:
+		college = None
+		if type == 'F':
+			faculty = requester.pop('profile')
+			college = faculty.college
+		else:
+			college = requester.pop('profile')
+		if college != association.college:
+			data['authorized'] = False
+	else:
+		data['authorized'] = False
+	return data

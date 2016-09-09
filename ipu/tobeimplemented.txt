@@ -1,0 +1,10 @@
+Barring placed students or interns from applying, viewing companies
+Adding a "Bar student from sitting in placements (both I and J)" option
+Confirm whether to remove a selected student from all current sessions (End Session)
+Downloading resumes or viewing
+If a student is a placed, is he/she allowed to view other job/internship opportunities
+If a student is an intern, is he/she allowed to apply for other jobs
+Handling additional company requirements.. Like student shouldn't have any backs, or filtering on the basis of percentage
+
+-- IMPORTANT --
+Disable form 'submit' after a request, re-enable on success. Also, use get_or_create in views to avoid multiple creation due to multiple submits

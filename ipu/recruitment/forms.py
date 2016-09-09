@@ -5,8 +5,10 @@ from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from college.models import College, Programme, Stream
 from company.models import Company
-from recruitment.models import Association, PlacementSession, Dissociation
+from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
 from student.models import Student
+from material import *
+import datetime
 
 class AssActorsOnlyForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -146,69 +148,65 @@ class AssociationForm(forms.ModelForm):
 		model = Association
 		fields = ['college', 'company', 'programme', 'streams', 'type', 'salary', 'desc']
 
-"""
-class PlacementSessionForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		self.association = kwargs.pop('association')
-		super(PlacementSessionForm, self).__init__(*args, **kwargs)
-		self.fields['students'].queryset = Student.objects.filter(college=self.association.college, stream__in=self.association.streams.all())
-		self.initial['token'] = settings.HASHID_ASSOCIATION.encode(self.association.pk)
-	
-	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': 'True'}))
-	
-	def save(self, commit=True):
-		session = super(PlacementSessionForm, self).save(commit=False)
-		session.association = self.association
-		if commit:
-			try:
-				session.save()
-			except IntegrityError as error:
-				raise forms.ValidationError(_('Error occurred.'))
-			except ValidationError as error:
-				raise forms.ValidationError(_('Error occurred.'))
-		return session
-	
-	class Meta:
-		model = PlacementSession
-		fields = ['students', 'status', 'application_deadline', 'ended']
-"""
-
 class SessionEditForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(SessionEditForm, self).__init__(*args, **kwargs)
 		self.fields['students'].queryset = Student.objects.filter(college=self.instance.association.college, stream__in=self.instance.association.streams.all())
 		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.instance.pk)
 	
-	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': 'True'}))
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
+	
+	def clean_application_deadline(self):
+		date = self.cleaned_data['application_deadline']
+		if date and date <= datetime.date.today():
+			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
+		return date
 	
 	class Meta:
 		model = PlacementSession
 		fields = ['students', 'status', 'application_deadline', 'ended']
 	
-
-class DeadlineForm(forms.ModelForm):
+class CreateCriteriaForm(forms.ModelForm):
+	layout = Layout(
+			Row('application_deadline'),
+			Row(Span8('current_year'), Span4('is_sub_back')),
+			Row(Span6('tenth'), Span6('twelfth')),
+			Row(Span4('graduation'), Span4('post_graduation'), Span4('doctorate')),
+		)
+	
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
+	application_deadline = forms.DateField(label=_('Application Deadline'), help_text=_("Choose last date for students to apply. If no event is scheduled for now, choose an arbitrary future date."),input_formats=['%d %B, %Y','%d %B %Y','%d %b %Y','%d %b, %Y'])
+	
 	def __init__(self, *args, **kwargs):
 		self.association = kwargs.pop('association')
-		super(DeadlineForm, self).__init__(*args, **kwargs)
+		super(CreateCriteriaForm, self).__init__(*args, **kwargs)
 		self.initial['token'] = settings.HASHID_ASSOCIATION.encode(self.association.pk)
+
+	def clean_application_deadline(self):
+		date = self.cleaned_data['application_deadline']
+		if date and date <= datetime.date.today():
+			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
+		return date
 	
-	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': 'True'}))
+	"""
+# Not overriding the save method because get_or_create has to be used in views instead of saving here and then catching IntegrityError (Duplicate Entry)
+	"""
+
+	class Meta:
+		model = SelectionCriteria
+		fields = '__all__'
+
+class CriteriaEditForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		self.session = kwargs.pop('session')
+		super(CriteriaEditForm, self).__init__(*args, **kwargs)
+		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.session.pk)
 	
-	def save(self, commit=True):
-		session = super(DeadlineForm, self).save(commit=False)
-		session.association = self.association
-		if commit:
-			try:
-				session.save()
-			except IntegrityError as error:
-				raise forms.ValidationError(_('Error occurred.'))
-			except ValidationError as error:
-				raise forms.ValidationError(_('Error occurred.'))
-		return session
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
 	
 	class Meta:
-		model = PlacementSession
-		fields = ['application_deadline']
+		model = SelectionCriteria
+		fields = '__all__'
 
 class DissociationForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):

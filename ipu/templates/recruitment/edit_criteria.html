@@ -1,0 +1,25 @@
+{% extends 'account/base.html' %}
+{% load staticfiles %}
+{% load material_form %}
+{% block title %}Edit Criteria{% endblock %}
+{% block content %}
+<!--<script type="text/javascript" src="{% static 'material/js/materialize.js' %}"></script> -->
+	<h4 class="center" style="color: goldenrod;">Edit Criteria</h4>
+	<div class="col s12" id="edit-criteria-div">
+		<form action="{% url 'edit_criteria' sessid %}" method='POST' class="col s8 offset-s2" id="edit-criteria-form">
+			{% csrf_token %}
+			{% form form=criteria_edit_form %}{% endform %}
+			<div class="row">
+				<button class="btn btn-waves-light col s8 offset-s2" style="width: 80%">Update Criteria</button>
+			</div>
+		</form>
+	</div>
+{% endblock %}
+{% block scripts %}
+	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
+	<script>
+		$(document).ready(function() {
+			Settings.init(['edit-criteria-form']);
+		});
+	</script>
+{% endblock %}

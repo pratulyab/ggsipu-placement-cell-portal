@@ -337,6 +337,7 @@ def companies_in_my_college(request):
 				return JsonResponse(status=200, data={'form': html})
 			
 			associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(salary__gte=student.salary_expected).filter(session__application_deadline__gte=datetime.date.today())
+			associations = associations.order_by('session__application_deadline')
 			placement_sessions_assoc = [a['association'] for a in student.sessions.filter( Q(application_deadline__lt=datetime.date.today()) | Q(ended=True)).values('association')]
 			associations = associations.exclude(pk__in=placement_sessions_assoc)
 			jobs = associations.filter(type='J')
@@ -393,6 +394,12 @@ def apply_to_company(request, sess): # handling withdrawl as well
 				return JsonResponse(status=400, data={'error': 'Invalid request'})
 			if student.college != session.association.college or student.stream not in session.association.streams.all() or session.application_deadline < datetime.date.today():
 				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
+			association = session.association
+			if (association.type == 'J' and student.is_placed) or (association.type == 'I' and student.is_intern):
+				type = dict(association.PLACEMENT_TYPE)[association.type]
+#				msg = "Sorry, you cannot apply to more companies for %s as you are already selected for %s at %s" % (type,type,student.sessions.get().association.company.name.title())
+				msg = "Sorry, you cannot apply to more companies for %s as you are already selected for %s." % (type,type)
+				return JsonResponse(status=400, data={'error': msg})
 			students_sessions = student.sessions.all()
 			"""
 			sessions_students = session.students.all()
