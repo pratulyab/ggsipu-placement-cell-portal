@@ -1,0 +1,155 @@
+ <div class="slider">
+    <ul class="slides">
+      <li>
+        <img src="http://lorempixel.com/580/250/nature/1"> <!-- random image -->
+        <div class="caption center-align">
+          <h3>This is our big Tagline!</h3>
+          <h5 class="light grey-text text-lighten-3">Here's our small slogan.</h5>
+        </div>
+      </li>
+      <li>
+        <img src="http://lorempixel.com/580/250/nature/2"> <!-- random image -->
+        <div class="caption left-align">
+          <h3>Left Aligned Caption</h3>
+          <h5 class="light grey-text text-lighten-3">Here's our small slogan.</h5>
+        </div>
+      </li>
+      <li>
+        <div class="black_overlay" id="fade"></div>
+
+<div id="corner-buttons" class="hide-on-small-only">
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('student-sign-up').style.display='flex';document.getElementById('fade').style.display='flex'">sign up as student</a>
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('recruiter-sign-up').style.display='flex';document.getElementById('fade').style.display='flex'">sign up as recruiter</a>
+</div>
+
+<div id="corner-buttons-small" class="hide-on-large-only hide-on-med-only">
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('student-sign-up').style.display='flex';document.getElementById('fade').style.display='flex'">sign up as student</a>
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('recruiter-sign-up').style.display='flex';document.getElementById('fade').style.display='flex'">sign up as recruiter</a>
+</div>
+
+<div id="student-sign-up" class="white_content"> 
+       <a href = "javascript:void(0)" onclick = "document.getElementById('student-sign-up').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-2x" id="cross"></i>
+       </a>
+       <div class="row" id="student-signup-mainbox">
+      <div class="col s12 m8 l6" id="student-signup-box">
+        <div class="card-panel">
+          <h4> Student Signup </h4>
+          <div id="student-signup-div">
+            <form method="POST" action="{% url 'student_signup' %}" id="student-signup-form">
+              {% csrf_token %}
+              {% form form=student_signup_form %}{% endform %}
+              <div class="row">
+                <div class="col s12">
+                  <br>
+                  <button type="submit" id="student-signup-btn" class="btn waves-effect waves-light-right">Signup<i class="material-icons right">send</i></button>
+                </div>
+              </div>
+              <br>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div> 
+
+ </div>
+    <!--for for recruiter sign up-->
+    <div id="recruiter-sign-up" class="white_content"> 
+       <a href = "javascript:void(0)" onclick = "document.getElementById('recruiter-sign-up').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-2x" id="cross"></i>
+       </a>
+       <div class="row" id="recruiter-signup-mainbox">
+        <div class="col s12 m8 l6" id="recruiter-signup-box">
+          <div class="card-panel">
+            <h4> Recruiter Signup </h4>
+            <div id="signup-div">
+              <form method="POST" action="{% url 'company_signup' %}" id="signup-form">
+                {% csrf_token %}
+                {% form form=signup_form %}{% endform %}
+                <div class="row">
+                  <div class="col s12">
+                    <br>
+                    <button type="submit" id="signup-btn" class="btn waves-effect waves-light-right">Signup<i class="material-icons right">send</i></button>
+                  </div>
+                </div>
+                <br>
+              </form>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    </div>
+
+
+   <img src="{% static 'account/images/ipu-logo.png' %}" class="hide-on-small-only" height="150px" width="180px">
+
+   <img src="{% static 'account/images/ipu-logo.png' %}" class="hide-on-med-only hide-on-large-only" height="100px" width="120px">
+   <h4 id="heading">LOGIN</h4>
+
+      <div id="form-box">
+           <div class="row">
+             <div class="col s12 m12 l12">
+                <ul class="tabs">
+                  <li class="tab col s3"><a class="active" href="#test1">Student</a></li>
+                  <li class="tab col s3"><a  href="#test2">Other</a></li>
+                </ul>
+             </div>
+               <div id="test1" class="col s12 m12 l12">
+                  <div class="row">
+                        <div class="col s12 m12 l12">
+                          <div class="card-panel">
+                            <div id="student-login-div">
+                              <form method="POST" action="{% url 'student_login' %}" id="student-login-form">
+                                {% csrf_token %}
+                                {% form form=student_login_form %}{% endform %}
+                                 <div class="col s6">
+                                    <a href="{% url 'forgot_password' %}"> Forgot Password? </a>
+                                  </div>
+                                <div class="row">
+                                  <div class="col s12">
+                                    <br>
+                                    <button type="submit" id="student-login-btn" class="btn waves-effect waves-light-right">Log In</button>
+                                  </div>
+                                </div>
+                                <br>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+               </div>
+               <div id="test2" class="col s12">
+                   <div class="row">
+                        <div class="col s12 m12 l12">
+                          <div class="card-panel">
+                            <div id="login-div">
+                              <form method="POST" action="{% url 'login' %}" id="login-form">
+                                {% csrf_token %}
+                                {% form form=login_form %}{% endform %}
+                                <div class="col s6">
+                                    <a href="{% url 'forgot_password' %}"> Forgot Password? </a>
+                                  </div>
+                                <div class="row">
+                                  <div class="col s12">
+                                    <br>
+                                    <button type="submit" id="login-btn" class="btn waves-effect waves-light-right">Log In</button>
+                                  </div>
+                                </div>
+                                <br>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+               </div>
+
+           </div>
+        
+     </div>
+
+
+      </li>
+    
+    </ul>
+  </div>

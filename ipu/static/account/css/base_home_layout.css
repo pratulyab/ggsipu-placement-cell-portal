@@ -45,7 +45,14 @@ nav .brand-logo {
 {
     width: 450px;
     margin-top: 10px;
+    max-height: 400px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+
 }
+
 
 #dropdown1 li i
 {
@@ -68,6 +75,21 @@ span.badge {
     cursor: default;
 }
 
+.collapsible-header
+{
+    max-width:450px;
+    white-space: normal;
+    line-height: 20px;
+    font-size: 15px;
+    padding-top: 3px;
+
+}
+
+#from
+{
+  white-space: nowrap;
+}
+
 #noti-head
 {   
     display: flex;
@@ -78,6 +100,19 @@ span.badge {
     font-family: bold;
     background: #2e3d49;
 }
+
+#noti-foot
+{   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 15px;
+    font-family: bold;
+    background: #2e3d49;
+}
+
+
 
 nav ul a {
     padding: 0 10px;
