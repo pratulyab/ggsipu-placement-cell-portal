@@ -14,7 +14,7 @@ a {
 }
 
 a:hover {
-    color: coral;
+    color: #02ccba;
     font-weight: 500;
     opacity: 1 ;
 }

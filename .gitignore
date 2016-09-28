@@ -142,3 +142,9 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Celery
+celerybeat-schedule.db
+
+# Redis
+dump.rdb

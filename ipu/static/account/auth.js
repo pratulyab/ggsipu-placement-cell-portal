@@ -1,4 +1,4 @@
-var Landing = (function() {
+var Auth = (function() {
 	'use strict';
 
 	function clearErrors(el){

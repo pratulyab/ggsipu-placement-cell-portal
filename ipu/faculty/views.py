@@ -10,7 +10,8 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from account.models import CustomUser, SocialProfile
 from account.forms import AccountForm, SocialProfileForm
-from account.views import handle_user_type, send_activation_email, get_relevant_reversed_url, get_home_url
+from account.tasks import send_activation_email_task
+from account.views import handle_user_type, get_relevant_reversed_url, get_home_url
 from college.models import College
 from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm
 from faculty.models import Faculty
@@ -32,7 +33,7 @@ def faculty_signup(request):
 				faculty = f.save()
 				Faculty.objects.create(profile=faculty, college=user.college)
 				faculty = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
-				send_activation_email(faculty, get_current_site(request).domain)
+				send_activation_email_task.delay(faculty.id, get_current_site(request).domain)
 				return JsonResponse(status=200, data={'location': reverse(get_home_url('C'))})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})

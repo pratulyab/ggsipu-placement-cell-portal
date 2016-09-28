@@ -16,12 +16,13 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import url, include, static
 from django.contrib import admin
-from account.views import landing, login, view_profile, logout, search
+from account.views import auth, landing, login, view_profile, logout, search
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 	url(r'^admin$', admin.site.urls),
 	url(r'^$', landing, name='landing'),
+	url(r'^auth/$', auth, name='auth'),
 	url(r'^login/$', login, name='login'),
 	url(r'^account/', include('account.urls')),
 	url(r'^college/', include('college.urls')),

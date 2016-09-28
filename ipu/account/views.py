@@ -31,8 +31,14 @@ import re
 def landing(request):
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_request=True)
+	return render(request, 'account/landing.html', {})
+
+@require_GET
+def auth(request):
+	if request.user.is_authenticated():
+		return handle_user_type(request, redirect_request=True)
 	context = {'login_form': LoginForm(prefix='l'), 'signup_form': SignupForm(prefix='s'), 'student_login_form': StudentLoginForm(prefix='sl'), 'student_signup_form': StudentSignupForm(prefix='ss')}
-	return render(request, 'account/landing.html', context)
+	return render(request, 'account/auth.html', context)
 
 @require_POST
 def login(request):
@@ -311,11 +317,12 @@ def get_relevant_reversed_url(request):
 
 # Methods for facilitation. No 'request' requirement
 
-def send_activation_email(user, domain):
+def send_activation_email(uid, domain):
+	user = CustomUser.objects.get(pk=uid)
 	email_body_context = {
 		'username': user.username,
 		'token': urlsafe_base64_encode(force_bytes(user.username)),
-		'uid': user.id,
+		'uid': uid,
 		'protocol': 'http',
 		'domain': domain
 	}

@@ -8,7 +8,8 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from account.forms import SignupForm, AccountForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
-from account.views import handle_user_type, send_activation_email, get_creation_url, get_home_url, get_relevant_reversed_url
+from account.tasks import send_activation_email_task
+from account.views import handle_user_type, get_creation_url, get_home_url, get_relevant_reversed_url
 from college.forms import CollegeCreationForm, CollegeEditForm
 from college.models import College
 from faculty.forms import FacultySignupForm
@@ -39,7 +40,7 @@ def college_signup(request):
 				auth_login(request, college)
 				context['email'] = college.email
 				context['profile_creation'] = request.build_absolute_uri(reverse('create_college'))
-				send_activation_email(college, get_current_site(request).domain)
+				send_activation_email_task.delay(college.id, get_current_site(request).domain)
 				return render(request, 'account/post_signup.html', context)
 	return render(request, 'college/signup.html', {'college_signup_form': f})
 

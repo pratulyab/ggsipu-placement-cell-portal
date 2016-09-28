@@ -9,7 +9,8 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from account.forms import SignupForm, AccountForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
-from account.views import handle_user_type, send_activation_email, get_creation_url, get_home_url, get_relevant_reversed_url
+from account.tasks import send_activation_email_task
+from account.views import handle_user_type, get_creation_url, get_home_url, get_relevant_reversed_url
 from company.forms import CompanyCreationForm, CompanyEditForm
 from company.models import Company
 from notification.models import Notification
@@ -28,7 +29,7 @@ def company_signup(request):
 		user = f.save(user_type='CO')
 		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 #		auth_login(request, user)
-		send_activation_email(user, get_current_site(request).domain)
+		send_activation_email_task.delay(user.id, get_current_site(request).domain)
 		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse('create_company'))}
 		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')
 		return JsonResponse(data = {'success': True, 'render': html})
