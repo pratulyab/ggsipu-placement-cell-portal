@@ -7,109 +7,262 @@
 {% block head %}
 	<link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
 	<link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
+	<link type="text/css" rel="stylesheet" href="{% static 'account/css/landing.css' %}" />
 {% endblock %}
 
 {% block content %}
+<div id="modal1" class="modal bottom-sheet">
+    <div class="modal-content">
+      <h4>Modal Header</h4>
+      <p>A bunch of text</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+</div>
+
 	<div class="slider fullscreen">
 		<ul class="slides">
 			<li>
-				<img class="responsive-img circle" src="{% static 'images/ipu-logo.png' %}" style="height: 200px !important; width: 200px !important">
+			  <div id="first-slider">
+			   
+				
 				<div class="caption center-align">
 					<h3>Guru Gobind Singh Indraprastha University</h3>
-					<h5 class="light grey-text text-lighten-3">Training & Placement Cell</h5>
+					<h5 class="light grey-text text-lighten-3">Training & Placement Cell</h5>\
+					<img id="logo" src="{% static 'images/ipu-logo.png' %}" style="height: 180px !important; width: 200px !important">
 				</div>
+			  </div>	
 			</li>
 			<li class="row" style="overflow-y: scroll">
-				<h3 class="center">Recruiters Associated With Us</h3>
+			   <div id="second-slider">
+				<h3 class="light grey-text text-lighten-3 center">Recruiters Associated With Us</h3>
 				<div class="col s10 offset-s1">
-					<div class="col s10 m5 l3 offset-s1">
+					
+					<div class="col s10 m5 l2 offset-s1 recruiter">
 						<div class="recruiter-logo">
-							<a href=""><img src="/media/TCS.png" width="200" height="101" alt="TCS" title="Tata Consultancy Services"></a>
+							<a href=""><img src="{% static 'images/AmazonLogo.jpg' %}"></a>
 						</div>  
 						<div class="recruiter-label center">
-							Tata Consultancy Services
+							Amazon
 						</div>
 					</div>
-					<div class="col s10 m5 l3 offset-s1">
+					<div class="col s10 m5 l2 offset-s1 recruiter">
 						<div class="recruiter-logo">
-							<a href=""><img src="/media/TCS.png" width="200" height="101" alt="TCS" title="Tata Consultancy Services"></a>
+							<a href=""><img src="{% static 'images/flipkartlogo.png' %}"></a>
 						</div>  
 						<div class="recruiter-label center">
-							Tata Consultancy Services
+							Flipkart
 						</div>
 					</div>
-					<div class="col s10 m5 l3 offset-s1">
+					<div class="col s10 m5 l2 offset-s1 recruiter">
 						<div class="recruiter-logo">
-							<a href=""><img src="/media/TCS.png" width="200" height="101" alt="TCS" title="Tata Consultancy Services"></a>
+							<a href=""><img src="{% static 'images/snapdeal-new-logo.png' %}"></a>
 						</div>  
 						<div class="recruiter-label center">
-							Tata Consultancy Services
+							Snapdeal
 						</div>
+
 					</div>
-					<div class="col s10 m5 l3 offset-s1">
+					<div class="col s10 m5 l2 offset-s1 recruiter">
 						<div class="recruiter-logo">
-							<a href=""><img src="/media/TCS.png" width="200" height="101" alt="TCS" title="Tata Consultancy Services"></a>
+							<a href=""><img src="{% static 'images/Microsoft-logo.png' %}"></a>
 						</div>  
 						<div class="recruiter-label center">
-							Tata Consultancy Services
+							Microsoft
 						</div>
+						
 					</div>
-					<div class="col s10 m5 l3 offset-s1">
+					<div class="col s10 m5 l2 offset-s1 recruiter">
 						<div class="recruiter-logo">
-							<a href=""><img src="/media/TCS.png" width="200" height="101" alt="TCS" title="Tata Consultancy Services"></a>
+							<a href=""><img src="{% static 'images/Adobe_logo.jpg' %}"></a>
 						</div>  
 						<div class="recruiter-label center">
-							Tata Consultancy Services
+							Adobe
 						</div>
+						
 					</div>
-					<div class="col s10 m5 l3 offset-s1">
+					<div class="col s10 m5 l2 offset-s1 recruiter">
 						<div class="recruiter-logo">
-							<a href=""><img src="/media/TCS.png" width="200" height="101" alt="TCS" title="Tata Consultancy Services"></a>
+							<a href=""><img src="{% static 'images/TCS-Logo.jpg' %}"></a>
 						</div>  
 						<div class="recruiter-label center">
-							Tata Consultancy Services
+							TCS
 						</div>
+						
 					</div>
-					<div class="col s10 m5 l3 offset-s1">
+					<div class="col s10 m5 l2 offset-s1 recruiter">
 						<div class="recruiter-logo">
-							<a href=""><img src="/media/TCS.png" width="200" height="101" alt="TCS" title="Tata Consultancy Services"></a>
+							<a href=""><img src="{% static 'images/ibm_logo.jpg' %}"></a>
 						</div>  
 						<div class="recruiter-label center">
-							Tata Consultancy Services
+							IBM
 						</div>
+						
 					</div>
-					<div class="col s10 m5 l3 offset-s1">
+					<div class="col s10 m5 l2 offset-s1 recruiter">
 						<div class="recruiter-logo">
-							<a href=""><img src="/media/TCS.png" width="200" height="101" alt="TCS" title="Tata Consultancy Services"></a>
+							<a href=""><img src="{% static 'images/Wipro_Logo.png' %}"></a>
 						</div>  
 						<div class="recruiter-label center">
-							Tata Consultancy Services
+							Wipro
 						</div>
+						
 					</div>
-					<div class="col s10 m5 l3 offset-s1">
+					<div class="col s10 m5 l2 offset-s1 recruiter">
 						<div class="recruiter-logo">
-							<a href=""><img src="/media/TCS.png" width="200" height="101" alt="TCS" title="Tata Consultancy Services"></a>
+							<a href=""><img src="{% static 'images/opera-solutions-logo.png' %}"></a>
 						</div>  
 						<div class="recruiter-label center">
-							Tata Consultancy Services
+							Opera Solutions
 						</div>
+						
 					</div>
-					<div class="col s10 m5 l3 offset-s1">
+					<div class="col s10 m5 l2 offset-s1 recruiter">
 						<div class="recruiter-logo">
-							<a href=""><img src="/media/TCS.png" width="200" height="101" alt="TCS" title="Tata Consultancy Services"></a>
+							<a href=""><img src="{% static 'images/Infosys-Logo.jpg' %}"></a>
 						</div>  
 						<div class="recruiter-label center">
-							Tata Consultancy Services
+							Infosys
 						</div>
+						
 					</div>
 				</div>
+			   </div>	
 			</li>
-			<li>
-				<img src="">
-				<div class="caption right-align">
-					<h3>Right Aligned Caption</h3>
-					<h5 class="light grey-text text-lighten-3">Here's our small slogan.</h5>
+			<li class="row" style="overflow-y: scroll">
+			  <div id="third-slider">
+			   <h3 class="light grey-text text-lighten-3 center">USS</h3>
+			   <div class="col s10 offset-s1">
+					
+					<div class="col s10 m5 l2 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/ipu-logo2.jpg' %}"></a>
+						</div>  
+						<div class="college-label center">
+							USICT
+						</div>
+						
+					</div>
+
+					<div class="col s10 m5 l2 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/ipu-logo2.jpg' %}"></a>
+						</div>  
+						<div class="college-label center">
+							USLLS
+						</div>
+						
+					</div>
+					<div class="col s10 m5 l2 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/ipu-logo2.jpg' %}"></a>
+						</div>  
+						<div class="college-label center">
+							USMS
+						</div>
+						
+					</div>
+
+					<div class="col s10 m5 l2 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/ipu-logo2.jpg' %}"></a>
+						</div>  
+						<div class="college-label center">
+							USBT
+						</div>
+						
+					</div>
+					<div class="col s10 m5 l2 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/ipu-logo2.jpg' %}"></a>
+						</div>  
+						<div class="college-label center">
+							USCT
+						</div>
+						
+					</div>
+					
+
+					
+
 				</div>
+				<h3 class="light grey-text text-lighten-3 center">Affiliated colleges</h3>
+			   <div class="col s10 offset-s1 offset-l2">
+					
+					<div class="col s10 m5 l1 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/MAIT-Logo.png' %}"></a>
+						</div>  
+						<div class="afcollege-label center">
+							Maharaja Agrasen Institute of Technology
+						</div>
+						
+					</div>
+
+					<div class="col s10 m5 l1 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/bpit.png' %}"></a>
+						</div>  
+						<div class="afcollege-label center">
+							Bhagwan Pashuram Institute of Technology
+						</div>
+						
+					</div>
+
+					<div class="col s10 m5 l1 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/niec_logo.png' %}"></a>
+						</div>  
+						<div class="afcollege-label center">
+							Northern <br> India Engineering College
+						</div>
+						
+					</div>
+
+					<div class="col s10 m5 l1 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/Gb.jpg' %}"></a>
+						</div>  
+						<div class="afcollege-label center">
+							Govind Ballabh <br> Pant Engineering College
+						</div>
+						
+					</div>
+					<div class="col s10 m5 l1 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/msit.jpg' %}"></a>
+						</div>  
+						<div class="afcollege-label center">
+							Maharaja Surajmal Institute of Technology
+						</div>
+						
+					</div>
+					<div class="col s10 m5 l1 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/HMR.jpg' %}"></a>
+						</div>  
+						<div class="afcollege-label center">
+							HMR Institute of Technology & Managemen
+						</div>
+						
+					</div>
+					<div class="col s10 m5 l1 offset-s1 college">
+					  <div class="recruiter-logo">
+							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/GTBIT.png' %}"></a>
+						</div>  
+						<div class="afcollege-label center">
+							Guru Tegh Bahadur Institute of Technology 
+						</div>
+						
+					</div>
+
+
+
+					
+				</div>
+			 </div>
+			 	
 			</li>
 		</ul>
 	</div>
@@ -120,6 +273,19 @@
 	<script>
 		$(document).ready(function() {
 			$('.slider').slider({full_width: true});
+
 		});
+
+		 $(document).ready(function(){
+    // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+    $('.modal-trigger').leanModal();
+  });
+
+		 $('.modal-trigger').leanModal({
+      ready: function() { $('.slider').slider('pause'); }, // Callback for Modal open
+      complete: function() { $('.slider').slider('start'); } // Callback for Modal close
+    }
+  );
+      
 	</script>
 {% endblock %}

@@ -1,0 +1,76 @@
+html {
+    height: 100%;
+    background: url("../images/USICT.jpg") no-repeat center fixed;
+    background-size: cover;
+}
+
+li
+{
+
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.slider .slides {
+    
+    background: none;
+}
+
+
+#logo
+{
+	margin-top: 20px;
+}
+
+
+.recruiter
+{
+	background-color: #eeeeee;
+	margin: 25px;
+	padding: 0px;
+
+}
+
+.recruiter-label
+{
+	margin-top: -7px;
+	background-color: #337ab7;
+	color: white;
+	font-size: 18px;
+}
+
+
+.college
+{
+	background-color: #eeeeee;
+	margin: 30px;
+	margin-top: 10px;
+	padding: 0px;
+
+}
+
+
+.college-label
+{
+	margin-top: -7px;
+	background-color: #337ab7;
+	color: white;
+	font-size: 15px;
+}
+
+.afcollege-label
+{
+	margin-top: -7px;
+	background-color: #337ab7;
+	color: white;
+	font-size: 10px;
+}
+
+
+.row .col {
+
+    padding: 0px
+}
+
+.modal.bottom-sheet {
+    min-height: 45%;
+}
