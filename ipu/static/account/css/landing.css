@@ -74,3 +74,21 @@ li
 .modal.bottom-sheet {
     min-height: 45%;
 }
+
+h5
+{
+	font-weight: bold;
+
+}
+
+h6
+{
+	font-size: 20px;
+
+}
+
+.modal-top
+{
+	display: flex;
+	justify-content: space-between;
+}
