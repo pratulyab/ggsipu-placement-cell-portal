@@ -37,6 +37,7 @@ var Auth = (function() {
 		clearErrors(form_id);
 		var url = $(form).attr('action');
 		var form_data = new FormData(form[0]);
+		$(form_id).off('submit');
 		$.ajax({
 			url: url,
 			type: 'POST',
@@ -54,6 +55,7 @@ var Auth = (function() {
 			error: function(xhr, status, error){
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id, prefix);
+				$(form_id).on('submit', submitForm);
 			}
 		});
 	}

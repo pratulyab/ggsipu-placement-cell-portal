@@ -1,0 +1,23 @@
+{% with criterion as c %}
+	{% if c.tenth %}
+		<p>Xth Percentage: <b>{{ c.tenth }}%</b></p>
+	{% endif %}
+	{% if c.twelfth %}
+		<p>XIIth Percentage: <b>{{ c.twelfth }}%</b></p>
+	{% endif %}
+	{% if c.graduation %}
+		<p>Graduation Percentage: <b>{{ c.graduation }}%</b></p>
+	{% endif %}
+	{% if c.post_graduation %}
+		<p>Post Graduation Percentage: <b>{{ c.post_graduation }}%</b></p>
+	{% endif %}
+	{% if c.doctorate %}
+		<p>Doctorate Percentage: <b>{{ c.doctorate }}%</b></p>
+	{% endif %}
+	{% if c.years %}
+		<p>Students of year(s) <b>{{ c.years }}</b> can appear</p>
+	{% endif %}
+	{% if c.is_sub_back %}
+		<p>Students with subject back allowed: <b>{{ c.is_sub_back|yesno:"Yes,No,Maybe"}}</b></p>
+	{% endif %}
+{% endwith %}

@@ -101,7 +101,7 @@ def create_notification(request):
 def get_notifications(request):
 	user = request.user
 	data_list = list()
-	notification_object_queryset = Notification.objects.filter(target = user)
+	notification_object_queryset = Notification.objects.filter(target = user).order_by('-creation_time')
 	notifications = serializers.serialize("json", notification_object_queryset, indent = 4)
 	for notification_object in notification_object_queryset:
 		data_dict = dict()

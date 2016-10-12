@@ -336,11 +336,28 @@ def companies_in_my_college(request):
 			if not student.salary_expected:
 				html = render(request, 'student/paygrade.html', {'paygrade_form': PaygradeForm()}).content.decode('utf-8')
 				return JsonResponse(status=200, data={'form': html})
+
+			if student.is_barred:
+				return JsonResponse(status=200, data={'barred': 'Sorry, you have been barred by your college. You cannot view/apply to various job and internship opportunities.'})
 			
 			associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(salary__gte=student.salary_expected).filter(session__application_deadline__gte=datetime.date.today())
 			associations = associations.order_by('session__application_deadline')
 			placement_sessions_assoc = [a['association'] for a in student.sessions.filter( Q(application_deadline__lt=datetime.date.today()) | Q(ended=True)).values('association')]
 			associations = associations.exclude(pk__in=placement_sessions_assoc)
+			# Eligibility
+			'''
+			eligible_criteria = set()
+			only_eligible_assoc = list()
+			for a in associations:
+				criterion = a.session.selection_criteria
+				if criterion in eligible_criteria:
+					only_eligible_assoc.append(a.pk)
+				else:
+					if criterion.check_eligibility(student):
+						eligible_criteria.add(criterion)
+						only_eligible_assoc.append(a.pk)
+			associations = associations.filter(pk__in=only_eligible_assoc)
+			'''
 			jobs = associations.filter(type='J')
 			enrolled_jobs = jobs.filter(session__students__pk__in = [student.pk])
 			unenrolled_jobs = jobs.exclude(pk__in = enrolled_jobs.values('pk'))
@@ -389,18 +406,24 @@ def apply_to_company(request, sess): # handling withdrawl as well
 			except Student.DoesNotExist:
 				return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
 			try:
-#				sess = request.GET.get('psid')
 				session = PlacementSession.objects.get(pk=settings.HASHID_PLACEMENTSESSION.decode(sess)[0])
 			except:
 				return JsonResponse(status=400, data={'error': 'Invalid request'})
+			if student.is_barred:
+				return JsonResponse(status=403, data={'error': 'Sorry, you have been barred by your college from placements.'})
 			if student.college != session.association.college or student.stream not in session.association.streams.all() or session.application_deadline < datetime.date.today():
 				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
 			association = session.association
+			criterion = session.selection_criteria
+			if not criterion.check_eligibility(student):
+				return JsonResponse(status=400, data={'error': 'Sorry, you are not eligible for this %s.' % 'job' if association.type == 'J' else 'internship'})
+			"""
 			if (association.type == 'J' and student.is_placed) or (association.type == 'I' and student.is_intern):
 				type = dict(association.PLACEMENT_TYPE)[association.type]
 #				msg = "Sorry, you cannot apply to more companies for %s as you are already selected for %s at %s" % (type,type,student.sessions.get().association.company.name.title())
 				msg = "Sorry, you cannot apply to more companies for %s as you are already selected for %s." % (type,type)
 				return JsonResponse(status=400, data={'error': msg})
+			"""
 			students_sessions = student.sessions.all()
 			"""
 			sessions_students = session.students.all()

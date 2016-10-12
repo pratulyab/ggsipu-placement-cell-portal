@@ -57,6 +57,7 @@ var Settings = (function() {
 		var url = $(form).attr('action');
 		var type = $(form).attr('method');
 		var form_data = new FormData(form[0]);
+		$(form).off('submit');
 		$.ajax({
 			url: url,
 			type: type,
@@ -84,6 +85,7 @@ var Settings = (function() {
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
+				$(form_id).on('submit', submitForm);
 			}
 		});
 	}

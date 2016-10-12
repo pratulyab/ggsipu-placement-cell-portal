@@ -1,5 +1,5 @@
 {% load staticfiles %}
-<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+<!-- <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script> -->
 {% include 'material/includes/material_js.html' %}
 <div class="container">
 	<div class="col s8 offset-s2 request-content">
@@ -18,7 +18,8 @@
 				<hr />
 			</div>
 			{% empty %}
-				<p>No requests at the moment.</p>
+				<b><h1 class="center flow-text teal-text text-accent-4">No requests at the moment.</h1></b>
 		{% endfor %}
 	</div>
 </div>
+<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>

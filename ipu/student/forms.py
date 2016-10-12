@@ -175,7 +175,7 @@ class StudentCreationForm(forms.ModelForm):
 	
 	class Meta:
 		model = Student
-		exclude = ['profile', 'is_verified', 'verified_by']
+		exclude = ['profile', 'is_verified', 'verified_by', 'is_intern', 'is_placed', 'is_barred', 'salary_expected']
 		help_texts = {
 			'resume': _('Please upload resume in either pdf, doc or docx format, < %sMB' % str(settings.FILE_MAX_SIZE/(1024*1024))),
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
@@ -254,7 +254,7 @@ class StudentEditForm(forms.ModelForm):
 
 	class Meta:
 		model = Student
-		exclude = ['profile', 'is_verified', 'verified_by']
+		exclude = ['profile', 'is_verified', 'verified_by', 'is_intern', 'is_placed', 'is_barred', 'salary_expected']
 		help_texts = {
 			'resume': _('Please upload resume in either pdf, doc or docx format, < %sMB' % str(settings.FILE_MAX_SIZE/(1024*1024))),
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),

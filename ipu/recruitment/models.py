@@ -1,4 +1,4 @@
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 from college.models import College, Programme, Stream
 from company.models import Company
 from notification.models import Notification
-from student.models import Student
+from student.models import Student, Qualification
 from django.utils.translation import ugettext_lazy as _
 
 from decimal import Decimal
@@ -41,16 +41,36 @@ class Association(models.Model):
 		return self.company.name + " for placement in " + self.college.name
 
 class SelectionCriteria(models.Model):
-# Don't forget to typecast the fields (except current_year) of this class's objects to int before comparing them with the students' quals
-	PERCENTAGE_CHOICES = tuple((("%s"%i, "%s and above" % i) for i in range(50,100,10)))
-	current_year = models.CharField(_('Which year students may apply'), max_length=1, blank=True, choices=tuple((("%s"%i, "%s and above" % i) for i in range(1,5))))
+	SCHOOL_PERCENTAGE_CHOICES = tuple((("%s" % i, "%s and above" % i) for i in ['60','70','75','80','85','90','95']))
+	COLLEGE_PERCENTAGE_CHOICES = tuple((("%s" % i, "%s and above" % i) for i in ['50','60','65','70','75','80','85']))
+	years = models.CharField(_('Which year students may apply'), max_length=11, blank=True, help_text="Eg. 1,2,3 (Without spaces anywhere)(In increasing order)", 
+			validators = [RegexValidator(r'^([1-6](,[1-6])*)?$')]
+		)
+		# MAX: 1,2,3,4,5,6(w/o spaces)
+		# regex is valid for empty string as well
 	is_sub_back = models.BooleanField(_('Are student with any subject back(s) allowed'), default=False)
-	tenth = models.CharField(_('Xth Percentage'), max_length=2, blank=True, choices=PERCENTAGE_CHOICES)
-	twelfth = models.CharField(_('XIIth Percentage'), max_length=2, blank=True, choices=PERCENTAGE_CHOICES)
-	graduation = models.CharField(_('Graduation Percentage'), max_length=2, blank=True, choices=PERCENTAGE_CHOICES)
-	post_graduation = models.CharField(_('Post Graduation Percentage'), max_length=2, blank=True, choices=PERCENTAGE_CHOICES)
-	doctorate = models.CharField(_('Doctorate Percentage'), max_length=2, blank=True, choices=PERCENTAGE_CHOICES)
+	tenth = models.CharField(_('Xth Percentage'), max_length=2, blank=True, choices=SCHOOL_PERCENTAGE_CHOICES)
+	twelfth = models.CharField(_('XIIth Percentage'), max_length=2, blank=True, choices=SCHOOL_PERCENTAGE_CHOICES)
+	graduation = models.CharField(_('Graduation Percentage'), max_length=2, blank=True, choices=COLLEGE_PERCENTAGE_CHOICES)
+	post_graduation = models.CharField(_('Post Graduation Percentage'), max_length=2, blank=True, choices=COLLEGE_PERCENTAGE_CHOICES)
+	doctorate = models.CharField(_('Doctorate Percentage'), max_length=2, blank=True, choices=COLLEGE_PERCENTAGE_CHOICES)
 
+	def check_eligibility(self, student):
+		if not isinstance(student, Student):
+			return False
+		try:
+			report_card = student.qualifications
+		except Qualification.DoesNotExist:
+			return False
+		fields = ['tenth', 'twelfth', 'graduation', 'post_graduation', 'doctorate']
+		if getattr(student, 'current_year') not in getattr(self, 'years'):
+			return False
+		for f in fields:
+			if getattr(self, f) and getattr(report_card, f) < int(getattr(self, f)):
+				return False
+		if not getattr(self, 'is_sub_back') and getattr(student, 'is_sub_back'):
+				return False
+		return True
 
 class PlacementSession(models.Model):
 	association = models.OneToOneField(Association, related_name="session")
@@ -93,17 +113,6 @@ class Dissociation(models.Model):
 	class Meta:
 		unique_together = ['company', 'college']
 
-
-@receiver(m2m_changed, sender=Association.streams.through)
-def verify_assoc_stream_uniqueness(sender, **kwargs):
-	association = kwargs.get('instance', None)
-	action = kwargs.get('action', None)
-	streams = kwargs.get('pk_set', None)
-
-	if action == 'pre_add':
-		for stream in streams:
-			if Association.objects.filter(company=association.company, college=association.college).filter(streams=stream):
-				raise IntegrityError(_('Association between (%s, %s) already exists for stream %s' % (association.college, association.company, stream,)))
 
 @receiver(m2m_changed, sender=PlacementSession.students.through)
 def notify_college_student_list_changed(sender, **kwargs):

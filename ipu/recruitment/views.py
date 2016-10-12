@@ -59,7 +59,6 @@ def get_with_prog_form(request):
 		else:
 			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 
-	
 	else:
 		return handle_user_type(request, redirect_request=True)
 
@@ -147,8 +146,11 @@ def associate(request):
 			streams_queryset = college.streams.filter(programme__pk=chosen_programme)
 			f = AssociationForm(POST, initiator_profile=company, programme_queryset=programme_queryset, chosen_programme=chosen_programme, streams_queryset=streams_queryset)
 			if f.is_valid():
-				f.save()
-				f.save_m2m()
+				try:
+					f.save()
+					f.save_m2m()
+				except Exception as e:
+					return JsonResponse(status=400, data={'error': str(e)})
 				return JsonResponse(status=200, data={'location': reverse(get_home_url('CO'))})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
@@ -202,11 +204,13 @@ def create_session(request):
 				return JsonResponse(status=400, data={'error': 'Session already exists'})
 			except PlacementSession.DoesNotExist:
 				pass
-			f = CreateCriteriaForm(request.POST, association=association)
+			# Converting list to string. i.e. somewhat custom to_python
+			POST = request.POST.copy()
+			POST['years'] = (','.join(POST.getlist('years')))
+			f = CreateCriteriaForm(POST, association=association)
 			if f.is_valid():
 				data = f.cleaned_data
-				print(f.fields)
-				criterion,created = SelectionCriteria.objects.get_or_create(current_year=data['current_year'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
+				criterion,created = SelectionCriteria.objects.get_or_create(years=data['years'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
 				session = PlacementSession.objects.create(association=association,application_deadline=data['application_deadline'],last_modified_by=type, selection_criteria=criterion)
 				association.approved = True
 				association.save()
@@ -295,10 +299,12 @@ def edit_criteria(request, sess):
 				return JsonResponse(status=400, data={'location': creation})
 			if not requester.get('authorized', True):
 				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
-			f = CriteriaEditForm(request.POST, session=session, instance=session.selection_criteria)
+			POST = request.POST.copy()
+			POST['years'] = ','.join(POST.getlist('years'))
+			f = CriteriaEditForm(POST, session=session, instance=session.selection_criteria)
 			if f.is_valid():
 				data = f.cleaned_data
-				criterion,created = SelectionCriteria.objects.get_or_create(current_year=data['current_year'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
+				criterion,created = SelectionCriteria.objects.get_or_create(years=data['years'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
 				session.selection_criteria = criterion
 #				session.last_modified_by = type
 				session.save()

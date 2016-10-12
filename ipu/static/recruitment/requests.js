@@ -29,7 +29,6 @@ var Request = (function() {
 		var form = $(el);
 		if(!form || !form_errors)
 			return;
-		console.log(form);
 		
 		if ('__all__' in form_errors){
 			var non_field_errors = form_errors['__all__'];
@@ -56,6 +55,7 @@ var Request = (function() {
 		var url = $(form).attr('action');
 		var type = $(form).attr('method');
 		var form_data = new FormData(form[0]);
+		$(form_id).off('submit');
 		$.ajax({
 			url: url,
 			type: type,
@@ -63,11 +63,11 @@ var Request = (function() {
 			processData: false,
 			contentType: false,
 			success: function(data, status, xhr){
-				handleMultipleJquery();
 				if (data['location']){
 					location.href = data['location'];
 					return;
 				}
+				handleMultipleJquery();
 				var form_div = $(form).parent();
 				form_div.html(data['render']);
 				$(form_id).on('submit', submitForm);
@@ -84,6 +84,7 @@ var Request = (function() {
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
+				$(form_id).on('submit', submitForm);
 			}
 		});
 	}

@@ -1,8 +1,16 @@
 var Apply = (function() {
 	"use strict";
 
+	var applicationCounter = 0;
+	var opporCounter = 0;
+
 	function changeEnrollment(e){
 		e.preventDefault();
+		applicationCounter++;
+		if (applicationCounter >= 10){
+			location.href = '';
+			return;
+		}
 		var a = $(this);
 		var url = a.attr('href');
 		$.ajax({
@@ -42,6 +50,11 @@ var Apply = (function() {
 	
 	function getOpportunities(e) {
 		var div = $('#companies');
+		opporCounter++;
+		if (opporCounter >= 10){
+			location.href = '';
+			return;
+		}
 		$.ajax({
 			url: '/student/view_companies/',
 			type: 'GET',
@@ -52,7 +65,16 @@ var Apply = (function() {
 					location.href = loc;
 					return;
 				}
+				var bar = data['barred'];
+				if (bar){
+					var h1 = $('<h1 class="center flow-text teal-text text-accent-4"/>')
+					h1.html('<b>' + bar + '</b>');
+					div.html(h1);
+					return;
+				}
 				var form = data['form'];
+//				var h3 = $('<h3 class="center flow-text teal-text text-accent-4"/>')
+//				h3.html('You wouldn\'t be able to view/apply to companies offering lesser salary than your minimum expected salary')
 				if (form){
 					var form_div = $('<div id="paygrade-form-div" class="col s12"/>');
 					form_div.html(form);

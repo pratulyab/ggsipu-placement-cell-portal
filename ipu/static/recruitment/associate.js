@@ -18,14 +18,6 @@ var Associate = (function() {
 		});
 	}
 
-	function reloadProgrammes(){
-
-	}
-
-	function reloadStreams(){
-
-	}
-
 	function clearErrors(el){
 		$(el + ' .non-field-errors').remove();
 		$(el + ' .errors').remove();
@@ -58,11 +50,12 @@ var Associate = (function() {
 		}
 	}
 
-	function handleAJAX(form, form_id) {
+	function handleAJAX(form, form_id, url) {
 		clearErrors(form_id);
-		var url = $(form).attr('action');
+		form = $(form_id);
 		var type = $(form).attr('method');
 		var form_data = new FormData(form[0]);
+		form.off('submit');
 		$.ajax({
 			url: url,
 			type: type,
@@ -78,18 +71,20 @@ var Associate = (function() {
 				var form_div = $(form).parent();
 				form_div.html(data['render']);
 				$(form_id).on('submit', submitForm);
-//				$(form_id).find('select').material_select();
-				var prog = $(form_id).find('#id_programme');
-				if (prog.length)
-					prog.on('change', getStreams);
-				var streams = $(form_id).find('#id_streams');
-				if (streams.length){
-					$(document).on('click', function(e){
-						var target = $(e.target);
-						if(!target.closest('#id_streams_container').length)
-							getP
+				
+				// Reload programmes on college change
+				var coll_container = $('#id_college_container');
+				if (coll_container.length && !coll_container.find('span.disabled').length)
+					coll_container.on('change', function(e){
+						handleAJAX(form, form_id, '/recruitment/get_with_prog/');
 					});
-				}
+				
+				var prog = $(form_id).find('#id_programme');
+				var streams = $(form_id).find('#id_streams');
+				if (prog.length && streams.length)
+					prog.on('change', function(e){
+						handleAJAX(form, form_id, '/recruitment/get_with_streams/');
+					});
 			},
 			error: function(xhr, status, error){
 				var loc = xhr.responseJSON['location'];
@@ -99,13 +94,14 @@ var Associate = (function() {
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
+				$(form_id).on('submit', submitForm);
 			}
 		});
 	}
 
 	function submitForm(e){
 		e.preventDefault();
-		handleAJAX($(this), '#' + $(this).attr('id'));
+		handleAJAX($(this), '#' + $(this).attr('id'), $(this).attr('action'));
 	}
 
 	return {

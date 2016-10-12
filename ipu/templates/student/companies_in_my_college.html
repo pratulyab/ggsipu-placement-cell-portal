@@ -40,6 +40,7 @@
 								<li></li>
 							</ul>
 						{% endwith %}
+						{% include 'recruitment/criteria.html' with criterion=enrolled.session.selection_criteria %}
 					</div>
 				</div>
 			{% endwith %}
@@ -84,6 +85,7 @@
 								<li></li>
 							</ul>
 						{% endwith %}
+						{% include 'recruitment/criteria.html' with criterion=unenrolled.session.selection_criteria %}
 					</div>
 				</div>
 			{% endwith %}

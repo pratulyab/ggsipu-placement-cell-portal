@@ -32,9 +32,6 @@ nav .brand-logo {
     margin-top: 10px;
 }
 
-
-
-
 #dropdown2
 {
     width: 250px;
@@ -617,13 +614,15 @@ form#search input {
 }
 
 .vertical-tabs .tabs .active {
-	color: goldenrod !important;
+	color: #1c262f !important;
+	background-color: lightcoral !important;
+	border-radius: 8px;
 }
 
 .vertical-tabs ul.tabs li.tab a:hover {
-	color: deepskyblue !important;
-	background: none !important;
-	opacity: 0.5;
+	color: white !important;
+	background-color: #00bcba !important;
+	border-radius: 8px;
 }
 
 #tabs-data-div > div {

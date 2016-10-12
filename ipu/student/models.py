@@ -47,6 +47,7 @@ class Student(models.Model):
 	resume = models.FileField(_('Resume'), upload_to='student/resume', blank=True)
 	is_intern = models.BooleanField(_('Currently Intern'), default=False)
 	is_placed = models.BooleanField(_('Currently Placed'), default=False)
+	is_barred = models.BooleanField(_('Bar the student from applying to companies'), default=False, help_text="This will prevent the student from applying to companies for jobs as well as for internships.")
 	salary_expected = models.PositiveSmallIntegerField(_('Minimum salary expected (Lakhs P.A.)'), blank=False, null=True, choices=SALARY_CHOICES, 
 			help_text = _('Caution: You won\'t be able to appear for companies offering salary less than the minimum you choose. Also, you won\'t be able to change this again.'),
 		)

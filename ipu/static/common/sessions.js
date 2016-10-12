@@ -1,5 +1,6 @@
 var Session = (function() {
 	"use strict";
+	var sessionCounter = 0;
 	/*
 	function handleMultipleJquery(){
 		$('a').unbind('click'); // to prevent multiple fires because of reloading of jquery in the rendered template.
@@ -38,6 +39,11 @@ var Session = (function() {
 	}
 */
 	function getSessions() {
+		sessionCounter++;
+		if (sessionCounter >= 10){
+			location.href = '';
+			return;
+		}
 		var li = $(this);
 		var div = $('#sessions');
 		$.ajax({

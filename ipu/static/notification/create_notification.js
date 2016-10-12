@@ -1,5 +1,5 @@
 var Notification = (function() {
-	'use strict'
+	'use strict';
 	
 	function handleMultipleJquery(){
 		$('a').unbind('click'); // to prevent multiple fires because of reloading of jquery in the rendered template.
@@ -46,10 +46,10 @@ var Notification = (function() {
     }
 
     function getStudentForm(stream_list, indices) {
-        var url = "http://127.0.0.1:8000/notification/select_streams/"
+//        var url = "http://127.0.0.1:8000/notification/select_streams/"
         var token = $('input[name = csrfmiddlewaretoken]').val();
         $.ajax({
-            url : url,
+            url : '/notification/select_streams/',
             type : 'POST',
             data : { 'csrfmiddlewaretoken' : token,
                      'stream_list' : stream_list,

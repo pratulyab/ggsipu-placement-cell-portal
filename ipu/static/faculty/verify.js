@@ -104,6 +104,7 @@ var VerifyStu = (function() {
 		var form = $(this);
 		var url = form.attr('action');
 		var form_data = new FormData(form[0]);
+		form.off('submit');
 		$.ajax({
 			type: 'POST',
 			url: url,
@@ -125,6 +126,7 @@ var VerifyStu = (function() {
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrors(form_errors, '#profile-form');
+				$('#profile-form').on('submit', updateProfile);
 			}
 		});
 	}
@@ -135,6 +137,7 @@ var VerifyStu = (function() {
 		var form = $(this);
 		var url = form.attr('action');
 		var form_data = new FormData(form[0]);
+		form.off('submit');
 		$.ajax({
 			url: url,
 			type: 'POST',
@@ -154,6 +157,7 @@ var VerifyStu = (function() {
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrors(form_errors, '#qual-form');
+				$('#qual-form').on('submit', updateQual);
 			}
 		});
 	}

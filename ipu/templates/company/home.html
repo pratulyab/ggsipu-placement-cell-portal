@@ -55,7 +55,7 @@
 			</div>
 		</form>
 	</div>
-	<div id="requests" class="col s12">Data 2</div>
+	<div id="requests" class="col s12"></div>
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">
@@ -105,11 +105,13 @@
 	<script type="text/javascript" src="{% static 'common/sessions.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
+	<script type="text/javascript" src="{% static 'recruitment/associate.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();
 			Session.init();
-			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form', 'associate-form']);
+			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form']);
+			Associate.init(['associate-form']);
 			Request.init();
 		});
 	</script>

@@ -21,6 +21,7 @@ from company.forms import CompanyCreationForm
 from company.models import Company
 from faculty.forms import FacultyProfileForm
 from faculty.models import Faculty
+from recruitment.models import Association
 from student.forms import StudentCreationForm, StudentSignupForm, StudentLoginForm
 from student.models import Student
 import re
@@ -166,23 +167,22 @@ def search(request):
 	if not query:
 		return JsonResponse({'success': False, 'message': "No results found."})
 	result = []
-
-# To refine the results on the basis of user searching
-# Student => Batchmates (if nav-bar search)    all (if tab search)
-# Faculty => all
-# College => all
-# Company => Limit search to colleges, other companies and students enrolled in current sessions with the company
-	print(query)
-	students = Student.objects.filter( Q(firstname__istartswith=query) | Q(lastname__istartswith=query) )
-	queryset = students.filter(stream=profile.stream)
-	for q in queryset:
-		result.append({'name': q.get_full_name(), 'url': request.build_absolute_uri(q.get_absolute_url())})
+	space_separated_query = query.split(' ')
+	first = ' '.join(space_separated_query[:-1]) if len(space_separated_query)-1 else space_separated_query[0]
+	students = Student.objects.filter( Q(firstname__istartswith=first) | Q(lastname__istartswith=space_separated_query[-1]) )
+	if user_type == 'CO':
+		associated_colleges = list({a.college for a in Association.objects.filter(company=profile, approved=True)})
+		students = students.filter(college__in = associated_colleges)
+	for s in students:
+		result.append({'name': s.get_full_name(), 'url': request.build_absolute_uri(s.get_absolute_url())})
+		
 	colleges = College.objects.filter(name__icontains=query)
 	for c in colleges:
 		result.append({'name': c.name.title(), 'url': request.build_absolute_uri(c.get_absolute_url())})
 	companies = Company.objects.filter(name__icontains=query)
 	for co in companies:
 		result.append({'name': co.name.title(), 'url': request.build_absolute_uri(co.get_absolute_url())})
+	result = result[:12]
 	if result:
 		return JsonResponse({'success': True, 'result': result})
 	else:
@@ -329,7 +329,7 @@ def send_activation_email(uid, domain):
 	body = loader.render_to_string('account/activation_email_body.html', email_body_context)
 	email_message = EmailMultiAlternatives('Activate Account', body, settings.DEFAULT_FROM_EMAIL, [user.email])
 	print(settings.DEFAULT_FROM_EMAIL)
-#	email_message.send()
+	email_message.send()
 
 
 def get_type_created(user):
