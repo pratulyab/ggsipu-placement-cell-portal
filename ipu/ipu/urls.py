@@ -34,4 +34,4 @@ urlpatterns = [
 	url(r'^logout/$', logout, name='logout'),
 	url(r'^search/$', search, name='search'),
 	url(r'^(?P<username>[\w.+=]+)/$', view_profile, name='view_profile'),
-] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static.static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -26,7 +26,7 @@ SECRET_KEY = 'yc55$ws@*mj)q8q&-!bwg6@44ua@7l2^&+!vd$9uje!shpwlxy'
 # SECURITY WARNING: don't run with debug turned on in production!
 if socket.gethostname() == 'TPC':
 	DEBUG = False
-	ALLOWED_HOSTS = []
+	ALLOWED_HOSTS = ['14.139.60.220', '192.168.2.2']
 	db_password = 'P30R1024$1089'
 else:
 	DEBUG = True
@@ -144,7 +144,8 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS=[os.path.join(BASE_DIR, 'static')]
+STATICFILES_DIRS=[os.path.join(BASE_DIR, 'dstatic')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 LOGIN_URL = 'auth'
 LOGOUT_URL = 'logout'
@@ -159,8 +160,8 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 """
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'username'
-EMAIL_HOST_PASSWORD = 'password'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 

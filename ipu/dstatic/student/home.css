@@ -1,0 +1,94 @@
+.black_overlay3{
+      display: none;
+      position: absolute;
+      top: 0%;
+      left: 0%;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      opacity: 0.7;
+      z-index:1001;
+
+    }
+   .white_content3 {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 5%;
+      left: 20%;
+      width: 60%;
+      height: 90%;
+      padding: 10px;
+      border: 1px solid white;
+      background-color: white;
+      z-index:1002;
+      overflow: auto;
+      color: black;
+      flex-direction: column;
+      border-radius: 2%;
+    }
+
+   
+
+
+     .white_content3 i
+    {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        color: black;
+    }
+
+
+.black_overlay4{
+      display: none;
+      position: absolute;
+      top: 0%;
+      left: 0%;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      opacity: 0.8;
+      z-index:1001;
+
+    }
+   .white_content4 {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 2.5%;
+      left: 5%;
+      width: 90%;
+      height: 95%;
+      z-index:1002;
+      overflow: auto;
+      color: black;
+      flex-direction: column;
+      border-radius: 2%;
+    }
+
+   
+
+
+     .white_content4 i
+    {
+        position: fixed;
+        right: 10px;
+        top: 10px;
+        color: #02b3e4;
+    }
+
+/* Scrollspy */
+.nested-pushpin {
+	margin-left: 22px;
+}
+
+.toc-wrapper .table-of-contents .nested-pushpin a.active {
+	border-left: 2px solid #02b3e4;
+}
+
+.toc-wrapper .table-of-contents a.active {
+	border-left: 2px solid lightcoral;
+}

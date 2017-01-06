@@ -1,0 +1,28 @@
+html {
+    height: 100%;
+    background: url("gg3.jpg") no-repeat center fixed;
+    background-size: cover;
+    color: white;
+    padding: 0px;
+}
+
+
+body {
+    min-height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 50px;
+    margin: 0px;
+    color: white;
+}
+
+h4,h6,p
+{
+    color: white;
+}
+
+#logout-button
+{
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}

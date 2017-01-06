@@ -1,0 +1,207 @@
+html {
+    height: 100%;
+    background: url("images/2.jpg") no-repeat center fixed;
+    background-size: cover;
+}
+
+
+body {
+    min-height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 50px;
+    padding-bottom: 0px;
+}
+
+.navbar-fixed
+{
+	height: 0px;
+}
+
+main
+{
+    align-items: center;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+    padding: 10px;
+}
+main img
+{
+	margin-bottom: 0px;
+}
+
+#heading
+{
+  color: white;
+}
+
+#form-box
+{
+	background-color: white;
+	display: flex;
+	flex-direction: column;
+  transition: box-shadow .25s;
+	height: 366px;
+  border-radius: 7px;
+  width: 40%;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+#student-signup-mainbox
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#student-signup-box
+{
+  width: 100%;
+}
+
+#recruiter-signup-mainbox
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#recruiter-signup-box
+{
+  width: 100%;
+}
+
+
+.tabs .tab a {
+    color: #26a69a;
+}
+
+.tabs .indicator {
+   
+    background-color: #26a69a;
+    width: 50%;  
+}
+
+.card-panel
+{
+  box-shadow: none;
+  margin: 0;
+    
+
+   
+}
+
+#corner-buttons {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    left: 5%;
+    width: 90%;
+
+}
+
+#corner-buttons-small {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+    display: flex;
+    justify-content: space-between;
+    left: 5%;
+    width: 90%;
+    
+}
+
+#corner-buttons a{
+    margin: 4px;
+
+}
+
+#corner-buttons-small a{
+    margin: 4px;
+    font-size: 10px;
+    line-height: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+#student-login-btn
+{
+  width: 100%;
+  font-weight: bold;
+}
+
+#login-btn
+{
+  width: 100%;
+  font-weight: bold;
+}
+
+
+
+
+
+.black_overlay{
+      display: none;
+      position: absolute;
+      top: 0%;
+      left: 0%;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      opacity: 0.7;
+      z-index:1001;
+
+    }
+.white_content {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 5%;
+      left: 20%;
+      width: 60%;
+      height: 90%;
+      padding: 10px;
+      border: 1px solid white;
+      background-color: white;
+      z-index:1002;
+      overflow: auto;
+      color: black;
+      border-radius: 2%;
+    }
+.white_content #cross
+    {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        color: black;
+    }
+
+@media screen and (max-width: 992px) {
+  
+  .white_content {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 1%;
+      left: 1%;
+      width: 98%;
+      height: 98%;
+      padding: 10px;
+      border: 1px solid white;
+      background-color: white;
+      z-index:1002;
+      overflow: auto;
+      color: black;
+    }
+
+
+}
+
+
