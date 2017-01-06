@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
-import hashids
+import hashids, socket
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,9 +24,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'yc55$ws@*mj)q8q&-!bwg6@44ua@7l2^&+!vd$9uje!shpwlxy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if socket.gethostname() == 'TPC':
+	DEBUG = False
+	ALLOWED_HOSTS = []
+	db_password = 'P30R1024$1089'
+else:
+	DEBUG = True
+	ALLOWED_HOSTS = []
+	db_password = ''
 
-ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'account.CustomUser'
 
@@ -43,12 +49,10 @@ INSTALLED_APPS = [
 	'college',
 	'company',
 	'faculty',
+	'notification',
 	'recruitment',
 	'student',
 	'material',
-	'rest_framework',
-	'markdown',
-    'notification',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -92,7 +96,7 @@ DATABASES = {
         'NAME': 'ipu',
 		'HOST': 'localhost',
 		'USER': 'root',
-		'PASSWORD': '',
+		'PASSWORD': db_password,
 		'PORT': 3306
     }
 }
