@@ -157,3 +157,4 @@ def request_accepted_notification(sender, **kwargs):
 	else:
 		message = "%s accepted your association request for %s session.\n%s" % (college.name.title(), type, streams)
 	Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
+	

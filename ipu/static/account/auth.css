@@ -54,6 +54,16 @@ main img
   align-items: center;
 }
 
+#back
+{
+   position: absolute;
+   top: 15px;
+   left: 9px;
+   color: white;
+   font-size: 25px;
+
+}
+
 #student-signup-box
 {
   width: 100%;

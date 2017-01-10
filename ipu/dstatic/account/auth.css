@@ -201,6 +201,39 @@ main img
       color: black;
     }
 
+    #form-box
+{
+	background-color: white;
+	display: flex;
+	flex-direction: column;
+  transition: box-shadow .25s;
+	height: 366px;
+  border-radius: 7px;
+  min-width: 50%;
+  margin-left: 25%;
+  margin-right: 25%;
+
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+}
+
+@media screen and (max-width: 600px) {
+     
+
+    #form-box
+{
+	background-color: white;
+	display: flex;
+	flex-direction: column;
+  transition: box-shadow .25s;
+	height: 366px;
+  border-radius: 7px;
+  min-width: 99%;
+  margin-left: .5%;
+  margin-right: .5%;
+
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
 
 }
 
