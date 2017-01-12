@@ -94,10 +94,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ipu',
-		'HOST': 'localhost',
-		'USER': 'root',
-		'PASSWORD': db_password,
-		'PORT': 3306
+        'HOST': 'localhost',
+        'USER': 'root',
+        'PASSWORD': '',
+        'PORT': 3306
     }
 }
 

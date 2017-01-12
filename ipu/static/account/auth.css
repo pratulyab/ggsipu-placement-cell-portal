@@ -14,20 +14,20 @@ body {
 
 .navbar-fixed
 {
-	height: 0px;
+  height: 0px;
 }
 
 main
 {
     align-items: center;
-	display: flex;
-	justify-content: center;
-	flex-direction: column;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
     padding: 10px;
 }
 main img
 {
-	margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 #heading
@@ -37,11 +37,11 @@ main img
 
 #form-box
 {
-	background-color: white;
-	display: flex;
-	flex-direction: column;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
   transition: box-shadow .25s;
-	height: 366px;
+  height: 366px;
   border-radius: 7px;
   width: 40%;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
@@ -52,16 +52,6 @@ main img
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-#back
-{
-   position: absolute;
-   top: 15px;
-   left: 9px;
-   color: white;
-   font-size: 25px;
-
 }
 
 #student-signup-box

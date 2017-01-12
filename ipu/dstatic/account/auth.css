@@ -209,9 +209,9 @@ main img
   transition: box-shadow .25s;
 	height: 366px;
   border-radius: 7px;
-  min-width: 50%;
-  margin-left: 25%;
-  margin-right: 25%;
+  min-width: 60%;
+  margin-left: 20%;
+  margin-right: 20%;
 
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
