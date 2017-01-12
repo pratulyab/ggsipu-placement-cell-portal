@@ -1,5 +1,8 @@
 # Created by https://www.gitignore.io/api/osx,linux,django,python
 
+# Static Files
+static/
+
 ### OSX ###
 *.DS_Store
 .AppleDouble
