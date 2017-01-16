@@ -17,7 +17,23 @@
 
 {% block user_email_id %}
 	{{ student.profile.email }}
-{% endblock %} 
+{% endblock %}
+
+<!--for sidenav-->
+{% block user_photo_s %}
+	{% if student.photo %}
+		{{ student.photo.url }}
+	{% endif %}
+{% endblock %}
+
+{% block user_name_card_s %}
+	{{ student.firstname }}&nbsp;{{ student.lastname }}
+{% endblock %}
+
+{% block user_email_id_s %}
+	{{ student.profile.email }}
+{% endblock %}
+
 
  {% block lightbox_data %}
         <div id="light3" class="white_content3">

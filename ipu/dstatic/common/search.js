@@ -56,10 +56,10 @@ var Search = (function() {
 			location.href = location;
 			return;
 		}
-		var ul = $('#search #results');
+		var ul = $('#search-line #results');
 		if (!ul){
 			ul = $('<ul id="results"/>');
-			$('form#search').append(ul);
+			$('form#search-line').append(ul);
 		}
 		ul.empty();
 		
@@ -85,7 +85,7 @@ var Search = (function() {
 	
 	function search(e) {
 		var query = $(this).val();
-		$('#search #results').empty();
+		$('#search-line #results').empty();
 		$.ajax({
 			url: '/search/',
 			type: 'GET',
@@ -98,14 +98,14 @@ var Search = (function() {
 
 	return {
 		init: function(){
-			$('form#search').on('submit', function(e){e.preventDefault();});
-			var search_box = $('#search input');
+			$('form#search-line').on('submit', function(e){e.preventDefault();});
+			var search_box = $('#search-line input');
 			search_box.on('input', search);
-			var result = $('#search #results');
+			var result = $('#search-line #results');
 			search_box.on('focus', function(e){result.css('display','block')});
 			$(document).on('click', function(e){
 				var target = $(e.target);
-				if(!target.closest('form#search').length){
+				if(!target.closest('form#search-line').length){
 					result.css('display', 'none');
 				}
 			});

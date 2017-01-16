@@ -1,5 +1,11 @@
 var Auth = (function() {
 	'use strict';
+	var inProcess = {
+		'sl': false,
+		'ss': false,
+		's': false,
+		'l': false
+	}
 
 	function clearErrors(el){
 		$(el + ' .non-field-errors').remove();
@@ -33,11 +39,16 @@ var Auth = (function() {
 		}
 	}
 
-	function handleAJAX(form, form_id, prefix) {
+	function handleAJAX(form, form_id, prefix, submit_event_function) {
+		if (inProcess[prefix.slice(0,2)])
+			return;
+		
+		inProcess[prefix.slice(0,2)] = true;
 		clearErrors(form_id);
 		var url = $(form).attr('action');
 		var form_data = new FormData(form[0]);
-		$(form_id).off('submit');
+//		$(form_id).off('submit'); // Not using this method because ajax isn't able to handle multiple requests simultaneously. Hence, when Enter is keep pressed for a long time, one of the request gets missed by JS and gets processed by html (i.e. Synchronous POST)
+		// Moreover, we want JS to handle all requests. Therefore, we shouldn't turn off the event listener
 		$.ajax({
 			url: url,
 			type: 'POST',
@@ -50,12 +61,14 @@ var Auth = (function() {
 					return;
 				}
 				var loc = data['location'] ? data['location'] : '';
+				inProcess[prefix.slice(0,2)] = false;
 				location.href = loc;
 			},
 			error: function(xhr, status, error){
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id, prefix);
-				$(form_id).on('submit', submitForm);
+				inProcess[prefix.slice(0,2)] = false;
+//				$(form_id).on('submit', submit_event_function);
 			}
 		});
 	}
@@ -75,25 +88,25 @@ var Auth = (function() {
 	function login(e) {
 		e.preventDefault();
 		clearPrefixFromName('#login-form', 'l-');
-		handleAJAX($(this), '#login-form', 'l-');
+		handleAJAX($(this), '#login-form', 'l-', login);
 	}
 
 	function signup(e) {
 		e.preventDefault();
 		clearPrefixFromName('#signup-form', 's-');
-		handleAJAX($(this), '#signup-form', 's-');
+		handleAJAX($(this), '#signup-form', 's-', signup);
 	}
 
 	function studentLogin(e) {
 		e.preventDefault();
 		clearPrefixFromName('#student-login-form', 'sl-');
-		handleAJAX($(this), '#student-login-form', 'sl-');
+		handleAJAX($(this), '#student-login-form', 'sl-', studentLogin);
 	}
 
 	function studentSignup(e) {
 		e.preventDefault();
 		clearPrefixFromName('#student-signup-form', 'ss-');
-		handleAJAX($(this), '#student-signup-form', 'ss-');
+		handleAJAX($(this), '#student-signup-form', 'ss-', studentSignup);
 	}
 
 	return {

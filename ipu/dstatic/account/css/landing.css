@@ -1,94 +1,555 @@
-html {
+@media (min-width:300px) and (orientation: portrait){ 
+    html {
     height: 100%;
-    background: url("../images/USICT.jpg") no-repeat center fixed;
+    background: url("USICT.jpg") no-repeat center fixed;
     background-size: cover;
+    color: white;
+    padding: 0px;
 }
 
-li
-{
-
-  background: rgba(0, 0, 0, 0.7);
-}
-
-.slider .slides {
+nav{
     
+    height: 120px;
+    padding-top: 25px;
+    padding-left: 10px;
+}
+
+nav .brand-logo
+{
+    font-size: 50px;
+
+}
+
+#corner-button
+{
+    position: fixed; right: 15px; 
+    top: 25px;
+    z-index: 50000000;
+    height: 70px;
+    line-height: 70px;
+    width: 250px;
+    font-size: 25px;
+    padding: 4px;
+}
+
+
+
+#img-mid
+{
+    background: rgba(0, 0, 0, 0.7);
+}
+
+#img-bottom
+{
     background: none;
 }
 
-
-#logo
+.parallax-container {
+      height: 550px;
+    }
+.section
 {
-	margin-top: 20px;
-}
-
-
-.recruiter
+    background-color: #f2f2f2;
+    height: 300px;
+}    
+#mid-section
 {
-	background-color: #eeeeee;
-	margin: 25px;
-	padding: 0px;
-
+    background-color: white;
 }
 
-.recruiter-label
+#first-box
 {
-	margin-top: -7px;
-	background-color: #337ab7;
-	color: white;
-	font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
 }
 
-
-.college
+#first-box>h3
 {
-	background-color: #eeeeee;
-	margin: 30px;
-	margin-top: 10px;
-	padding: 0px;
+    color: black;
+    font-size: 50px;
+    margin-bottom: 5px;
+    text-align: center;
 
 }
 
-
-.college-label
+#first-box>img
 {
-	margin-top: -7px;
-	background-color: #337ab7;
-	color: white;
-	font-size: 15px;
+    height: 120px;
+    width: 135px
 }
 
-.afcollege-label
+#second-box
 {
-	margin-top: -7px;
-	background-color: #337ab7;
-	color: white;
-	font-size: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 90%;
 }
 
-
-.row .col {
-
-    padding: 0px
-}
-
-.modal.bottom-sheet {
-    min-height: 45%;
-}
-
-h5
+#second-box>h3
 {
-	font-weight: bold;
+    color: black;
+    font-size: 45px;
+    margin-bottom: 20px;
+}
+
+#second-box-images
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#second-box-images>img
+{
+    margin: 10px;
+    height: 110px;
+    width: 120px;
+}
+
+#third-section
+{
+    height: 340px;
+}
+
+#third-box
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 90%;
+}
+#third-box>h3
+{
+    color: black;
+    font-size: 45px;
+}
+#third-box-images
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+    width: 80%;
+}
+
+.team-member
+{
+    display: flex;
+    flex-direction: column;
+    margin-top: 3px;
+    justify-content: center;
+    align-items: center;
+}
+.team-member>h5
+{
+   font-size: 25px;
+   color: #1c262f
+}
+
+.team-member>img
+{
+    border-width: 6px;
+    border-style: solid;
+    border-color: #1c262f;
+    height: 140px;
+    width: 140px;
+}
+
+#last-parallax-container
+{
+   height: 630px;
 
 }
 
-h6
-{
-	font-size: 20px;
+ }
+
+@media (min-width:300px) and (orientation: landscape) { 
+
+   html {
+    height: 100%;
+    background: url("USICT.jpg") no-repeat center fixed;
+    background-size: cover;
+    color: white;
+    padding: 0px;
+}
+
+nav{
+    
+    height: 80px;
+    padding-top: 9px;
 
 }
 
-.modal-top
+nav .brand-logo
 {
-	display: flex;
-	justify-content: space-between;
+    font-size: 40px;
+    padding-left: 0px;
+    margin-left: 5px;
+
+}
+
+#corner-button
+{
+    position: fixed; 
+    right: 6px; 
+    top: 11px;
+    z-index: 50000000;
+    height: 54px;
+    line-height: 54px;
+    width: 190px;
+    font-size: 18px;
+    padding: 4px;
+}
+
+#img-mid
+{
+    background: rgba(0, 0, 0, 0.7);
+}
+
+#img-bottom
+{
+    background: none;
+}
+
+.parallax-container {
+      height: 250px;
+    }
+.section
+{
+    background-color: #f2f2f2;
+    height: 300px;
+}     
+
+#first-section
+{
+    height: 160px;
+}
+
+#mid-section
+{
+    background-color: white;
+}
+
+#first-box
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+}
+
+#first-box>h3
+{
+    color: black;
+    font-size: 30px;
+    margin-bottom: 5px;
+
+}
+
+#first-box>img
+{
+    height: 80px;
+    width: 95px
+}
+
+#second-section
+{
+    height: 200px;
+}
+
+#second-box
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 80%;
+}
+
+#second-box>h3
+{
+    color: black;
+    font-size: 30px;
+}
+
+#second-box-images
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+#second-box-images>img
+{
+    margin: 10px;
+    height: 80px;
+    width: 90px;
+}
+
+#third-section
+{
+    height: 260px;
+}
+
+#third-box
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 90%;
+}
+#third-box>h3
+{
+    color: black;
+    font-size: 30px;
+}
+#third-box-images
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+    width: 80%;
+}
+
+.team-member
+{
+    display: flex;
+    flex-direction: column;
+    margin-top: 3px;
+    justify-content: center;
+    align-items: center;
+}
+.team-member>h5
+{
+   font-size: 20px;
+   color: #1c262f
+}
+
+.team-member>img
+{
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1c262f;
+    height: 90px;
+    width: 90px;
+}
+
+#last-parallax-container
+{
+   height: 300px;
+
+}
+
+#second-parallax-container
+{
+   height: 300px;
+
+}
+
+} 
+
+
+
+
+@media (min-width:992px) {
+
+   html {
+    height: 100%;
+    background: url("USICT.jpg") no-repeat center fixed;
+    background-size: cover;
+    color: white;
+    padding: 0px;
+}
+
+nav{
+    
+    height: 64px;
+    padding-top: 2px;
+
+}
+
+nav .brand-logo
+{
+    font-size: 40px;
+    padding-left: 0px;
+
+}
+
+#corner-button
+{
+    position: fixed; right: 6px; 
+    top: 6px;
+    z-index: 50000000;
+    height: 54px;
+    line-height: 54px;
+    width: 170px;
+    font-size: 15px;
+    padding: 1px;
+    padding-bottom: 5px;
+}
+
+#img-mid
+{
+    background: rgba(0, 0, 0, 0.7);
+}
+
+#img-bottom
+{
+    background: url("../images/23.jpg") no-repeat center fixed;
+    background-size: cover;
+}
+
+.parallax-container {
+      height: 400px;
+    }
+.section
+{
+    background-color: #f2f2f2;
+    height: 300px;
+}     
+
+#first-section
+{
+    height: 220px;
+}
+
+#second-section
+{
+    background-color: white;
+    height: 250px;
+}
+
+#first-box
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+}
+
+#first-box>h3
+{
+    color: black;
+    font-size: 40px;
+    margin-bottom: 5px;
+
+}
+
+#first-box>img
+{
+    height: 90px;
+    width: 105px
+}
+
+#second-box
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 90%;
+}
+
+#second-box>h3
+{
+    color: black;
+    font-size: 30px;
+}
+
+#second-box-images
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 80%;
+}
+
+#second-box-images>img
+{
+    margin: 10px;
+    height: 110px;
+    width: 120px;
+}
+
+#third-section
+{
+    height: 300px;
+}
+
+#third-box
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 90%;
+}
+#third-box>h3
+{
+    color: black;
+    font-size: 30px;
+}
+#third-box-images
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+    width: 80%;
+}
+
+.team-member
+{
+    display: flex;
+    flex-direction: column;
+    margin-top: 3px;
+    justify-content: center;
+    align-items: center;
+}
+.team-member>h5
+{
+   font-size: 20px;
+   color: #1c262f
+}
+
+.team-member>img
+{
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1c262f;
+    height: 120px;
+    width: 120px;
+}
+
+#last-parallax-container
+{
+   height: 550px;
+
+}
+
+#second-parallax-container
+{
+   height: 500px;
+
+}
+
 }

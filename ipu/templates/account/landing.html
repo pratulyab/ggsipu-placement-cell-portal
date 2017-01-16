@@ -10,659 +10,73 @@
 	<link type="text/css" rel="stylesheet" href="{% static 'account/css/landing.css' %}" />
 {% endblock %}
 
+{% block header %}
+<div class="navbar-fixed">
+    <nav>
+      <div class="nav-wrapper">
+        <a href="#!" class="brand-logo center hide-on-med-and-down">Training & Placement Cell</a>
+        <a href="#!" class="brand-logo left hide-on-large-only">Training & Placement Cell</a>
+      </div>
+    </nav>
+  </div>
+
+  
+{% endblock header %}
+
 {% block content %}
-<div id="modal1" class="modal bottom-sheet">
-    <div class="modal-content">
-      <h5>University School of Information & Communication Technology</h5>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
 
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
+     <div class="parallax-container">
+    <div class="parallax"></div>
+  </div>
+  <div class="section" id="first-section">
+    <div class="row container" id="first-box">
+      <img class="responsive-img" src="{% static 'account/images/ipu-logo.png' %}">
+      <h3>Guru Gobind Singh Indraprastha University</h3>
     </div>
-    
-</div>
-
-<div id="modal2" class="modal bottom-sheet">
-    <div class="modal-content">
-      <h5>University School of Law and Legal Studies</h5>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
-    </div>
-    
-</div>
-
-<div id="modal3" class="modal bottom-sheet">
-    <div class="modal-content">
-      <h5>University School of Management Studies</h5>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
-    </div>
-    
-</div>
-
-<div id="modal4" class="modal bottom-sheet">
-    <div class="modal-content">
-      <h5>University School of Biotechnology</h5>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
-    </div>
-    
-</div>
-
-<div id="modal5" class="modal bottom-sheet">
-    <div class="modal-content">
-      <h5>University School of Chemical Technology</h5>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
-    </div>
-    
-</div>
-
-<!--Affiliated colleges-->
-
-<div id="modal6" class="modal bottom-sheet">
-    <div class="modal-content">
-     <div class="modal-top">
-      <h5>Maharaja Agrasen Institute of Technology</h5>
-      <h6>Website :<a href="http://www.mait.ac.in/" target="_blank">www.mait.ac.in</a> 
-</h6>
+  </div>
+  <div class="parallax-container" id="second-parallax-container">
+    <div class="parallax" id="img-mid"></div>
+  </div>
+  <div class="section" id="second-section">
+    <div class="row container" id="second-box">
+      <h3>Recruiters Associated With Us</h3>
+      <div id="second-box-images">
+         <img class="responsive-img" src="{% static 'images/AmazonLogo.jpg' %}">
+         <img class="responsive-img" src="{% static 'images/flipkartlogo.png' %}">
+         <img class="responsive-img" src="{% static 'images/snapdeal-new-logo.png' %}">
+         <img class="responsive-img" src="{% static 'images/Microsoft-logo.png' %}">
+         <img class="responsive-img" src="{% static 'images/Adobe_logo.jpg' %}">
+         <img class="responsive-img" src="{% static 'images/TCS-Logo.jpg' %}">
       </div>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
     </div>
-    
-</div>
-
-<div id="modal7" class="modal bottom-sheet">
-    <div class="modal-content">
-    <div class="modal-top">
-      <h5>Bhagwan Parshuram Institute of Technology</h5>
-      <h6>Website :<a href="http://www.bpitindia.com/" target="_blank">www.bpitindia.com</a> 
-</h6>
+  </div>
+  <div class="parallax-container" id="last-parallax-container">
+    <div class="parallax" id="img-bottom"></div>
+  </div>
+  <div class="section" id="third-section">
+    <div class="row container" id="third-box">
+      <h3>Meet the team</h3>
+      <div id="third-box-images">
+            <div class="team-member">
+              <img class="circle responsive-img" src="{% static 'account/images/team/bob.jpg' %}">
+              <h5>Pratulya Bubna</h5>
+            </div>
+            <div class="team-member">
+              <img class="circle responsive-img" src="{% static 'account/images/team/rajjo.jpg' %}">
+              <h5>Rajneesh Sharma</h5>
+            </div>
+            <div class="team-member">
+              <img class="circle responsive-img" src="{% static 'account/images/team/shivam.jpg' %}">
+              <h5>Shivam Sharma</h5>
+        </div>
       </div>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
     </div>
-    
-</div>
-
-<div id="modal8" class="modal bottom-sheet">
-    <div class="modal-content">
-    <div class="modal-top">
-      <h5>Northern India Engineering College</h5>
-      <h6>Website :<a href="http://www.niecdelhi.ac.in/" target="_blank">www.niecdelhi.ac.in</a> 
-</h6>
-      </div>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
-    </div>
-    
-</div>
-
-<div id="modal9" class="modal bottom-sheet">
-    <div class="modal-content">
-    <div class="modal-top">
-      <h5>Govind Ballabh Pant Engineering College</h5>
-      <h6>Website :<a href="http://www.gbpec.edu.in/" target="_blank">www.gbpec.edu.in</a> 
-</h6>
-      </div>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
-    </div>
-    
-</div>
-
-<div id="modal10" class="modal bottom-sheet">
-    <div class="modal-content">
-    <div class="modal-top">
-      <h5>Maharaja Surajmal Institute of Technology</h5>
-      <h6>Website :<a href="http://www.msit.in/" target="_blank">www.msit.in</a> 
-</h6>
-      </div>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
-    </div>
-    
-</div>
-
-<div id="modal11" class="modal bottom-sheet">
-    <div class="modal-content">
-    <div class="modal-top">
-      <h5>HMR Institute of Technology & Management</h5>
-      <h6>Website :<a href="http://www.hmritm.org/" target="_blank">www.hmritm.org</a> 
-</h6>
-      </div>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
-    </div>
-    
-</div>
-
-<div id="modal12" class="modal bottom-sheet">
-    <div class="modal-content">
-    <div class="modal-top">
-      <h5>Guru Tegh Bahadur Institute of Technology</h5>
-      <h6>Website :<a href="http://www.gtbit.org/" target="_blank">www.gtbit.org</a> 
-</h6>
-      </div>
-      <h6>Last year placement record :</h6>
-      <table class="bordered">
-        <thead>
-          <tr>
-              <th data-field="companies">Companies</th>
-              <th data-field="jobs">Jobs offered</th>
-              <th data-field="package">Package</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-          
-        </tbody>
-      </table>
-    </div>
-    
-</div>
+  </div>
 
 
+        
 
-
-
-	<div class="slider fullscreen">
-		<ul class="slides">
-			<li>
-			  <div id="first-slider">
-			   
-				
-				<div class="caption center-align">
-					<h3>Guru Gobind Singh Indraprastha University</h3>
-					<h5 class="light grey-text text-lighten-3">Training & Placement Cell</h5>\
-					<img id="logo" src="{% static 'images/ipu-logo.png' %}" style="height: 180px !important; width: 200px !important">
-				</div>
-			  </div>	
-			</li>
-			<li class="row" style="overflow-y: scroll">
-			   <div id="second-slider">
-				<h3 class="light grey-text text-lighten-3 center">Recruiters Associated With Us</h3>
-				<div class="col s10 offset-s1">
-					
-					<div class="col s10 m5 l2 offset-s1 recruiter">
-						<div class="recruiter-logo">
-							<a href=""><img src="{% static 'images/AmazonLogo.jpg' %}"></a>
-						</div>  
-						<div class="recruiter-label center">
-							Amazon
-						</div>
-					</div>
-					<div class="col s10 m5 l2 offset-s1 recruiter">
-						<div class="recruiter-logo">
-							<a href=""><img src="{% static 'images/flipkartlogo.png' %}"></a>
-						</div>  
-						<div class="recruiter-label center">
-							Flipkart
-						</div>
-					</div>
-					<div class="col s10 m5 l2 offset-s1 recruiter">
-						<div class="recruiter-logo">
-							<a href=""><img src="{% static 'images/snapdeal-new-logo.png' %}"></a>
-						</div>  
-						<div class="recruiter-label center">
-							Snapdeal
-						</div>
-
-					</div>
-					<div class="col s10 m5 l2 offset-s1 recruiter">
-						<div class="recruiter-logo">
-							<a href=""><img src="{% static 'images/Microsoft-logo.png' %}"></a>
-						</div>  
-						<div class="recruiter-label center">
-							Microsoft
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l2 offset-s1 recruiter">
-						<div class="recruiter-logo">
-							<a href=""><img src="{% static 'images/Adobe_logo.jpg' %}"></a>
-						</div>  
-						<div class="recruiter-label center">
-							Adobe
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l2 offset-s1 recruiter">
-						<div class="recruiter-logo">
-							<a href=""><img src="{% static 'images/TCS-Logo.jpg' %}"></a>
-						</div>  
-						<div class="recruiter-label center">
-							TCS
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l2 offset-s1 recruiter">
-						<div class="recruiter-logo">
-							<a href=""><img src="{% static 'images/ibm_logo.jpg' %}"></a>
-						</div>  
-						<div class="recruiter-label center">
-							IBM
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l2 offset-s1 recruiter">
-						<div class="recruiter-logo">
-							<a href=""><img src="{% static 'images/Wipro_Logo.png' %}"></a>
-						</div>  
-						<div class="recruiter-label center">
-							Wipro
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l2 offset-s1 recruiter">
-						<div class="recruiter-logo">
-							<a href=""><img src="{% static 'images/opera-solutions-logo.png' %}"></a>
-						</div>  
-						<div class="recruiter-label center">
-							Opera Solutions
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l2 offset-s1 recruiter">
-						<div class="recruiter-logo">
-							<a href=""><img src="{% static 'images/Infosys-Logo.jpg' %}"></a>
-						</div>  
-						<div class="recruiter-label center">
-							Infosys
-						</div>
-						
-					</div>
-				</div>
-			   </div>	
-			</li>
-			<li class="row" style="overflow-y: scroll">
-			  <div id="third-slider">
-			   <h3 class="light grey-text text-lighten-3 center">USS</h3>
-			   <div class="col s10 offset-s1">
-					
-					<div class="col s10 m5 l2 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal1"><img src="{% static 'images/ipu-logo2.jpg' %}"></a>
-						</div>  
-						<div class="college-label center">
-							USICT
-						</div>
-						
-					</div>
-
-					<div class="col s10 m5 l2 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal2"><img src="{% static 'images/ipu-logo2.jpg' %}"></a>
-						</div>  
-						<div class="college-label center">
-							USLLS
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l2 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal3"><img src="{% static 'images/ipu-logo2.jpg' %}"></a>
-						</div>  
-						<div class="college-label center">
-							USMS
-						</div>
-						
-					</div>
-
-					<div class="col s10 m5 l2 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal4"><img src="{% static 'images/ipu-logo2.jpg' %}"></a>
-						</div>  
-						<div class="college-label center">
-							USBT
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l2 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal5"><img src="{% static 'images/ipu-logo2.jpg' %}"></a>
-						</div>  
-						<div class="college-label center">
-							USCT
-						</div>
-						
-					</div>
-					
-
-					
-
-				</div>
-				<h3 class="light grey-text text-lighten-3 center">Affiliated colleges</h3>
-			   <div class="col s10 offset-s1 offset-l2">
-					
-					<div class="col s10 m5 l1 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal6"><img src="{% static 'images/MAIT-Logo.png' %}"></a>
-						</div>  
-						<div class="afcollege-label center">
-							Maharaja Agrasen Institute of Technology
-						</div>
-						
-					</div>
-
-					<div class="col s10 m5 l1 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal7"><img src="{% static 'images/bpit.png' %}"></a>
-						</div>  
-						<div class="afcollege-label center">
-							Bhagwan Pashuram Institute of Technology
-						</div>
-						
-					</div>
-
-					<div class="col s10 m5 l1 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal8"><img src="{% static 'images/niec_logo.png' %}"></a>
-						</div>  
-						<div class="afcollege-label center">
-							Northern <br> India Engineering College
-						</div>
-						
-					</div>
-
-					<div class="col s10 m5 l1 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal9"><img src="{% static 'images/Gb.jpg' %}"></a>
-						</div>  
-						<div class="afcollege-label center">
-							Govind Ballabh <br> Pant Engineering College
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l1 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal10"><img src="{% static 'images/msit.jpg' %}"></a>
-						</div>  
-						<div class="afcollege-label center">
-							Maharaja Surajmal Institute of Technology
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l1 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal11"><img src="{% static 'images/HMR.jpg' %}"></a>
-						</div>  
-						<div class="afcollege-label center">
-							HMR Institute of Technology & Management
-						</div>
-						
-					</div>
-					<div class="col s10 m5 l1 offset-s1 college">
-					  <div class="recruiter-logo">
-							<a class="modal-trigger" href="#modal12"><img src="{% static 'images/GTBIT.png' %}"></a>
-						</div>  
-						<div class="afcollege-label center">
-							Guru Tegh Bahadur Institute of Technology 
-						</div>
-						
-					</div>
-
-
-
-					
-				</div>
-			 </div>
-			 	
-			</li>
-		</ul>
-	</div>
-	<a href="{% url 'auth' %}" class="waves-effect waves-light btn-large red text-flow" style="position: fixed; right: 0; bottom: 0;z-index: 5;">Login / Sign Up</a>
+	<a id="corner-button" href="{% url 'auth' %}" class="waves-effect waves-light btn-large red text-flow">Login / Sign Up</a>
 {% endblock %}
 
 {% block scripts %}
@@ -682,6 +96,11 @@
       complete: function() { $('.slider').slider('start'); } // Callback for Modal close
     }
   );
+
+    $(document).ready(function(){
+      $('.parallax').parallax();
+    });
+
       
 	</script>
 {% endblock %}
