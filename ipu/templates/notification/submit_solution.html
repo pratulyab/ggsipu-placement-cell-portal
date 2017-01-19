@@ -1,0 +1,44 @@
+{% load staticfiles %}
+{% load material_form %}
+<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+{% include 'material/includes/material_js.html' %}
+
+<div class="col s12">
+	<div class="card">
+	    <div class="card-content">
+	        <span class="card-title">
+	        <div class="row">
+		            <div class="col s7"><h5>{{ issue_type }}</h5></div>
+		            <div class="col s5"><h5>{{ issue_object.creation_time }}</h5></div>
+	        </div>
+	        <hr/>
+
+	        	<br>
+	            <h6>{{ student.profile.username }}</h6>
+	            <h6>{{ student.firstname }}&nbsp;{{ student.lastname}}</h6>
+	            <h6>{{ student.programme }}&nbsp;{{ student.stream }}</h6>
+	        </span>
+	        <br>
+	            <blockquote><h5>{{ issue_object.subject }}</h5></blockquote>
+	        <br>
+	        	<p>{{ issue_object.message }}</p> 
+	            
+	    </div>
+	    <hr/>
+	    <div class="card-action">
+		    <form method = 'POST' id = "submit-solution-form" action="{% url 'solve_issue' %}" identifier="{{ identifier }}">
+		        {% csrf_token %}
+		        
+		        {% form form=solve_issue_form %}
+
+		        {% endform %}
+
+		    	
+		    </form>
+
+		    	<br>
+		    	<br>
+		        <button type = 'submit' id = "solve" data-id="false" class="btn waves-effect waves-light-right">Submit</button>
+	    </div>
+	</div>
+</div>

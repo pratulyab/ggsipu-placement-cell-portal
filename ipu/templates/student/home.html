@@ -88,7 +88,7 @@
 	{% endif %}
 	<li id="apply" class="tab col s2"><a class="active" href="#companies">Companies Visiting</a></li>
 <!--	<li class="tab col s2"><a href="#tab2">Status</a></li> -->
-	<li id = "notification" class="tab col s2" url="{% url 'get_notifications' %}"><a href="#notifications">Notification</a></li>
+	<li id = "notification" class="tab col s2" url="{% url 'submit_issue' %}"><a href="#notifications">Notification</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 	<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
 {% endblock %}
@@ -96,13 +96,14 @@
 {% block tabs_content %}
 	<div id="companies" class="col s12"></div>
 <!--	<div id="tab2" class="col s12">Data 2</div> -->
-	<div id="notifications" class="col s12">
+		<div id="notifications" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">
 				<div class="col s3">
 					<ul class="tabs">
 						<li class="tab col s12"><a id = "your-notifications" class="active" href="#your-notifications-div">Your Notifications</a></li>
 						<li class="tab col s12"><a id = "help" href="#help-div">Help !</a></li>
+						<li class="tab col s12"><a id = "view-issues" href="#view-issues-div" url="{%url 'view_solution_list' %}">Your Issues</a></li>
 					</ul>
 				</div>
 				<div class=" col s8 offset-s1">
@@ -110,10 +111,13 @@
 		
 							<ul id = "your-notifications-div-ul" class="collection">
 							</ul>
-            
 					</div>
+
 					<div id="help-div" class="col s12">
-					<h1>Under Construction</h1>
+					</div>
+					<div id="view-issues-div" class="col s12" url = "{% url 'view_solution' %}">
+							  <ul id = "view-issues-div-ul" class="collection">
+							  </ul>
 					</div>
 					</div>
 				</div>
@@ -196,14 +200,14 @@
 	<script type="text/javascript" src="{% static 'common/sessions.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
 	<script type="text/javascript" src="{% static 'student/update.js' %}"></script>
-	<script type="text/javascript" src="{% static 'notification/create_notification.js' %}"></script>
+	<script type="text/javascript" src="{% static 'notification/student.js' %}"></script
 	<script type="text/javascript" src="{% static 'student/apply.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();
 			Session.init();
-			Apply.init();
 			Notification.init();
+			Apply.init();
 			Settings.init(['edit-account-form', 'upload-file-form', 'social-profile-form', 'tech-profile-form']);
 			Update.init(['edit-student-form', 'edit-qual-form']);
 		});

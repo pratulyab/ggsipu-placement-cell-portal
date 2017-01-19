@@ -59,7 +59,7 @@
 {% block tabs%}
 	<li class="tab col s2"><a class="active" href="#associate">Associate With Companies</a></li>
 	<li id = "request" class="tab col s2" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
-	<li id = "notification" class="tab col s2" url="{% url 'select_streams' %}"><a href="#notifications">Notification</a></li>
+	<li id = "notification" class="tab col s2" url="{% url 'select_streams' %}"><a id="notification-anchor" href="#notifications">Notification</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 	<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
 {% endblock %}
@@ -76,7 +76,7 @@
 	</div>
 	<div id="requests" class="col s12"></div>
 
-	<div id="notifications" class="col s12">
+<div id="notifications" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">
 				<div class="col s3">
@@ -101,6 +101,7 @@
 			</div>
 		</div>
 	</div>
+	
 	<!-- -->
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
@@ -149,7 +150,7 @@
 	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/sessions.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
-	<script type="text/javascript" src="{% static 'notification/create_notification.js' %}"></script>
+	<script type="text/javascript" src="{% static 'notification/college.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/associate.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script>

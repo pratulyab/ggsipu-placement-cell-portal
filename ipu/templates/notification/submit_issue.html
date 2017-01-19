@@ -6,18 +6,14 @@
 {% include 'material/includes/material_js.html' %}
 
 <head>
-    <title>Title</title>
+    <title>Issue</title>
 <!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
 </head>
 <body>
-    <form method = 'POST' id = "select_streams-form" action="{% url 'select_streams' %}">
+    <form method = 'POST' id = "submit_issue-form" action="{% url 'submit_issue' %}">
         {% csrf_token %}
-        {% form form=select_streams %}{% endform %}                 
-        <br>
-        <button type="submit" id="getstudents" data-id="false" class="btn waves-effect waves-light-right">Proceed</button>
+        {% form form=issue_form %}
+        {% endform %}                 
+        <button type="submit" id="submitissue" class="btn waves-effect waves-light-right">Submit</button>
     </form>
-    
-
-
 </body>
-</html>

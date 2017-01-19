@@ -42,7 +42,7 @@
 	<li class="tab col s2"><a class="active" href="#verify">Verify students</a></li>
 	<li class="tab col s2"><a href="#tab2">College Associations</a></li>
 	<li id="request" class="tab col s2" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
-	<li class="tab col s2"><a href="#notifications">Notifications</a></li>
+	<li id = "notification" class="tab col s2" url="{% url 'select_streams' %}"><a id="notification-anchor" href="#notifications">Notification</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 	<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
 {% endblock %}
@@ -100,7 +100,31 @@
 	</div>
 	<div id="tab2" class="col s12">Data 2</div>
 	<div id="requests" class="col s12">Data 3</div>
-	<div id="notifications" class="col s12">Data 4</div>
+	<div id="notifications" class="col s12">
+		<div class="vertical-tabs">
+			<div class="row">
+				<div class="col s3">
+					<ul class="tabs">
+						<li class="tab col s12"><a id = "your-notifications" class="active" href="#your-notifications-div">Your Notifications</a></li>
+						<li class="tab col s12"><a id = "create-notifications" href="#notify-students-div">Notify Students</a></li>
+						<li class="tab col s12"><a id = "view-issues" href="#view-issues-div" markurl = "{% url 'mark' %}" url="{%url 'view_issue' %}">Address Issues</a></li>
+					</ul>
+				</div>
+				<div class=" col s8 offset-s1">
+					<div id="your-notifications-div" class="col s12">
+							  <ul id = "your-notifications-div-ul" class="collection">
+							  </ul>
+					</div>
+					<div id="notify-students-div" class="col s12">
+					</div>
+					<div id="view-issues-div" url = "{% url 'solve_issue' %}" class="col s12">
+							  <ul id = "view-issues-div-ul" class="collection">
+							  </ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">
@@ -148,12 +172,14 @@
 	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/sessions.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
+	<script type="text/javascript" src="{% static 'notification/faculty.js' %}"></script>
 	<script type="text/javascript" src="{% static 'faculty/verify.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();
 			Session.init();
+			Notification.init();
 			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form']);
 			VerifyStu.init();
 			Request.init();

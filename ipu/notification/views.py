@@ -1,24 +1,24 @@
-from django.shortcuts import render
-from django.http import HttpResponseForbidden , HttpResponse , JsonResponse
+from django.shortcuts import render ,  get_object_or_404
+from django.http import HttpResponseForbidden , HttpResponse , JsonResponse , Http404
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from .forms import CreateNotificationForm , SelectStreamsForm
+from .forms import CreateNotificationForm , SelectStreamsForm , SelectYearForm , IssueForm , IssueReplyForm
 from django.core.exceptions import PermissionDenied
 from account.models import CustomUser
 from faculty.models import Faculty
 from student.models import Student
 from college.models import College , Stream
-from .models import Notification
+from .models import Notification , Issue , IssueReply
 from django.core import serializers
 from recruitment.models import PlacementSession
 from django.contrib.auth.decorators import login_required
 import itertools
 import json
+from hashids import Hashids
 
 
 #from recruitment.forms import SessionInfoForm
 
 # Create your views here.
-
 @require_http_methods(['GET','POST'])
 @login_required
 def select_streams(request):
@@ -32,7 +32,7 @@ def select_streams(request):
 			form_object = SelectStreamsForm(college = college)
 			raw_html = render(request , 'notification/select_streams.html', {'select_streams' : form_object } )
 			return HttpResponse(raw_html)
-		else:
+		if request.method == 'POST':
 			form_object = SelectStreamsForm(request.POST)
 			if request.user.type == 'F':
 				college = request.user.faculty.college
@@ -40,31 +40,78 @@ def select_streams(request):
 				college = request.user.college	
 			students_of_streams = list()
 			streams_selected = request.POST.getlist('stream_list[]')
-			indices = request.POST.getlist('indices[]')			
-			
-			
+			indices = request.POST.getlist('indices[]')						
+			programme_to_year_list = list()
 			for stream in streams_selected:
-				stream_object = Stream.objects.get(code = stream)
-				student_objects = stream_object.students.all().values('profile' , 'profile__username' )
-				students_of_streams.append(student_objects)							
-			
+				stream_object = get_object_or_404(Stream , code = stream)
+				if stream_object:	
+					full_name = stream_object
+					#above stores a string like [128] B.Tech. (Dual Degree) - Electronics and Communication
+					year = stream_object.programme.years
+					
+					programme_to_year = {'name' : full_name,
+										 'year' : year,
+										 'code' : stream,
+										}
+					programme_to_year_list.append(programme_to_year)
+						
+				else:
+					pass	
+			form_object = SelectYearForm(college = college ,programme_to_year = programme_to_year_list, initial={ 'stream' : indices })
+			raw_html = render(request , 'notification/select_year.html' , {'select_year' : form_object})
+						
 
-			students_of_streams = list(itertools.chain.from_iterable(students_of_streams))
-			send_list = list()
-			for_list = list()
-			for idx , element in enumerate(students_of_streams):
-				send_list.append(element['profile__username'])
-				for_list.append(idx + 1)
-			
-			zipped_choices = zip(for_list , send_list)
-			form_object = CreateNotificationForm(receive_list = zipped_choices , college = college , initial={ 'stream' : indices })
-			raw_html = render(request , 'notification/create_notification.html' , {'create_notification' : form_object})
-			
 			return HttpResponse(raw_html)
 			
 	else:
 		raise PermissionDenied
 
+
+@require_http_methods(['POST'])
+@login_required
+def select_years(request):
+	if request.user.type == 'C' or request.user.type == 'F':
+		form_object = SelectStreamsForm(request.POST)
+		if request.user.type == 'F':
+			college = request.user.faculty.college
+		else:
+			college = request.user.college	
+		students_of_streams = list()
+		stream_to_year = request.POST['stream_to_year']
+		indices = request.POST.getlist('indices[]')
+		stream_to_year = json.loads(stream_to_year)
+		stream_codes = list()
+		years_selected = list()
+		for key ,values in stream_to_year.items():
+			stream_codes.append(key)
+			years_selected.append(values)
+		
+		for idx , stream in enumerate(stream_codes):
+			try:
+				stream_object = Stream.objects.get(code = stream)
+			except:
+				return JsonResponse(status = 400 , data = {"error" : "Please select the stream again."})
+			student_objects = college.students.filter(stream = stream_object , current_year__in = years_selected[idx]).values('profile' , 'profile__username' )
+			students_of_streams.append(student_objects)
+		
+
+			
+		
+		students_of_streams = list(itertools.chain.from_iterable(students_of_streams))
+		send_list = list()
+		for_list = list()
+		for idx , element in enumerate(students_of_streams):
+			send_list.append(element['profile__username'])
+			for_list.append(idx + 1)
+		zipped_choices = zip(for_list , send_list)
+		form_object = CreateNotificationForm(receive_list = zipped_choices , college = college , initial={ 'stream' : indices })
+		raw_html = render(request , 'notification/create_notification.html' , {'create_notification' : form_object})
+		
+
+		return HttpResponse(raw_html)
+		
+	else:
+		raise PermissionDenied
 
 @require_http_methods(['GET','POST'])
 @login_required
@@ -87,7 +134,6 @@ def create_notification(request):
 				notification_object = Notification.objects.create(actor = college_customuser_object, target = student_customeuser_object, message = message )
 				notification_object.save()
 
-
 			return HttpResponse(len(students_selected))
 		else:
 			raise PermissionDenied
@@ -101,7 +147,7 @@ def create_notification(request):
 def get_notifications(request):
 	user = request.user
 	data_list = list()
-	notification_object_queryset = Notification.objects.filter(target = user).order_by('-creation_time')
+	notification_object_queryset = Notification.objects.filter(target = user).order_by('creation_time').reverse()
 	notifications = serializers.serialize("json", notification_object_queryset, indent = 4)
 	for notification_object in notification_object_queryset:
 		data_dict = dict()
@@ -113,7 +159,7 @@ def get_notifications(request):
 		if notification_object.actor.type == 'C':
 			actor_name = notification_object.actor.college
 		elif notification_object.actor.type =='F':
-			actor_name = notification_object.actor.faulty.college
+			actor_name = notification_object.actor.faculty.college
 		else:
 			actor_name = notification_object.actor.company
 		data_dict['message'] = message
@@ -124,16 +170,192 @@ def get_notifications(request):
 
 
 
+@require_http_methods(['GET','POST'])
+@login_required
+def submit_issue(request):
+	if request.user.type == 'S':
+		if request.method == 'GET':
+			form_object = IssueForm()
+			raw_html = render(request , 'notification/submit_issue.html' , {'issue_form' : form_object})
+			return HttpResponse(raw_html)
+		if request.method == 'POST':
+			form_object = IssueForm(request.POST , user = request.user.student , college = request.user.student.college)
+			if form_object.is_valid():
+				form_object.save()
+				return HttpResponse(status = 201)
+			else:
+				raise Http404
+	else:
+		raise PermissionDenied
 
+
+@require_GET
+@login_required
+def display_issue(request):
+	if request.user.type == 'F':
+		college = request.user.faculty.college
+		issue_object_queryset = Issue.objects.filter(college = college).order_by('-marked' , 'solved_by' , '-creation_time')
+		data_list = list()
+		hashids = Hashids("ALonePinkSpiderInYellowWoods")
+		for issue_object in issue_object_queryset:
+			data_dict = dict()
+			data_dict['actor'] = issue_object.actor.profile.username
+			data_dict['issue_type'] = issue_object.issue_type
+			data_dict['is_marked'] = issue_object.marked
+			if(issue_object.solved_by):
+				data_dict['is_solved'] = True
+			else:
+				data_dict['is_solved'] = False
+
+			pk_id = int(issue_object.pk)
+			pk_id = pk_id*1000033
+			data_dict['identifier'] = hashids.encode(pk_id)
+			data_list.append(data_dict)
+		
+		return JsonResponse(data_list , safe = False)
+	else:
+		raise PermissionDenied
+
+
+@login_required
+@require_GET
+def mark_issue(request):
+	if request.user.type == 'F':
+		identifier = request.GET.get('identifier' , None)
+		if not identifier:
+			raise Http404
+		hashids = Hashids("ALonePinkSpiderInYellowWoods")
+		pk_tuple = hashids.decode(identifier)
+		pk_list = list(pk_tuple)
+		possible_pk = pk_list[0]/1000033
+		if not possible_pk.is_integer():
+			raise Http404
+		issue_object = get_object_or_404(Issue , pk = possible_pk)
+		if issue_object.marked == True:
+			issue_object.marked = False
+		else:
+			issue_object.marked = True
+		issue_object.save()
+		return HttpResponse(status = 201)
+	else:
+		raise PermissionDenied
 
 
 
 @require_http_methods(['GET','POST'])
 @login_required
-def forward_modified_session_notifications(request):
-	if request.user.type == 'F' or request.user.type == 'C':
-		return HttpResponse("")
+def solve_issue(request):
+	if request.user.type == 'F':
+		if request.method == 'GET':
+			identifier = request.GET.get('identifier' , None)
+			if not identifier:
+				raise Http404
+			hashids = Hashids("ALonePinkSpiderInYellowWoods")
+			pk_tuple = hashids.decode(identifier)
+			pk_list = list(pk_tuple)
+			possible_pk = pk_list[0]/1000033
+			if not possible_pk.is_integer():
+				raise Http404
+			issue_object = get_object_or_404(Issue , pk = possible_pk)
+			context = dict()
+			context['student'] = issue_object.actor
+			context['issue_object'] = issue_object
+			context['identifier'] = identifier
+			context['issue_type'] = get_issue_name(issue_object.issue_type)
+			form_object = IssueReplyForm()
+			context['solve_issue_form'] = form_object
+			raw_html = render(request , 'notification/submit_solution.html' , context =  context)
+			return HttpResponse(raw_html)
+		if request.method == 'POST':
+			identifier = request.POST.get('identifier' , None)
+			if not identifier:
+				raise Http404
+			hashids = Hashids("ALonePinkSpiderInYellowWoods")
+			pk_tuple = hashids.decode(identifier)
+			pk_list = list(pk_tuple)
+			possible_pk = pk_list[0]/1000033
+			if not possible_pk.is_integer():
+				raise Http404
+			issue_object = get_object_or_404(Issue , pk = possible_pk)
+			form_object = IssueReplyForm(request.POST , faculty = request.user.faculty , root_issue = issue_object)
+			if form_object.is_valid():
+				form_object.save()
+				notification_message = "Your issue with subject : " + issue_object.subject + " has been solved."
+				notification_object = Notification.objects.create(actor = request.user, target = issue_object.actor.profile, message = notification_message )
+				notification_object.save()
+				issue_object.solved_by = request.user.faculty
+				issue_object.save()
 
+				return HttpResponse(status = 201)
+			else:
+				raise Http404
+
+	else:
+		raise PermissionDenied
+
+@require_GET
+@login_required
+def display_solution_list(request):
+	if request.user.type == 'S':
+		student = request.user.student
+		issue_object_queryset = Issue.objects.filter(actor = student).order_by('creation_time').reverse()
+		data_list = list()
+		hashids = Hashids("ALonePinkSpiderInYellowWoods")
+		for issue_object in issue_object_queryset:
+			data_dict = dict()
+			data_dict['issue_type'] = issue_object.issue_type
+			data_dict['subject'] = issue_object.subject
+			try:
+				issue_reply_object = issue_object.issue_reply
+				data_dict['is_solved'] = True
+			except IssueReply.DoesNotExist:
+				data_dict['is_solved'] = False
+			pk_id = int(issue_object.pk)
+			pk_id = pk_id*1000033
+			data_dict['identifier'] = hashids.encode(pk_id)
+			data_list.append(data_dict)
+		return JsonResponse(data_list , safe = False)
+	else:
+		PermissionDenied
+
+@require_GET
+@login_required
+def display_solution(request):
+	if request.user.type == 'S':
+		identifier = request.GET.get('identifier' , None)
+		if not identifier:
+			raise Http404
+		hashids = Hashids("ALonePinkSpiderInYellowWoods")
+		pk_tuple = hashids.decode(identifier)
+		pk_list = list(pk_tuple)
+		possible_pk = pk_list[0]/1000033
+		if not possible_pk.is_integer():
+			raise Http404
+		issue_object = get_object_or_404(Issue , pk = possible_pk)
+		try:
+			issue_reply_object = issue_object.issue_reply
+		except IssueReply.DoesNotExist:
+			raise Http404
+		context = dict()
+		context['issue_object'] = issue_object
+		context['issue_reply_object'] = issue_reply_object
+		context['issue_type'] = get_issue_name(issue_object.issue_type)
+		raw_html = render(request , 'notification/view_solution.html' , context =  context)
+		return HttpResponse(raw_html)
+	else:
+		raise PermissionDenied
+
+#===============================View Methods=====================================#
+
+def get_issue_name(issue_symbol):
+	if issue_symbol == 'V':
+		return "Verification"
+	if issue_symbol == 'P':
+		return "Placement"
+	if issue_symbol == 'G':
+		return "General"
+	else:
+		raise Http404
 
 
 

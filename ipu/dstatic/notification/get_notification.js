@@ -9,10 +9,14 @@ var GetNotification = (function()  {
           	'</li>'
 		}
 
-        raw_html += '<div id="noti-foot"><a>See Older Notifications' + '</a></div>';
+        raw_html += '<div id="noti-foot"><a id="noti-foot-anchor" href="#notifications">See Older Notifications' + '</a></div>';
 
-
+        
 		$('#dropdown3').html(raw_html);
+        $('#noti-foot-anchor').on('click' , function () {
+            $('#notification_button').trigger('click');
+            console.log("yeah");
+        });
 	}
 
 
