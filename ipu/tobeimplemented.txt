@@ -1,6 +1,7 @@
 -- PRIMARY --
 Preloader
 Toasts
+Initials
 
 -- SECONDARY -- 
 Downloading resumes -- ZIP

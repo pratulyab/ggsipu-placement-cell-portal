@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
 from account.forms import AccountForm, ForgotPasswordForm, LoginForm, SetPasswordForm, SignupForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
+from account.utils import *
 from college.forms import CollegeCreationForm
 from college.models import College, Stream
 from company.forms import CompanyCreationForm
@@ -27,7 +28,6 @@ from student.models import Student
 import re
 
 # Create your views here
-
 @require_GET
 def landing(request):
 	if request.user.is_authenticated():
@@ -61,7 +61,7 @@ def activate(request, uid=None, token=None):
 		data = get_type_created(request.user)
 		user_type = data.pop('user_type')
 		if request.user.is_active:
-			return redirect(get_home_url(user_type))
+			return redirect(settings.HOME_URL[user_type])
 	
 	if uid is None or token is None:
 		raise Http404(_('Invalid Request'))
@@ -82,7 +82,7 @@ def activate(request, uid=None, token=None):
 @require_http_methods(['GET', 'POST'])
 def forgot_password(request):
 	if request.user.is_authenticated():
-		return redirect(get_home_url(request.user.type))
+		return redirect(settings.HOME_URL[request.user.type])
 	if request.method == 'GET':
 		f = ForgotPasswordForm()
 	if request.method == 'POST':
@@ -107,7 +107,7 @@ def forgot_password(request):
 @require_http_methods(['GET', 'POST'])
 def reset_password(request, uid = None, token=None):
 	if request.user.is_authenticated():
-		return redirect(get_home_url(request.user.type))
+		return redirect(settings.HOME_URL[request.user.type])
 	try:
 		user = CustomUser.objects.get(id = uid)
 	except (CustomUser.DoesNotExist):
@@ -126,8 +126,8 @@ def reset_password(request, uid = None, token=None):
 	context = { 'validlink' : True, 'form' : f}
 	return render(request, 'account/set_password.html', context)
 
-@require_http_methods(['GET', 'POST'])
 @login_required
+@require_http_methods(['GET', 'POST'])
 def edit_account(request):
 	if request.is_ajax():
 		if request.method == 'GET':
@@ -150,8 +150,8 @@ def edit_account(request):
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_GET
 @login_required
+@require_GET
 def search(request):
 	if not request.is_ajax():
 		return render(request, '404.html')
@@ -159,7 +159,7 @@ def search(request):
 	data = get_type_created(request.user)
 	user_type = data.pop('user_type')
 	if not data:
-		return JsonResponse({ 'location': reverse(get_creation_url(user_type)) })
+		return JsonResponse({ 'location': reverse(settings.PROFILE_CREATION_URL[user_type]) })
 	profile = data.pop('profile')
 	query = request.GET.get('query')
 # If 'location' key is not passed in JSON, then 'username' and 'name' of the relevant results will be passed
@@ -188,8 +188,8 @@ def search(request):
 	else:
 		return JsonResponse({'success': False, 'message': 'No results found.'})
 
-@require_http_methods(['GET', 'POST'])
 @login_required
+@require_http_methods(['GET', 'POST'])
 def social_profile(request):
 	if request.is_ajax():
 		if request.method == 'GET':
@@ -214,17 +214,17 @@ def social_profile(request):
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_GET
 @login_required
+@require_GET
 def home(request):
 	return handle_user_type(request, redirect_request=True)
 
-@require_GET
 @login_required
+@require_GET
 def logout(request):
 	auth_logout(request)
 	return redirect('landing')
-
+'''
 # Methods that aren't mapped to any URL
 
 @require_http_methods(['GET','POST'])
@@ -277,9 +277,9 @@ def redirect_profile_creation(request, user_type):
 		return redirect('create_student')
 	else:
 		return redirect('create_company')
-
-@require_GET
+'''
 @login_required
+@require_GET
 def view_profile(request, username):
 	if not request.is_ajax() or not CustomUser.objects.filter(username=username).exists():
 		print('-----------')
@@ -290,7 +290,7 @@ def view_profile(request, username):
 	data = get_type_created(request.user)
 	user_type = data.pop('user_type')
 	if not data:
-		return JsonResponse({ 'location': reverse(get_creation_url(user_type)) })
+		return JsonResponse({ 'location': reverse(settings.PROFILE_CREATION_URL[user_type]) })
 #	if request.user.username == username:
 #		return redirect(get_home_url(user_type))
 	user = CustomUser.objects.get(username=username)
@@ -304,7 +304,7 @@ def view_profile(request, username):
 		return JsonResponse({'success':True, 'card-html':get_student_public_profile(user, user_type)})
 	else:
 		return JsonResponse({'success':True, 'card-html':get_company_public_profile(user, user_type)})
-
+'''
 @require_http_methods(['GET','POST'])
 @login_required
 def get_relevant_reversed_url(request):
@@ -314,7 +314,7 @@ def get_relevant_reversed_url(request):
 		return reverse(get_home_url(user_type))
 	else:
 		return reverse(get_creation_url(user_type))
-
+'''
 # Methods for facilitation. No 'request' requirement
 
 def send_activation_email(uid, domain):
@@ -331,7 +331,7 @@ def send_activation_email(uid, domain):
 	print(settings.DEFAULT_FROM_EMAIL)
 	email_message.send()
 
-
+'''
 def get_type_created(user):
 	user_type = user.type
 	if user_type == 'C':
@@ -360,7 +360,8 @@ def get_type_created(user):
 			return ({'profile': company, 'user_type': user_type})
 		except Company.DoesNotExist:
 			return ({'user_type': user_type})
-
+'''
+"""
 def get_home_url(user_type):
 	if user_type == 'C':
 		return 'college_home'
@@ -380,7 +381,7 @@ def get_creation_url(user_type):
 		return 'create_student'
 	else:
 		return 'create_company'
-
+"""
 from college.views import get_college_public_profile
 from company.views import get_company_public_profile
 from student.views import get_student_public_profile

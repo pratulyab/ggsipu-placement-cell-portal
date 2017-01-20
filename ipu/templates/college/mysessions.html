@@ -6,28 +6,48 @@
 {% if sessions %}
 <ul class="collection">
 	{% for session in sessions %}
-		<li class="collection-item avatar" data-sess="{{ session.sessid }}">
-			{% if session.photo %}
-				<img src="{{ session.photo.url }}" alt="Recruiter" class="circle" />
-			{% endif %}
-			<span class="title">{{ session.company }} for {{ session.type|title }} </span>
-			<p>
-				{{ session.salary }}
-				<br>
+		{% if session.is_dummy %}
+			<li class="collection-item avatar" data-sess="{{ session.dsessid }}">
+				<span class="title">{{ session.dcompany }} for {{ session.type|title }} </span>
 				<p>
-					{{ session.streams }}
+					{{ session.salary }}
+					<br>
+					<p>
+						{{ session.streams }}
+					</p>
+					<br>
+						{{ session.students }} student{{ session.students|pluralize }} in the session
 				</p>
-				<br>
-					{{ session.students }} student{{ session.students|pluralize }} in the session
-			</p>
-			<span class="secondary-content">
-				<a href="{% url 'edit_session' session.sessid %}"><i class="fa fa-2x fa-pencil"></i></a>
-				<a href="{% url 'edit_criteria' session.sessid %}"><i class="fa fa-2x fa-list-ol"></i></a>
-				<a href="{% url 'excel' session.sessid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
-			</span>
-		</li>
+				<span class="secondary-content">
+					<a href="{% url 'edit_dsession' session.dsessid %}"><i class="fa fa-2x fa-pencil"></i></a>
+					<a href="{% url 'edit_criteria' session.dsessid %}"><i class="fa fa-2x fa-list-ol"></i></a>
+					<a href="{% url 'dexcel' session.dsessid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
+				</span>
+			</li>
+		{% else %}
+			<li class="collection-item avatar" data-sess="{{ session.sessid }}">
+				{% if session.photo %}
+					<img src="{{ session.photo.url }}" alt="Recruiter" class="circle" />
+				{% endif %}
+				<span class="title">{{ session.company }} for {{ session.type|title }} </span>
+				<p>
+					{{ session.salary }}
+					<br>
+					<p>
+						{{ session.streams }}
+					</p>
+					<br>
+						{{ session.students }} student{{ session.students|pluralize }} in the session
+				</p>
+				<span class="secondary-content">
+					<a href="{% url 'edit_session' session.sessid %}"><i class="fa fa-2x fa-pencil"></i></a>
+					<a href="{% url 'edit_criteria' session.sessid %}"><i class="fa fa-2x fa-list-ol"></i></a>
+					<a href="{% url 'excel' session.sessid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
+				</span>
+			</li>
+		{% endif %}
 	{% endfor %}
 </ul>
 {% else %}
-	<p>You are currently not enrolled in any sessions.</p>
+	<b><h1 class="center flow-text teal-text text-accent-4">You are currently not enrolled in any sessions.</h1></b>
 {% endif %}

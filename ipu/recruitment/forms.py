@@ -183,7 +183,7 @@ class SessionEditForm(forms.ModelForm):
 		model = PlacementSession
 		fields = ['students', 'status', 'application_deadline', 'ended']
 	
-class CreateCriteriaForm(forms.ModelForm):
+class CreateSessionCriteriaForm(forms.ModelForm):
 	layout = Layout(
 			Row('application_deadline'),
 #			Row(Span8('current_year'), Span4('is_sub_back')),
@@ -199,7 +199,7 @@ class CreateCriteriaForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		self.association = kwargs.pop('association')
 		self.max_year = int(self.association.programme.years)
-		super(CreateCriteriaForm, self).__init__(*args, **kwargs)
+		super(CreateSessionCriteriaForm, self).__init__(*args, **kwargs)
 		self.initial['token'] = settings.HASHID_ASSOCIATION.encode(self.association.pk)
 		self.fields['years'].widget = forms.SelectMultiple(choices=(tuple(("%s"%i,"%s"%i) for i in range(1,self.max_year+1))))
 

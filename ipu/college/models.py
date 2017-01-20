@@ -49,8 +49,10 @@ class College(models.Model):
 	website = models.URLField(_('College website'), blank=True)
 	photo = models.ImageField(_('Photo'), upload_to='college/photo', blank=True)
 
-#	programmes = models.ManyToManyField(Programme, related_name="colleges")
 	streams = models.ManyToManyField(Stream, related_name="colleges")
+
+	def get_programmes_queryset(self):
+		return Programme.objects.filter(pk__in = {s.programme.pk for s in self.streams.all()})
 
 	def __str__(self):
 		return "%s (%s)" % (self.name.title(), self.code)

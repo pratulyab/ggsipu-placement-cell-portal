@@ -10,5 +10,6 @@ urlpatterns = [
 	url(r'^mysessions/$', mysessions, name='mysessions'),
 	url(r'^excel/(?P<sess>\w{12,})/$', generate_excel, name='excel'),
 	url(r'^edit_session/(?P<sess>\w{12,})/$', edit_session, name='edit_session'),
-	url(r'^edit_criteria/(?P<sess>\w{12,})/$', edit_criteria, name='edit_criteria'),
+#	url(r'^edit_criteria/(?P<sess>\w{12,})/$', edit_criteria, name='edit_criteria'),
+	url(r'^edit_criteria/(?P<sess>\w{9,})/$', edit_criteria, name='edit_criteria'),
 ]

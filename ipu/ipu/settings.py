@@ -26,7 +26,7 @@ SECRET_KEY = 'yc55$ws@*mj)q8q&-!bwg6@44ua@7l2^&+!vd$9uje!shpwlxy'
 # SECURITY WARNING: don't run with debug turned on in production!
 if socket.gethostname() == 'TPC':
 	DEBUG = False
-	ALLOWED_HOSTS = ['14.139.60.220', '192.168.2.2']
+	ALLOWED_HOSTS = ['10.102.18.18']
 	db_password = 'P30R1024$1089'
 else:
 	DEBUG = True
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 	'account',
 	'college',
 	'company',
+	'dummy_company',
 	'faculty',
 	'notification',
 	'recruitment',
@@ -96,7 +97,7 @@ DATABASES = {
         'NAME': 'ipu',
         'HOST': 'localhost',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': db_password,
         'PORT': 3306
     }
 }
@@ -176,6 +177,7 @@ IMAGE_MAX_SIZE = 1*1024*1024 #1MB
 #HASHIDS
 HASHID_ASSOCIATION = hashids.Hashids(salt="Sammelan", min_length=10)
 HASHID_PLACEMENTSESSION = hashids.Hashids(salt="Naukari", min_length=12)
+HASHID_DUMMY_SESSION = hashids.Hashids(salt="NakliNakli", min_length=9)
 
 # CELERY STUFF
 BROKER_URL = 'redis://localhost:6379'
@@ -184,3 +186,18 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'India/Kolkata'
+
+# URL NAMES DICTIONARY FOR USER TYPES
+HOME_URL = {
+	'C': 'college_home',
+	'F': 'faculty_home',
+	'S': 'student_home',
+	'CO': 'company_home'
+}
+
+PROFILE_CREATION_URL = {
+	'C': 'create_college',
+	'F': 'edit_create_faculty',
+	'S': 'create_student',
+	'CO': 'create_company'
+}

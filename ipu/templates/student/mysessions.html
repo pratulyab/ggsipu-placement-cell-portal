@@ -7,7 +7,7 @@
 <ul class="collection">
 	{% for session in sessions %}
 		<li class="collection-item avatar">
-			{% if session.photo %}
+			{% if not session.is_dummy and session.photo %}
 				<img src="{{ session.photo.url }}" alt="Recruiter" class="circle" />
 			{% endif %}
 			<span class="title">{{ session.company }} for {{ session.type|title }} </span>
@@ -24,5 +24,5 @@
 	{% endfor %}
 </ul>
 {% else %}
-	<p>You are currently not enrolled in any sessions.</p>
+	<b><h1 class="center flow-text teal-text text-accent-4">You are currently not enrolled in any sessions.</h1></b>
 {% endif %}

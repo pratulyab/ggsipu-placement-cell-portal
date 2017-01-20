@@ -28,6 +28,7 @@ urlpatterns = [
 	url(r'^college/', include('college.urls')),
 	url(r'^notification/', include('notification.urls')),
 	url(r'^company/', include('company.urls')),
+	url(r'^dcompany/', include('dummy_company.urls')),
 	url(r'^faculty/', include('faculty.urls')),
 	url(r'^recruitment/', include('recruitment.urls')),
 	url(r'^student/', include('student.urls')),

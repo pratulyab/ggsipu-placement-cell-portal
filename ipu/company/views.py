@@ -7,10 +7,11 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from account.decorators import require_user_types
 from account.forms import SignupForm, AccountForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
-from account.views import handle_user_type, get_creation_url, get_home_url, get_relevant_reversed_url
+from account.utils import handle_user_type, get_relevant_reversed_url
 from company.forms import CompanyCreationForm, CompanyEditForm
 from company.models import Company
 from notification.models import Notification
@@ -30,83 +31,86 @@ def company_signup(request):
 		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 #		auth_login(request, user)
 		send_activation_email_task.delay(user.id, get_current_site(request).domain)
-		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse('create_company'))}
+		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse(settings.PROFILE_CREATION_URL['CO']))}
 		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')
 		return JsonResponse(data = {'success': True, 'render': html})
 	else:
 		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
+@require_user_types(['CO'])
+@login_required
 @require_http_methods(['GET','POST'])
-@login_required
 def create_company(request):
-	if request.user.type == 'CO':
-		if request.method == 'GET':
-			f = CompanyCreationForm()
-			try:
-				company = request.user.company
-				return redirect('company_home')
-			except Company.DoesNotExist:
-				pass
-		else:
-			f = CompanyCreationForm(request.POST, request.FILES)
-			if f.is_valid():
-				company = f.save(profile=request.user)
-				return redirect('company_home')
-		return render(request, 'company/create.html', {'company_creation_form': f})
+##	if request.user.type == 'CO':
+	if request.method == 'GET':
+		f = CompanyCreationForm()
+		try:
+			company = request.user.company
+			return redirect(settings.HOME_URL['CO'])
+		except Company.DoesNotExist:
+			pass
 	else:
-		return handle_user_type(request, redirect_request=True)
+		f = CompanyCreationForm(request.POST, request.FILES)
+		if f.is_valid():
+			company = f.save(profile=request.user)
+			return redirect(settings.HOME_URL['CO'])
+	return render(request, 'company/create.html', {'company_creation_form': f})
+##	else:
+##		return handle_user_type(request, redirect_request=True)
 
-@require_GET
+@require_user_types(['CO'])
 @login_required
+@require_GET
 def company_home(request):
-	if request.user.type == 'CO':
-		context = {}
-		user = request.user
+##	if request.user.type == 'CO':
+	context = {}
+	user = request.user
+	try:
+		company = request.user.company
+	except Company.DoesNotExist:
+		return redirect(settings.PROFILE_CREATION_URL['CO'])
+	context['user'] = user
+	context['company'] = company
+	context['edit_account_form'] = AccountForm(instance=user)
+	context['edit_company_form'] = CompanyEditForm(instance=company)
+	context['associate_actors_only_form'] = AssActorsOnlyForm(initiator_profile=company)
+	try:
+		context['social_profile_form'] = SocialProfileForm(instance=user.social)
+	except SocialProfile.DoesNotExist:
+		context['social_profile_form'] = SocialProfileForm()
+	context['badge'] = company.profile.notification_target.filter(is_read=False).count()
+	return render(request, 'company/home.html', context)
+##	else:
+##		return handle_user_type(request, redirect_request=True)
+
+@require_user_types(['CO'])
+@login_required
+@require_POST
+def edit_company(request):
+	if request.is_ajax():
+##		if request.user.type == 'CO':
 		try:
 			company = request.user.company
 		except Company.DoesNotExist:
-			return redirect('create_company')
-		context['user'] = user
-		context['company'] = company
-		context['edit_account_form'] = AccountForm(instance=user)
-		context['edit_company_form'] = CompanyEditForm(instance=company)
-		context['associate_actors_only_form'] = AssActorsOnlyForm(initiator_profile=company)
-		try:
-			context['social_profile_form'] = SocialProfileForm(instance=user.social)
-		except SocialProfile.DoesNotExist:
-			context['social_profile_form'] = SocialProfileForm()
-		context['badge'] = company.profile.notification_target.filter(is_read=False).count()
-		return render(request, 'company/home.html', context)
-	else:
-		return handle_user_type(request, redirect_request=True)
-
-@require_POST
-@login_required
-def edit_company(request):
-	if request.is_ajax():
-		if request.user.type == 'CO':
-			try:
-				company = request.user.company
-			except Company.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('CO'))})
-			f = CompanyEditForm(request.POST, request.FILES, instance=company)
-			photo = company.photo
-			if f.is_valid():
-				f.save()
-				if photo and photo != company.photo:
-					try:
-						os.remove(os.path.join(settings.BASE_DIR, photo.url[1:]))
-					except:
-						pass
-				context = {}
-				context['company_edit_form'] = CompanyEditForm(instance=company)
-				if f.has_changed():
-					context['success_msg'] = "Profile has been updated successfully!"
-				return JsonResponse(status=200, data={'render': render(request, 'company/edit.html', context).content.decode('utf-8')})
-			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+			return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['CO'])})
+		f = CompanyEditForm(request.POST, request.FILES, instance=company)
+		photo = company.photo
+		if f.is_valid():
+			f.save()
+			if photo and photo != company.photo:
+				try:
+					os.remove(os.path.join(settings.BASE_DIR, photo.url[1:]))
+				except:
+					pass
+			context = {}
+			context['company_edit_form'] = CompanyEditForm(instance=company)
+			if f.has_changed():
+				context['success_msg'] = "Profile has been updated successfully!"
+			return JsonResponse(status=200, data={'render': render(request, 'company/edit.html', context).content.decode('utf-8')})
 		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request, redirect_request=True)
 

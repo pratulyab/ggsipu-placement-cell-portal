@@ -6,10 +6,11 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
+from account.decorators import require_user_types
 from account.forms import SignupForm, AccountForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
-from account.views import handle_user_type, get_creation_url, get_home_url, get_relevant_reversed_url
+from account.utils import handle_user_type, get_relevant_reversed_url
 from college.forms import CollegeCreationForm, CollegeEditForm
 from college.models import College
 from faculty.forms import FacultySignupForm
@@ -39,84 +40,87 @@ def college_signup(request):
 			if college:
 				auth_login(request, college)
 				context['email'] = college.email
-				context['profile_creation'] = request.build_absolute_uri(reverse('create_college'))
+				context['profile_creation'] = request.build_absolute_uri(reverse(settings.PROFILE_CREATION_URL['C']))
 				send_activation_email_task.delay(college.id, get_current_site(request).domain)
 				return render(request, 'account/post_signup.html', context)
 	return render(request, 'college/signup.html', {'college_signup_form': f})
 
+@require_user_types(['C'])
+@login_required
 @require_http_methods(['GET','POST'])
-@login_required
 def create_college(request):
-	if request.user.type == 'C':
-		if request.method == 'GET':
-			f = CollegeCreationForm()
-			try:
-				college = request.user.college
-				return redirect('college_home')
-			except College.DoesNotExist:
-				pass
-		else:
-			f = CollegeCreationForm(request.POST, request.FILES)
-			if f.is_valid():
-				college = f.save(profile=request.user)
-				f.save_m2m()
-				return redirect('college_home')
-		return render(request, 'college/create.html', {'college_creation_form': f})
+##	if request.user.type == 'C':
+	if request.method == 'GET':
+		f = CollegeCreationForm()
+		try:
+			college = request.user.college
+			return redirect(settings.HOME_URL['C'])
+		except College.DoesNotExist:
+			pass
 	else:
-		return handle_user_type(request, redirect_request=True)
+		f = CollegeCreationForm(request.POST, request.FILES)
+		if f.is_valid():
+			college = f.save(profile=request.user)
+			f.save_m2m()
+			return redirect(settings.HOME_URL['C'])
+	return render(request, 'college/create.html', {'college_creation_form': f})
+##	else:
+##		return handle_user_type(request, redirect_request=True)
 
-@require_GET
+@require_user_types(['C'])
 @login_required
+@require_GET
 def college_home(request):
-	if request.user.type == 'C':
-		context = {}
-		user = request.user
+##	if request.user.type == 'C':
+	context = {}
+	user = request.user
+	try:
+		college = request.user.college
+	except College.DoesNotExist:
+		return redirect(settings.PROFILE_CREATION_URL['C'])
+	context['user'] = user
+	context['college'] = college
+	context['edit_account_form'] = AccountForm(instance=user)
+	context['edit_college_form'] = CollegeEditForm(instance=college)
+	context['create_faculty_form'] = FacultySignupForm()
+	context['associate_actors_only_form'] = AssActorsOnlyForm(initiator_profile=college)
+	try:
+		context['social_profile_form'] = SocialProfileForm(instance=user.social)
+	except SocialProfile.DoesNotExist:
+		context['social_profile_form'] = SocialProfileForm()
+	context['badge'] = college.profile.notification_target.filter(is_read=False).count()
+	return render(request, 'college/home.html', context)
+##	else:
+##		return handle_user_type(request, redirect_request=True)
+
+@require_user_types(['C'])
+@login_required
+@require_POST
+def edit_college(request):
+	if request.is_ajax():
+##		if request.user.type == 'C':
 		try:
 			college = request.user.college
 		except College.DoesNotExist:
-			return redirect('create_college')
-		context['user'] = user
-		context['college'] = college
-		context['edit_account_form'] = AccountForm(instance=user)
-		context['edit_college_form'] = CollegeEditForm(instance=college)
-		context['create_faculty_form'] = FacultySignupForm()
-		context['associate_actors_only_form'] = AssActorsOnlyForm(initiator_profile=college)
-		try:
-			context['social_profile_form'] = SocialProfileForm(instance=user.social)
-		except SocialProfile.DoesNotExist:
-			context['social_profile_form'] = SocialProfileForm()
-		context['badge'] = college.profile.notification_target.filter(is_read=False).count()
-		return render(request, 'college/home.html', context)
-	else:
-		return handle_user_type(request, redirect_request=True)
-
-@require_POST
-@login_required
-def edit_college(request):
-	if request.is_ajax():
-		if request.user.type == 'C':
-			try:
-				college = request.user.college
-			except College.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('C'))})
-			f = CollegeEditForm(request.POST, request.FILES, instance=college)
-			photo = college.photo
-			if f.is_valid():
-				f.save()
-				if photo and photo != college.photo:
-					try:
-						os.remove(os.path.join(settings.BASE_DIR, photo.url[1:]))
-					except:
-						pass
-				context = {}
-				context['edit_college_form'] = CollegeEditForm(instance=college)
-				if f.has_changed():
-					context['success_msg'] = "Profile has been updated successfully!"
-				return JsonResponse(status=200, data={'render': render(request, 'college/edit.html', context).content.decode('utf-8')})
-			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+			return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['C'])})
+		f = CollegeEditForm(request.POST, request.FILES, instance=college)
+		photo = college.photo
+		if f.is_valid():
+			f.save()
+			if photo and photo != college.photo:
+				try:
+					os.remove(os.path.join(settings.BASE_DIR, photo.url[1:]))
+				except:
+					pass
+			context = {}
+			context['edit_college_form'] = CollegeEditForm(instance=college)
+			if f.has_changed():
+				context['success_msg'] = "Profile has been updated successfully!"
+			return JsonResponse(status=200, data={'render': render(request, 'college/edit.html', context).content.decode('utf-8')})
 		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request, redirect_request=True)
 

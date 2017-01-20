@@ -55,6 +55,23 @@ class SelectionCriteria(models.Model):
 	post_graduation = models.CharField(_('Post Graduation Percentage'), max_length=2, blank=True, choices=COLLEGE_PERCENTAGE_CHOICES)
 	doctorate = models.CharField(_('Doctorate Percentage'), max_length=2, blank=True, choices=COLLEGE_PERCENTAGE_CHOICES)
 
+	def clean(self, *args, **kwargs):
+		super(SelectionCriteria, self).clean()
+		years = self.years.split(',')
+		for each in years:
+			if not year:
+				raise IntegrityError(_('There must not be any spaces in the years.'))
+			elif len(each > 1):
+				raise IntegrityError(_('Make sure the year is entered in the proper desired format'))
+			elif int(each) > 6:
+				raise IntegrityError(_('Maximum year value can be 6.'))
+#		return self.years
+
+	def save(self, *args, **kwargs):
+		self.full_clean()
+		criterion = super(SelectionCriteria, self).save()
+		return criterion
+
 	def check_eligibility(self, student):
 		if not isinstance(student, Student):
 			return False
@@ -113,6 +130,30 @@ class Dissociation(models.Model):
 	class Meta:
 		unique_together = ['company', 'college']
 
+
+@receiver(m2m_changed, sender=Association.streams.through)
+def verify_assoc_stream_uniqueness(sender, **kwargs):
+	association = kwargs.get('instance', None)
+	action = kwargs.get('action', None)
+	streams = kwargs.get('pk_set', None)
+
+	if action == 'pre_add':
+		association_streams = Association.objects.filter(company=association.company, college=association.college)
+		for stream in streams:
+			if association_streams.filter(streams=stream):
+				raise IntegrityError(_('Association between (%s, %s) already exists for stream %s' % (association.college, association.company, stream,)))
+
+@receiver(m2m_changed, sender=PlacementSession.students.through)
+def validating_students(sender, **kwargs):
+	session = kwargs.get('instance', None)
+	action = kwargs.get('action', None)
+	students = kwargs.get('pk_set', None)
+	
+	if action == 'pre_add':
+		for student in students:
+			student = Student.objects.get(pk=student)
+			if student.college != session.association.college:
+				raise IntegrityError(_('Student %s doesn\'t belong to this college, thus cannot be added to the session.'))
 
 @receiver(m2m_changed, sender=PlacementSession.students.through)
 def notify_college_student_list_changed(sender, **kwargs):

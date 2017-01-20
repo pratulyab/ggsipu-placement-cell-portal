@@ -1,5 +1,6 @@
 from django.conf.urls import url, include
 from .views import create_student, student_home, edit_student, student_login, student_signup, edit_qualifications, delete_student, tech_profile, upload_file, paygrade, coder, companies_in_my_college, apply_to_company
+from dummy_company.views import apply_to_dummy_company
 
 urlpatterns = [
 	url(r'^create/$', create_student, name='create_student'),
@@ -15,4 +16,5 @@ urlpatterns = [
 	url(r'^coder/$', coder, name='coder'),
 	url(r'^view_companies/$', companies_in_my_college, name='view_companies'),
 	url(r'^apply/(?P<sess>\w{12,})/$', apply_to_company, name='apply'),
+	url(r'^applyd/(?P<dsess>\w{9,})/$', apply_to_dummy_company, name='applyd'),
 ]

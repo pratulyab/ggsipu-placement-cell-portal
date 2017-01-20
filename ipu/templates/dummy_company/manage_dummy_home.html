@@ -1,0 +1,24 @@
+{% extends 'account/navbar.html' %}
+{% load staticfiles %}
+{% load material_form %}
+{% block title %}Manage Dummy Company{% endblock %}
+{% block content %}
+	<h4 class="center" style="color: goldenrod;">Edit Dummy Company</h4>
+	<div class="col s12" id="create-dummy-session-div">
+		<form action="{% url 'create_dsessI' %}" method='POST' class="col s8 offset-s2" id="create-dummy-session-form">
+			{% csrf_token %}
+			{% form form=create_dummy_session_form %}{% endform %}
+			<div class="row">
+				<button class="btn btn-waves-light col s8 offset-s2" style="width: 80%">Create Dummy Company</button>
+			</div>
+		</form>
+	</div>
+{% endblock %}
+{% block scripts %}
+	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
+	<script>
+		$(document).ready(function() {
+			Settings.init(['create-dummy-session-form']);
+		});
+	</script>
+{% endblock %}

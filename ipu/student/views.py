@@ -10,11 +10,13 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from account.models import CustomUser, SocialProfile
+from account.decorators import require_user_types
 from account.forms import AccountForm, SocialProfileForm
+from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
-from account.views import handle_user_type, get_relevant_reversed_url, get_creation_url, get_home_url
+from account.utils import handle_user_type, get_relevant_reversed_url
 from college.models import College, Stream
+from dummy_company.models import DummyCompany, DummySession
 from notification.models import Notification
 from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm, FileUploadForm, PaygradeForm
 from recruitment.models import Association, PlacementSession
@@ -50,93 +52,96 @@ def student_signup(request):
 		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 #		auth_login(request, user)
 		send_activation_email_task.delay(user.id, get_current_site(request).domain)
-		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse('create_student'))}
+		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse(settings.PROFILE_CREATION_URL['S']))}
 		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')
 		return JsonResponse(data = {'success': True, 'render': html})
 	else:
 		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
+@require_user_types(['S'])
+@login_required
 @require_http_methods(['GET','POST'])
-@login_required
 def create_student(request):
-	if request.user.type == 'S':
-		username = request.user.username
-		user_profile = request.user
-		try:
-			roll, coll, strm, year = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', username).groups()
-		except AttributeError:
+##	if request.user.type == 'S':
+	username = request.user.username
+	user_profile = request.user
+	try:
+		roll, coll, strm, year = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', username).groups()
+	except AttributeError:
 #			pass
-			raise Http404(_('Enrollment number should contain only digits'))
-		except ValueError:
+		raise Http404(_('Enrollment number should contain only digits'))
+	except ValueError:
 #			pass
-			raise Http404(_('Enrollment number should be 11 digits long'))
-		coll = College.objects.get(code=coll).pk
-		strm = Stream.objects.get(code=strm).pk
-		if request.method == 'GET':
-			f = StudentCreationForm(profile=user_profile, coll=coll, strm=strm)
-			try:
-				student = request.user.student
-				return redirect('student_home')
-			except Student.DoesNotExist:
-				pass
-		else:
-			POST = request.POST.copy()
-			POST['college'] = coll
-			POST['stream'] = strm
-			POST['programme'] = Stream.objects.get(pk=strm).programme.pk
-			f = StudentCreationForm(POST, request.FILES, profile=user_profile, coll=coll, strm=strm)
-			if f.is_valid():
-				student = f.save()
-				return redirect('student_home')
-		return render(request, 'student/create.html', {'student_creation_form': f})
-	else:
-		return handle_user_type(request, redirect_request=True)
-
-@require_GET
-@login_required
-def student_home(request):
-	if request.user.type == 'S':
-		context = {}
-		user = request.user
-		context['user'] = user
+		raise Http404(_('Enrollment number should be 11 digits long'))
+	coll = College.objects.get(code=coll).pk
+	strm = Stream.objects.get(code=strm).pk
+	if request.method == 'GET':
+		f = StudentCreationForm(profile=user_profile, coll=coll, strm=strm)
 		try:
 			student = request.user.student
+			return redirect(settings.HOME_URL['S'])
 		except Student.DoesNotExist:
-			return redirect('create_student')
-		context['student'] = student
-		if student.is_verified == False and student.verified_by == None:
-			try:
-				student.qualifications
-			except Qualification.DoesNotExist:
-				context['qual_form'] = QualificationForm()
-			return render(request, 'student/unverified.html', context)
-		context['edit_account_form'] = AccountForm(instance=user)
-		context['upload_file_form'] = FileUploadForm(instance=student)
-		if student.is_verified is None:
-			context['edit_profile_form'] = StudentEditForm(instance=student)
-		try:
-			qual = student.qualifications
-			if qual.is_verified is None:
-				context['edit_qual_form'] = QualificationForm(instance=qual)
-		except Qualification.DoesNotExist:
-			context['edit_qual_form'] = QualificationForm()
-		try:
-			context['social_profile_form'] = SocialProfileForm(instance=user.social)
-		except SocialProfile.DoesNotExist:
-			context['social_profile_form'] = SocialProfileForm()
-		try:
-			context['tech_profile_form'] = TechProfileForm(instance=student.tech, student=student)
-		except:
-			context['tech_profile_form'] = TechProfileForm(student=student)
-		if not student.salary_expected:
-			context['paygrade_form'] = PaygradeForm()
-		context['badge'] = student.profile.notification_target.filter(is_read=False).count()
-		return render(request, 'student/home.html', context)
+			pass
 	else:
-		return handle_user_type(request, redirect_request=True)
+		POST = request.POST.copy()
+		POST['college'] = coll
+		POST['stream'] = strm
+		POST['programme'] = Stream.objects.get(pk=strm).programme.pk
+		f = StudentCreationForm(POST, request.FILES, profile=user_profile, coll=coll, strm=strm)
+		if f.is_valid():
+			student = f.save()
+			return redirect(settings.HOME_URL['S'])
+	return render(request, 'student/create.html', {'student_creation_form': f})
+##	else:
+##		return handle_user_type(request, redirect_request=True)
 
-@require_POST
+@require_user_types(['S'])
 @login_required
+@require_GET
+def student_home(request):
+##	if request.user.type == 'S':
+	context = {}
+	user = request.user
+	context['user'] = user
+	try:
+		student = request.user.student
+	except Student.DoesNotExist:
+		return redirect(settings.PROFILE_CREATION_URL['S'])
+	context['student'] = student
+	if student.is_verified == False and student.verified_by == None:
+		try:
+			student.qualifications
+		except Qualification.DoesNotExist:
+			context['qual_form'] = QualificationForm()
+		return render(request, 'student/unverified.html', context)
+	context['edit_account_form'] = AccountForm(instance=user)
+	context['upload_file_form'] = FileUploadForm(instance=student)
+	if student.is_verified is None:
+		context['edit_profile_form'] = StudentEditForm(instance=student)
+	try:
+		qual = student.qualifications
+		if qual.is_verified is None:
+			context['edit_qual_form'] = QualificationForm(instance=qual)
+	except Qualification.DoesNotExist:
+		context['edit_qual_form'] = QualificationForm()
+	try:
+		context['social_profile_form'] = SocialProfileForm(instance=user.social)
+	except SocialProfile.DoesNotExist:
+		context['social_profile_form'] = SocialProfileForm()
+	try:
+		context['tech_profile_form'] = TechProfileForm(instance=student.tech, student=student)
+	except:
+		context['tech_profile_form'] = TechProfileForm(student=student)
+	if not student.salary_expected:
+		context['paygrade_form'] = PaygradeForm()
+	context['badge'] = student.profile.notification_target.filter(is_read=False).count()
+	return render(request, 'student/home.html', context)
+##	else:
+##		return handle_user_type(request, redirect_request=True)
+
+@require_user_types(['S', 'F'])
+@login_required
+@require_POST
 def edit_student(request):
 	if request.is_ajax():
 		if request.user.type == 'S':
@@ -151,7 +156,7 @@ def edit_student(request):
 			try:
 				student = request.user.student
 			except Student.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
+				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['S'])})
 			POST = request.POST.copy()
 			POST['college'] = student.college.pk
 			POST['programme'] = student.programme.pk
@@ -163,7 +168,7 @@ def edit_student(request):
 #			context['message'] = "Your profile has been updated. Please contact your college's TPC faculty for verification."
 #			return JsonResponse(status=200, data={'render': render(request, 'student/home.html', context).content.decode('utf-8')})
 				toast_msg = "Your profile has been updated successfully! Contact your college's TPC faculty for verification."
-				return JsonResponse(status=200, data={'location': reverse(get_home_url('S')), 'toast_msg': toast_msg})
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['S']), 'toast_msg': toast_msg})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 			
@@ -201,20 +206,21 @@ def edit_student(request):
 #			return HttpResponse(render_to_string('faculty/verify_profile_form.html', context))
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
-		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request)
 
-@require_POST
+@require_user_types(['S', 'F'])
 @login_required
+@require_POST
 def edit_qualifications(request):
 	if request.is_ajax():
 		if request.user.type == 'S':
 			try:
 				student = request.user.student
 			except Student.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
+				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['S'])})
 			try:
 				qual = student.qualifications
 				f = QualificationForm(request.POST, instance=qual)
@@ -223,7 +229,7 @@ def edit_qualifications(request):
 			if f.is_valid():
 				f.save(student=student, verified=False, verifier=student.verified_by)
 				toast_msg = "Qualifications have been updated successfully! Contact your college's TPC faculty for verification."
-				return JsonResponse(status=200, data={'location': reverse(get_home_url('S')), 'toast_msg': toast_msg})
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['S']), 'toast_msg': toast_msg})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 		
@@ -262,19 +268,21 @@ def edit_qualifications(request):
 				form_html = render(request, 'faculty/verify_qual_form.html', context).content.decode('utf-8')
 				return HttpResponse(form_html)
 			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
-		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		handle_user_type(request, redirect_request=True)
 
-@require_POST
+@require_user_types(['F'])
 @login_required
+@require_POST
 def delete_student(request):
-	if request.user.type == 'F' and request.is_ajax():
+##	if request.user.type == 'F' and request.is_ajax():
+	if request.is_ajax():
 		try:
 			faculty = request.user.faculty
 		except Faculty.DoesNotExist:
-			return redirect('edit_create_faculty')
+			return redirect(settings.PROFILE_CREATION_URL['F'])
 		enroll = request.session['enrollmentno']
 		if not enroll:
 			return JsonResponse(status=403, data={'error': 'Cookie Error. Couldn\'t complete request'})
@@ -290,23 +298,25 @@ def delete_student(request):
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_POST
+@require_user_types(['S'])
 @login_required
+@require_POST
 def paygrade(request):
-	if request.is_ajax() and request.user.type == 'S':
+##	if request.is_ajax() and request.user.type == 'S':
+	if request.is_ajax():
 		try:
 			student = request.user.student
 		except:
-			return JsonResponse(status=400, data={'location': reverse('create_student')})
+			return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['S'])})
 		f = PaygradeForm(request.POST, instance=student)
 		if f.is_valid():
 			f.save()
-			return JsonResponse(status=200, data={'location': reverse('student_home')})
+			return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['S'])})
 		else:
 			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
-@require_GET
 @login_required
+@require_GET
 def coder(request):
 	try:
 		platform = request.GET.get('platform').strip().lower()
@@ -324,126 +334,157 @@ def coder(request):
 	except:
 		return JsonResponse(status=400, data={})
 
-@require_GET
+@require_user_types(['S'])
 @login_required
+@require_GET
 def companies_in_my_college(request):
 	if request.is_ajax():
-		if request.user.type == 'S':
-			try:
-				student = request.user.student
-			except Student.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
-			if not student.salary_expected:
-				html = render(request, 'student/paygrade.html', {'paygrade_form': PaygradeForm()}).content.decode('utf-8')
-				return JsonResponse(status=200, data={'form': html})
+##		if request.user.type == 'S':
+		try:
+			student = request.user.student
+		except Student.DoesNotExist:
+			return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['S'])})
+		if not student.salary_expected:
+			html = render(request, 'student/paygrade.html', {'paygrade_form': PaygradeForm()}).content.decode('utf-8')
+			return JsonResponse(status=200, data={'form': html})
 
-			if student.is_barred:
-				return JsonResponse(status=200, data={'barred': 'Sorry, you have been barred by your college. You cannot view/apply to various job and internship opportunities.'})
-			
-			associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(salary__gte=student.salary_expected).filter(session__application_deadline__gte=datetime.date.today())
-			associations = associations.order_by('session__application_deadline')
-			placement_sessions_assoc = [a['association'] for a in student.sessions.filter( Q(application_deadline__lt=datetime.date.today()) | Q(ended=True)).values('association')]
-			associations = associations.exclude(pk__in=placement_sessions_assoc)
-			# Eligibility
-			'''
-			eligible_criteria = set()
-			only_eligible_assoc = list()
-			for a in associations:
-				criterion = a.session.selection_criteria
-				if criterion in eligible_criteria:
+		if student.is_barred:
+			return JsonResponse(status=200, data={'barred': 'Sorry, you have been barred by your college. You cannot view/apply to various job and internship opportunities.'})
+		# Recruitment
+		associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(salary__gte=student.salary_expected).filter(session__application_deadline__gte=datetime.date.today())
+		associations = associations.order_by('session__application_deadline')
+		placement_sessions_assoc = [a['association'] for a in student.sessions.filter( Q(application_deadline__lt=datetime.date.today()) | Q(ended=True)).values('association')]
+		associations = associations.exclude(pk__in=placement_sessions_assoc)
+		# Dummy
+		dsessions = DummySession.objects.filter(dummy_company__college=student.college, streams__pk__in=[student.stream.pk]).filter(salary__gte=student.salary_expected).filter(application_deadline__gte=datetime.date.today())
+		dsessions = dsessions.order_by('application_deadline')
+		dsessions = dsessions.exclude(pk__in=[ds.pk for ds in student.dummy_sessions.filter(Q(application_deadline__lt=datetime.date.today()) | Q(ended=True))])
+		# Eligibility
+		'''
+		eligible_criteria = set()
+		only_eligible_assoc = list()
+		for a in associations:
+			criterion = a.session.selection_criteria
+			if criterion in eligible_criteria:
+				only_eligible_assoc.append(a.pk)
+			else:
+				if criterion.check_eligibility(student):
+					eligible_criteria.add(criterion)
 					only_eligible_assoc.append(a.pk)
-				else:
-					if criterion.check_eligibility(student):
-						eligible_criteria.add(criterion)
-						only_eligible_assoc.append(a.pk)
-			associations = associations.filter(pk__in=only_eligible_assoc)
-			'''
-			jobs = associations.filter(type='J')
-			enrolled_jobs = jobs.filter(session__students__pk__in = [student.pk])
-			unenrolled_jobs = jobs.exclude(pk__in = enrolled_jobs.values('pk'))
-			internships = associations.filter(type='I')
-			enrolled_internships = internships.filter(session__students__pk__in = [student.pk])
-			unenrolled_internships = internships.exclude(pk__in = enrolled_internships.values('pk'))
-			render_data = {}; context = {}
-			context['datecomp'] = datetime.date.today() + datetime.timedelta(1)
-			context['htmlid'] = 'jobs'
-			data = []
-			for j in enrolled_jobs:
-				sess = settings.HASHID_PLACEMENTSESSION.encode(j.session.pk)
-				data.append({'sessid':sess, 'assoc':j, 'date':j.session.application_deadline + datetime.timedelta(1)})
-			context['on'] = data
-			data = []
-			for j in unenrolled_jobs:
-				sess = settings.HASHID_PLACEMENTSESSION.encode(j.session.pk)
-				data.append({'sessid':sess, 'assoc':j, 'date':j.session.application_deadline + datetime.timedelta(1)})
-			context['off'] = data
-			render_data['jobs'] = render(request, 'student/companies_in_my_college.html', context).content.decode('utf-8')
-			context['htmlid'] = 'internships'
-			data = []
-			for i in enrolled_internships:
-				sess = settings.HASHID_PLACEMENTSESSION.encode(i.session.pk)
-				data.append({'sessid':sess, 'assoc':i, 'date':i.session.application_deadline + datetime.timedelta(1)})
-			context['on'] = data
-			data = []
-			for i in unenrolled_internships:
-				sess = settings.HASHID_PLACEMENTSESSION.encode(i.session.pk)
-				data.append({'sessid':sess, 'assoc':i, 'date':i.session.application_deadline + datetime.timedelta(1)})
-			context['off'] = data
-			render_data['internships'] = render(request, 'student/companies_in_my_college.html', context).content.decode('utf-8')
-			return JsonResponse(status=200, data=render_data)
-		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+		associations = associations.filter(pk__in=only_eligible_assoc)
+		'''
+		# Actual
+		jobs = associations.filter(type='J')
+		enrolled_jobs = jobs.filter(session__students__pk__in = [student.pk])
+		unenrolled_jobs = jobs.exclude(pk__in = enrolled_jobs.values('pk'))
+		internships = associations.filter(type='I')
+		enrolled_internships = internships.filter(session__students__pk__in = [student.pk])
+		unenrolled_internships = internships.exclude(pk__in = enrolled_internships.values('pk'))
+		# Dummy
+		djobs = dsessions.filter(type='J')
+		enrolled_djobs = djobs.filter(students__pk__in = [student.pk])
+		unenrolled_djobs = djobs.exclude(pk__in = enrolled_djobs.values('pk'))
+		dinternships = dsessions.filter(type='I')
+		enrolled_dinternships = dinternships.filter(students__pk__in = [student.pk])
+		unenrolled_dinternships = dinternships.exclude(pk__in = enrolled_dinternships.values('pk'))
+		# # #
+		render_data = {}; context = {}
+		context['datecomp'] = datetime.date.today() + datetime.timedelta(1)
+		context['htmlid'] = 'jobs'
+		data = []
+		for j in enrolled_jobs:
+			sess = settings.HASHID_PLACEMENTSESSION.encode(j.session.pk)
+			data.append({'sessid':sess, 'assoc':j, 'date':j.session.application_deadline + datetime.timedelta(1), 'is_dummy': False})
+		for j in enrolled_djobs:
+			dsess = settings.HASHID_DUMMY_SESSION.encode(j.pk)
+			data.append({'dsessid': dsess, 'dsess': j, 'date': j.application_deadline + datetime.timedelta(1), 'is_dummy': True})
+		data = sorted(data, key=lambda x: x['date'])
+		context['on'] = data
+		data = []
+		for j in unenrolled_jobs:
+			sess = settings.HASHID_PLACEMENTSESSION.encode(j.session.pk)
+			data.append({'sessid':sess, 'assoc':j, 'date':j.session.application_deadline + datetime.timedelta(1), 'is_dummy': False})
+		for j in unenrolled_djobs:
+			dsess = settings.HASHID_DUMMY_SESSION.encode(j.pk)
+			data.append({'dsessid': dsess, 'dsess': j, 'date': j.application_deadline + datetime.timedelta(1), 'is_dummy': True})
+		data = sorted(data, key=lambda x: x['date'])
+		context['off'] = data
+		render_data['jobs'] = render(request, 'student/companies_in_my_college.html', context).content.decode('utf-8')
+		context['htmlid'] = 'internships'
+		data = []
+		for i in enrolled_internships:
+			sess = settings.HASHID_PLACEMENTSESSION.encode(i.session.pk)
+			data.append({'sessid':sess, 'assoc':i, 'date':i.session.application_deadline + datetime.timedelta(1)})
+		for i in enrolled_dinternships:
+			dsess = settings.HASHID_DUMMY_SESSION.encode(i.pk)
+			data.append({'dsessid': dsess, 'dsess': i, 'date': i.application_deadline + datetime.timedelta(1), 'is_dummy': True})
+		data = sorted(data, key=lambda x: x['date'])
+		context['on'] = data
+		data = []
+		for i in unenrolled_internships:
+			sess = settings.HASHID_PLACEMENTSESSION.encode(i.session.pk)
+			data.append({'sessid':sess, 'assoc':i, 'date':i.session.application_deadline + datetime.timedelta(1)})
+		for i in unenrolled_dinternships:
+			dsess = settings.HASHID_DUMMY_SESSION.encode(i.pk)
+			data.append({'dsessid': dsess, 'dsess': i, 'date': i.application_deadline + datetime.timedelta(1), 'is_dummy': True})
+		data = sorted(data, key=lambda x: x['date'])
+		context['off'] = data
+		render_data['internships'] = render(request, 'student/companies_in_my_college.html', context).content.decode('utf-8')
+		return JsonResponse(status=200, data=render_data)
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_GET
+@require_user_types(['S'])
 @login_required
+@require_GET
 def apply_to_company(request, sess): # handling withdrawl as well
 	if request.is_ajax():
-		if request.user.type == 'S':
-			try:
-				student = request.user.student
-			except Student.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
-			try:
-				session = PlacementSession.objects.get(pk=settings.HASHID_PLACEMENTSESSION.decode(sess)[0])
-			except:
-				return JsonResponse(status=400, data={'error': 'Invalid request'})
-			if student.is_barred:
-				return JsonResponse(status=403, data={'error': 'Sorry, you have been barred by your college from placements.'})
-			if student.college != session.association.college or student.stream not in session.association.streams.all() or session.application_deadline < datetime.date.today():
-				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
-			association = session.association
-			criterion = session.selection_criteria
-			if not criterion.check_eligibility(student):
-				return JsonResponse(status=400, data={'error': 'Sorry, you are not eligible for this %s.' % 'job' if association.type == 'J' else 'internship'})
-			"""
-			if (association.type == 'J' and student.is_placed) or (association.type == 'I' and student.is_intern):
-				type = dict(association.PLACEMENT_TYPE)[association.type]
+##		if request.user.type == 'S':
+		try:
+			student = request.user.student
+		except Student.DoesNotExist:
+			return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['S'])})
+		try:
+			session = PlacementSession.objects.get(pk=settings.HASHID_PLACEMENTSESSION.decode(sess)[0])
+		except:
+			return JsonResponse(status=400, data={'error': 'Invalid request'})
+		if student.is_barred:
+			return JsonResponse(status=403, data={'error': 'Sorry, you have been barred by your college from placements.'})
+		if student.college != session.association.college or student.stream not in session.association.streams.all() or session.application_deadline < datetime.date.today():
+			return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
+		association = session.association
+		criterion = session.selection_criteria
+		if not criterion.check_eligibility(student):
+			return JsonResponse(status=400, data={'error': 'Sorry, you are not eligible for this %s.' % 'job' if association.type == 'J' else 'internship'})
+		"""
+		if (association.type == 'J' and student.is_placed) or (association.type == 'I' and student.is_intern):
+			type = dict(association.PLACEMENT_TYPE)[association.type]
 #				msg = "Sorry, you cannot apply to more companies for %s as you are already selected for %s at %s" % (type,type,student.sessions.get().association.company.name.title())
-				msg = "Sorry, you cannot apply to more companies for %s as you are already selected for %s." % (type,type)
-				return JsonResponse(status=400, data={'error': msg})
-			"""
-			students_sessions = student.sessions.all()
-			"""
-			sessions_students = session.students.all()
-			if student not in sessions_students:
-				session.students.add(student)
-				return JsonResponse(status=200, data={'enrolled': True})
-			else:
-				session.students.remove(student)
-				return JsonResponse(status=200, data={'enrolled': False})
-#				return JsonResponse(status=400, data={'error': 'You have already applied to this company'})
-			"""
-#			Better! => 1. Complexity 2. m2m changed signal discrepancy handled because implementing below code will cause reverse=True :D
-			if session not in students_sessions:
-				student.sessions.add(session)
-				return JsonResponse(status=200, data={'enrolled': True})
-			else:
-				student.sessions.remove(session)
-				return JsonResponse(status=200, data={'enrolled': False})
+			msg = "Sorry, you cannot apply to more companies for %s as you are already selected for %s." % (type,type)
+			return JsonResponse(status=400, data={'error': msg})
+		"""
+		students_sessions = student.sessions.all()
+		"""
+		sessions_students = session.students.all()
+		if student not in sessions_students:
+			session.students.add(student)
+			return JsonResponse(status=200, data={'enrolled': True})
 		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+			session.students.remove(student)
+			return JsonResponse(status=200, data={'enrolled': False})
+#				return JsonResponse(status=400, data={'error': 'You have already applied to this company'})
+		"""
+#			Better! => 1. Complexity 2. m2m changed signal discrepancy handled because implementing below code will cause reverse=True :D
+		if session not in students_sessions:
+			student.sessions.add(session)
+			return JsonResponse(status=200, data={'enrolled': True})
+		else:
+			student.sessions.remove(session)
+			return JsonResponse(status=200, data={'enrolled': False})
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request)
 
@@ -486,52 +527,54 @@ def get_student_public_profile(user, requester_type):
 	context['companies'] = companies
 	return render_to_string('student/pub_profile.html', context)
 
-@require_POST
+@require_user_types(['S'])
 @login_required
+@require_POST
 def tech_profile(request):
 	if request.is_ajax():
-		if request.user.type == 'S':
-			student = request.user.student
-			try:
-				f = TechProfileForm(request.POST, student=student, instance=student.tech)
-			except:
-				f = TechProfileForm(request.POST, student=student)
-			if f.is_valid():
-				f.save()
-				context = {}
-				context['tech_profile_form'] = f
-				context['success_msg'] = "Your profile has been updated successfully!"
-				return JsonResponse(status=200, data={ 'render': render(request, 'student/tech_profile.html', context).content.decode('utf-8') })
-			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+##		if request.user.type == 'S':
+		student = request.user.student
+		try:
+			f = TechProfileForm(request.POST, student=student, instance=student.tech)
+		except:
+			f = TechProfileForm(request.POST, student=student)
+		if f.is_valid():
+			f.save()
+			context = {}
+			context['tech_profile_form'] = f
+			context['success_msg'] = "Your profile has been updated successfully!"
+			return JsonResponse(status=200, data={ 'render': render(request, 'student/tech_profile.html', context).content.decode('utf-8') })
 		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_POST
+@require_user_types(['S'])
 @login_required
+@require_POST
 def upload_file(request):
 	if request.is_ajax():
-		if request.user.type == 'S':
-			try:
-				student = request.user.student
-			except Student.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
-			f = FileUploadForm(request.POST, request.FILES, instance=student)
-			photo, resume = student.photo, student.resume
-			if f.is_valid():
-				f.save()
-				# Removing old files
-				delete_old_filefield(photo, student.photo)
-				delete_old_filefield(resume, student.resume)
-				context = {}
-				context['upload_file_form'] = FileUploadForm(instance=student)
-				context['success_msg'] = "Upload success!"
-				return JsonResponse(status=200, data={'location': reverse(get_home_url('S'))})
-			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
-		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+##		if request.user.type == 'S':
+		try:
+			student = request.user.student
+		except Student.DoesNotExist:
+			return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['S'])})
+		f = FileUploadForm(request.POST, request.FILES, instance=student)
+		photo, resume = student.photo, student.resume
+		if f.is_valid():
+			f.save()
+			# Removing old files
+			delete_old_filefield(photo, student.photo)
+			delete_old_filefield(resume, student.resume)
+			context = {}
+			context['upload_file_form'] = FileUploadForm(instance=student)
+			context['success_msg'] = "Upload success!"
+			return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['S'])})
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 		return handle_user_type(request)
 

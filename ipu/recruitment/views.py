@@ -6,26 +6,30 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
-from account.views import handle_user_type, get_relevant_reversed_url, get_creation_url, get_home_url, get_type_created
+from account.decorators import require_user_types
+from account.utils import handle_user_type, get_relevant_reversed_url, get_type_created
 from college.models import College
 from company.models import Company
+from dummy_company.models import DummyCompany, DummySession
 from faculty.models import Faculty
-from recruitment.forms import AssActorsOnlyForm, AssWithProgrammeForm, AssociationForm, SessionEditForm, DissociationForm, CreateCriteriaForm, CriteriaEditForm
+from recruitment.forms import AssActorsOnlyForm, AssWithProgrammeForm, AssociationForm, SessionEditForm, DissociationForm, CreateSessionCriteriaForm, CriteriaEditForm
 from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
+from recruitment.utils import get_excel_structure
 from student.models import Student, Programme, Stream
 
 import openpyxl as excel, time
 from hashids import Hashids
 
-@require_POST
+@require_user_types(['C', 'CO'])
 @login_required
+@require_POST
 def get_with_prog_form(request):
 	if request.is_ajax():
 		if request.user.type == 'C':
 			try:
 				college = request.user.college
 			except College.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('C'))})
+				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['C'])})
 			POST = request.POST.copy()
 			POST['college'] = college.pk
 			f = AssActorsOnlyForm(POST, initiator_profile=college)
@@ -42,7 +46,7 @@ def get_with_prog_form(request):
 			try:
 				company = request.user.company
 			except Company.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('CO'))})
+				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['CO'])})
 			POST = request.POST.copy()
 			POST['company'] = company.pk
 			f = AssActorsOnlyForm(POST, initiator_profile=company)
@@ -56,21 +60,22 @@ def get_with_prog_form(request):
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
-		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_POST
+@require_user_types(['C', 'CO'])
 @login_required
+@require_POST
 def get_ass_streams(request):
 	if request.is_ajax():
 		if request.user.type == 'C':
 			try:
 				college = request.user.college
 			except College.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('C'))})
+				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['C'])})
 			POST = request.POST.copy()
 			POST['college'] = college.pk
 			programme_queryset = Programme.objects.filter(pk__in=list({s.programme.pk for s in college.streams.all()}))
@@ -88,7 +93,7 @@ def get_ass_streams(request):
 			try:
 				company = request.user.company
 			except Company.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('CO'))})
+				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['CO'])})
 			POST = request.POST.copy()
 			POST['company'] = company.pk
 			college = College.objects.get(pk=POST['college'])
@@ -103,22 +108,23 @@ def get_ass_streams(request):
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 		
-		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	
 	
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_POST
+@require_user_types(['C', 'CO'])
 @login_required
+@require_POST
 def associate(request):
 	if request.is_ajax():
 		if request.user.type == 'C':
 			try:
 				college = request.user.college
 			except College.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('C'))})
+				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['C'])})
 			POST = request.POST.copy()
 			POST['college'] = college.pk
 			programme_queryset = Programme.objects.filter(pk__in=list({s.programme.pk for s in college.streams.all()}))
@@ -128,7 +134,7 @@ def associate(request):
 			if f.is_valid():
 				f.save()
 				f.save_m2m()
-				return JsonResponse(status=200, data={'location': reverse(get_home_url('C'))})
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['C'])})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
@@ -136,7 +142,7 @@ def associate(request):
 			try:
 				company = request.user.company
 			except Company.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('CO'))})
+				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['CO'])})
 			POST = request.POST.copy()
 			POST['company'] = company.pk
 			college = College.objects.get(pk=POST['college'])
@@ -151,24 +157,25 @@ def associate(request):
 					f.save_m2m()
 				except Exception as e:
 					return JsonResponse(status=400, data={'error': str(e)})
-				return JsonResponse(status=200, data={'location': reverse(get_home_url('CO'))})
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['CO'])})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
-		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+##		else:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	
 	
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_http_methods(['GET','POST'])
+@require_user_types(['C', 'CO'])
 @login_required
+@require_http_methods(['GET','POST'])
 def create_session(request):
 	if request.is_ajax():
 		type = request.user.type
-		if type not in ['C', 'CO']:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+##		if type not in ['C', 'CO']:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 		if request.method == 'GET':
 			try:
 				association_id = settings.HASHID_ASSOCIATION.decode(request.GET.get('ass'))[0]
@@ -182,7 +189,7 @@ def create_session(request):
 				return JsonResponse(status=400, data={'location': creation})
 			if not requester.get('authorized', True):
 				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
-			f = CreateCriteriaForm(association=association)
+			f = CreateSessionCriteriaForm(association=association)
 			html = render(request, 'recruitment/create_session.html', {'session_creation_form': f}).content.decode('utf-8')
 			return JsonResponse(status=200, data={'html':html})
 		
@@ -207,29 +214,30 @@ def create_session(request):
 			# Converting list to string. i.e. somewhat custom to_python
 			POST = request.POST.copy()
 			POST['years'] = (','.join(POST.getlist('years')))
-			f = CreateCriteriaForm(POST, association=association)
+			f = CreateSessionCriteriaForm(POST, association=association)
 			if f.is_valid():
 				data = f.cleaned_data
 				criterion,created = SelectionCriteria.objects.get_or_create(years=data['years'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
 				session = PlacementSession.objects.create(association=association,application_deadline=data['application_deadline'],last_modified_by=type, selection_criteria=criterion)
 				association.approved = True
 				association.save()
-				return JsonResponse(status=200, data={'location': reverse(get_home_url(type))})
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[type])})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 	
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_http_methods(['GET','POST'])
+@require_user_types(['C', 'F', 'CO'])
 @login_required
+@require_http_methods(['GET','POST'])
 def edit_session(request, sess):
 	if request.is_ajax():
 		type = request.user.type
-		if type not in ['F', 'C', 'CO']:
-			return JsonResponse(status=403, data={'location': get_relevant_reversed_url(request)})
+##		if type not in ['F', 'C', 'CO']:
+##			return JsonResponse(status=403, data={'location': get_relevant_reversed_url(request)})
 		if request.method == 'POST':
-			sess_post = request.POST.get('token')
+			sess_post = request.POST.get('token', None)
 			if sess != sess_post:
 				return JsonResponse(status=400, data={'error': 'Invalid session requested'})
 			try:
@@ -251,7 +259,7 @@ def edit_session(request, sess):
 				session.last_modified_by = type
 				session.save()
 				f.save_m2m()
-				return JsonResponse(status=200, data={'location': reverse(get_home_url(type))})
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[type])})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 		else:
@@ -270,21 +278,22 @@ def edit_session(request, sess):
 			if creation:
 				return redirect(creation)
 			if not requester.get('authorized', True):
-				return redirect(reverse(get_home_url(requester['type'])))
+				return redirect(reverse(settings.HOME_URL[requester['type']]))
 			f = SessionEditForm(instance=session)
 			return render(request, 'recruitment/edit_session.html', {'session_edit_form': f, 'sessid': sess})
 		else:
 			return handle_user_type(request)
 
-@require_http_methods(['GET','POST'])
+@require_user_types(['F', 'C', 'CO'])
 @login_required
+@require_http_methods(['GET','POST'])
 def edit_criteria(request, sess):
 	if request.is_ajax():
 		type = request.user.type
-		if type not in ['F', 'C', 'CO']:
-			return JsonResponse(status=403, data={'location': get_relevant_reversed_url(request)})
+##		if type not in ['F', 'C', 'CO']:
+##			return JsonResponse(status=403, data={'location': get_relevant_reversed_url(request)})
 		if request.method == 'POST':
-			sess_post = request.POST.get('token')
+			sess_post = request.POST.get('token', None)
 			if sess != sess_post:
 				return JsonResponse(status=400, data={'error': 'Invalid session requested'})
 			try:
@@ -308,7 +317,7 @@ def edit_criteria(request, sess):
 				session.selection_criteria = criterion
 #				session.last_modified_by = type
 				session.save()
-				return JsonResponse(status=200, data={'location': reverse(get_home_url(type))})
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[type])})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 		else:
@@ -326,14 +335,14 @@ def edit_criteria(request, sess):
 			if creation:
 				return redirect(creation)
 			if not requester.get('authorized', True):
-				return redirect(reverse(get_home_url(requester['type'])))
+				return redirect(reverse(settings.HOME_URL[requester['type']]))
 			f = CriteriaEditForm(session=session, instance=session.selection_criteria)
 			return render(request, 'recruitment/edit_criteria.html', {'criteria_edit_form': f, 'sessid': sess})
 		else:
 			return handle_user_type(request)
 
-@require_GET
 @login_required
+@require_GET
 def mysessions(request):
 	if request.is_ajax():
 		user = request.user
@@ -343,8 +352,9 @@ def mysessions(request):
 			try:
 				student = user.student
 			except Student.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('S'))})
+				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['S'])})
 			sessions = student.sessions.all()
+			dsessions = student.dummy_sessions.all()
 			sessions_list = []
 			for s in sessions:
 				assoc = s.association
@@ -357,13 +367,23 @@ def mysessions(request):
 				data['photo'] = assoc.company.photo
 				data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
 				data['students'] = s.students.count()
+				data['is_dummy'] = False
 				sessions_list.append(data)
+			for ds in dsessions:
+				data['dsessobj'] = ds
+#				data['dsessid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
+				data['salary'] = "%d LPA" % ds.salary
+				data['company'] = ds.dummy_company.name.title()
+				data['type'] = "Internship" if ds.type == 'I' else "Job"
+				data['streams'] = ', '.join([s.name.title() for s in ds.streams.all()])
+				data['students'] = ds.students.count()
+				data['is_dummy'] = True
 			html = render(request, 'student/mysessions.html', {'sessions': sessions_list}).content.decode('utf-8')
 		elif type == 'CO':
 			try:
 				company = user.company
 			except Company.DoesNotExist:
-				return JsonResponse(status=400, data={'location': reverse(get_creation_url('CO'))})
+				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['CO'])})
 			associations = Association.objects.filter(company=company, approved=True).values('pk')
 			sessions = PlacementSession.objects.filter(association__pk__in = associations)
 			sessions_list = []
@@ -391,15 +411,16 @@ def mysessions(request):
 				if not faculty.firstname:
 					verdict = True
 				if verdict:
-					return JsonResponse(status=400, data={'location': reverse(get_creation_url('F'))})
+					return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['F'])})
 				college = faculty.college
 			elif type == 'C':
 				try:
 					college = user.college
 				except College.DoesNotExist:
-					return JsonResponse(status=400, data={'location': reverse(get_creation_url('C'))})
+					return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['C'])})
 			associations = Association.objects.filter(college=college, approved=True).values('pk')
 			sessions = PlacementSession.objects.filter(association__pk__in = associations)
+			dsessions = DummySession.objects.filter(dummy_company__college=college)
 			sessions_list = []
 			for s in sessions:
 				assoc = s.association
@@ -412,6 +433,19 @@ def mysessions(request):
 				data['photo'] = assoc.company.photo
 				data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
 				data['students'] = s.students.count()
+				data['is_dummy'] = False
+				sessions_list.append(data)
+			for ds in dsessions:
+				assoc = s.association
+				data = {}
+				data['dsessobj'] = ds
+				data['dsessid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
+				data['salary'] = "%d LPA" % ds.salary
+				data['dcompany'] = ds.dummy_company.name.title()
+				data['type'] = "Internship" if ds.type == 'I' else "Job"
+				data['streams'] = ', '.join([s.name.title() for s in ds.streams.all()])
+				data['students'] = ds.students.count()
+				data['is_dummy'] = True
 				sessions_list.append(data)
 			html = render(request, 'college/mysessions.html', {'sessions': sessions_list}).content.decode('utf-8')
 		
@@ -419,12 +453,13 @@ def mysessions(request):
 	else:
 		return handle_user_type(request)
 
-@require_http_methods(['GET','POST'])
+@require_user_types(['C', 'CO'])
 @login_required
+@require_http_methods(['GET','POST'])
 def dissociate(request):
 	if request.is_ajax():
-		if request.user.type not in ['C', 'CO']:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+##		if request.user.type not in ['C', 'CO']:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 		if request.method == 'GET':
 			try:
 				association_id = settings.HASHID_ASSOCIATION.decode(request.GET.get('ass'))[0]
@@ -449,19 +484,20 @@ def dissociate(request):
 				f.save()
 				association.approved = False
 				association.save()
-				return JsonResponse(status=200, data={'location': reverse(get_home_url(request.user.type))})
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[request.user.type])})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 	
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_GET
+@require_user_types(['C', 'F', 'CO'])
 @login_required
+@require_GET
 def view_association_requests(request):
 	if request.is_ajax():
-		if request.user.type not in ['C', 'CO', 'F']:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+##		if request.user.type not in ['C', 'CO', 'F']:
+##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 		associations = Association.objects.filter( ~Q(initiator=request.user.type) )
 		if request.user.type == 'C':
 			associations = associations.filter( Q(college=request.user.college) & Q(approved=None) )
@@ -488,62 +524,41 @@ def view_association_requests(request):
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_GET
+
+@require_user_types(['C', 'F', 'CO'])
 @login_required
+@require_GET
 def generate_excel(request, sess):
 #	if request.is_ajax() and request.user.type in ['F', 'C', 'CO']:
-	if request.user.type in ['F', 'C', 'CO']:
-		try:
+##	if request.user.type in ['F', 'C', 'CO']:
+	requester = get_type_created(request.user)
+	user_type = requester.pop(user_type)
+	if not requester:
+		return redirect(reverse(settings.PROFILE_CREATION_URL[user_type]))
+	profile = requester['profile']
+	try:
 #			sess = request.GET.get('sess')
-			session_id = settings.HASHID_PLACEMENTSESSION.decode(sess)[0]
-			session = PlacementSession.objects.get(pk=session_id)
-		except: #To account for both KeyError as well as PlacementSession.DoesNotExist
-			return JsonResponse(status=400, data={'error': 'Unexpected error occurred. Please refresh the page and try again.'})
-		workbook = excel.Workbook()
-		worksheet = workbook.active
-		worksheet.title = "Placement Session"
-		worksheet['A1'].font = excel.styles.Font(name='Times New Roman', size=20, bold=True)
-		worksheet.merge_cells("A1:I2");worksheet.merge_cells("A3:I3")
-		if request.user.type == 'CO':
-			text = dict(Association.PLACEMENT_TYPE)[session.association.type].__str__() + " session at "
-			worksheet['A1'] = text + session.association.college.name.upper()
+		session_id = settings.HASHID_PLACEMENTSESSION.decode(sess)[0]
+		session = None
+		if user_type == 'CO':
+			session = PlacementSession.objects.get(association__company=profile, pk=session_id)
+		elif user_type == 'C':
+			session = PlacementSession.objects.get(association__college=profile, pk=session_id)
 		else:
-			text = dict(Association.PLACEMENT_TYPE)[session.association.type].__str__() + " opportunity by "
-			worksheet['A1'] = text + session.association.company.name.upper()
-		worksheet['A3'] = session.association.programme.name + ' - ' + ', '.join(["%s (%s)" % (s.name, s.code) for s in session.association.streams.all()])
-		worksheet.freeze_panes = 'A5'
-		
-		# S.No. | Enrollment No. | First Name | Last Name | Gender | Email | Stream | Year
-		worksheet['A4'] = 'S.No.'; worksheet['B4'] = 'Enrollment No.'; worksheet['C4'] = 'First Name'; worksheet['D4'] = 'Last Name';
-		worksheet['E4'] = 'Sex';worksheet['F4'] = 'Email'; worksheet['G4'] = 'Stream'; worksheet['H4'] = 'Year';
-		
-		bold = excel.styles.Font(bold=True)
-		for i in range(1,9):
-			worksheet.cell(row=4, column=i).font = bold
-		
-		students = session.students.all()
-		GENDER = dict(Student.GENDER_CHOICES)
-		for i, student in enumerate(students, 1):
-			row = worksheet.max_row+1
-			worksheet.cell(row=row, column=1).value = i
-			worksheet.cell(row=row, column=2).value = student.profile.username
-			worksheet.cell(row=row, column=3).value = student.firstname.title()
-			worksheet.cell(row=row, column=4).value = student.lastname.title()
-			worksheet.cell(row=row, column=5).value = GENDER[student.gender].__str__()
-			worksheet.cell(row=row, column=6).value = student.profile.email
-			worksheet.cell(row=row, column=7).value = student.stream.name.title()
-			worksheet.cell(row=row, column=8).value = student.current_year
-		
-		to_letter = excel.cell.get_column_letter
-		for col in [1,5,8]:
-			worksheet.column_dimensions[to_letter(col)].width = 5
-		for col in [2,3,4]:
-			worksheet.column_dimensions[to_letter(col)].width = 12
-		for col in [6,7]:
-			worksheet.column_dimensions[to_letter(col)].width = 20
-		response = HttpResponse(content=excel.writer.excel.save_virtual_workbook(workbook), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-		response['Content-Disposition'] = 'attachment; filename=session_%s.xlsx' % Hashids(salt="AbhiKaSamay").encode(round(time.time()))
-		return response
+			session = PlacementSession.objects.get(association__college=profile.college, pk=session_id)
+	except: #To account for both KeyError as well as PlacementSession.DoesNotExist
+		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+	title = ''
+	if user_type == 'CO':
+		title = dict(Association.PLACEMENT_TYPE)[session.association.type].__str__() + " session at " + session.association.college.name.upper()
+	else:
+		title = dict(Association.PLACEMENT_TYPE)[session.association.type].__str__() + " opportunity by " + session.association.company.name.upper()
+	streams_title = session.association.programme.name + ' - ' + ', '.join(["%s (%s)" % (s.name, s.code) for s in session.association.streams.all()])
+	students_queryset = session.students.all()
+	workbook = get_excel_structure(title, streams_title, students_queryset)
+	response = HttpResponse(content=excel.writer.excel.save_virtual_workbook(workbook), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+	response['Content-Disposition'] = 'attachment; filename=session_%s.xlsx' % Hashids(salt="AbhiKaSamay").encode(round(time.time()))
+	return response
 #	else:
 #		return HttpResponse('')
 
@@ -555,7 +570,7 @@ def validate_associator(request, association):
 	type = requester.pop('user_type')
 	data['type'] = type
 	if not requester: # requester dict empty i.e. no profile
-		data['creation'] = reverse(get_creation_url(type))
+		data['creation'] = reverse(settings.PROFILE_CREATION_URL[type])
 		return data
 	if type == 'CO':
 		company = requester.pop('profile')
