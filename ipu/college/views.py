@@ -16,7 +16,7 @@ from college.models import College
 from faculty.forms import FacultySignupForm
 from notification.models import Notification
 from recruitment.models import PlacementSession
-from recruitment.forms import AssActorsOnlyForm
+from recruitment.forms import AssActorsOnlyForm, NewAssociationForm
 
 import os
 
@@ -84,6 +84,7 @@ def college_home(request):
 	context['edit_college_form'] = CollegeEditForm(instance=college)
 	context['create_faculty_form'] = FacultySignupForm()
 	context['associate_actors_only_form'] = AssActorsOnlyForm(initiator_profile=college)
+#	context['associate_actors_only_form'] = NewAssociationForm()
 	try:
 		context['social_profile_form'] = SocialProfileForm(instance=user.social)
 	except SocialProfile.DoesNotExist:

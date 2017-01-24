@@ -33,8 +33,7 @@ class CollegeCreationForm(forms.ModelForm):
 	
 	class Meta:
 		model = College
-		exclude = ['profile']
-#		fields = ['name', 'country', 'state', 'address', 'details', 'contact', 'website', 'profile_pic']
+		fields = ['name', 'code', 'address', 'details', 'contact', 'website', 'photo']
 		help_texts = {
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
 		}
@@ -55,7 +54,7 @@ class CollegeEditForm(forms.ModelForm):
 	
 	class Meta:
 		model = College
-		exclude = ['profile', 'code']
+		fields = ['name', 'address', 'details', 'contact', 'website', 'photo']
 		help_texts = {
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
 		}

@@ -223,7 +223,7 @@ def home(request):
 @require_GET
 def logout(request):
 	auth_logout(request)
-	return redirect('landing')
+	return redirect('auth')
 '''
 # Methods that aren't mapped to any URL
 

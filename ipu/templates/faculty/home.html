@@ -38,16 +38,25 @@
 	{% endif %}
 {% endblock %}
 
-{% block tabs%}
-	<li class="tab col s2"><a class="active" href="#verify">Verify students</a></li>
-	<li class="tab col s2"><a href="#tab2">College Associations</a></li>
-	<li id="request" class="tab col s2" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
+{% block tabs %}
+	{% if perms.student.verify_student %}
+		<li class="tab col s2"><a class="active" href="#verify">Verify students</a></li>
+	{% endif %}
+	{% if perms.recruitment.handle_placement %}
+		<li class="tab col s2"><a href="#tab2">College Associations</a></li>
+		<li id="request" class="tab col s2" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
+	{% endif %}
+	{% if perms.notification.manage_notification %}
 	<li id = "notification" class="tab col s2" url="{% url 'select_streams' %}"><a id="notification-anchor" href="#notifications">Notification</a></li>
+	{% endif %}
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
-	<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
+	{% if perms.recruitment.handle_placement %}
+		<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
+	{% endif %}
 {% endblock %}
 
 {% block tabs_content %}
+{% if perms.student.verify_student %}
 	<div id="verify" class="col s12">
 		{% if messages %}
 			{% for message in messages %}
@@ -62,7 +71,9 @@
 							<li class="tab col s12"><a href="#enrollment-div">Get Student</a></li>
 							<li class="tab col s12"><a href="#profile-div">Student Profile</a></li>
 							<li class="tab col s12"><a href="#qual-div">Student Qualifications</a></li>
+						{% if perms.student.delete_student %}
 							<li class="tab col s12"><a href="#delete-div">Delete Student</a></li>
+						{% endif %}
 						</ul>
 					</div>
 					<div class=" col s8 offset-s1">
@@ -84,6 +95,7 @@
 						<div class="col s12 m10 offset-m1 card-panel" id="qual-div">
 							<h4 class="center-align" style="color: goldenrod">Student Qualifications</h4>
 						</div>			
+					{% if perms.student.delete_student %}
 						<div class="col s12 m10 offset-m1 card-panel" id="delete-div">
 							<form class="row">
 								{% csrf_token %}
@@ -93,13 +105,18 @@
 								<h6 class="red-text">Careful, the student will be deleted forever. Your action will be logged for reference purposes.</h6>
 							</div>
 						</div>
+					{% endif %}
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+{% endif %}
+{% if perms.recruitment.handle_placement %}
 	<div id="tab2" class="col s12">Data 2</div>
 	<div id="requests" class="col s12">Data 3</div>
+{% endif %}
+{% if perms.notification.manage_notification %}
 	<div id="notifications" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">
@@ -125,6 +142,7 @@
 			</div>
 		</div>
 	</div>
+{% endif %}
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">
@@ -161,11 +179,15 @@
 			</div>
 		</div>
 	</div>
+{% if perms.recruitment.handle_placement %}
 	<div id="sessions" class="col s12"></div>
+{% endif %}
 
+{% if perms.notification.manage_notification %}
 	{% if badge %}
 		<span class="badge" id="notifications_badge">{{ badge }}</span>
 	{% endif %}
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

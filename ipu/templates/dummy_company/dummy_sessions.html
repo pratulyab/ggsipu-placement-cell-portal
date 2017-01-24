@@ -1,0 +1,24 @@
+{% load staticfiles %}
+<ul class="collection">
+{% for dsession in dsessions %}
+	<li class="collection-item avatar" data-sess="{{ dsession.dsessid }}">
+		<span class="title">{{ dsession.dcompany }} for {{ dsession.type|title }} </span>
+		<p>
+			{{ dsession.salary }}
+			<br>
+			<p>
+				{{ dsession.streams }}
+			</p>
+			<br>
+				{{ dsession.students }} student{{ dsession.students|pluralize }} in the session
+		</p>
+		<span class="secondary-content">
+			<a href="{% url 'edit_dsession' dsession.dsessid %}"><i class="fa fa-2x fa-pencil"></i></a>
+			<a href="{% url 'edit_criteria' dsession.dsessid %}"><i class="fa fa-2x fa-list-ol"></i></a>
+			<a href="{% url 'dexcel' dsession.dsessid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
+		</span>
+	</li>
+{% empty %}
+	<b><h1 class="center flow-text teal-text text-accent-4">You have not created any Dummy Session.</h1></b>
+{% endfor %}
+</ul>

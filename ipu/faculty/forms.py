@@ -8,6 +8,7 @@ from account.models import CustomUser
 from faculty.models import Faculty
 from student.models import Student
 import re
+from material import *
 
 class FacultySignupForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
@@ -64,6 +65,11 @@ class FacultyFormset(forms.BaseModelFormSet):
 """
 class FacultyProfileForm(forms.ModelForm):
 # Serves as both Creation, as well as Edit form
+	layout = Layout(
+		Row(Span6('firstname'), Span6('lastname')),
+		Row(Span6('employee_id'), Span6('phone_number')),
+		Row('photo')
+	)
 	def clean_photo(self):
 		photo = self.cleaned_data.get('photo', False)
 		if photo:
@@ -79,7 +85,7 @@ class FacultyProfileForm(forms.ModelForm):
 	
 	class Meta:
 		model = Faculty
-		exclude = ['profile', 'college']
+		fields = ['firstname', 'lastname', 'employee_id', 'phone_number', 'photo']
 		help_texts = {
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
 		}

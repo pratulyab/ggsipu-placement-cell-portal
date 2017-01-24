@@ -1,7 +1,9 @@
 {% load staticfiles %}
 {% load material_form %}
+<!--
 <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
 {% include 'material/includes/material_js.html' %}
+-->
 <form action="{% url 'associate' %}" method='POST' id="associate-form" class="col s8 offset-s2">
 	{% csrf_token %}
 	{% form form=ass_form %}{% endform %}
@@ -11,3 +13,5 @@
 		</div>
 	</div>
 </form>
+<script>
+</script>

@@ -8,6 +8,3 @@ Downloading resumes -- ZIP
 Logging
 Caching
 Monitoring
-
--- UNKNOWN --
-Dummy company for database consistency

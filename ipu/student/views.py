@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from account.decorators import require_user_types
+from account.decorators import require_user_types, new_require_user_types
 from account.forms import AccountForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
@@ -334,10 +334,10 @@ def coder(request):
 	except:
 		return JsonResponse(status=400, data={})
 
-@require_user_types(['S'])
+@new_require_user_types(['S'])
 @login_required
 @require_GET
-def companies_in_my_college(request):
+def companies_in_my_college(request, **kwargs):
 	if request.is_ajax():
 ##		if request.user.type == 'S':
 		try:

@@ -123,7 +123,25 @@
 <!--navbar ends-->
 
         <main>
-			{% block content %}{% endblock %}
+            <!--Tabs bar begins--> 
+            <div id="tab-bar">
+                <div class="row">
+                    <div class="col s12 hide-on-med-and-down">
+                        <ul class="tabs">
+                            <!--naming for tabs-->
+                            {% block tabs %}
+                            <!--each li  represents a new tab with the name-->
+<!--                            <li class="tab col s2"><a class="active" href="#test1">Test 1</a></li> -->
+                            {% endblock %}
+                        </ul>
+                    </div>
+                    <div id="tabs-data-div" class="row"> 
+                        {% block tabs_content %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+
         </main>
 
 

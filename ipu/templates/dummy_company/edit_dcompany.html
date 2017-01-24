@@ -1,0 +1,17 @@
+{% load staticfiles %}
+{% load material_form %}
+<!--
+<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
+{% include 'material/includes/material_js.html' %}
+-->
+<div class="col s12" id="edit-dummy-company-div" style="margin-top: 7%">
+{% if success_msg %}<div class="card green accent-1 center success"><p>{{ success_msg }}</p></div>{% endif %}
+	<h4 class="center" style="color: goldenrod;">Dummy Company Details</h4>
+<form action="{% url 'edit_dcompany' dsess %}" method='POST' class="col s8 offset-s2" id="edit-dummy-company-form">
+	{% csrf_token %}
+	{% form form=edit_dcompany_form %}{% endform %}
+	<div class="row">
+		<button class="btn btn-waves col s10 m8 offset-s1 offset-m2" type="submit">Save Changes</button>
+	</div>
+</form>
+</div>
