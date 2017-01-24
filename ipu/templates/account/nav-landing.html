@@ -1,0 +1,43 @@
+{% extends 'account/base.html' %}
+{% load staticfiles %}
+{% load material_form %}
+
+{% block title %}Training And Placement Cell{% endblock %}
+
+{% block head %}
+	<link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
+	<link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
+	<link type="text/css" rel="stylesheet" href="{% static 'account/css/landing.css' %}" />
+{% endblock %}
+
+{% block header %}
+<div class="navbar-fixed">
+    <nav>
+      <div class="nav-wrapper">
+        <a href="#!" class="brand-logo center hide-on-med-and-down">Training & Placement Cell</a>
+        <a href="#!" class="brand-logo left hide-on-large-only">Training & Placement Cell</a>
+        <ul class="left">
+          <li><a href="{% url 'landing' %}"><i class="fa fa-arrow-left fa-2x" aria-hidden="true"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  
+{% endblock header %}
+
+{% block content %}
+  
+  {% block main %}
+
+  {% endblock %}  
+  
+  <a id="corner-button" href="{% url 'auth' %}" class="waves-effect waves-light btn-large red text-flow">Login / Sign Up</a>
+{% endblock %}
+
+{% block scripts %}
+  
+  
+{% endblock %}

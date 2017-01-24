@@ -79,6 +79,38 @@
 	{% endif %}
 {% endblock %}
 
+{% block side_nav_links %}
+    <li><a class="waves-effect" href="#!"><i class="fa fa-user" aria-hidden="true"></i>
+          Update Profile</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-book" aria-hidden="true"></i> 
+          Update Qualifications</a></li>  
+    <li><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>
+          Companies Visiting</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
+            Sessions</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-bell" aria-hidden="true"></i>Notifications</a></li>
+    <li class="no-padding">
+        <ul class="collapsible collapsible-accordion">
+          <li>
+            <a class="collapsible-header"><i class="fa fa-cog" aria-hidden="true"></i>
+            Settings</a>
+            <div class="collapsible-body">
+              <ul>
+                <li><a href="#!"><i class="fa fa-sliders" aria-hidden="true"></i>
+                    Account Settings</a></li>
+                <li><a href="#!"><i class="fa fa-upload" aria-hidden="true"></i>
+                  Upload Image/Resume</a></li>
+                <li><a href="#!"><i class="fa fa-users" aria-hidden="true"></i>
+                      Social Profile Settings</a></li>
+                <li><a href="#!"><i class="fa fa-wrench" aria-hidden="true"></i>
+                  Technical Profile Settings</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </li>
+{% endblock %}
+
 {% block tabs%}
 	{% if edit_profile_form %}
 		<li class="tab col s2"><a href="#profile" style="color: #9c27b0 !important">Update Profile*</a></li>

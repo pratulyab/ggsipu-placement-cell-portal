@@ -35,6 +35,24 @@ def landing(request):
 	return render(request, 'account/landing.html', {})
 
 @require_GET
+def procedures(request):
+	if request.user.is_authenticated():
+		return handle_user_type(request, redirect_request=True)
+	return render(request, 'account/procedures.html', {})
+
+@require_GET
+def stats(request):
+	if request.user.is_authenticated():
+		return handle_user_type(request, redirect_request=True)
+	return render(request, 'account/stats.html', {})
+
+@require_GET
+def intro(request):
+	if request.user.is_authenticated():
+		return handle_user_type(request, redirect_request=True)
+	return render(request, 'account/intro.html', {})			
+
+@require_GET
 def auth(request):
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_request=True)

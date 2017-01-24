@@ -5,12 +5,45 @@ nav .brand-logo {
   margin-left: 20px;
 }
 
+#logo
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#inner-logo
+{
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+
+#inner-logo h4
+{
+  font-size:21px;
+  margin-bottom: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+#inner-logo h6
+{
+  
+  font-size: 14px;
+  margin-top: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
 
 #img-corner
 {
     height: 30px;
     width: 30px;
     margin-bottom: -9px;
+    
 }
 
 #notifications_badge

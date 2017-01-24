@@ -57,6 +57,14 @@ class College(models.Model):
 	def __str__(self):
 		return "%s (%s)" % (self.name.title(), self.code)
 
+	def get_short_name(self):
+		output = ""
+		inp = self.name.replace("Of","",1)
+		inp = inp.replace("And","",1)
+		for i in inp.upper().split():
+			output += i[0]	
+		return output	
+
 	def get_absolute_url(self):
 		return "/%s/" % self.profile.username
 

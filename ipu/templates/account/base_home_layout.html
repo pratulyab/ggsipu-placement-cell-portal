@@ -21,13 +21,8 @@
       #corner_name
       {
         white-space: pre-wrap;
-        text-align: center;
         margin-top: -15px;
-
-      }
-      #corner_email
-      {
-        text-align: center;
+        margin-left: -35px;
 
       }
 
@@ -78,13 +73,21 @@
         <div class="navbar-fixed">
             <nav id="nav-bar">
                 <div class="nav-wrapper">
-                    <a href="#!" class="brand-logo left hide-on-med-and-down">Training & Placement Cell</a>
+                    <div class="left" style="margin-left: 1.5%;">
+                      <div id="logo">
+                        <img src="{% static 'images/ipu-logo.png' %}" style="height: 55px">
+                        <div id="inner-logo">
+                        <h4>Training & Placement cell</h4>
+                        <h6>Guru Gobind Singh Indraprastha University</h6> 
+                        </div>
+                      </div>
+                    </div>
                     <a id="center_logo" href="#!" class="brand-logo center hide-on-large-only">Training & Placement Cell</a>
                     <ul class="right">
                    	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
                   	</li>
                   	<li class="hide-on-med-and-down">
-                    	<a id = 'notification_button' class="dropdown-button tooltipped" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3" data-position="left" data-delay="20" data-tooltip="Notifications"><i class="material-icons">add_alert</i></a>
+                    	<a id = 'notification_button' class="dropdown-button tooltipped" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3" data-position="left" data-delay="20" data-tooltip="Notifications"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
                   </li>
 
                   <li class="hide-on-med-and-down">
@@ -121,36 +124,8 @@
       <a href="#!name"><span class="white-text name">{% block user_name_card %}{% endblock %}</span></a>
       <a href="#!email"><span class="white-text email">{% block user_email_id %}{% endblock %}</span></a>
     </div></li>
-    <li><a class="waves-effect" href="#!"><i class="fa fa-user" aria-hidden="true"></i>
-          Update Profile</a></li>
-    <li><a class="waves-effect" href="#!"><i class="fa fa-book" aria-hidden="true"></i> 
-          Update Qualifications</a></li>  
-    <li><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>
-          Companies Visiting</a></li>
-    <li><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
-            Sessions</a></li>
-    <li><a class="waves-effect" href="#!"><i class="fa fa-bell" aria-hidden="true"></i>Notifications</a></li>
-    </div>
-    <li class="no-padding">
-        <ul class="collapsible collapsible-accordion">
-          <li>
-            <a class="collapsible-header"><i class="fa fa-cog" aria-hidden="true"></i>
-            Settings</a>
-            <div class="collapsible-body">
-              <ul>
-                <li><a href="#!"><i class="fa fa-sliders" aria-hidden="true"></i>
-                    Account Settings</a></li>
-                <li><a href="#!"><i class="fa fa-upload" aria-hidden="true"></i>
-                  Upload Image/Resume</a></li>
-                <li><a href="#!"><i class="fa fa-users" aria-hidden="true"></i>
-                      Social Profile Settings</a></li>
-                <li><a href="#!"><i class="fa fa-wrench" aria-hidden="true"></i>
-                  Technical Profile Settings</a></li>
-              </ul>
-            </div>
-          </li>
-        </ul>
-      </li>
+    {% block side_nav_links %}
+    {% endblock %}
       <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Logout</a></li>
   </ul>
 

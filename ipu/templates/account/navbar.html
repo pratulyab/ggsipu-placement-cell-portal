@@ -82,7 +82,6 @@
             {% endblock %}
         </ul>
 
-<!--Search box for tab and mobile view-->
 
 <!--materialize fixed main navbar-->
         <div class="navbar-fixed">
@@ -94,12 +93,13 @@
                     <ul class="right">
                     <li>
                     <a href="{% block home_url4 %}{% endblock %}"><i class="fa fa-2x fa-home" aria-hidden="true"></i></a>
+
                     </li>
                    	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
                   	</li>
                   	<li class="hide-on-med-and-down">
 
-                    	<a id = 'notification_button' class="dropdown-button tooltipped" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3" data-position="left" data-delay="20" data-tooltip="Notifications"><i class="material-icons">add_alert</i></a>
+                    	<a id = 'notification_button' class="dropdown-button tooltipped" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3" data-position="left" data-delay="20" data-tooltip="Notifications"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
                   </li>
 
                   <li class="hide-on-med-and-down">
@@ -126,7 +126,25 @@
 <!--navbar ends-->
 
         <main>
-			{% block content %}{% endblock %}
+            <!--Tabs bar begins--> 
+            <div id="tab-bar">
+                <div class="row">
+                    <div class="col s12 hide-on-med-and-down">
+                        <ul class="tabs">
+                            <!--naming for tabs-->
+                            {% block tabs %}
+                            <!--each li  represents a new tab with the name-->
+<!--                            <li class="tab col s2"><a class="active" href="#test1">Test 1</a></li> -->
+                            {% endblock %}
+                        </ul>
+                    </div>
+                    <div id="tabs-data-div" class="row"> 
+                        {% block tabs_content %}
+                        {% endblock %}
+                    </div>
+                </div>
+            </div>
+
         </main>
 
 

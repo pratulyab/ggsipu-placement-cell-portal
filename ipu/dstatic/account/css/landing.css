@@ -131,6 +131,8 @@ nav .brand-logo
 {
     color: black;
     font-size: 45px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 #third-box-images
 {
@@ -158,17 +160,23 @@ nav .brand-logo
 
 .team-member>img
 {
-    border-width: 6px;
+    border-width: 5px;
     border-style: solid;
     border-color: #1c262f;
     height: 140px;
     width: 140px;
 }
 
+
 #last-parallax-container
 {
    height: 630px;
 
+}
+
+#icons i
+{
+    margin-left: 5px;
 }
 
  }
@@ -209,6 +217,35 @@ nav .brand-logo
     width: 190px;
     font-size: 18px;
     padding: 4px;
+}
+
+#top-links
+{
+    margin-top: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+#top-links a
+{
+    color:#8db0f2;
+    font-size: 23px;
+}
+
+#top-bar
+{
+    margin-bottom: 0px;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    width: 100%;
+    padding: 20px;
+    padding-top: 5px;
+    padding-bottom: 0px;
 }
 
 #img-mid
@@ -316,6 +353,8 @@ nav .brand-logo
 {
     color: black;
     font-size: 30px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 #third-box-images
 {
@@ -324,6 +363,7 @@ nav .brand-logo
     justify-content: space-between;
     align-items: center;
     margin: 10px;
+    margin-top: 5px;
     width: 80%;
 }
 
@@ -343,7 +383,7 @@ nav .brand-logo
 
 .team-member>img
 {
-    border-width: 5px;
+    border-width: 4px;
     border-style: solid;
     border-color: #1c262f;
     height: 90px;
@@ -360,6 +400,11 @@ nav .brand-logo
 {
    height: 300px;
 
+}
+
+#icons i
+{
+    margin-left: 5px;
 }
 
 } 
@@ -406,7 +451,12 @@ nav .brand-logo
 
 #img-mid
 {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+#img-first
+{
+    background: rgba(0, 0, 0, 0.4);
 }
 
 #img-bottom
@@ -424,38 +474,28 @@ nav .brand-logo
     height: 300px;
 }     
 
-#first-section
+#first-bo
 {
-    height: 220px;
+    position: absolute;
+    top: 61%;
+    left: 19%;
 }
+
 
 #second-section
 {
-    background-color: white;
+    background-color: rgba(0, 0, 0, 0.9);
     height: 250px;
 }
 
-#first-box
+
+#icon-college
 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-
-}
-
-#first-box>h3
-{
-    color: black;
-    font-size: 40px;
-    margin-bottom: 5px;
-
-}
-
-#first-box>img
-{
-    height: 90px;
-    width: 105px
+    height: 125px;
+    width: 140px;
+    position: absolute;
+    top: 33%;
+    left: 45%;
 }
 
 #second-box
@@ -469,7 +509,7 @@ nav .brand-logo
 
 #second-box>h3
 {
-    color: black;
+    color: white;
     font-size: 30px;
 }
 
@@ -492,6 +532,7 @@ nav .brand-logo
 #third-section
 {
     height: 300px;
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 #third-box
@@ -504,8 +545,10 @@ nav .brand-logo
 }
 #third-box>h3
 {
-    color: black;
-    font-size: 30px;
+    color: white;
+    font-size: 32px;
+    margin-bottom: 9px;
+    margin-top: 7px;
 }
 #third-box-images
 {
@@ -514,6 +557,7 @@ nav .brand-logo
     justify-content: space-between;
     align-items: center;
     margin: 10px;
+    margin-top: 0px;
     width: 80%;
 }
 
@@ -528,14 +572,14 @@ nav .brand-logo
 .team-member>h5
 {
    font-size: 20px;
-   color: #1c262f
+   color: white;
 }
 
 .team-member>img
 {
-    border-width: 5px;
+    border-width: 3px;
     border-style: solid;
-    border-color: #1c262f;
+    border-color: white;
     height: 120px;
     width: 120px;
 }
