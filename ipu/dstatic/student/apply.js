@@ -92,7 +92,7 @@ var Apply = (function() {
 				var parsedPushpin = $.parseHTML(pushpin);
 				div.append(parsedPushpin);
 				var top = div.offset().top;
-				$('.toc-wrapper').pushpin({top: top, offset:top});
+				$('.toc-wrapper').pushpin({offset:top});
 				$('.scrollspy').scrollSpy();
 				$('.nested-scrollspy').scrollSpy();
 			},

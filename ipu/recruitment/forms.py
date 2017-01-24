@@ -165,6 +165,27 @@ class AssociationForm(forms.ModelForm):
 		model = Association
 		fields = ['college', 'company', 'type', 'programme', 'streams', 'salary', 'desc']
 
+class NewAssociationForm(forms.ModelForm):
+	layout = Layout(
+		Row('college'),
+		Row('company'),
+		Row('programme'),
+		Row('streams'),
+		Row(Span4('type'), Span8('salary')),
+		Row('desc')
+	)
+
+	def __init__(self, *args, **kwargs):
+		super(NewAssociationForm, self).__init__(*args, **kwargs)
+		self.fields['streams'].widget.attrs['disabled'] = 'disabled'
+		self.fields['streams'].queryset = Stream.objects.none()
+#		self.fields['college'].queryset = College.objects.get(pk=1)
+		self.fields['college'].widget.attrs['disabled'] = 'disabled'
+
+	class Meta:
+		model = Association
+		fields = ['college', 'company', 'type', 'programme', 'streams', 'salary', 'desc']
+
 class SessionEditForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(SessionEditForm, self).__init__(*args, **kwargs)

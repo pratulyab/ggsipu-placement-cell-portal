@@ -2,22 +2,20 @@
 {% load material_form %}
 {% block title %} Student | Sign Up {% endblock title %}
 {% block content %}
+	<a class="btn waves-effect waves-light blue right" href="{% url 'logout' %}">Logout</a>
     <form enctype="multipart/form-data" action="{% url 'create_student' %}" method='POST' id='student-creation-form' >
         {% csrf_token %}
 		<div class="row">
-			<div class="col s6 m12">
-				<h4> Create Profile </h4>
+			<div class="col s12 m8 offset-m2">
+				<h4 class="center" style="color: goldenrod"> Create Profile </h4>
 				<div>
 	 		     	{% form form=student_creation_form %}{% endform %}
 				 </div>
 			</div>
 		</div>
 		<div class="row">
-			<div class="col s6 m12">
-		        <button type="submit" name="createstudent" class="btn waves-effect waves-light">Finish<i class="material-icons right">send</i></button>
-			</div>
+		        <button type="submit" name="createstudent" class="btn waves-effect waves-light col s10 m8 offset-s1 offset-m2">Finish<i class="material-icons right">send</i></button>
 		</div>
     </form>
 	<br />
-	<a href="{% url 'logout' %}">Logout</a>
 {% endblock content %}

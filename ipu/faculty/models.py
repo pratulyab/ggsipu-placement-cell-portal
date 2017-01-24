@@ -24,7 +24,10 @@ class Faculty(models.Model):
 	photo = models.ImageField(_('Photo'),upload_to='faculty/photo', blank=True)
 
 	def get_full_name(self):
-		return (self.firstname + " " + self.lastname).title()
+		try:
+			return (self.firstname + " " + self.lastname).title()
+		except:
+			return ("<%s>" % self.profile.username)
 
 	def __str__(self):
 		return self.get_full_name()

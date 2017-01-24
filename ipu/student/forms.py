@@ -11,6 +11,7 @@ from college.models import College, Stream
 from student.models import Student, Qualification, TechProfile
 from urllib.parse import urlparse
 import re
+from material import *
 
 class StudentLoginForm(forms.Form):
 	username = forms.CharField(label=_('Enrollment Number'), max_length=11, widget=forms.TextInput(attrs={'placeholder': _('or email address'), 'auto_focus':''}))
@@ -103,6 +104,19 @@ class StudentSignupForm(forms.ModelForm):
 		}
 
 class StudentCreationForm(forms.ModelForm):
+	layout = Layout(
+		Fieldset('Personal Details', 
+			Row(Span6('firstname'), Span6('lastname')),
+			Row(Span3('gender'), Span4('dob'), Span5('phone_number')),
+			Row(Span6('photo'))
+		),
+		Fieldset('Educational Details', 
+			Row('college'),
+			Row(Span6('programme'), Span6('stream')),
+			Row(Span6('current_year'), Span6('is_sub_back')),
+			Row('resume')
+		),
+	)
 	def __init__(self, *args, **kwargs):
 		self.user_profile = kwargs.pop('profile', None)
 		self.coll = kwargs.pop('coll', None)
@@ -175,13 +189,26 @@ class StudentCreationForm(forms.ModelForm):
 	
 	class Meta:
 		model = Student
-		exclude = ['profile', 'is_verified', 'verified_by', 'is_intern', 'is_placed', 'is_barred', 'salary_expected']
+		fields = ['firstname', 'lastname', 'gender', 'dob', 'photo', 'phone_number', 'college', 'programme', 'stream', 'is_sub_back', 'current_year', 'resume']
 		help_texts = {
 			'resume': _('Please upload resume in either pdf, doc or docx format, < %sMB' % str(settings.FILE_MAX_SIZE/(1024*1024))),
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
 		}
 
 class StudentEditForm(forms.ModelForm):
+	layout = Layout(
+		Fieldset('Personal Details', 
+			Row(Span6('firstname'), Span6('lastname')),
+			Row(Span3('gender'), Span4('dob'), Span5('phone_number')),
+			Row(Span6('photo'))
+		),
+		Fieldset('Educational Details', 
+			Row('college'),
+			Row(Span6('programme'), Span6('stream')),
+			Row(Span6('current_year'), Span6('is_sub_back')),
+			Row('resume')
+		),
+	)
 	def __init__(self, *args, **kwargs):
 		super(StudentEditForm, self).__init__(*args, **kwargs)
 		self.initial['college'] = self.instance.college.pk
@@ -254,7 +281,7 @@ class StudentEditForm(forms.ModelForm):
 
 	class Meta:
 		model = Student
-		exclude = ['profile', 'is_verified', 'verified_by', 'is_intern', 'is_placed', 'is_barred', 'salary_expected']
+		fields = ['firstname', 'lastname', 'gender', 'dob', 'photo', 'phone_number', 'college', 'programme', 'stream', 'is_sub_back', 'current_year', 'resume']
 		help_texts = {
 			'resume': _('Please upload resume in either pdf, doc or docx format, < %sMB' % str(settings.FILE_MAX_SIZE/(1024*1024))),
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),

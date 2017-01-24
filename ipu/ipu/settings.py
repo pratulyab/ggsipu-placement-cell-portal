@@ -177,6 +177,7 @@ IMAGE_MAX_SIZE = 1*1024*1024 #1MB
 #HASHIDS
 HASHID_ASSOCIATION = hashids.Hashids(salt="Sammelan", min_length=10)
 HASHID_PLACEMENTSESSION = hashids.Hashids(salt="Naukari", min_length=12)
+HASHID_DUMMY_COMPANY = hashids.Hashids(salt="NakliComp", min_length=7)
 HASHID_DUMMY_SESSION = hashids.Hashids(salt="NakliNakli", min_length=9)
 
 # CELERY STUFF

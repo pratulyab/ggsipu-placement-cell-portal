@@ -59,11 +59,11 @@ class SelectionCriteria(models.Model):
 		super(SelectionCriteria, self).clean()
 		years = self.years.split(',')
 		for each in years:
-			if not year:
+			if not each and len(years) > 1:
 				raise IntegrityError(_('There must not be any spaces in the years.'))
-			elif len(each > 1):
+			elif len(each) > 1:
 				raise IntegrityError(_('Make sure the year is entered in the proper desired format'))
-			elif int(each) > 6:
+			elif each.isalpha() and int(each) > 6:
 				raise IntegrityError(_('Maximum year value can be 6.'))
 #		return self.years
 

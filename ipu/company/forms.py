@@ -36,8 +36,7 @@ class CompanyCreationForm(forms.ModelForm):
 	
 	class Meta:
 		model = Company
-		exclude = ['profile']
-#		fields = ['name', 'details', 'website', 'photo']
+		fields = ['name', 'corporate_code', 'details', 'website', 'photo']
 		help_texts = {
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
 		}
@@ -58,7 +57,7 @@ class CompanyEditForm(forms.ModelForm):
 	
 	class Meta:
 		model = Company
-		exclude = ['profile']
+		fields = ['name', 'details', 'website', 'photo']
 		help_texts = {
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
 		}

@@ -85,6 +85,12 @@ var Associate = (function() {
 					prog.on('change', function(e){
 						handleAJAX(form, form_id, '/recruitment/get_with_streams/');
 					});
+	$(document).ready(function(){
+		$('select').material_select();
+	});
+	console.log($('#id_streams_container').find('ul'));
+	console.log($('#id_streams_container').find('#id_streams'));
+	Materialize.updateTextFields();
 			},
 			error: function(xhr, status, error){
 				var loc = xhr.responseJSON['location'];

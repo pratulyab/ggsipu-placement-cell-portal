@@ -422,6 +422,7 @@ def mysessions(request):
 			sessions = PlacementSession.objects.filter(association__pk__in = associations)
 			dsessions = DummySession.objects.filter(dummy_company__college=college)
 			sessions_list = []
+			dsessions_list = []
 			for s in sessions:
 				assoc = s.association
 				data = {}
@@ -433,10 +434,9 @@ def mysessions(request):
 				data['photo'] = assoc.company.photo
 				data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
 				data['students'] = s.students.count()
-				data['is_dummy'] = False
+#				data['is_dummy'] = False
 				sessions_list.append(data)
 			for ds in dsessions:
-				assoc = s.association
 				data = {}
 				data['dsessobj'] = ds
 				data['dsessid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
@@ -445,10 +445,9 @@ def mysessions(request):
 				data['type'] = "Internship" if ds.type == 'I' else "Job"
 				data['streams'] = ', '.join([s.name.title() for s in ds.streams.all()])
 				data['students'] = ds.students.count()
-				data['is_dummy'] = True
-				sessions_list.append(data)
-			html = render(request, 'college/mysessions.html', {'sessions': sessions_list}).content.decode('utf-8')
-		
+#				data['is_dummy'] = True
+				dsessions_list.append(data)
+			html = render(request, 'college/mysessions.html', {'sessions': sessions_list, 'dsessions': dsessions_list}).content.decode('utf-8')
 		return JsonResponse(status=200, data={'html': html})
 	else:
 		return handle_user_type(request)
