@@ -67,14 +67,14 @@ var Notification = (function() {
 
 				},
 				success : function(data , status , xhr){
-					handleMultipleJquery();
-					$('#your-notifications').trigger('click');
+					$('#view-issues').trigger('click');
 					alert("Successful! Please check again after sometime for the reply.");
 				},
 				error: function(error){
 					alert("Couldn't Submit! Please try again later.");
 				},
 			});
+			 $("#submit_issue-form").unbind('submit');
 		}	
 	}
 
@@ -113,7 +113,6 @@ function fieldEvaluator(input_field , max_length){
 			url : url,
 			type : 'GET',
 			success : function(data , status , xhr){
-				handleMultipleJquery();
 				populateIssueListDiv(data);
 
 			}
@@ -152,7 +151,9 @@ function fieldEvaluator(input_field , max_length){
 				'<div class="row"><div class="col s10"><span class="title">' + "Issue Type :   " + issue_type + "</span>" +
 				'<p>' + "Subject :   " + data[i].subject + '</p></div>' + reply_anchor +'</div></li>'
 		}
+		
 		$('#view-issues-div-ul').html(raw_html);
+		
 		$('#view-issues-div-ul').find('a').on('click' , function(e) {
 			e.preventDefault();
 			var param = '';
@@ -192,7 +193,6 @@ function fieldEvaluator(input_field , max_length){
             type : 'GET',
             async : true,
             success : function(data, status, xhr){
-                handleMultipleJquery();
                 populateNotificationDiv(data);
                 
             }
@@ -202,7 +202,13 @@ function fieldEvaluator(input_field , max_length){
 
     function populateNotificationDiv(data) {
         var raw_html = '';  
-        var icon = '';                   
+        var icon = '';
+        if(data.length === 0){
+            icon = '<i class="material-icons circle">report_problem</i>' 
+            raw_html = '<li class="collection-item avatar">' + icon + '<span class="title">' + 'None' + '</span>' + '<p>' + 'No notifications found.' + '</p>' + '</li>';
+            $('#your-notifications-div-ul').html(raw_html);
+            return;
+        }                   
         for(var i = 0 ; i < data.length ; i++){
             icon = ( (data[i].read === true) ? '<i class="material-icons circle blue">done_all</i>' : '<i class="material-icons circle red">fiber_new</i>');
             raw_html += '<li class="collection-item avatar">' + icon + 

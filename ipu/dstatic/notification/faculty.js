@@ -7,7 +7,7 @@ var Notification = (function() {
 		$('.dropdown-button').on('click', function(e){e.preventDefault()});
 		$('nav .brand-logo').on('click', function(e){location.href='';});
         $('#create-notifications').on('click' , generateNewForm); // Handles the left panel notification button.
-        $('#notification').on('click' , function(e){$('#your-notifications').trigger('click');});//Handles the maine notification tab button.
+        $('#notification-anchor').on('click' , function(e){$('#your-notifications').trigger('click');});//Handles the maine notification tab button.
         $('#view-issues').on('click' , getIssuesList);
         $('#dropdown1 a').each(function(i, a){
 			var el = $(a);
@@ -107,6 +107,16 @@ var Notification = (function() {
                 handleMultipleJquery();
                 $('#notify-students-div').html(data);
                 $('#id_stream').on('change' , generateNewForm);
+                $('#id_if_all').on('change' , function(){
+                    var el = $('#id_students_container').find('select');
+                    if ($(this).is(':checked')) {         
+                        el.attr("disabled" , "");
+                        el.material_select();
+                  } else {
+                        el.removeAttr("disabled");
+                        el.material_select();
+                  }
+                })
                 $('#create_notification-form').on('submit' , getStudentsSelected);
                 
                 //$('#id_if_all').on('click' , function(){
@@ -131,13 +141,19 @@ var Notification = (function() {
 
 //Final function which creates the notification ion the database.
     function submitNotificationForm(student_list) {
-    	var url = $('#create_notification-form').attr('action')
+        var url = $('#create_notification-form').attr('action')
     	var message = $('#id_message').val();
         var token = $('input[name = csrfmiddlewaretoken]').val();
         var if_all = $('#id_if_all').prop('checked');
+        if(if_all === true){
+            student_list.length = 0;
+            $('#id_students option').each(function(){
+                student_list.push($(this).text());
+            });
+        }
+        student_list.shift();
         var if_email = $('#id_if_email').prop('checked');
         var if_sms = $('#id_if_sms').prop('checked');
-    	student_list.shift();
     	$.ajax({
     		url : url,
     		type : 'POST',
@@ -145,12 +161,11 @@ var Notification = (function() {
                 'csrfmiddlewaretoken' : token , 
                 'student_list' :student_list,
                 'message' : message,
-                'if_all' : if_all,
                 'if_sms' : if_sms,
                 'if_email' : if_email,
             },
     		success : function(data , status , xhr){
-                handleMultipleJquery();
+                //handleMultipleJquery();
                 $('#your-notifications').trigger('click');
                 alert("Successful ! " + data + " students are notified");
 
@@ -168,7 +183,7 @@ var Notification = (function() {
 			url:url,
 			type : 'GET',
 			success: function(data , status , xhr){
-				handleMultipleJquery();
+				//handleMultipleJquery();
 				populateHelpDiv(data);
 			}
 		});
@@ -235,7 +250,7 @@ var Notification = (function() {
                 'identifier' : identifier,
             },
             success : function(data , status , xhr){
-                handleMultipleJquery();
+                //handleMultipleJquery();
                 $('#view-issues').trigger('click');
             }
         });
@@ -277,7 +292,9 @@ var Notification = (function() {
                 'if_email' : email,
             },
             success : function(data , status , xhr){
-                handleMultipleJquery();
+                //For some reason handleMultipleJquery wasn't working here. Manually brought the listener
+                //in this function.
+                $('#view-issues').on('click' , getIssuesList);
                 $('#view-issues').trigger('click');
                 alert("Successful! Your solution is submitted.");
 
@@ -294,7 +311,6 @@ var Notification = (function() {
             type : 'GET',
             async : true,
             success : function(data, status, xhr){
-                handleMultipleJquery();
                 populateDiv(data);                
             }
         });       
@@ -314,6 +330,7 @@ var Notification = (function() {
             raw_html += '<li class="collection-item avatar">' + icon + 
                 '<span class="title">' + data[i].actor + '</span>' + '<p>' + data[i].message + '</p>' + '</li>';
         }
+        //handleMultipleJquery();
         $('#your-notifications-div-ul').html(raw_html);
 
 
@@ -324,6 +341,7 @@ var Notification = (function() {
     function generateNewForm(e) {
             e.preventDefault();
             $('#notify-students-div').html(" ");
+            //handleMultipleJquery();
             getForm();
 
         }

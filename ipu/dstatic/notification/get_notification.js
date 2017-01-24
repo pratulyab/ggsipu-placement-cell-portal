@@ -8,6 +8,7 @@ var GetNotification = (function()  {
             '<div class="collapsible-body"><p>' + data[i].message + '</p></div>' + 
           	'</li>'
 		}
+        console.log("yeah2");
 
         raw_html += '<div id="noti-foot"><a id="noti-foot-anchor" href="#notifications">See Older Notifications' + '</a></div>';
 
@@ -21,6 +22,7 @@ var GetNotification = (function()  {
 
 
 	function getNotifications(e) {
+        console.log("yeah3");
         e.preventDefault();
         var url = $('#notification_button').attr('href');
         $.ajax({
@@ -36,6 +38,7 @@ var GetNotification = (function()  {
 
 	return {
 		init : function() {
+
 			$('#notification_button').on('click' , getNotifications)
 		}
 	}

@@ -121,9 +121,11 @@ def create_notification(request):
 			if request.user.type == 'F':
 				college_object = request.user.faculty.college
 			else:
-				college_object = request.user.college
+				college_object = request.user.college 
 			students_selected = request.POST.getlist('student_list[]')
-			message = request.POST['message']		
+			message = request.POST['message']
+			if_sms = request.POST.get('if_sms')
+			if_email = request.POST.get('if_email')		
 			college_customuser_object = college_object.profile
 			college_students_queryset = college_object.students.all()
 			
