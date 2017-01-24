@@ -7,7 +7,7 @@ var Notification = (function() {
 		$('.dropdown-button').on('click', function(e){e.preventDefault()});
 		$('nav .brand-logo').on('click', function(e){location.href='';});
         $('#create-notifications').on('click' , generateNewForm); // Handles the left panel notification button.
-        $('#notification').on('click' , function(e){$('#your-notifications').trigger('click');});//Handles the maine notification tab button.
+        $('#notification-anchor').on('click' , function(e){$('#your-notifications').trigger('click');});//Handles the maine notification tab button.
         $('#dropdown1 a').each(function(i, a){
 			var el = $(a);
 			var target = el.data('links');
@@ -106,7 +106,24 @@ var Notification = (function() {
                 handleMultipleJquery();
                 $('#notify-students-div').html(data);
                 $('#id_stream').on('change' , generateNewForm);
+                $('#id_if_all').on('change' , function(){
+                    var el = $('#id_students_container').find('select');
+                    if ($(this).is(':checked')) {         
+                        el.attr("disabled" , "");
+                        el.material_select();
+                  } else {
+                        el.removeAttr("disabled");
+                        el.material_select();
+                  }
+                })
                 $('#create_notification-form').on('submit' , getStudentsSelected);
+                
+                //$('#id_if_all').on('click' , function(){
+                    //if($(this).prop("checked")){
+                        //$('#id_students option').attr('selected' , 'selected');
+                    //}
+                    //else{
+                        //console.log("unchecked"); }       
 
             }
         });
@@ -123,25 +140,36 @@ var Notification = (function() {
 
 //Final function which creates the notification ion the database.
     function submitNotificationForm(student_list) {
-    	var url = $('#create_notification-form').attr('action')
-    	var message = $('#id_message').val();
+        var url = $('#create_notification-form').attr('action')
+        var message = $('#id_message').val();
         var token = $('input[name = csrfmiddlewaretoken]').val();
-    	student_list.shift();
-    	$.ajax({
-    		url : url,
-    		type : 'POST',
-    		data : { 
+        var if_all = $('#id_if_all').prop('checked');
+        if(if_all === true){
+            student_list.length = 0;
+            $('#id_students option').each(function(){
+                student_list.push($(this).text());
+            });
+        }
+        student_list.shift();
+        var if_email = $('#id_if_email').prop('checked');
+        var if_sms = $('#id_if_sms').prop('checked');
+        $.ajax({
+            url : url,
+            type : 'POST',
+            data : { 
                 'csrfmiddlewaretoken' : token , 
                 'student_list' :student_list,
-                'message' : message ,
+                'message' : message,
+                'if_sms' : if_sms,
+                'if_email' : if_email,
             },
-    		success : function(data , status , xhr){
-                handleMultipleJquery();
+            success : function(data , status , xhr){
+                //handleMultipleJquery();
                 $('#your-notifications').trigger('click');
                 alert("Successful ! " + data + " students are notified");
 
-    		}
-    	});
+            }
+        });
     }
 //Create Notification Ends.
 
@@ -155,7 +183,6 @@ var Notification = (function() {
             type : 'GET',
             async : true,
             success : function(data, status, xhr){
-                handleMultipleJquery();
                 populateDiv(data);
                 
             }
