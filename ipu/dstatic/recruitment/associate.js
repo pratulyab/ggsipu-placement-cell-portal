@@ -23,6 +23,7 @@ var Associate = (function() {
 		$(el + ' .errors').remove();
 		$(el + ' .input-field').removeClass('has-error');
 		$(el + ' .input-field input').removeClass('invalid');
+		$(el).parent().find('.error').remove();
 	}
 	
 	function addErrorsToForm(form_errors, el){
@@ -50,12 +51,62 @@ var Associate = (function() {
 		}
 	}
 
+	function addOptionsToSelectField(data, $select_el){
+		$select_el.children().slice(1).remove();
+		for(var datum of data) {
+			var $option = $('<option/>');
+			$option.attr('value', datum.value);
+			$option.html(datum.html);
+			$select_el.append($option);
+		}
+		$select_el.material_select('destroy');
+		$select_el.prop('disabled', false);
+		$select_el.material_select();
+		Materialize.updateTextFields();
+	}
+
+	function get_whatever(form, form_id, url, data) {
+		clearErrors(form_id);
+		form = $(form_id);
+		$.ajax({
+			url: url,
+			type: 'GET',
+			data: data,
+			contentType: false,
+			success: function(data, status, xhr){
+				if (data['programmes']){
+					var $programme_select = $(form).find('#id_programme');
+					addOptionsToSelectField(data['programmes'], $programme_select);
+					var $streams_select = $(form).find('#id_streams');
+					$streams_select.children().slice(1).remove()
+					$streams_select.material_select();
+				}
+				if (data['streams']){
+					var $streams_select = $(form).find('#id_streams');
+					addOptionsToSelectField(data['streams'], $streams_select);
+				}
+			},
+			error: function(xhr, status, error){
+				var loc = xhr.responseJSON['location'];
+				if (loc){
+					location.href = loc;
+					return;
+				}
+				if (xhr.responseJSON['error']){
+					$(form).parent().prepend($('<small class="error">'+xhr.responseJSON['error']+'</small>'))
+					Materialize.toast(xhr.responseJSON['error'], 4000);
+				}
+				var form_errors = xhr.responseJSON['errors'];
+				addErrorsToForm(form_errors, form_id);
+			}
+		});
+	}
+
 	function handleAJAX(form, form_id, url) {
 		clearErrors(form_id);
 		form = $(form_id);
 		var type = $(form).attr('method');
 		var form_data = new FormData(form[0]);
-		form.off('submit');
 		$.ajax({
 			url: url,
 			type: type,
@@ -67,6 +118,7 @@ var Associate = (function() {
 					location.href = data['location'];
 					return;
 				}
+				/*
 				handleMultipleJquery();
 				var form_div = $(form).parent();
 				form_div.html(data['render']);
@@ -85,12 +137,7 @@ var Associate = (function() {
 					prog.on('change', function(e){
 						handleAJAX(form, form_id, '/recruitment/get_with_streams/');
 					});
-	$(document).ready(function(){
-		$('select').material_select();
-	});
-	console.log($('#id_streams_container').find('ul'));
-	console.log($('#id_streams_container').find('#id_streams'));
-	Materialize.updateTextFields();
+					*/
 			},
 			error: function(xhr, status, error){
 				var loc = xhr.responseJSON['location'];
@@ -98,9 +145,13 @@ var Associate = (function() {
 					location.href = loc;
 					return;
 				}
+				if (xhr.responseJSON['error']){
+					$(form).parent().prepend($('<small class="center error">'+xhr.responseJSON['error']+'</small>'))
+					Materialize.toast(xhr.responseJSON['error'], 4000);
+				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
-				$(form_id).on('submit', submitForm);
+//				$(form_id).on('submit', submitForm);
 			}
 		});
 	}
@@ -115,6 +166,24 @@ var Associate = (function() {
 			for(var i=0; i<forms.length; i++){
 				$('#' + forms[i]).on('submit', submitForm);
 			}
+			var association_form_id = '#associate-form'
+			var association_form = $(association_form_id);
+			var college_field = association_form.find('#id_college');
+			var programme_field = association_form.find('#id_programme');
+			if (college_field)
+				college_field.on('change', function(e){
+					e.preventDefault();
+					var college_value = $(college_field.children()[college_field.prop('selectedIndex')]).attr('value');
+					get_whatever(association_form, association_form_id, '/recruitment/get_prog/', {'college': college_value});
+				});
+			programme_field.on('change', function(e){
+				e.preventDefault();
+				var programme_value = $(programme_field.children()[programme_field.prop('selectedIndex')]).attr('value');
+				var $streams_select = $(association_form).find('#id_streams');
+				$streams_select.children().slice(1).remove()
+				$streams_select.material_select();
+				get_whatever(association_form, association_form_id, '/recruitment/get_streams/', {'programme': programme_value});
+			});
 		}
 	};
 })();

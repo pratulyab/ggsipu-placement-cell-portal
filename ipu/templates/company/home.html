@@ -59,11 +59,11 @@
 
 {% block tabs_content %}
 	<div id="associate" class="col s12">
-		<form method="POST" action={% url 'with_prog' %} id="associate-form" class="col s8 offset-s2">
+		<form method="POST" action={% url 'associate' %} id="associate-form" class="col s8 offset-s2">
 			{% csrf_token %}
-			{% form form=associate_actors_only_form%}{% endform %}
+			{% form form=association_form%}{% endform %}
 			<div class="col s8 offset-s2">
-				<button type="submit" class="btn btn-waves" style="width: 100%">Get Programmes</button>
+				<button type="submit" class="btn btn-waves" style="width: 100%">Associate</button>
 			</div>
 		</form>
 	</div>

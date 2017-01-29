@@ -606,6 +606,11 @@ form#search input {
   margin-left: 5px !important;
 }
 
+form h5 {
+	/* Form Fieldset Bottom Border */
+	border-bottom: 3px solid;
+	margin: 3% 0;
+}
 
 /* */
 

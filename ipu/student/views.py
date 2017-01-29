@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from account.decorators import require_user_types, new_require_user_types
+from account.decorators import require_user_types
 from account.forms import AccountForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
@@ -51,7 +51,7 @@ def student_signup(request):
 		user = f.save()
 		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 #		auth_login(request, user)
-		send_activation_email_task.delay(user.id, get_current_site(request).domain)
+		send_activation_email_task.delay(user.pk, get_current_site(request).domain)
 		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse(settings.PROFILE_CREATION_URL['S']))}
 		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')
 		return JsonResponse(data = {'success': True, 'render': html})
@@ -61,7 +61,7 @@ def student_signup(request):
 @require_user_types(['S'])
 @login_required
 @require_http_methods(['GET','POST'])
-def create_student(request):
+def create_student(request, **kwargs):
 ##	if request.user.type == 'S':
 	username = request.user.username
 	user_profile = request.user
@@ -98,7 +98,7 @@ def create_student(request):
 @require_user_types(['S'])
 @login_required
 @require_GET
-def student_home(request):
+def student_home(request, **kwargs):
 ##	if request.user.type == 'S':
 	context = {}
 	user = request.user
@@ -142,7 +142,7 @@ def student_home(request):
 @require_user_types(['S', 'F'])
 @login_required
 @require_POST
-def edit_student(request):
+def edit_student(request, **kwargs):
 	if request.is_ajax():
 		if request.user.type == 'S':
 			username = request.user.username
@@ -214,7 +214,7 @@ def edit_student(request):
 @require_user_types(['S', 'F'])
 @login_required
 @require_POST
-def edit_qualifications(request):
+def edit_qualifications(request, **kwargs):
 	if request.is_ajax():
 		if request.user.type == 'S':
 			try:
@@ -276,7 +276,7 @@ def edit_qualifications(request):
 @require_user_types(['F'])
 @login_required
 @require_POST
-def delete_student(request):
+def delete_student(request, **kwargs):
 ##	if request.user.type == 'F' and request.is_ajax():
 	if request.is_ajax():
 		try:
@@ -301,7 +301,7 @@ def delete_student(request):
 @require_user_types(['S'])
 @login_required
 @require_POST
-def paygrade(request):
+def paygrade(request, **kwargs):
 ##	if request.is_ajax() and request.user.type == 'S':
 	if request.is_ajax():
 		try:
@@ -334,7 +334,7 @@ def coder(request):
 	except:
 		return JsonResponse(status=400, data={})
 
-@new_require_user_types(['S'])
+@require_user_types(['S'])
 @login_required
 @require_GET
 def companies_in_my_college(request, **kwargs):
@@ -439,7 +439,7 @@ def companies_in_my_college(request, **kwargs):
 @require_user_types(['S'])
 @login_required
 @require_GET
-def apply_to_company(request, sess): # handling withdrawl as well
+def apply_to_company(request, sess, **kwargs): # handling withdrawl as well
 	if request.is_ajax():
 ##		if request.user.type == 'S':
 		try:
@@ -530,7 +530,7 @@ def get_student_public_profile(user, requester_type):
 @require_user_types(['S'])
 @login_required
 @require_POST
-def tech_profile(request):
+def tech_profile(request, **kwargs):
 	if request.is_ajax():
 ##		if request.user.type == 'S':
 		student = request.user.student
@@ -554,7 +554,7 @@ def tech_profile(request):
 @require_user_types(['S'])
 @login_required
 @require_POST
-def upload_file(request):
+def upload_file(request, **kwargs):
 	if request.is_ajax():
 ##		if request.user.type == 'S':
 		try:

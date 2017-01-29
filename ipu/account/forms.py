@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser, SocialProfile
 from urllib.parse import urlparse
 import re
+from material import *
 
 class LoginForm(forms.Form):
 	username = forms.CharField(label=_('Username'), max_length=32, widget=forms.TextInput(attrs={'placeholder': _('or email address'), 'auto_focus':''}))
@@ -55,12 +56,14 @@ class SignupForm(forms.ModelForm):
 		super(SignupForm, self).clean(*args, **kwargs)
 		pwd1 = self.cleaned_data.get('password1', None)
 		pwd2 = self.cleaned_data.get('password2', None)
-		if pwd1 and pwd2 and pwd1!=pwd2:
-			raise forms.ValidationError(_('Passwords do not match.'))
+		if pwd1 and pwd2:
+			if pwd1 != pwd2:
+				raise forms.ValidationError(_('Passwords do not match.'))
+			password_validation.validate_password(pwd1)
 		return self.cleaned_data
 
 	def save(self, commit=True, *args, **kwargs):
-		self.user_type = kwargs.pop('user_type', None)
+		self.user_type = kwargs.pop('user_type')
 		user = super(SignupForm, self).save(commit=False)
 		user.set_password(self.cleaned_data.get('password2'))
 		user.is_active = False
@@ -150,7 +153,6 @@ class AccountForm(forms.ModelForm):
 		old = self.cleaned_data.get('current_password', None)
 		new1 = self.cleaned_data.get('new_password1', None)
 		new2 = self.cleaned_data.get('new_password2', None)
-		
 		if old:
 			if not new1:
 				raise forms.ValidationError(_('Please enter new password'))
@@ -161,10 +163,7 @@ class AccountForm(forms.ModelForm):
 			elif new1 == old:
 				raise forms.ValidationError(_('New password shouldn\'t be same as current one'))
 			else:
-				try:
-					password_validation.validate_password(new2)
-				except ValidationError as error:
-					raise forms.ValidationError(error)
+				password_validation.validate_password(new2)
 		else:
 			if new1 or new2:
 				raise forms.ValidationError(_('Please enter current password'))
@@ -187,13 +186,20 @@ class AccountForm(forms.ModelForm):
 	class Meta:
 		model = CustomUser
 		fields = ['username', 'email']
+		help_texts = {
+			'username': 'Readonly.',
+			'email': 'Readonly.',
+		}
 
 class ForgotPasswordForm(forms.Form):
+	layout = Layout(
+		Fieldset('Registration Details', Row('email'))
+	)
 	email = forms.EmailField(max_length = 254, help_text=_('Enter your registered email address'))
 	def clean_email(self):
 		data_email = self.cleaned_data.get('email', None)
 		if data_email and CustomUser.objects.filter(email = data_email).count() == 0:
-			raise forms.ValidationError(_("We cannot find user with this email address. Please verify email address and try again"))
+			raise forms.ValidationError(_("User with this email has not registered with us."))
 		return data_email
 
 class SetPasswordForm(forms.Form):
@@ -205,8 +211,5 @@ class SetPasswordForm(forms.Form):
 		if data_password1 and data_password2 and data_password1 != data_password2:
 			raise forms.ValidationError(_("Passwords don't match"))
 		if data_password1 and data_password2:
-			try:
-				password_validation.validate_password(data_password2)
-			except ValidationError as error:
-				raise forms.ValidationError(error)
+			password_validation.validate_password(data_password2)
 		return data_password2
