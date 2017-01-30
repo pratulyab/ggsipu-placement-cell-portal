@@ -119,6 +119,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+	{
+		'NAME': 'account.validators.CustomPasswordValidator',
+	},
 ]
 
 
@@ -165,6 +168,7 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'TnP@GGSIPU'
 
 # FILE UPLOAD CONSTRAINTS
 FILE_CONTENT_TYPE = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
@@ -176,9 +180,16 @@ IMAGE_MAX_SIZE = 1*1024*1024 #1MB
 
 #HASHIDS
 HASHID_ASSOCIATION = hashids.Hashids(salt="Sammelan", min_length=10)
-HASHID_PLACEMENTSESSION = hashids.Hashids(salt="Naukari", min_length=12)
+HASHID_COLLEGE = hashids.Hashids(salt="mahavidyalya", min_length=8)
+HASHID_COMPANY = hashids.Hashids(salt="NoIdea", min_length=8)
+HASHID_CUSTOM_USER = hashids.Hashids(salt="ThinkRandomly", min_length=13)
 HASHID_DUMMY_COMPANY = hashids.Hashids(salt="NakliComp", min_length=7)
 HASHID_DUMMY_SESSION = hashids.Hashids(salt="NakliNakli", min_length=9)
+HASHID_FACULTY = hashids.Hashids(salt="Workforce", min_length=8)
+HASHID_PLACEMENTSESSION = hashids.Hashids(salt="Naukari", min_length=12)
+HASHID_PROGRAMME = hashids.Hashids(salt="Something", min_length=3)
+HASHID_STREAM = hashids.Hashids(salt="Dhaara", min_length=4)
+HASHID_STUDENT = hashids.Hashids(salt="Vidyarthi", min_length=8)
 
 # CELERY STUFF
 BROKER_URL = 'redis://localhost:6379'
@@ -202,3 +213,7 @@ PROFILE_CREATION_URL = {
 	'S': 'create_student',
 	'CO': 'create_company'
 }
+
+# SESSIONS
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 1 * (60 * 60 * 24)

@@ -16,7 +16,7 @@ from college.models import College
 from faculty.forms import FacultySignupForm
 from notification.models import Notification
 from recruitment.models import PlacementSession
-from recruitment.forms import AssActorsOnlyForm, NewAssociationForm
+from recruitment.forms import AssociationForm
 
 import os
 
@@ -38,17 +38,17 @@ def college_signup(request):
 			college = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 			context = {}
 			if college:
-				auth_login(request, college)
+#				auth_login(request, college)
 				context['email'] = college.email
 				context['profile_creation'] = request.build_absolute_uri(reverse(settings.PROFILE_CREATION_URL['C']))
-				send_activation_email_task.delay(college.id, get_current_site(request).domain)
+				send_activation_email_task.delay(college.pk, get_current_site(request).domain)
 				return render(request, 'account/post_signup.html', context)
 	return render(request, 'college/signup.html', {'college_signup_form': f})
 
 @require_user_types(['C'])
 @login_required
 @require_http_methods(['GET','POST'])
-def create_college(request):
+def create_college(request, **kwargs):
 ##	if request.user.type == 'C':
 	if request.method == 'GET':
 		f = CollegeCreationForm()
@@ -70,7 +70,7 @@ def create_college(request):
 @require_user_types(['C'])
 @login_required
 @require_GET
-def college_home(request):
+def college_home(request, **kwargs):
 ##	if request.user.type == 'C':
 	context = {}
 	user = request.user
@@ -83,8 +83,7 @@ def college_home(request):
 	context['edit_account_form'] = AccountForm(instance=user)
 	context['edit_college_form'] = CollegeEditForm(instance=college)
 	context['create_faculty_form'] = FacultySignupForm()
-	context['associate_actors_only_form'] = AssActorsOnlyForm(initiator_profile=college)
-#	context['associate_actors_only_form'] = NewAssociationForm()
+	context['association_form'] = AssociationForm(profile=college)
 	try:
 		context['social_profile_form'] = SocialProfileForm(instance=user.social)
 	except SocialProfile.DoesNotExist:
@@ -97,7 +96,7 @@ def college_home(request):
 @require_user_types(['C'])
 @login_required
 @require_POST
-def edit_college(request):
+def edit_college(request, **kwargs):
 	if request.is_ajax():
 ##		if request.user.type == 'C':
 		try:

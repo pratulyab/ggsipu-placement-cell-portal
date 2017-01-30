@@ -1,7 +1,10 @@
 {% extends 'account/base.html' %}
 {% block title %} Acitvation Failed {% endblock %}
-{% block content %} 
-    <h4> Invalid Activation Link</h4>
-    <p> Either create a new account <a href="{% url 'signup' %}">Signup</a> or <a href="{% url 'auth' %}">login</a>
-    </p> 
+{% block content %}
+	<div class="row">
+		<h4 class="center flow-text red-text">Invalid Activation Link</h4>
+		<p class="col s12 flow-text blue-text"> If you are viewing this page after clicking the activation link sent to your registered email address, then chances are that the activation link has expired. </p>
+		<p class="col s12"><a class="btn btn-waves-light center" href="{% url 'auth' %}"> Resend Activation Link </a></p>
+		<p class="left flow-text blue-text"> Go to <a href={% url 'landing' %}>Home Page</a> </p>
+	</div>
 {% endblock %}

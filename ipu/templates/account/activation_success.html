@@ -1,6 +1,10 @@
 {% extends 'account/base.html' %}
 {% block title %} Acitvation Complete {% endblock %}
 {% block content %} 
-    <h4> Account Successfully Verified</h4>
-    <p> You can now proceed to <a href="{% url 'auth' %}">login</a> </p>. 
+	<div class="row">
+	    <h4 class="center flow-text teal-text text-accent-4"> Your email address has been verified successfully!</h4>
+		<div class="col s12">
+			<a class="btn btn-waves-light col s8 offset-s2" style="width: 80%" href="{% url 'auth' %}">Login &nbsp;<i class="fa fa-sign-in fa-2x"></i></a>
+		</div>
+	</div>
 {% endblock %}

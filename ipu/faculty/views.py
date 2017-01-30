@@ -34,7 +34,7 @@ def faculty_signup(request):
 				faculty = f.save()
 				Faculty.objects.create(profile=faculty, college=user.college)
 				faculty = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
-				send_activation_email_task.delay(faculty.id, get_current_site(request).domain)
+				send_activation_email_task.delay(faculty.pk, get_current_site(request).domain)
 				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['C'])})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
@@ -46,7 +46,7 @@ def faculty_signup(request):
 @require_user_types(['F'])
 @login_required
 @require_http_methods(['GET','POST'])
-def edit_create_faculty(request):
+def edit_create_faculty(request, **kwargs):
 	if request.is_ajax():
 ##		if request.user.type == 'F' and request.method == 'POST':
 		if request.method == 'POST':
@@ -89,7 +89,7 @@ def edit_create_faculty(request):
 @require_user_types(['F'])
 @login_required
 @require_GET
-def faculty_home(request):
+def faculty_home(request, **kwargs):
 ##	if request.user.type == 'F':
 	if not request.user.faculty.firstname:
 		return redirect(settings.PROFILE_CREATION_URL['F'])
@@ -113,7 +113,7 @@ def faculty_home(request):
 @require_user_types(['F'])
 @login_required
 @require_http_methods(['GET','POST'])
-def get_enrollment_number(request):
+def get_enrollment_number(request, **kwargs):
 	if not request.is_ajax():
 		return handle_user_type(request)
 ##	if request.user.type == 'F':

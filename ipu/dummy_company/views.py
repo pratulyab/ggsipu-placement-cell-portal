@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
-from account.decorators import new_require_user_types
+from account.decorators import require_user_types
 from account.utils import handle_user_type, get_relevant_reversed_url, get_type_created
 from college.models import College
 from company.models import Company
@@ -22,7 +22,7 @@ from student.models import Student, Programme, Stream
 import openpyxl as excel, datetime, time
 from hashids import Hashids
 
-@new_require_user_types(['C', 'F'])
+@require_user_types(['C', 'F'])
 @login_required
 @require_GET
 def manage_dummy_home(request, **kwargs):
@@ -30,9 +30,9 @@ def manage_dummy_home(request, **kwargs):
 	college = kwargs.pop('profile')
 	if user_type == 'F':
 		college = college.college
-	return render(request, 'dummy_company/manage_dummy_home.html', context={'create_dummy_company_form': CreateDummyCompanyForm(), 'choose_dummy_company_form': ChooseDummyCompanyForm(college=college), 'create_dummy_session_form': CreateDummySessionForm(college=college), 'create_selection_criteria_form': CreateSelectionCriteriaForm()})
+	return render(request, 'dummy_company/manage_dummy_home.html', context={'create_dummy_company_form': CreateDummyCompanyForm(), 'choose_dummy_company_form': ChooseDummyCompanyForm(college=college), 'create_dummy_session_form': CreateDummySessionForm(college=college), 'create_selection_criteria_form': CreateSelectionCriteriaForm(), 'college': college})
 
-@new_require_user_types(['C', 'F'])
+@require_user_types(['C', 'F'])
 @login_required
 @require_POST
 def create_dummy_company(request, **kwargs):
@@ -55,7 +55,7 @@ def create_dummy_company(request, **kwargs):
 	else:
 		raise PermissionDenied
 
-@new_require_user_types(['C', 'F'])
+@require_user_types(['C', 'F'])
 @login_required
 @require_GET
 def get_edit_dcompany_form(request, **kwargs):
@@ -74,7 +74,7 @@ def get_edit_dcompany_form(request, **kwargs):
 	else:
 		raise PermissionDenied
 
-@new_require_user_types(['C', 'F'])
+@require_user_types(['C', 'F'])
 @login_required
 @require_POST
 def edit_dummy_company(request, dummy_hashid, **kwargs):
@@ -99,7 +99,7 @@ def edit_dummy_company(request, dummy_hashid, **kwargs):
 	else:
 		raise PermissionDenied
 
-@new_require_user_types(['C', 'F'])
+@require_user_types(['C', 'F'])
 @login_required
 @require_GET
 def get_dummy_session_streams(request, **kwargs):
@@ -124,7 +124,7 @@ def get_dummy_session_streams(request, **kwargs):
 	else:
 		raise PermissionDenied
 
-@new_require_user_types(['C', 'F'])
+@require_user_types(['C', 'F'])
 @login_required
 @require_POST
 def create_dummy_session(request, **kwargs):
@@ -167,7 +167,7 @@ def create_dummy_session(request, **kwargs):
 	else:
 		raise PermissionDenied
 
-@new_require_user_types(['C', 'F'])
+@require_user_types(['C', 'F'])
 @login_required
 @require_http_methods(['GET', 'POST'])
 def edit_dummy_session(request, sess_hashid, **kwargs):
@@ -204,7 +204,7 @@ def edit_dummy_session(request, sess_hashid, **kwargs):
 	else:
 		raise PermissionDenied
 
-@new_require_user_types(['C', 'F'])
+@require_user_types(['C', 'F'])
 @login_required
 @require_GET
 def dummy_excel(request, dsess, **kwargs):
@@ -229,7 +229,7 @@ def dummy_excel(request, dsess, **kwargs):
 	return response
 
 
-@new_require_user_types(['S'])
+@require_user_types(['S'])
 @login_required
 @require_GET
 def apply_to_dummy_company(request, dsess, **kwargs):
@@ -258,7 +258,7 @@ def apply_to_dummy_company(request, dsess, **kwargs):
 	else:
 		raise PermissionDenied
 
-@new_require_user_types(['C', 'F'])
+@require_user_types(['C', 'F'])
 @login_required
 @require_GET
 def my_dummy_sessions(request, **kwargs):

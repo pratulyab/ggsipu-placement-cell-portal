@@ -1,6 +1,6 @@
 from django import forms
 from django.conf import settings
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, password_validation
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -76,8 +76,10 @@ class StudentSignupForm(forms.ModelForm):
 		super(StudentSignupForm, self).clean(*args, **kwargs)
 		pwd1 = self.cleaned_data.get('password1', None)
 		pwd2 = self.cleaned_data.get('password2', None)
-		if pwd1 and pwd2 and pwd1!=pwd2:
-			raise forms.ValidationError(_('Passwords must match.'))
+		if pwd1 and pwd2:
+			if pwd1 != pwd2:
+				raise forms.ValidationError(_('Passwords must match.'))
+			password_validation.validate_password(pwd1)
 		return self.cleaned_data
 
 	def save(self, commit=True, *args, **kwargs):
