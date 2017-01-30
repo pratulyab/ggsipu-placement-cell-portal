@@ -16,7 +16,7 @@ from company.forms import CompanyCreationForm, CompanyEditForm
 from company.models import Company
 from notification.models import Notification
 from recruitment.models import PlacementSession
-from recruitment.forms import AssActorsOnlyForm
+from recruitment.forms import AssociationForm
 
 # Create your views here.
 
@@ -30,7 +30,7 @@ def company_signup(request):
 		user = f.save(user_type='CO')
 		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 #		auth_login(request, user)
-		send_activation_email_task.delay(user.id, get_current_site(request).domain)
+		send_activation_email_task.delay(user.pk, get_current_site(request).domain)
 		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse(settings.PROFILE_CREATION_URL['CO']))}
 		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')
 		return JsonResponse(data = {'success': True, 'render': html})
@@ -40,7 +40,7 @@ def company_signup(request):
 @require_user_types(['CO'])
 @login_required
 @require_http_methods(['GET','POST'])
-def create_company(request):
+def create_company(request, **kwargs):
 ##	if request.user.type == 'CO':
 	if request.method == 'GET':
 		f = CompanyCreationForm()
@@ -61,7 +61,7 @@ def create_company(request):
 @require_user_types(['CO'])
 @login_required
 @require_GET
-def company_home(request):
+def company_home(request, **kwargs):
 ##	if request.user.type == 'CO':
 	context = {}
 	user = request.user
@@ -73,7 +73,7 @@ def company_home(request):
 	context['company'] = company
 	context['edit_account_form'] = AccountForm(instance=user)
 	context['edit_company_form'] = CompanyEditForm(instance=company)
-	context['associate_actors_only_form'] = AssActorsOnlyForm(initiator_profile=company)
+	context['association_form'] = AssociationForm(profile=company)
 	try:
 		context['social_profile_form'] = SocialProfileForm(instance=user.social)
 	except SocialProfile.DoesNotExist:
@@ -86,7 +86,7 @@ def company_home(request):
 @require_user_types(['CO'])
 @login_required
 @require_POST
-def edit_company(request):
+def edit_company(request, **kwargs):
 	if request.is_ajax():
 ##		if request.user.type == 'CO':
 		try:

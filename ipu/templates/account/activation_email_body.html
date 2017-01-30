@@ -1,7 +1,20 @@
-Hi {{ username }},
-Thanks for signing up. 
-Click on the below link to verify yourself.
+{% autoescape off %}
+Hi <b>{{ username }}</b>!
 
-{{ protocol }}://{{ domain }}{% url 'activate' uid=uid token=token %}
+To activate your GGSIPU Training &amp; Placement Cell Account,
+click the link below:
 
-Thanks
+{{ protocol }}://{{ domain }}{% url 'activate' user_hashid=user_hashid token=token %}
+
+
+If clicking the link above doesn't work, please copy and paste the URL in a new browser
+window instead.
+
+Note: The activation link will be valid only for <b>{{ days }}</b> day{{ days|pluralize }}.
+
+Sincerely,
+
+Development &amp; Maintenance Team
+Training &amp; Placement Cell,
+Guru Gobind Singh Indraprastha University
+{% endautoescape %}

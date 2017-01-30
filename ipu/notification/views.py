@@ -1,7 +1,7 @@
 from django.shortcuts import render ,  get_object_or_404
 from django.http import HttpResponseForbidden , HttpResponse , JsonResponse , Http404
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from .forms import CreateNotificationForm , SelectStreamsForm , SelectYearForm , IssueForm , IssueReplyForm
+from .forms import SelectStreamsForm , SelectYearForm , IssueForm , IssueReplyForm
 from django.core.exceptions import PermissionDenied
 from account.models import CustomUser
 from faculty.models import Faculty
@@ -58,7 +58,7 @@ def select_streams(request):
 				else:
 					pass	
 			form_object = SelectYearForm(college = college ,programme_to_year = programme_to_year_list, initial={ 'stream' : indices })
-			raw_html = render(request , 'notification/select_year.html' , {'select_year' : form_object})
+			raw_html = render(request , 'notification/create_notification.html' , {'create_notification' : form_object})
 						
 
 			return HttpResponse(raw_html)
@@ -94,21 +94,12 @@ def select_years(request):
 			student_objects = college.students.filter(stream = stream_object , current_year__in = years_selected[idx]).values('profile' , 'profile__username' )
 			students_of_streams.append(student_objects)
 		
-
-			
-		
 		students_of_streams = list(itertools.chain.from_iterable(students_of_streams))
-		send_list = list()
-		for_list = list()
-		for idx , element in enumerate(students_of_streams):
-			send_list.append(element['profile__username'])
-			for_list.append(idx + 1)
-		zipped_choices = zip(for_list , send_list)
-		form_object = CreateNotificationForm(receive_list = zipped_choices , college = college , initial={ 'stream' : indices })
-		raw_html = render(request , 'notification/create_notification.html' , {'create_notification' : form_object})
 		
-
-		return HttpResponse(raw_html)
+		send_list = list()
+		for element in students_of_streams:
+			send_list.append(element['profile__username'])
+		return JsonResponse(send_list , safe = False)
 		
 	else:
 		raise PermissionDenied

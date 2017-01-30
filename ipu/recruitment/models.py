@@ -116,7 +116,7 @@ class Dissociation(models.Model):
 	company = models.ForeignKey(Company, related_name="dissociations")
 	college = models.ForeignKey(College, related_name="dissociations")
 	duration = models.DateField(null=True, blank=True,
-			help_text = "Choose the date till when you want to block this user from contacting you."
+		help_text = "Choose the date till when you want to block this user from contacting you. Leave it blank in order to decline just the current request."
 	)
 	initiator = models.CharField(_('Who caused it'), choices=SOURCE, max_length=2, default=SOURCE[0][0])
 
@@ -136,24 +136,25 @@ def verify_assoc_stream_uniqueness(sender, **kwargs):
 	association = kwargs.get('instance', None)
 	action = kwargs.get('action', None)
 	streams = kwargs.get('pk_set', None)
-
 	if action == 'pre_add':
 		association_streams = Association.objects.filter(company=association.company, college=association.college)
 		for stream in streams:
 			if association_streams.filter(streams=stream):
-				raise IntegrityError(_('Association between (%s, %s) already exists for stream %s' % (association.college, association.company, stream,)))
+				raise IntegrityError(_('Association between (%s, %s) already exists for chosen stream' % (association.college, association.company)))
 
 @receiver(m2m_changed, sender=PlacementSession.students.through)
 def validating_students(sender, **kwargs):
 	session = kwargs.get('instance', None)
 	action = kwargs.get('action', None)
-	students = kwargs.get('pk_set', None)
+	reverse = kwargs.get('reverse')
 	
-	if action == 'pre_add':
-		for student in students:
-			student = Student.objects.get(pk=student)
-			if student.college != session.association.college:
-				raise IntegrityError(_('Student %s doesn\'t belong to this college, thus cannot be added to the session.'))
+	if action == 'pre_add' and not reverse: # Validation when reverse=True, i.e. student has applied using the form, is taken care of in the views
+		# Validating if the admin adds incorrectly
+			students = kwargs.get('pk_set', None)
+			for student in students:
+				student = Student.objects.get(pk=student)
+				if student.college != session.association.college:
+					raise IntegrityError(_('Student %s doesn\'t belong to this college, thus cannot be added to the session.'))
 
 @receiver(m2m_changed, sender=PlacementSession.students.through)
 def notify_college_student_list_changed(sender, **kwargs):

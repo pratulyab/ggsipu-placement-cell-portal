@@ -7,7 +7,7 @@
 	<div id="sessions" class="scrollspy">
 		<ul class="collection">
 			{% for session in sessions %}
-				<li class="collection-item avatar" data-sess="{{ session.sessid }}">
+				<li class="collection-item avatar" data-sess="{{ session.sess_hashid }}">
 					{% if session.photo %}
 						<img src="{{ session.photo.url }}" alt="Recruiter" class="circle" />
 					{% endif %}
@@ -22,9 +22,9 @@
 							{{ session.students }} student{{ session.students|pluralize }} in the session
 					</p>
 					<span class="secondary-content">
-						<a href="{% url 'edit_session' session.sessid %}"><i class="fa fa-2x fa-pencil"></i></a>
-						<a href="{% url 'edit_criteria' session.sessid %}"><i class="fa fa-2x fa-list-ol"></i></a>
-						<a href="{% url 'excel' session.sessid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
+						<a href="{% url 'manage_session' session.sess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>
+{#						<a href="{% url 'edit_criteria' session.sess_hashid %}"><i class="fa fa-2x fa-list-ol"></i></a> #}
+						<a href="{% url 'excel' session.sess_hashid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
 					</span>
 				</li>
 			{% empty %}
@@ -36,7 +36,7 @@
 	<div id="dsessions" class="scrollspy">
 		<ul class="collection">
 			{% for dsession in dsessions %}
-				<li class="collection-item avatar" data-sess="{{ dsession.dsessid }}">
+				<li class="collection-item avatar" data-sess="{{ dsession.dsess_hashid }}">
 					<span class="title">{{ dsession.dcompany }} for {{ dsession.type|title }} </span>
 					<p>
 						{{ dsession.salary }}
@@ -48,9 +48,9 @@
 							{{ dsession.students }} student{{ dsession.students|pluralize }} in the session
 					</p>
 					<span class="secondary-content">
-	<!--					<a href="{% url 'edit_dsession' dsession.dsessid %}"><i class="fa fa-2x fa-pencil"></i></a>-->
-	<!--					<a href="{% url 'edit_criteria' dsession.dsessid %}"><i class="fa fa-2x fa-list-ol"></i></a>-->
-						<a href="{% url 'dexcel' dsession.dsessid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
+	<!--					<a href="{% url 'edit_dsession' dsession.dsess_hashid %}"><i class="fa fa-2x fa-pencil"></i></a>-->
+	<!--					<a href="{# url 'edit_criteria' dsession.dsess_hashid #}"><i class="fa fa-2x fa-list-ol"></i></a>-->
+						<a href="{% url 'dexcel' dsession.dsess_hashid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
 					</span>
 				</li>
 			{% empty %}

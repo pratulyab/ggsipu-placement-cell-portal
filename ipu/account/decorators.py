@@ -1,10 +1,11 @@
 from functools import wraps
 from django.shortcuts import redirect
 from django.conf import settings
+from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from account.utils import get_relevant_reversed_url, get_type_created
-
+'''
 def require_user_types(user_types_list):
 	"""
 		This decorator allows the logged in users of particular types, provided in the list.
@@ -24,8 +25,8 @@ def require_user_types(user_types_list):
 			return redirect(get_relevant_reversed_url(request))
 		return inner
 	return decorator
-
-def new_require_user_types(user_types_list):
+'''
+def require_user_types(user_types_list):
 	"""
 		This decorator allows the logged in users of particular types, provided in the list.
 		It doesn't check for user authentication. Therefore, if authentication is required,
@@ -57,3 +58,27 @@ def new_require_user_types(user_types_list):
 				return redirect(get_relevant_reversed_url(request))
 		return inner
 	return decorator
+
+def require_AJAX_redirect(redirect_appropriately=True):
+	"""
+		Decorator to allow only asynchronous requests.
+		It accepts a boolean param which decides whether to redirect the user to a relevant url,
+		or raise Permission Denied (403) error, for synchronous requests made.
+	
+		Careful on usage with anonymous users.
+		In such cases, place this decorator above login_required.
+	
+	"""
+	def decorator(func):
+		@wraps(func)
+		def inner(request, *args, **kwargs):
+			if not request.is_ajax():
+				if redirect_appropriately:
+					return redirect(get_relevant_reversed_url(request))
+				raise PermissionDenied
+			return func(request, *args, **kwargs)
+		return inner
+	return decorator
+
+require_AJAX = require_AJAX_redirect(False)
+require_AJAX.__doc__ = 'Decorator to allow only asynchronous request and raise Permission Denied (403) error otherwise.'

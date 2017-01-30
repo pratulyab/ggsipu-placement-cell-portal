@@ -2,7 +2,8 @@
 {% load staticfiles %}
 {% load material_form %}
 {% block head %}<link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
-<link type="text/css" rel="stylesheet" href="{% static 'student/home.css' %}" /> 
+<link type="text/css" rel="stylesheet" href="{% static 'student/home.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
 
 {% endblock %}
 {% block user_photo %}
@@ -163,7 +164,6 @@
 				</div>
 			</div>
 		</div>
-	</div>
 	<!-- -->
 	{% if edit_qual_form %}
 		<div id="qualifications" class="col s12">
@@ -242,6 +242,7 @@
 	<script type="text/javascript" src="{% static 'student/update.js' %}"></script>
 	<script type="text/javascript" src="{% static 'notification/student.js' %}"></script>
 	<script type="text/javascript" src="{% static 'student/apply.js' %}"></script>
+	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();
