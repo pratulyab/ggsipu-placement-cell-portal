@@ -87,7 +87,7 @@ def activate(request, user_hashid='', token=''):
 			auth_logout(request)
 			return redirect('auth')
 	
-	if not user_hashids or not token:
+	if not user_hashid or not token:
 		raise Http404(_('Invalid Request'))
 	
 	try:

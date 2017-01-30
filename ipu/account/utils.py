@@ -1,12 +1,18 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 from account.models import CustomUser
-from college.models import College
+from college.forms import CollegeCreationForm
+from college.models import College, Stream
+from company.forms import CompanyCreationForm
 from company.models import Company
+from faculty.forms import FacultyProfileForm
 from faculty.models import Faculty
+from student.forms import StudentCreationForm
 from student.models import Student
+
+import re
 
 #@require_http_methods(['GET','POST'])
 #@login_required

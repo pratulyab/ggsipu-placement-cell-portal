@@ -1,8 +1,5 @@
 # Created by https://www.gitignore.io/api/osx,linux,django,python
 
-# Static Files
-static/
-
 ### OSX ###
 *.DS_Store
 .AppleDouble
@@ -69,7 +66,7 @@ __pycache__/
 env/
 build/
 develop-eggs/
-dist/
+#dist/ Reqd for sweetalert
 downloads/
 eggs/
 .eggs/

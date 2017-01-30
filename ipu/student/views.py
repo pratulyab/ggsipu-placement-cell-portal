@@ -58,42 +58,42 @@ def student_signup(request):
 	else:
 		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
-@require_user_types(['S'])
+#@require_user_types(['S'])
 @login_required
 @require_http_methods(['GET','POST'])
 def create_student(request, **kwargs):
-##	if request.user.type == 'S':
-	username = request.user.username
-	user_profile = request.user
-	try:
-		roll, coll, strm, year = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', username).groups()
-	except AttributeError:
-#			pass
-		raise Http404(_('Enrollment number should contain only digits'))
-	except ValueError:
-#			pass
-		raise Http404(_('Enrollment number should be 11 digits long'))
-	coll = College.objects.get(code=coll).pk
-	strm = Stream.objects.get(code=strm).pk
-	if request.method == 'GET':
-		f = StudentCreationForm(profile=user_profile, coll=coll, strm=strm)
+	if request.user.type == 'S':
+		username = request.user.username
+		user_profile = request.user
 		try:
-			student = request.user.student
-			return redirect(settings.HOME_URL['S'])
-		except Student.DoesNotExist:
-			pass
+			roll, coll, strm, year = re.match(r'^(\d{3})(\d{3})(\d{3})(\d{2})$', username).groups()
+		except AttributeError:
+#			pass
+			raise Http404(_('Enrollment number should contain only digits'))
+		except ValueError:
+#			pass
+			raise Http404(_('Enrollment number should be 11 digits long'))
+		coll = College.objects.get(code=coll).pk
+		strm = Stream.objects.get(code=strm).pk
+		if request.method == 'GET':
+			f = StudentCreationForm(profile=user_profile, coll=coll, strm=strm)
+			try:
+				student = request.user.student
+				return redirect(settings.HOME_URL['S'])
+			except Student.DoesNotExist:
+				pass
+		else:
+			POST = request.POST.copy()
+			POST['college'] = coll
+			POST['stream'] = strm
+			POST['programme'] = Stream.objects.get(pk=strm).programme.pk
+			f = StudentCreationForm(POST, request.FILES, profile=user_profile, coll=coll, strm=strm)
+			if f.is_valid():
+				student = f.save()
+				return redirect(settings.HOME_URL['S'])
+		return render(request, 'student/create.html', {'student_creation_form': f})
 	else:
-		POST = request.POST.copy()
-		POST['college'] = coll
-		POST['stream'] = strm
-		POST['programme'] = Stream.objects.get(pk=strm).programme.pk
-		f = StudentCreationForm(POST, request.FILES, profile=user_profile, coll=coll, strm=strm)
-		if f.is_valid():
-			student = f.save()
-			return redirect(settings.HOME_URL['S'])
-	return render(request, 'student/create.html', {'student_creation_form': f})
-##	else:
-##		return handle_user_type(request, redirect_request=True)
+		return handle_user_type(request, redirect_request=True)
 
 @require_user_types(['S'])
 @login_required

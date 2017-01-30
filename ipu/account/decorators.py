@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.core.urlresolvers import reverse
-from account.utils import get_relevant_reversed_url, get_type_created
+from account.utils import get_relevant_reversed_url, get_type_created, render_profile_creation
 '''
 def require_user_types(user_types_list):
 	"""
@@ -49,7 +49,8 @@ def require_user_types(user_types_list):
 					if request.is_ajax():
 						return JsonResponse(status=403, data = {'location': url})
 					else:
-						return redirect(url)
+#						return redirect(url)
+						return render_profile_creation(request, user_type)
 				profile = requester['profile']
 				return func(request, user_type=user_type, profile=profile, *args, **kwargs)
 			if request.is_ajax():
