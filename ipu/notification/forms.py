@@ -2,7 +2,7 @@ from django import forms
 from notification.models import Issue , IssueReply
 from django.utils.translation import ugettext_lazy as _
 
-from material import Layout, Row, Span3, Span9 , Fieldset
+from material import Layout, Row, Span3, Span9 , Fieldset , Span2 , Span7 , Span5
 from unidecode import unidecode
 
 class SelectStreamsForm(forms.Form):
@@ -35,6 +35,7 @@ class SelectYearForm(forms.Form):
 
 		for_list = list()
 		year_list = list()
+		year_fields = list()
 		for i in range(len(programme_to_year)):
 			for j in range(1, (int(programme_to_year[i]['year'])+1)):
 				for_list.append(j)
@@ -44,13 +45,34 @@ class SelectYearForm(forms.Form):
 			self.fields['select_year_%s' % programme_to_year[i]['code']] = forms.MultipleChoiceField(label = "Select Year For " + str(programme_to_year[i]['name']) , choices = choices, widget = forms.SelectMultiple())
 			del for_list[:]
 			del year_list[:]
+			year_field = Row('select_year_%s' % programme_to_year[i]['code'])
+			year_fields.append(year_field)
 		
+		self.layout = Layout(Fieldset('Selected Streams' , Row('stream')), 
+					Fieldset('Select Year',
+					*year_fields),
+					Fieldset('Select Students' , Row(Span9('students') , Fieldset('', 'if_all'))),
+					Fieldset('Message' ,  Row('message')),
+					Fieldset('' ,  Row(Span3('if_email') , Span3('if_sms')),
+					))
+
+	options = (
+		(None , None),
+		)	
 	stream = forms.ModelChoiceField(label = "Select Stream of the Students" ,queryset = None , widget=forms.SelectMultiple())
+	if_all = forms.BooleanField(label = "Notify All Students" , widget = forms.CheckboxInput())
+	students = forms.MultipleChoiceField(label = "Select Students" , choices=options, widget=forms.SelectMultiple())
+	message = forms.CharField(widget=forms.Textarea)
+	if_email = forms.BooleanField(label = "Send E-Mail" , widget = forms.CheckboxInput())
+	if_sms = forms.BooleanField(label = "Send SMS" , widget = forms.CheckboxInput())
 
+	class Meta:
+		help_texts = {
+			'message' : _("Message for the students."),
+			'if_all' : _('All')
+		}
 
-
-
-
+'''
 
 class CreateNotificationForm(forms.Form):	
 	def __init__(self , *args , **kwargs):
@@ -95,10 +117,7 @@ class CreateNotificationForm(forms.Form):
 			ls.append(("'select_year_" + self.programme_to_year[i]['code'] + "',")[:-1])
 		print (','.join(ls))
 		return ls
-		
-	 
-
-
+	'''
 
 class IssueForm(forms.ModelForm):
 	def __init__(self , *args , **kwargs):

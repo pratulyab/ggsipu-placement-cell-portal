@@ -3,10 +3,14 @@
 <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
 {% include 'material/includes/material_js.html' %}
 
-    <form method = 'POST' id = "create_notification-form" students="{% url 'select_years' %}" action="{% url 'create_notification' %}">
+    <form method = 'POST' id = "create_notification-form" action="{% url 'create_notification' %}">
         {% csrf_token %}
-        {% form form=create_notification %}{% endform %}                 
-    	
+        
+        {% form form=create_notification %}
+
+        {% endform %}
+        <br>
+        <hr/>
     	<button type = 'input' id = "notifyall" data-id="false" class="btn waves-effect waves-light-right">Notify All</button>
     </form>
 

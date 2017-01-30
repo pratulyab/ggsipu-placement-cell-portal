@@ -1,12 +1,15 @@
 var Notification = (function() {
 	'use strict'
+    var sphr_create_notification = true;
 	var indices = [];
 	function handleMultipleJquery(){
 		$('a').unbind('click'); // to prevent multiple fires because of reloading of jquery in the rendered template.
-		$('#dropdown3').on('click', function(e){e.stopPropagation();});
+		document.getElementById('create-notifications').removeEventListener('click', generateNewForm);
+        $('#dropdown3').on('click', function(e){e.stopPropagation();});
 		$('.dropdown-button').on('click', function(e){e.preventDefault()});
 		$('nav .brand-logo').on('click', function(e){location.href='';});
-        $('#create-notifications').on('click' , generateNewForm); // Handles the left panel notification button.
+        document.getElementById('create-notifications').addEventListener('click', generateNewForm);
+         // Handles the left panel notification button.
         $('#notification-anchor').on('click' , function(e){$('#your-notifications').trigger('click');});//Handles the maine notification tab button.
         $('#dropdown1 a').each(function(i, a){
 			var el = $(a);
@@ -19,6 +22,14 @@ var Notification = (function() {
 			el.on('click', function(e){e.preventDefault();target_el[0].click();});
 		});
 	}
+
+
+    function generateNewForm(e) {
+            e.preventDefault();
+            $('#notify-students-div').html(" ");
+            getForm();
+
+        }
 //Notification Starts.
 //Follow the flow. Up to Down.
 //Gets the first form. Asks to select the streams.
@@ -64,8 +75,19 @@ var Notification = (function() {
             success : function(data , status , xhr){
 				handleMultipleJquery();
                 $('#notify-students-div').html(data);
+                $('#id_if_all').on('change' , function(){
+                    var el = $('#id_students_container').find('select');
+                    if ($(this).is(':checked')) {         
+                        el.attr("disabled" , "");
+                        el.material_select();
+                  } else {
+                        el.removeAttr("disabled");
+                        el.material_select();
+                  }
+                });
+                $('#create_notification-form').on('submit' , getStudentsSelected);
                 $('#id_stream').on('change' , generateNewForm);
-                $('#select_year-form').on('submit' , getYearsSelected);
+                $('select[id^="id_select_year"]').on('change' , getYearsSelected)
             }
         });
     }
@@ -88,11 +110,10 @@ var Notification = (function() {
 
         });
         submitYearForm(JSON.stringify(stream_to_year));
-        
     }
         
     function submitYearForm(stream_to_year) {
-        var url = $('#select_year-form').attr('action');
+        var url = $('#create_notification-form').attr('students');
         var token = $('input[name = csrfmiddlewaretoken]').val();
         $.ajax({
             url : url,
@@ -103,32 +124,31 @@ var Notification = (function() {
                 'indices' : indices,
             },
             success : function(data , status , xhr){
-                handleMultipleJquery();
-                $('#notify-students-div').html(data);
                 $('#id_stream').on('change' , generateNewForm);
-                $('#id_if_all').on('change' , function(){
-                    var el = $('#id_students_container').find('select');
-                    if ($(this).is(':checked')) {         
-                        el.attr("disabled" , "");
-                        el.material_select();
-                  } else {
-                        el.removeAttr("disabled");
-                        el.material_select();
-                  }
-                })
-                $('#create_notification-form').on('submit' , getStudentsSelected);
-                
-                //$('#id_if_all').on('click' , function(){
-                    //if($(this).prop("checked")){
-                        //$('#id_students option').attr('selected' , 'selected');
-                    //}
-                    //else{
-                        //console.log("unchecked"); }       
-
+                populateStudents(data)
             }
         });
 
     }
+
+    function populateStudents(data){
+        var student_select = $('#id_students_container').find('#id_students');
+        student_select.empty();
+        if(data.length === 0){
+            student_select.append('<option disabled="">No Students</option>')
+        }
+        var i = 1;
+        for(var username of data){
+            var option = '<option value="' + i +'">'+ username +"</option>";
+            student_select.append(option);
+            i++;
+        } 
+        student_select.material_select('destroy');
+        student_select.prop('disabled', false);
+        student_select.material_select();
+        Materialize.updateTextFields();
+    }
+
     function getStudentsSelected(e) {
         e.preventDefault();
         var student_list = [];
@@ -138,38 +158,42 @@ var Notification = (function() {
         submitNotificationForm(student_list);
     }
 
-//Final function which creates the notification ion the database.
+//Final function which creates the notification in the database.
     function submitNotificationForm(student_list) {
-        var url = $('#create_notification-form').attr('action')
-        var message = $('#id_message').val();
-        var token = $('input[name = csrfmiddlewaretoken]').val();
-        var if_all = $('#id_if_all').prop('checked');
-        if(if_all === true){
-            student_list.length = 0;
-            $('#id_students option').each(function(){
-                student_list.push($(this).text());
-            });
-        }
-        student_list.shift();
-        var if_email = $('#id_if_email').prop('checked');
-        var if_sms = $('#id_if_sms').prop('checked');
-        $.ajax({
-            url : url,
-            type : 'POST',
-            data : { 
-                'csrfmiddlewaretoken' : token , 
-                'student_list' :student_list,
-                'message' : message,
-                'if_sms' : if_sms,
-                'if_email' : if_email,
-            },
-            success : function(data , status , xhr){
-                //handleMultipleJquery();
-                $('#your-notifications').trigger('click');
-                alert("Successful ! " + data + " students are notified");
-
+        if(sphr_create_notification){
+            sphr_create_notification = false;
+            var url = $('#create_notification-form').attr('action')
+            var message = $('#id_message').val();
+            var token = $('input[name = csrfmiddlewaretoken]').val();
+            var if_all = $('#id_if_all').prop('checked');
+            if(if_all === true){
+                student_list.length = 0;
+                $('#id_students option').each(function(){
+                    student_list.push($(this).text());
+                });
             }
-        });
+            var if_email = $('#id_if_email').prop('checked');
+            var if_sms = $('#id_if_sms').prop('checked');
+
+            $.ajax({
+                url : url,
+                type : 'POST',
+                data : { 
+                    'csrfmiddlewaretoken' : token , 
+                    'student_list' :student_list,
+                    'message' : message,
+                    'if_sms' : if_sms,
+                    'if_email' : if_email,
+                },
+                success : function(data , status , xhr){
+                    //handleMultipleJquery();
+                    $('#your-notifications').trigger('click');
+                    alert("Successful ! " + data + " students are notified");
+
+                }
+            });
+            sphr_create_notification = true;
+        }
     }
 //Create Notification Ends.
 
@@ -207,18 +231,7 @@ var Notification = (function() {
         $('#your-notifications-div-ul').html(raw_html);
 
 
-    }
-
-
-
-    function generateNewForm(e) {
-            e.preventDefault();
-            $('#notify-students-div').html(" ");
-            getForm();
-
-        }
-    
-    
+    }    
     function viewNotifications(e) {
         e.preventDefault();
         getNotifications();
@@ -228,7 +241,7 @@ var Notification = (function() {
 
 	return {
 		init: function() {
-            $('#create-notifications').on('click' , generateNewForm);
+            document.getElementById('create-notifications').addEventListener('click', generateNewForm);
             $('#notification').on('click' , viewNotifications);
 			$('#your-notifications').on('click' , viewNotifications);
 		}

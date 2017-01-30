@@ -2,12 +2,13 @@ var Notification = (function() {
 	'use strict'
 	function handleMultipleJquery(){
 		$('a').unbind('click');
-		$('#submit_issue-form').unbind(); // to prevent multiple fires because of reloading of jquery in the rendered template.
+		document.getElementById('help').removeEventListener('click', generateNewHelpForm); // to prevent multiple fires because of reloading of jquery in the rendered template.
+		document.getElementById('view-issues').removeEventListener('click', generateIssueList); 
 		$('#dropdown3').on('click', function(e){e.stopPropagation();});
 		$('.dropdown-button').on('click', function(e){e.preventDefault()});
 		$('nav .brand-logo').on('click', function(e){location.href='';});
-		$('#help').on('click' , generateNewHelpForm);//Re-Binds help button in vertical tab.
-        $('#view-issues').on('click' , generateIssueList);
+		document.getElementById('help').addEventListener('click', generateNewHelpForm);//Re-Binds help button in vertical tab.
+        document.getElementById('view-issues').addEventListener('click' , generateIssueList);
         $('#notification').on('click' , function(e){$('#your-notifications').trigger('click');});//Handles the maine notification tab button.
         $('#dropdown1 a').each(function(i, a){
 			var el = $(a);
@@ -135,7 +136,7 @@ function fieldEvaluator(input_field , max_length){
 		for(var i=0; i<(data.length);i++){
 			if(data[i].is_solved === true) {
 				icon = '<i class="material-icons circle blue">done_all</i>' ;
-				reply_anchor = '<div class="col s2 itemBox"><a href="" identifier='+ data[i].identifier +'><i class="material-icons ">reply</i><div class="caption">View Reply</div></a></div>';
+				reply_anchor = '<div class="col s3 itemBox"><a href="" identifier='+ data[i].identifier +'><i class="material-icons ">reply</i><div class="caption">View Reply</div></a></div>';
 			}
 			else {
 				icon = '<i class="material-icons circle grey">indeterminate_check_box</i>';
@@ -148,7 +149,7 @@ function fieldEvaluator(input_field , max_length){
 			else if(data[i].issue_type === 'G')
 				issue_type = 'General';
 			raw_html+= '<li identifier class="collection-item avatar">' + icon +
-				'<div class="row"><div class="col s10"><span class="title">' + "Issue Type :   " + issue_type + "</span>" +
+				'<div class="row"><div class="col s9"><span class="title">' + "Issue Type :   " + issue_type + "</span>" +
 				'<p>' + "Subject :   " + data[i].subject + '</p></div>' + reply_anchor +'</div></li>'
 		}
 		
@@ -231,8 +232,8 @@ function fieldEvaluator(input_field , max_length){
 		init: function() {
 			$('#notification').on('click' , viewNotifications);
 			$('#your-notifications').on('click' , viewNotifications);
-			$('#help').on('click' , generateNewHelpForm);
-			$('#view-issues').on('click' , generateIssueList);
+			document.getElementById('help').addEventListener('click' , generateNewHelpForm)
+			document.getElementById('view-issues').addEventListener('click' , generateIssueList);
 
 
 		}
