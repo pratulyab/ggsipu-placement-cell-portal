@@ -1,0 +1,55 @@
+html
+{
+	background:white;
+}
+#main-box
+{
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+	flex-direction: column;
+	min-height: 550px;
+	width: 90%;
+	background-color: white;
+	margin: 20px;
+	margin-left: 5%;
+	padding: 20px;
+	padding-top: 10px;
+
+}
+
+#main-box h4
+{
+	color: black;
+	font-size: 25px;
+}
+
+#steps
+{
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	padding: 3px;
+	flex-direction: column;
+	width: 90%
+}
+
+.step
+{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 10px;
+
+}
+
+.step img
+{
+	height:91px;
+	width:auto;
+}
+
+.step p
+{
+	color: #404040;
+}
