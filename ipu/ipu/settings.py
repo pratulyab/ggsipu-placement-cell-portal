@@ -148,8 +148,9 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS=[os.path.join(BASE_DIR, 'dstatic')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATICFILES_DIRS=[os.path.join(BASE_DIR, 'static')]
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static/') Security Flaw
+STATIC_ROOT = '/var/www/ipu/static/'
 
 LOGIN_URL = 'auth'
 LOGOUT_URL = 'logout'

@@ -8,15 +8,28 @@ var GetNotification = (function()  {
             '<div class="collapsible-body"><p>' + data[i].message + '</p></div>' + 
           	'</li>'
 		}
+        console.log("yeah2");
+        if (data.length==0) {
+            raw_html += '<div id="noti-content">You have no notifications currently</div>';
+        }
 
-        raw_html += '<div id="noti-foot"><a>See Older Notifications' + '</a></div>';
 
+        if (data.length>0) {
+            raw_html += '<div id="noti-foot"><a id="noti-foot-anchor" href="#notifications">See Older Notifications' + '</a></div>';    
+        }
+        
 
+        
 		$('#dropdown3').html(raw_html);
+        $('#noti-foot-anchor').on('click' , function () {
+            $('#notification_button').trigger('click');
+            console.log("yeah");
+        });
 	}
 
 
 	function getNotifications(e) {
+        console.log("yeah3");
         e.preventDefault();
         var url = $('#notification_button').attr('href');
         $.ajax({
@@ -32,6 +45,7 @@ var GetNotification = (function()  {
 
 	return {
 		init : function() {
+
 			$('#notification_button').on('click' , getNotifications)
 		}
 	}

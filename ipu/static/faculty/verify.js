@@ -116,7 +116,7 @@ var VerifyStu = (function() {
 				$('#profile-div').html(data);
 				// because new html has been added
 				$('#profile-form').on('submit', updateProfile);
-				window.scrollTo(0);
+				window.scrollTo(0,0);
 //				tabs[2].click();
 			},
 			error: function(xhr, status, error){
@@ -147,7 +147,7 @@ var VerifyStu = (function() {
 			success: function(data, status, xhr){
 				$('#qual-div').html(data);
 				$('#qual-form').on('submit', updateQual);
-				window.scrollTo(0);
+				window.scrollTo(0,0);
 //				tabs[1].click();
 			},
 			error: function(xhr, status, error){
