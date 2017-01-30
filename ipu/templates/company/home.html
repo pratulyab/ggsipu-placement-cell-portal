@@ -4,21 +4,31 @@
 
 {% block user_photo %}
 	{% if company.photo %}
-		{{ company.photo.url }}
+		<img src="{{ company.photo.url }}" class="circle" height="64" width="64">
+	{% else %}
+		<img src="{% static 'images/company.png' %}" class="circle" height="64" width="64">
 	{% endif %}
 {% endblock %}
 
+{% block user_name_card %}
+	{{ company.name | title }}
+{% endblock %}
+
+{% block user_email_id %}
+	{{ company.profile.email }}
+{% endblock %}
+
+
 {% block user_photo_s %}
 	{% if company.photo %}
-		{{ company.photo.url }}
+		<img src="{{ company.photo.url }}" class="circle" height="90" width="90">
 	{% else %}
-			{% static 'images/company2.png' %}	
-
+		<img src="{% static 'images/company2.png' %}" class="circle" height="90" width="90">
 	{% endif %}
 {% endblock %}
 
 {% block user_name_card_s %}
-	{{ company.name }}
+	{{ company.name | title }}
 {% endblock %}
 
 {% block user_email_id_s %}
@@ -39,16 +49,48 @@
 {% endblock %}
 
 {% block user_name %}
-	{{ company.name }}
+	{{ company.name | title }}
 {% endblock %}
 
 {% block user_photo2 %}
 	{% if company.photo %}
-		{{ company.photo.url }}
+		<img src="{{ company.photo.url }}" class="circle" height="30" width="30" id="img-corner">
 	{% else %}
-			{% static 'images/company2.png' %}	
+		<img src="{% static 'images/company2.png' %}" class="circle" height="30" width="30" id="img-corner">
 	{% endif %}
 {% endblock %}
+
+{% block side_nav_links %}
+    <li><a class="waves-effect" href="#!" style=""><i class="fa fa-building" aria-hidden="true"></i>
+          Associate Colleges</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-envelope" aria-hidden="true"></i> 
+          Association Requests</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-bell" aria-hidden="true"></i>Notifications</a></li>     
+    <li><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
+            Sessions</a></li>
+    
+    <li class="no-padding">
+        <ul class="collapsible collapsible-accordion">
+          <li>
+            <a class="collapsible-header"><i class="fa fa-cog" aria-hidden="true"></i>
+            Settings</a>
+            <div class="collapsible-body">
+              <ul>
+                <li><a href="#!"><i class="fa fa-sliders" aria-hidden="true"></i>
+                    Account Settings</a></li>
+                    <li><a href="#!"><i class="fa fa-wrench" aria-hidden="true"></i>
+                   Profile Settings</a></li>
+                <li><a href="#!"><i class="fa fa-users" aria-hidden="true"></i>
+                      Social Profile Settings</a></li>
+                
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </li>
+{% endblock %}
+
+
 
 {% block tabs%}
 	<li class="tab col s3"><a class="active" href="#associate">Associate with colleges</a></li>

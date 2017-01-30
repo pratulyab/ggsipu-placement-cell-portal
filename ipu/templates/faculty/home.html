@@ -1,18 +1,29 @@
 {% extends 'account/base_home_layout.html' %}
 {% load staticfiles %}
 {% load material_form %}
+
 {% block user_photo %}
 	{% if faculty.photo %}
-		{{ faculty.photo.url }}
+		<img class="circle" src="{{ faculty.photo.url }}">
+	{% else %}
+		<div style="height: 64px;width: 64px;background-color:  #17827d;border-radius: 50%;display: flex;justify-content: center;align-items: center;"><h3 style="font-size: 25px;color: white;font-weight: bold;text-transform: uppercase;">{{ faculty.firstname | first }}{{ faculty.lastname | first}}</h3></div>
 	{% endif %}
 {% endblock %}
 
 {% block user_name_card %}
-	{{ faculty.firstname }}&nbsp;{{ faculty.lastname }}
+	{{ faculty.firstname | title }}&nbsp;{{ faculty.lastname | title }}
 {% endblock %}
 
 {% block user_email_id %}
 	{{ faculty.profile.email }}
+{% endblock %}
+
+{% block user_photo_s %}
+	{% if faculty.photo %}
+		<img src="{{ faculty.photo.url }}" class="circle" height="90" width="90">
+	{% else %}
+		<div style="height: 90px;width: 90px;background-color: #337ab7;border-radius: 50%;display: flex;justify-content: center;align-items: center;"><h3 style="font-size: 40px;color: white;font-weight: bold;text-transform: uppercase;">{{ faculty.firstname | first }}{{ faculty.lastname | first}}</h3></div>	
+	{% endif %}
 {% endblock %}
 
 {% block edit_profile_url %}
@@ -24,18 +35,68 @@
     <li class="divider"></li>
 {% endblock %}
 
-{% block user_type %}
-	Faculty
+{% block user_name_card_s %}
+	{{ faculty.firstname | title }}&nbsp;{{ faculty.lastname | title}}
+{% endblock %}
+
+{% block user_email_id_s %}
+	{{ faculty.profile.email }}
 {% endblock %}
 
 {% block user_name %}
-	{{ faculty.firstname }}&nbsp;{{ faculty.lastname }}	
+	{{ faculty.firstname | title }}&nbsp;{{ faculty.lastname | title }}	
 {% endblock %}
 
 {% block user_photo2 %}
 	{% if faculty.photo %}
-		{{ faculty.photo.url }}
+		<img src="{{ faculty.photo.url }}" class="circle" id="img-corner">
+	{% else %}
+		<div style="height: 30px;width: 30px;margin-top: 15px;background-color: #337ab7;border-radius: 50%;display: flex;justify-content: center;align-items: center;"><h3 style="font-size: 15px;color: white;text-transform: uppercase;">{{ faculty.firstname | first }}{{ faculty.lastname | first}}</h3></div>
 	{% endif %}
+{% endblock %}
+
+{% block user_type %}
+	Faculty
+{% endblock %}
+
+{% block side_nav_links %}
+	{% if perms.student.verify_student %}
+    <li><a class="waves-effect" href="#!"><i class="fa fa-user" aria-hidden="true"></i>
+          Verify Student</a></li>
+    {% endif %}
+
+    {% if perms.recruitment.handle_placement %}
+	<li><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>
+          College Associations</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-envelope" aria-hidden="true"></i> 
+          Association Requests</a></li>
+	{% endif %}
+
+	{% if perms.recruitment.handle_placement %}
+	<li><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
+            Sessions</a></li>
+	{% endif %}  
+    {% if perms.notification.manage_notification %}        
+    <li><a class="waves-effect" href="#!"><i class="fa fa-bell" aria-hidden="true"></i>Notifications</a></li>
+    {% endif %}
+    <li class="no-padding">
+        <ul class="collapsible collapsible-accordion">
+          <li>
+            <a class="collapsible-header"><i class="fa fa-cog" aria-hidden="true"></i>
+            Settings</a>
+            <div class="collapsible-body">
+              <ul>
+                <li><a href="#!"><i class="fa fa-sliders" aria-hidden="true"></i>
+                    Account Settings</a></li>
+                <li><a href="#!"><i class="fa fa-users" aria-hidden="true"></i>
+                      Social Profile Settings</a></li>
+                <li><a href="#!"><i class="fa fa-wrench" aria-hidden="true"></i>
+                 Profile Settings</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </li>
 {% endblock %}
 
 {% block tabs %}
@@ -54,6 +115,7 @@
 		<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
 	{% endif %}
 {% endblock %}
+
 
 {% block tabs_content %}
 {% if perms.student.verify_student %}

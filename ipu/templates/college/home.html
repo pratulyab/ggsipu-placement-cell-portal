@@ -9,15 +9,17 @@
 
 {% block user_photo %}
 	{% if college.photo %}
-		{{ college.photo.url }}
+		<img src="{{ college.photo.url }}" class="circle" height="64" width="64">
+	{% else %}
+		<img src="{% static 'images/college.png' %}" class="circle" height="64" width="64">
 	{% endif %}
 {% endblock %}
 
 {% block user_photo_s %}
 	{% if college.photo %}
-		{{ college.photo.url }}
+		<img src="{{ college.photo.url }}" class="circle" height="90" width="90">
 	{% else %}
-			{% static 'images/college.png' %}	
+		<img src="{% static 'images/college.png' %}" class="circle" height="90" width="90">
 	{% endif %}
 {% endblock %}
 
@@ -64,20 +66,20 @@
 {% endblock %}
 
 {% block user_name %}
-	{{ college.name }}
+	{{ college.name | title}}
 {% endblock %}
 
 {% block user_photo2 %}
 	{% if college.photo %}
-		{{ college.photo.url }}
+		<img src="{{ college.photo.url }}" class="circle" height="30" width="30" id="img-corner">
 	{% else %}
-			{% static 'images/college.png' %}
+		<img src="{% static 'images/college.png' %}" class="circle" height="30" width="30" id="img-corner">
 	{% endif %}
 {% endblock %}
 
 {% block side_nav_links %}
     <li><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>
-          Associate With Companies</a></li>
+          Associate Companies</a></li>
     <li><a class="waves-effect" href="#!"><i class="fa fa-envelope" aria-hidden="true"></i> 
           Association Requests</a></li>
     <li><a class="waves-effect" href="#!"><i class="fa fa-bell" aria-hidden="true"></i>Notifications</a></li>     

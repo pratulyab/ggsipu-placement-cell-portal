@@ -1,5 +1,5 @@
 @media (min-width:300px) and (orientation: portrait){ 
-    html {
+   html {
     height: 100%;
     background: url("USICT.jpg") no-repeat center fixed;
     background-size: cover;
@@ -9,77 +9,114 @@
 
 nav{
     
-    height: 120px;
-    padding-top: 25px;
-    padding-left: 10px;
+    height: 110px;
+    padding-top: 24px;
+
 }
 
 nav .brand-logo
 {
-    font-size: 50px;
+    font-size: 47px;
+    padding-left: 0px;
+    margin-left: 5px;
 
 }
 
 #corner-button
 {
-    position: fixed; right: 15px; 
-    top: 25px;
+    position: fixed; right: 6px; 
+    top: 16px;
     z-index: 50000000;
     height: 70px;
     line-height: 70px;
     width: 250px;
     font-size: 25px;
-    padding: 4px;
+    padding: 1px;
+    padding-bottom: 5px;
 }
 
+#top-links
+{
+    margin-top: 37px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 5px;
+}
 
+#top-links a
+{
+    color:#8db0f2;
+    font-size: 32px;
+}
+
+#top-bar
+{
+    margin-bottom: 0px;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    width: 100%;
+    padding: 20px;
+    padding-top: 5px;
+    padding-bottom: 0px;
+}
 
 #img-mid
 {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+#img-first
+{
+    background: rgba(0, 0, 0, 0.4);
 }
 
 #img-bottom
 {
-    background: none;
+    background: rgba(0, 0, 0, 0.4);
 }
 
 .parallax-container {
-      height: 550px;
+      height: 400px;
     }
 .section
 {
     background-color: #f2f2f2;
     height: 300px;
-}    
-#mid-section
+}     
+
+#first-bo
 {
-    background-color: white;
+    position: absolute;
+    top: 80%;
+    left: 10%;
 }
 
-#first-box
-{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-
-}
-
-#first-box>h3
-{
-    color: black;
-    font-size: 50px;
-    margin-bottom: 5px;
-    text-align: center;
+#first-bo h3
+{ 
+    font-size: 3.1rem;
 
 }
 
-#first-box>img
+#icon-college
 {
-    height: 120px;
-    width: 135px
+    height: 125px;
+    width: 140px;
+    position: absolute;
+    top: 27%;
+    left: 42.5%;
 }
+
+
+#second-section
+{
+    background-color: rgba(0, 0, 0, 0.8);
+    height: 325px;
+}
+
 
 #second-box
 {
@@ -92,9 +129,9 @@ nav .brand-logo
 
 #second-box>h3
 {
-    color: black;
+    color: white;
     font-size: 45px;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
 }
 
 #second-box-images
@@ -103,8 +140,7 @@ nav .brand-logo
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
-    margin-top: 20px;
+    width: 90%;
 }
 
 #second-box-images>img
@@ -116,7 +152,8 @@ nav .brand-logo
 
 #third-section
 {
-    height: 340px;
+    height: 390px;
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 #third-box
@@ -129,10 +166,10 @@ nav .brand-logo
 }
 #third-box>h3
 {
-    color: black;
+    color: white;
     font-size: 45px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-bottom: 30px;
+    margin-top: 7px;
 }
 #third-box-images
 {
@@ -141,6 +178,7 @@ nav .brand-logo
     justify-content: space-between;
     align-items: center;
     margin: 10px;
+    margin-top: 0px;
     width: 80%;
 }
 
@@ -154,32 +192,42 @@ nav .brand-logo
 }
 .team-member>h5
 {
-   font-size: 25px;
-   color: #1c262f
+   font-size: 30px;
+   color: white;
 }
 
 .team-member>img
 {
-    border-width: 5px;
+    border-width: 3px;
     border-style: solid;
-    border-color: #1c262f;
-    height: 140px;
-    width: 140px;
+    border-color: white;
+    height: 150px;
+    width: 150px;
 }
 
-
-#last-parallax-container
+#icons
 {
-   height: 630px;
-
+    font-size: 1.5rem;
 }
 
 #icons i
 {
-    margin-left: 5px;
+  margin-left: 5px;
 }
 
- }
+#last-parallax-container
+{
+   height: 750px;
+
+}
+
+#second-parallax-container
+{
+   height: 500px;
+
+}
+ 
+}
 
 @media (min-width:300px) and (orientation: landscape) { 
 
@@ -193,30 +241,31 @@ nav .brand-logo
 
 nav{
     
-    height: 80px;
-    padding-top: 9px;
+    height: 64px;
+    padding-top: 2px;
+
 
 }
 
 nav .brand-logo
 {
-    font-size: 40px;
+    font-size: 35px;
     padding-left: 0px;
-    margin-left: 5px;
+    margin-left: 0px;
 
 }
 
 #corner-button
 {
-    position: fixed; 
-    right: 6px; 
-    top: 11px;
+    position: fixed; right: 6px; 
+    top: 6px;
     z-index: 50000000;
     height: 54px;
     line-height: 54px;
-    width: 190px;
-    font-size: 18px;
-    padding: 4px;
+    width: 170px;
+    font-size: 15px;
+    padding: 1px;
+    padding-bottom: 5px;
 }
 
 #top-links
@@ -250,16 +299,21 @@ nav .brand-logo
 
 #img-mid
 {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+#img-first
+{
+    background: rgba(0, 0, 0, 0.4);
 }
 
 #img-bottom
 {
-    background: none;
+    background: rgba(0, 0, 0, 0.4);
 }
 
 .parallax-container {
-      height: 250px;
+      height: 350px;
     }
 .section
 {
@@ -267,42 +321,33 @@ nav .brand-logo
     height: 300px;
 }     
 
-#first-section
+#first-bo
 {
-    height: 160px;
+    position: absolute;
+    top: 50%;
+    left: 19%;
 }
 
-#mid-section
-{
-    background-color: white;
-}
+#first-bo h3
+{ 
+    font-size: 2.52rem;
 
-#first-box
-{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-
-}
-
-#first-box>h3
-{
-    color: black;
-    font-size: 30px;
-    margin-bottom: 5px;
-
-}
-
-#first-box>img
-{
-    height: 80px;
-    width: 95px
 }
 
 #second-section
 {
-    height: 200px;
+    background-color: rgba(0, 0, 0, 0.8);
+    height: 250px;
+}
+
+
+#icon-college
+{
+    height: 110px;
+    width: 120px;
+    position: absolute;
+    top: 38%;
+    left: 45%;
 }
 
 #second-box
@@ -311,12 +356,12 @@ nav .brand-logo
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    width: 80%;
+    width: 90%;
 }
 
 #second-box>h3
 {
-    color: black;
+    color: white;
     font-size: 30px;
 }
 
@@ -326,19 +371,20 @@ nav .brand-logo
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    width: 90%;
 }
 
 #second-box-images>img
 {
     margin: 10px;
-    height: 80px;
-    width: 90px;
+    height: 110px;
+    width: 120px;
 }
 
 #third-section
 {
-    height: 260px;
+    height: 300px;
+    background-color: rgba(0, 0, 0, 0.8);
 }
 
 #third-box
@@ -351,10 +397,10 @@ nav .brand-logo
 }
 #third-box>h3
 {
-    color: black;
-    font-size: 30px;
-    margin-top: 5px;
-    margin-bottom: 5px;
+    color: white;
+    font-size: 32px;
+    margin-bottom: 9px;
+    margin-top: 7px;
 }
 #third-box-images
 {
@@ -363,7 +409,7 @@ nav .brand-logo
     justify-content: space-between;
     align-items: center;
     margin: 10px;
-    margin-top: 5px;
+    margin-top: 0px;
     width: 80%;
 }
 
@@ -378,35 +424,29 @@ nav .brand-logo
 .team-member>h5
 {
    font-size: 20px;
-   color: #1c262f
+   color: white;
 }
 
 .team-member>img
 {
-    border-width: 4px;
+    border-width: 3px;
     border-style: solid;
-    border-color: #1c262f;
-    height: 90px;
-    width: 90px;
+    border-color: white;
+    height: 120px;
+    width: 120px;
 }
 
 #last-parallax-container
 {
-   height: 300px;
+   height: 550px;
 
 }
 
 #second-parallax-container
 {
-   height: 300px;
+   height: 500px;
 
 }
-
-#icons i
-{
-    margin-left: 5px;
-}
-
 } 
 
 
@@ -414,7 +454,7 @@ nav .brand-logo
 
 @media (min-width:992px) {
 
-   html {
+html {
     height: 100%;
     background: url("USICT.jpg") no-repeat center fixed;
     background-size: cover;
@@ -433,6 +473,7 @@ nav .brand-logo
 {
     font-size: 40px;
     padding-left: 0px;
+    margin-left: 0px;
 
 }
 
@@ -447,6 +488,35 @@ nav .brand-logo
     font-size: 15px;
     padding: 1px;
     padding-bottom: 5px;
+}
+
+#top-links
+{
+    margin-top: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+#top-links a
+{
+    color:#8db0f2;
+    font-size: 23px;
+}
+
+#top-bar
+{
+    margin-bottom: 0px;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center; 
+    width: 100%;
+    padding: 20px;
+    padding-top: 5px;
+    padding-bottom: 0px;
 }
 
 #img-mid
@@ -479,6 +549,12 @@ nav .brand-logo
     position: absolute;
     top: 61%;
     left: 19%;
+}
+
+#first-bo h3
+{ 
+    font-size: 2.92rem;
+
 }
 
 

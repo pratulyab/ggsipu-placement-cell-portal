@@ -33,7 +33,7 @@
         <ul id="dropdown1" class="dropdown-content">
             <li id="corner_dropdown">
                 <a href="#!" data-links="settings" id="img-box">
-                    <img src="{% block user_photo_s %}{% endblock %}" class="circle" height="90" width="90">
+                    {% block user_photo_s %}{% endblock %}
                     <span id="corner_name" class="black-text">{% block user_name_card_s %}{% endblock %}</span>
                     <span id="corner_email" class="grey-text lighten-1">{% block user_email_id_s %}{% endblock %}</span>
                 </a>
@@ -42,7 +42,6 @@
             <li><a href="#!" data-links="settings"><i class="fa fa-sliders"></i>Account settings</a></li>
             <li class="divider"></li>
             <li><a href="#!" data-links="notifications"><i class="fa fa-bell"></i>Notifications</a></li>
-            <li class="divider"></li>
             <li class="divider"></li>
             <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Sign out</a></li>
         </ul>
@@ -54,7 +53,7 @@
         </ul>
 
         <ul class="collapsible dropdown-content" data-collapsible="accordion" id="dropdown3">
-            <!--every li here represents a notifcations. header and body for notifications repectively-->     
+            <!--every li here represents a notifcations. header and body for notifications repectively-->    
     
         </ul>
 <!--Search box-->
@@ -73,7 +72,8 @@
         <div class="navbar-fixed">
             <nav id="nav-bar">
                 <div class="nav-wrapper">
-                    <div class="left" style="margin-left: 1.5%;">
+                    <a class="brand-logo" id="brand-corner">
+                    <div class="left hide-on-med-and-down" style="margin-left: 1.5%;">
                       <div id="logo">
                         <img src="{% static 'images/ipu-logo.png' %}" style="height: 55px">
                         <div id="inner-logo">
@@ -82,9 +82,11 @@
                         </div>
                       </div>
                     </div>
+                    </a>
                     <a id="center_logo" href="#!" class="brand-logo center hide-on-large-only">Training & Placement Cell</a>
+                    <h6 class="center hide-on-large-only" style="font-size: 10px;padding: 0px;margin: 1px;margin-top: 1px;position: absolute;top: 40px;left: 15%;width: 70%;right: 15%">Guru Gobind Singh Indraprastha University</h6>
                     <ul class="right">
-                   	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
+                   	<li><a style="padding-right: 5px;" href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
                   	</li>
                   	<li class="hide-on-med-and-down">
                     	<a id = 'notification_button' class="dropdown-button tooltipped" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3" data-position="left" data-delay="20" data-tooltip="Notifications"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
@@ -94,7 +96,7 @@
                   		<a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown2"><i class="material-icons">menu</i></a>
                   </li>   
                   <li class="hide-on-med-and-down">
-                    	<a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown1"><img src="{% block user_photo2 %}{% endblock %}" class="circle" id="img-corner"></a>
+                    	<a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown1">{% block user_photo2 %}{% endblock %}</a>
                   </li>
                     
               </ul>
@@ -120,7 +122,7 @@
       <div class="background">
         <img src="{% static 'images/bgs2.jpg' %}" width="100%">
       </div>
-      <a href="#!user"><img class="circle" src="{% block user_photo %}{% endblock %}"></a>
+      <a href="#!user">{% block user_photo %}{% endblock %}</a>
       <a href="#!name"><span class="white-text name">{% block user_name_card %}{% endblock %}</span></a>
       <a href="#!email"><span class="white-text email">{% block user_email_id %}{% endblock %}</span></a>
     </div></li>
@@ -153,7 +155,10 @@
                 </div>
             </div>
 
-        </main>
+            {% block mobile_content %}
+            {% endblock %}
+
+          </main>
 
 
         <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
@@ -167,10 +172,9 @@
       				$('nav .brand-logo').on('click', function(e){location.href='';});
             		GetNotification.init();
                 $('.button-collapse').sideNav({
-      menuWidth: 240, 
-      closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
-    }
-  );
+                  menuWidth: 240, 
+                  closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+                    });
       	});
 		
 		// Mapping dropdown links to tabs

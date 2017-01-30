@@ -38,17 +38,16 @@
     <body>
         <ul id="dropdown1" class="dropdown-content">
             <li id="corner_dropdown">
-                <a href="{% block home_url1 %}{% endblock %}#settings" data-links="settings" id="img-box">
-                    <img src="{% block user_photo %}{% endblock %}" class="circle" height="90" width="90">
-                    <span id="corner_name" class="black-text">{% block user_name_card %}{% endblock %}</span>
-                    <span id="corner_email" class="grey-text lighten-1">{% block user_email_id %}{% endblock %}</span>
+                <a href="#!" data-links="settings" id="img-box">
+                    {% block user_photo_s %}{% endblock %}
+                    <span id="corner_name" class="black-text">{% block user_name_card_s %}{% endblock %}</span>
+                    <span id="corner_email" class="grey-text lighten-1">{% block user_email_id_s %}{% endblock %}</span>
                 </a>
             </li>
             <li class="divider"></li>
             <li><a href="{% block home_url2 %}{% endblock %}#settings" data-links="settings"><i class="fa fa-sliders"></i>Account settings</a></li>
             <li class="divider"></li>
             <li><a href="{% block home_url3 %}{% endblock %}#notifications" data-links="notifications"><i class="fa fa-bell"></i>Notifications</a></li>
-            <li class="divider"></li>
             <li class="divider"></li>
             <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Sign out</a></li>
         </ul>
@@ -59,51 +58,55 @@
             {% endblock %} 
         </ul>
 
-        <ul class="collapsible dropdown-content" data-collapsible="accordion" id="dropdown3">
-            <div id="noti-head">Notifications</div>
-            {% block notifications_dropdown %}
-            <!--every li here represents a notifcations. header and body for notifications repectively-->
-                <li>
-                    <div class="collapsible-header">First</div>
-                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-                </li>
-                <li>
-                    <div class="collapsible-header">Second</div>
-                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-                </li>
-                <li>
-                    <div class="collapsible-header">Third</div>
-                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-                </li>
-                <li>
-                    <div class="collapsible-header">Fourth</div>
-                    <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
-                </li>
-            {% endblock %}
+       <ul class="collapsible dropdown-content" data-collapsible="accordion" id="dropdown3">
+            <!--every li here represents a notifcations. header and body for notifications repectively-->    
+    
         </ul>
+<!--Search box-->
+        <div id="light" class="white_content"> 
+         <div id="box-search">
+            <form id="search-line">
+                            <input type="text" name="q" placeholder="Search for Students, Colleges, and Companies..." />
+                            <ul id="results"></ul>
+            </form>
+         </div>   
+            <a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='none'; document.getElementById('fade').style.display='none'; "><i class="fa fa-times fa-3x"></i></a>
+        </div>
+        <div id="fade" class="black_overlay"></div>
 
 <!--materialize fixed main navbar-->
         <div class="navbar-fixed">
             <nav id="nav-bar">
                 <div class="nav-wrapper">
-                    <a href="#!" class="brand-logo left hide-on-med-and-down">Training & Placement Cell</a>
+                    <a class="brand-logo" id="brand-corner">
+                    <div class="left hide-on-med-and-down" style="margin-left: 1.5%;">
+                      <div id="logo">
+                        <img src="{% static 'images/ipu-logo.png' %}" style="height: 55px">
+                        <div id="inner-logo">
+                        <h4>Training & Placement cell</h4>
+                        <h6>Guru Gobind Singh Indraprastha University</h6> 
+                        </div>
+                      </div>
+                    </div>
+                    </a>
                     <a id="center_logo" href="#!" class="brand-logo center hide-on-large-only">Training & Placement Cell</a>
+                    <h6 class="center hide-on-large-only" style="font-size: 10px;padding: 0px;margin: 1px;margin-top: 1px;position: absolute;top: 40px;left: 15%;width: 70%;right: 15%">Guru Gobind Singh Indraprastha University</h6>
 					<a class="brand-logo center hide-on-med-and-down" style="color:lightcoral;font-weight:800;">{% block pagetitle %}{% endblock %}</a>
                     <ul class="right">
-                    <li>
+                    <li class="hide-on-small-only">
                     <a href="{% block home_url4 %}{% endblock %}"><i class="fa fa-2x fa-home" aria-hidden="true"></i></a>
                     </li>
                    	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
                   	</li>
                   	<li class="hide-on-med-and-down">
-                    	<a id = 'notification_button' class="dropdown-button tooltipped" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3" data-position="left" data-delay="20" data-tooltip="Notifications"><i class="material-icons">add_alert</i></a>
+                    	<a id = 'notification_button' class="dropdown-button tooltipped" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3" data-position="left" data-delay="20" data-tooltip="Notifications"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
                   </li>
 
                   <li class="hide-on-med-and-down">
                   		<a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown2"><i class="material-icons">menu</i></a>
                   </li>   
-                  <li class="hide-on-med-and-down">
-                    	<a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown1"><img src="{% block user_photo2 %}{% endblock %}" class="circle" id="img-corner"></a>
+                   <li class="hide-on-med-and-down">
+                    	<a class="dropdown-button" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="" data-activates="dropdown1">{% block user_photo2 %}{% endblock %}</a>
                   </li>
                     
               </ul>
@@ -121,6 +124,24 @@
       </div> 
 
 <!--navbar ends-->
+
+<!--sidebar begins-->
+ 
+ <ul id="slide-out" class="side-nav">
+    <li><div class="userView">
+      <div class="background">
+        <img src="{% static 'images/bgs2.jpg' %}" width="100%">
+      </div>
+      <a href="#!user">{% block user_photo %}{% endblock %}</a>
+      <a href="#!name"><span class="white-text name">{% block user_name_card %}{% endblock %}</span></a>
+      <a href="#!email"><span class="white-text email">{% block user_email_id %}{% endblock %}</span></a>
+    </div></li>
+    {% block side_nav_links %}
+    {% endblock %}
+      <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Logout</a></li>
+  </ul>
+
+<!--sidebar ends-->
 
         <main>
             <!--Tabs bar begins--> 
@@ -155,6 +176,10 @@
           	        $('.dropdown-button').on('click', function(e){e.preventDefault()});
       				$('nav .brand-logo').on('click', function(e){location.href='';});
             		GetNotification.init();
+            		$('.button-collapse').sideNav({
+                  menuWidth: 240, 
+                  closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+                    });
       			});
 		
 		// Mapping dropdown links to tabs
@@ -168,6 +193,8 @@
       				return true;
       			el.on('click', function(e){e.preventDefault();target_el[0].click();});
       		});
+
+
         </script>
         
        {% block lightbox_data %}

@@ -12,6 +12,17 @@ nav .brand-logo {
   align-items: center;
 }
 
+nav .button-collapse {
+    margin: 0 10px;
+    margin-left: 5px;
+}
+
+
+#brand-corner:hover
+{
+  cursor: pointer;
+}
+
 #inner-logo
 {
   display: flex;
@@ -73,7 +84,7 @@ nav .brand-logo {
 
 #dropdown3
 {
-    width: 450px;
+    width: 500px;
     margin-top: 10px;
     max-height: 400px;
     overflow-y: scroll;
@@ -107,7 +118,7 @@ span.badge {
 
 .collapsible-header
 {
-    max-width:450px;
+    max-width:500px;
     white-space: normal;
     line-height: 20px;
     font-size: 15px;
@@ -126,7 +137,8 @@ span.badge {
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 20px;
+    font-size: 18px;
+    height: 50px;
     font-family: bold;
     background: #2e3d49;
 }
@@ -137,9 +149,23 @@ span.badge {
     justify-content: center;
     align-items: center;
     color: white;
-    font-size: 15px;
+    font-size: 12px;
     font-family: bold;
     background: #2e3d49;
+}
+
+#noti-foot-anchor
+{
+  line-height: 45px!important;
+}
+
+#noti-content
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 13px;
+  color: #337ab7;
 }
 
 
@@ -609,7 +635,7 @@ form#search input {
 
 /* */
 
-  @media screen and (min-width: 300px){
+  @media screen and (min-width: 300px) and (max-width: 992px){
 
     
     #dropdown1
@@ -634,6 +660,115 @@ form#search input {
     margin-top: 10px;
     margin-left: 10px;
     padding: 10px;
+
+}
+
+#box-search #search-line
+    {
+
+      width: 80%;
+      color: #999999;
+      font-weight: bold;
+      position: absolute;
+
+    }
+
+    #box-search #search-line input[type="text"], input[type="search"]{
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px dotted #9e9e9e;
+    border-radius: 0;
+    outline: none;
+    height: 2rem;
+    width: 80%;
+    font-size: 1.1rem;
+    margin-right: 10%;
+    margin-left: 10%;
+    padding: 0;
+    box-shadow: none;
+    box-sizing: content-box;
+    transition: all 0.3s;
+    font-family: 'HelveticaNeue', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    text-overflow: ellipsis;
+}
+
+#search-line #results {
+    display: none;
+    position: absolute;
+    top: 40px;
+    left: 50px;
+    z-index: 10;
+    padding: 2px;
+    margin: 5px;
+    margin-top: 2px;
+    font-size: 12px;
+  }
+
+  #search-line #results>li 
+  { 
+    margin-top: 0px;
+  }
+
+#search-line #results>li:first-child { margin-top: -1px }
+
+
+#search-line #results li>a {
+    display: block;
+    position: relative;
+    margin: 0 -1px;
+    padding: 6px 20px 6px 10px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 10px;
+}
+
+
+#search-line #results>a span { font-weight: 200 }
+
+#search-line #results>li>a:before {
+    content: '';
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    margin-top: -9px;
+}
+
+#search-line #results>li>a:hover {
+    text-decoration: none;
+    color: #fff;
+    background-color: rgba(51, 122, 183, 0.15); /* New */
+    -webkit-box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px rgba(0, 0, 0, 0.08);
+    -moz-box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px rgba(0, 0, 0, 0.08);
+    -ms-box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px rgba(0, 0, 0, 0.08);
+    -o-box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px rgba(0, 0, 0, 0.08);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 1px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+:-moz-placeholder {
+    color: #a7aabc;
+    font-weight: 200;
+}
+
+::-webkit-input-placeholder {
+    color: #a7aabc;
+    font-weight: 200;
+}
+
+
+#results ul
+{
+  margin-top: 5px;
+}
+
+#results li
+{
+   line-height: 26px;
+   width: 100%;
 
 }
 }

@@ -7,12 +7,14 @@
 {% endblock %}
 {% block user_photo %}
 	{% if student.photo %}
-		{{ student.photo.url }}
+		<img class="circle" src="{{ student.photo.url }}">
+	{% else %}
+		<div style="height: 64px;width: 64px;background-color:  #17827d;border-radius: 50%;display: flex;justify-content: center;align-items: center;"><h3 style="font-size: 25px;color: white;font-weight: bold;text-transform: uppercase;">{{ student.firstname | first }}{{ student.lastname | first}}</h3></div>
 	{% endif %}
 {% endblock %}
 
 {% block user_name_card %}
-	{{ student.firstname }}&nbsp;{{ student.lastname }}
+	{{ student.firstname | title }}&nbsp;{{ student.lastname | title }}
 {% endblock %}
 
 {% block user_email_id %}
@@ -22,12 +24,16 @@
 <!--for sidenav-->
 {% block user_photo_s %}
 	{% if student.photo %}
-		{{ student.photo.url }}
+		<img src="{{ student.photo.url }}" class="circle" height="90" width="90">
+	{% else %}
+		<div style="height: 90px;width: 90px;background-color: #337ab7;border-radius: 50%;display: flex;justify-content: center;align-items: center;"><h3 style="font-size: 40px;color: white;font-weight: bold;text-transform: uppercase;">{{ student.firstname | first }}{{ student.lastname | first}}</h3></div>	
 	{% endif %}
 {% endblock %}
 
+
+
 {% block user_name_card_s %}
-	{{ student.firstname }}&nbsp;{{ student.lastname }}
+	{{ student.firstname | title }}&nbsp;{{ student.lastname | title}}
 {% endblock %}
 
 {% block user_email_id_s %}
@@ -70,12 +76,14 @@
 {% endblock %}
 
 {% block user_name %}
-	{{ student.firstname }}&nbsp;{{ student.lastname }}	
+	{{ student.firstname | title }}&nbsp;{{ student.lastname | title }}	
 {% endblock %}
 
 {% block user_photo2 %}
 	{% if student.photo %}
-		{{ student.photo.url }}
+		<img src="{{ student.photo.url }}" class="circle" id="img-corner">
+	{% else %}
+		<div style="height: 30px;width: 30px;margin-top: 15px;background-color: #337ab7;border-radius: 50%;display: flex;justify-content: center;align-items: center;"><h3 style="font-size: 15px;color: white;text-transform: uppercase;">{{ student.firstname | first }}{{ student.lastname | first}}</h3></div>
 	{% endif %}
 {% endblock %}
 

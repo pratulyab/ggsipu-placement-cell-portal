@@ -9,8 +9,15 @@ var GetNotification = (function()  {
           	'</li>'
 		}
         console.log("yeah2");
+        if (data.length==0) {
+            raw_html += '<div id="noti-content">You have no notifications currently</div>';
+        }
 
-        raw_html += '<div id="noti-foot"><a id="noti-foot-anchor" href="#notifications">See Older Notifications' + '</a></div>';
+
+        if (data.length>0) {
+            raw_html += '<div id="noti-foot"><a id="noti-foot-anchor" href="#notifications">See Older Notifications' + '</a></div>';    
+        }
+        
 
         
 		$('#dropdown3').html(raw_html);

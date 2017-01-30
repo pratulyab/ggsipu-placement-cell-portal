@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>404</title>
+	<title>500</title>
 	<link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
 </head>
 
@@ -10,6 +10,7 @@
 	body
 	{
 		padding: 50px;
+		padding-top: 100px;
 		display: flex;
 	}
 	#error
@@ -18,13 +19,15 @@
 		flex-direction: column;
 		justify-content: flex-start;
 		align-items: center;
-		width: 40%;
+		width: 45%;
+		margin-left: 5%;
 
 	}
 	#error h2
 	{
 		font-size: 45px;
 		font-family: "Times New Roman";
+		margin-bottom: 25px;
 	}
 
 	#error-body
@@ -34,16 +37,15 @@
 		justify-content: center;
 		align-items: center;
 	}
-
 	#home-icon
 	{
-		color: #800000;
+		color: #b22222;
 	}
 
 	#home-icon:hover
 	{
 		cursor: pointer;
-		color: #000099;
+		color: #ffd700;
 	}
 	@media (min-width:300px) and (orientation: portrait){
 		body{
@@ -54,24 +56,25 @@
 			width: 99%;
 		}
 	}
+	
 </style>
 <body>
 
-<img src="{% static 'images/engineer.gif' %}">
-
 <div id="error">
 	<div id="error-head">
-		<h2 style="color: #800000;">404 : Page Not Found</h2>
+		<h2 style="color: #b22222;">500 : Internal Server Error</h2>
 	</div>
 
 	<div id="error-body">
 		<p style="font-size: 20px;">
-			Sorry but the page you are looking for cannot be found.<br><br> If must have stopped under construction or forgotton about completely. You can still go back to your home by clicking the icon below.
+			The web server encountered an unexpected condition that prevented it from fulfilling the request by you.<br><br> The server might be a machine but it is still human made. You can still go back to your home by clicking the icon below.
 		</p>
-		<a id="home-icon" href="{% url 'home' %}"><i class="fa fa-home fa-4x" aria-hidden="true"></i></a>
+		<a id="home-icon"><i class="fa fa-home fa-4x" aria-hidden="true"></i></a>
 	</div>
 	
 </div>
+
+<img src="{% static 'images/bee.gif' %}" height="40%" width="40%">
 
 
 </body>

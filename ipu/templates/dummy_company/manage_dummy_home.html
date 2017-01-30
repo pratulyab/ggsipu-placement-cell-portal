@@ -7,11 +7,71 @@
 {% block home_url3 %}{% url 'college_home' %}{% endblock %}
 {% block home_url4 %}{% url 'college_home' %}{% endblock %}
 {% block pagetitle %}Manage Dummy Company{% endblock %}
+
+
+{% block user_photo2 %}
+	{% if college.photo %}
+		<img src="{{ college.photo.url }}" class="circle" height="30" width="30" id="img-corner">
+	{% else %}
+		<img src="{% static 'images/college.png' %}" class="circle" height="30" width="30" id="img-corner">
+	{% endif %}
+{% endblock %}
+
+{% block user_name_card_s %}
+	{{ college.get_short_name }}
+{% endblock %}
+
+{% block user_email_id_s %}
+	{{ college.profile.email }}
+{% endblock %}
+
+{% block user_photo_s %}
+	{% if college.photo %}
+		<img src="{{ college.photo.url }}" class="circle" height="90" width="90">
+	{% else %}
+		<img src="{% static 'images/college.png' %}" class="circle" height="90" width="90">
+	{% endif %}
+{% endblock %}
+
+{% block user_photo %}
+	{% if college.photo %}
+		<img src="{{ college.photo.url }}" class="circle" height="64" width="64">
+	{% else %}
+		<img src="{% static 'images/college.png' %}" class="circle" height="64" width="64">
+	{% endif %}
+{% endblock %}
+
+{% block user_name_card %}
+	{{ college.get_short_name }}
+{% endblock %}
+
+{% block user_email_id %}
+	{{ college.profile.email }}
+{% endblock %}
+
+{% block side_nav_links %}
+	<li><a class="waves-effect" href="#!"><i class="fa fa-home" aria-hidden="true"></i>
+            Home</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>
+          Create Dummy Company</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+          Edit Dummy Company</a></li>      
+    <li><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i> 
+          Create Dummy Session</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-pencil" aria-hidden="true"></i>
+	Edit Criteria</a></li>     
+    <li><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
+            Dummy Sessions</a></li>
+         
+
+    
+{% endblock %}
+
 {% block tabs %}
-	<li class="tab col s2"><a class="active" href="#createdc">Create Dummy Company</a></li>
-	<li class="tab col s2"><a class="" href="#createds">Create Dummy Session</a></li>
-	<li class="tab col s2"><a class="" href="#edit">Edit Criteria</a></li>
-	<li id="dsessions" class="tab col s2"><a class="" href="#dsess">Dummy Sessions</a></li>
+	<li class="tab col s3"><a class="active" href="#createdc">Create Dummy Company</a></li>
+	<li class="tab col s3"><a class="" href="#createds">Create Dummy Session</a></li>
+	<li class="tab col s3"><a class="" href="#edit">Edit Criteria</a></li>
+	<li id="dsessions" class="tab col s3"><a class="" href="#dsess">Dummy Sessions</a></li>
 {% endblock tabs %}
 {% block tabs_content %}
 <!--                    -->
