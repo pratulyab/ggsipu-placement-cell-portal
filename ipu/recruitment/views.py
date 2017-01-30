@@ -1,10 +1,11 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.db.utils import IntegrityError
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
@@ -14,8 +15,8 @@ from college.models import College
 from company.models import Company
 from dummy_company.models import DummyCompany, DummySession
 from faculty.models import Faculty
-#from recruitment.forms import Associate, AssActorsOnlyForm, AssWithProgrammeForm, AssociationForm, SessionEditForm, DissociationForm, CreateSessionCriteriaForm, CriteriaEditForm
-from recruitment.forms import AssociationForm, SessionEditForm, DissociationForm, CreateSessionCriteriaForm, CriteriaEditForm
+#from recruitment.forms import AssociationForm, SessionEditForm, DissociationForm, CreateSessionCriteriaForm, CriteriaEditForm
+from recruitment.forms import AssociationForm, EditSessionForm, DissociationForm, CreateSessionCriteriaForm, EditCriteriaForm, ManageSessionStudentsForm
 from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
 from recruitment.utils import get_excel_structure
 from student.models import Student, Programme, Stream
@@ -38,6 +39,136 @@ def associate(request, **kwargs):
 		return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['C'])})
 	else:
 		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+
+@require_user_types(['C', 'F', 'CO'])
+@login_required
+@require_GET
+def manage_session(request, sess_hashid, **kwargs):
+	profile = kwargs.pop('profile')
+	user_type = kwargs.pop('user_type')
+	if user_type == 'F':
+		profile = profile.college
+	try:
+		session_pk = settings.HASHID_PLACEMENTSESSION.decode(sess_hashid)[0]
+		session = None
+		if user_type == 'CO':
+			session = PlacementSession.objects.get(association__company=profile, pk=session_pk)
+		else:
+			session = PlacementSession.objects.get(association__college=profile, pk=session_pk)
+	except:
+		raise Http404()
+	context = {
+		'edit_criteria_form': EditCriteriaForm(instance=session.selection_criteria, session=session),
+		'edit_session_form': EditSessionForm(instance=session),
+		'manage_session_students_form': ManageSessionStudentsForm(instance=session),
+		'association': session.association,
+		'session': session,
+		'sess_hashid': sess_hashid,
+		'home_url': reverse(settings.HOME_URL['CO'] if user_type == 'CO' else settings.HOME_URL['C']),
+	}
+	return render(request, 'recruitment/manage_session.html', context)
+
+@require_user_types(['C', 'F', 'CO'])
+@require_AJAX
+@login_required
+@require_POST
+def edit_criteria(request, sess_hashid, **kwargs):
+	profile = kwargs.pop('profile')
+	user_type = kwargs.pop('user_type')
+	if user_type == 'F':
+		profile = profile.college
+	token = request.POST.get('token', None)
+	if token != sess_hashid:
+		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+	try:
+		session_pk = settings.HASHID_PLACEMENTSESSION.decode(sess_hashid)[0]
+		session = None
+		if user_type == 'CO':
+			session = PlacementSession.objects.get(association__company=profile, pk=session_pk)
+		else:
+			session = PlacementSession.objects.get(association__college=profile, pk=session_pk)
+	except:
+		return JsonResponse(status=400, data={'error': 'It\'s not your placement session to manage!'})
+	POST = request.POST.copy()
+	POST['years'] = ','.join(POST.getlist('years'))
+	f = EditCriteriaForm(POST, instance=session.selection_criteria)
+	if f.is_valid():
+		criterion = f.save() # Not the typical save. Using get_or_create in form's save w/o calling super save
+		session.selection_criteria = criterion
+		session.last_modified_by = 'CO' if user_type == 'CO' else 'C'
+		session.save()
+	# Notifying the other party
+		actor, target = (profile, session.association.college) if user_type == 'CO' else (profile, session.association.company)
+		message = '%s updated the selection criteria for one of the placement session.' % (actor)
+		message += '\nTo review, visit http://%s' % (get_current_site(request) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
+		Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
+		return JsonResponse(status=200, data={'success': True, 'success_msg': 'Selection Criteria has been updated successfully'})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+
+@require_user_types(['C', 'F', 'CO'])
+@require_AJAX
+@login_required
+@require_POST
+def edit_session(request, sess_hashid, **kwargs):
+	profile = kwargs.pop('profile')
+	user_type = kwargs.pop('user_type')
+	if user_type == 'F':
+		profile = profile.college
+	token = request.POST.get('token', None)
+	if token != sess_hashid:
+		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+	try:
+		session_pk = settings.HASHID_PLACEMENTSESSION.decode(sess_hashid)[0]
+		session = None
+		if user_type == 'CO':
+			session = PlacementSession.objects.get(association__company=profile, pk=session_pk)
+		else:
+			session = PlacementSession.objects.get(association__college=profile, pk=session_pk)
+	except:
+		return JsonResponse(status=400, data={'error': 'It\'s not your placement session to manage!'})
+	f = EditSessionForm(request.POST, instance=session)
+	if f.is_valid():
+		session = f.save(commit=False)
+		session.last_modified_by = 'CO' if user_type == 'CO' else 'C'
+		session.save()
+	# Notifying the other party
+		actor, target = (profile, session.association.college) if user_type == 'CO' else (profile, session.association.company)
+		message = '%s updated the placement session fields. ' % (actor)
+		message += "\nTo review, visit http://%s" % (get_current_site(request) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
+		Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
+		return JsonResponse(status=200, data={'success': True, 'success_msg': 'Placement Session has been updated successfully'})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+
+@require_user_types(['C', 'F', 'CO'])
+@require_AJAX
+@login_required
+@require_POST
+def manage_session_students(request, sess_hashid, **kwargs):
+	profile = kwargs.pop('profile')
+	user_type = kwargs.pop('user_type')
+	if user_type == 'F':
+		profile = profile.college
+	token = request.POST.get('token', None)
+	if token != sess_hashid:
+		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+	try:
+		session_pk = settings.HASHID_PLACEMENTSESSION.decode(sess_hashid)[0]
+		session = None
+		if user_type == 'CO':
+			session = PlacementSession.objects.get(association__company=profile, pk=session_pk)
+		else:
+			session = PlacementSession.objects.get(association__college=profile, pk=session_pk)
+	except:
+		return JsonResponse(status=400, data={'error': 'It\'s not your placement session to manage!'})
+	f = ManageSessionStudentsForm(request.POST, instance=session)
+	if f.is_valid():
+		session = f.save(commit=False)
+		session.last_modified_by = 'CO' if user_type == 'CO' else 'C'
+		session.save()
+		f.save_m2m()
+		f.notify_disqualified_students(actor=profile.profile)
+		return JsonResponse(status=200, data={'success': True, 'success_msg': "Students' list has been modified successfully"})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
 @require_user_types(['CO'])
 @require_AJAX
@@ -133,7 +264,7 @@ def create_session(request, **kwargs):
 	
 	else:
 		return handle_user_type(request, redirect_request=True)
-
+'''
 @require_user_types(['C', 'F', 'CO'])
 @login_required
 @require_http_methods(['GET','POST'])
@@ -242,7 +373,7 @@ def edit_criteria(request, sess, **kwargs):
 			return render(request, 'recruitment/edit_criteria.html', {'criteria_edit_form': f, 'sessid': sess})
 		else:
 			return handle_user_type(request)
-
+'''
 @login_required
 @require_GET
 def mysessions(request):
@@ -329,7 +460,7 @@ def mysessions(request):
 				assoc = s.association
 				data = {}
 				data['sessobj'] = s
-				data['sessid'] = settings.HASHID_PLACEMENTSESSION.encode(s.pk)
+				data['sess_hashid'] = settings.HASHID_PLACEMENTSESSION.encode(s.pk)
 				data['salary'] = "%d LPA" % assoc.salary
 				data['company'] = assoc.company.name.title()
 				data['type'] = "Internship" if assoc.type == 'I' else "Job"
@@ -341,7 +472,7 @@ def mysessions(request):
 			for ds in dsessions:
 				data = {}
 				data['dsessobj'] = ds
-				data['dsessid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
+				data['dsess_hashid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
 				data['salary'] = "%d LPA" % ds.salary
 				data['dcompany'] = ds.dummy_company.name.title()
 				data['type'] = "Internship" if ds.type == 'I' else "Job"

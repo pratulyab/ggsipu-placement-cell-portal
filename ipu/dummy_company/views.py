@@ -30,7 +30,7 @@ def manage_dummy_home(request, **kwargs):
 	college = kwargs.pop('profile')
 	if user_type == 'F':
 		college = college.college
-	return render(request, 'dummy_company/manage_dummy_home.html', context={'create_dummy_company_form': CreateDummyCompanyForm(), 'choose_dummy_company_form': ChooseDummyCompanyForm(college=college), 'create_dummy_session_form': CreateDummySessionForm(college=college), 'create_selection_criteria_form': CreateSelectionCriteriaForm()})
+	return render(request, 'dummy_company/manage_dummy_home.html', context={'create_dummy_company_form': CreateDummyCompanyForm(), 'choose_dummy_company_form': ChooseDummyCompanyForm(college=college), 'create_dummy_session_form': CreateDummySessionForm(college=college), 'create_selection_criteria_form': CreateSelectionCriteriaForm(), 'college': college})
 
 @require_user_types(['C', 'F'])
 @login_required

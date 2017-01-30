@@ -154,45 +154,6 @@ class AssociationForm(forms.ModelForm):
 			The custom's parent class accepts help_text arg in its init method. Hence, making use of that instead of rewriting the whole Meta functionality.
 		'''
 
-class NewAssociationForm(forms.ModelForm):
-	layout = Layout(
-		Row('college'),
-		Row('company'),
-		Row('programme'),
-		Row('streams'),
-		Row(Span4('type'), Span8('salary')),
-		Row('desc')
-	)
-
-	def __init__(self, *args, **kwargs):
-		super(NewAssociationForm, self).__init__(*args, **kwargs)
-		self.fields['streams'].widget.attrs['disabled'] = 'disabled'
-		self.fields['streams'].queryset = Stream.objects.none()
-#		self.fields['college'].queryset = College.objects.get(pk=1)
-		self.fields['college'].widget.attrs['disabled'] = 'disabled'
-
-	class Meta:
-		model = Association
-		fields = ['college', 'company', 'type', 'programme', 'streams', 'salary', 'desc']
-
-class SessionEditForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		super(SessionEditForm, self).__init__(*args, **kwargs)
-		self.fields['students'].queryset = Student.objects.filter(college=self.instance.association.college, stream__in=self.instance.association.streams.all())
-		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.instance.pk)
-	
-	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
-	
-	def clean_application_deadline(self):
-		date = self.cleaned_data['application_deadline']
-		if date and date <= datetime.date.today():
-			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
-		return date
-	
-	class Meta:
-		model = PlacementSession
-		fields = ['students', 'status', 'application_deadline', 'ended']
-	
 class CreateSessionCriteriaForm(forms.ModelForm):
 	layout = Layout(
 			Row('application_deadline'),
@@ -233,20 +194,22 @@ class CreateSessionCriteriaForm(forms.ModelForm):
 			raise forms.ValidationError(_('Please choose valid year(s). Maximum year value for this programme is %s.' % self.max_year))
 		return comma_separated_years
 		
-	"""
-# Not overriding the save method because get_or_create has to be used in views instead of saving here and then catching IntegrityError (Duplicate Entry)
-	"""
-
 	class Meta:
 		model = SelectionCriteria
 		fields = ['is_sub_back','tenth', 'twelfth', 'graduation', 'post_graduation', 'doctorate']
 
-class CriteriaEditForm(forms.ModelForm):
+
+class EditCriteriaForm(forms.ModelForm):
+	layout = Layout(
+			Row(Span8('years'), Span4('is_sub_back')),
+			Row(Span6('tenth'), Span6('twelfth')),
+			Row(Span4('graduation'), Span4('post_graduation'), Span4('doctorate')),
+	)
+
 	def __init__(self, *args, **kwargs):
 		self.session = kwargs.pop('session')
-		self.association = self.session.association
-		self.max_year = int(self.association.programme.years)
-		super(CriteriaEditForm, self).__init__(*args, **kwargs)
+		super(EditCriteriaForm, self).__init__(*args, **kwargs)
+		self.max_year = int(self.session.association.programme.years)
 		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.session.pk)
 		self.fields['years'].widget = forms.SelectMultiple(choices=(tuple(("%s"%i,"%s"%i) for i in range(1,self.max_year+1))))
 		self.initial['years'] = self.instance.years.split(',')
@@ -265,10 +228,74 @@ class CriteriaEditForm(forms.ModelForm):
 		if max(chosen_years) > self.max_year:
 			raise forms.ValidationError(_('Please choose valid year(s). Maximum year value for this programme is %s.' % self.max_year))
 		return comma_separated_years
-		
+	
+	def save(self, commit=True, *args, **kwargs):
+		# Won't be calling model form's save method
+		data = self.cleaned_data
+		criterion, created = SelectionCritera.objects.get_or_create(years=data['years'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
+		return criterion
+	
 	class Meta:
 		model = SelectionCriteria
 		fields = ['is_sub_back','tenth', 'twelfth', 'graduation', 'post_graduation', 'doctorate']
+
+
+class EditSessionForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(EditSessionForm, self).__init__(*args, **kwargs)
+		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.instance.pk)
+	
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
+	
+	def clean_application_deadline(self):
+		date = self.cleaned_data['application_deadline']
+		if date and date <= datetime.date.today():
+			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
+		return date
+	
+	class Meta:
+		model = PlacementSession
+		fields = ['application_deadline', 'status', 'ended']
+
+
+class ManageSessionStudentsForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		self.students_queryset = kwargs.get('instance').students.all()
+		self.choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
+		kwargs.update(initial={'students': [c[0] for i,c in enumerate(self.choices) if i]})
+		super(ManageSessionStudentsForm, self).__init__(*args, **kwargs)
+		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('Note: Students can only be removed from the list. Removed students will be notified.'))
+		self.fields['students'].choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
+#		self.fields['students'].initial = (settings.HASHID_STUDENT.encode(s.pk) for s in self.students_queryset)
+#		Why wouldn't this work? Passing initial to MMHC's super isn't working either
+		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.instance.pk)
+	
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
+
+	def notify_disqualified_students(self, actor):
+		shortlisted_pks = [s['pk'] for s in self.cleaned_data['students'].values('pk')]
+		disqualified = self.students_queryset.exclude(pk__in=shortlisted_pks)
+		self.disqualified = disqualified
+		message = "Sorry, your involvement in the placement session %s was till here only!\
+					\nThanks for showing your interest.\
+					\nBest of luck for your future." % (self.instance)
+		for student in disqualified:
+			Notification.objects.create(actor=actor, target=student.profile, message=message)
+		# send mass email
+		
+	@staticmethod
+	def get_zipped_choices(queryset, hashid_name):
+		names, hashids = list(), list()
+		names.append('---------'); hashids.append('') # default
+		for q in queryset:
+			names.append(q.profile.username) # for STUDENT
+			hashids.append(getattr(settings, hashid_name).encode(q.pk))
+		return zip(hashids, names)
+	
+	class Meta:
+		model = PlacementSession
+		fields = ['students']
+
 
 class DissociationForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
