@@ -45,27 +45,26 @@ def college_signup(request):
 				return render(request, 'account/post_signup.html', context)
 	return render(request, 'college/signup.html', {'college_signup_form': f})
 
-@require_user_types(['C'])
 @login_required
 @require_http_methods(['GET','POST'])
 def create_college(request, **kwargs):
-##	if request.user.type == 'C':
-	if request.method == 'GET':
-		f = CollegeCreationForm()
-		try:
-			college = request.user.college
-			return redirect(settings.HOME_URL['C'])
-		except College.DoesNotExist:
-			pass
+	if request.user.type == 'C':
+		if request.method == 'GET':
+			f = CollegeCreationForm()
+			try:
+				college = request.user.college
+				return redirect(settings.HOME_URL['C'])
+			except College.DoesNotExist:
+				pass
+		else:
+			f = CollegeCreationForm(request.POST, request.FILES)
+			if f.is_valid():
+				college = f.save(profile=request.user)
+				f.save_m2m()
+				return redirect(settings.HOME_URL['C'])
+		return render(request, 'college/create.html', {'college_creation_form': f})
 	else:
-		f = CollegeCreationForm(request.POST, request.FILES)
-		if f.is_valid():
-			college = f.save(profile=request.user)
-			f.save_m2m()
-			return redirect(settings.HOME_URL['C'])
-	return render(request, 'college/create.html', {'college_creation_form': f})
-##	else:
-##		return handle_user_type(request, redirect_request=True)
+		return handle_user_type(request, redirect_request=True)
 
 @require_user_types(['C'])
 @login_required

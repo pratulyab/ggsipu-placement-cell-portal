@@ -37,26 +37,26 @@ def company_signup(request):
 	else:
 		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
-@require_user_types(['CO'])
+#@require_user_types(['CO'])
 @login_required
 @require_http_methods(['GET','POST'])
 def create_company(request, **kwargs):
-##	if request.user.type == 'CO':
-	if request.method == 'GET':
-		f = CompanyCreationForm()
-		try:
-			company = request.user.company
-			return redirect(settings.HOME_URL['CO'])
-		except Company.DoesNotExist:
-			pass
+	if request.user.type == 'CO':
+		if request.method == 'GET':
+			f = CompanyCreationForm()
+			try:
+				company = request.user.company
+				return redirect(settings.HOME_URL['CO'])
+			except Company.DoesNotExist:
+				pass
+		else:
+			f = CompanyCreationForm(request.POST, request.FILES)
+			if f.is_valid():
+				company = f.save(profile=request.user)
+				return redirect(settings.HOME_URL['CO'])
+		return render(request, 'company/create.html', {'company_creation_form': f})
 	else:
-		f = CompanyCreationForm(request.POST, request.FILES)
-		if f.is_valid():
-			company = f.save(profile=request.user)
-			return redirect(settings.HOME_URL['CO'])
-	return render(request, 'company/create.html', {'company_creation_form': f})
-##	else:
-##		return handle_user_type(request, redirect_request=True)
+		return handle_user_type(request, redirect_request=True)
 
 @require_user_types(['CO'])
 @login_required

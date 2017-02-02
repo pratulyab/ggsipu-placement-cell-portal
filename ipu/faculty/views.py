@@ -43,13 +43,11 @@ def faculty_signup(request):
 	else:
 		return handle_user_type(request, redirect_request=True)
 
-@require_user_types(['F'])
 @login_required
 @require_http_methods(['GET','POST'])
 def edit_create_faculty(request, **kwargs):
 	if request.is_ajax():
-##		if request.user.type == 'F' and request.method == 'POST':
-		if request.method == 'POST':
+		if request.user.type == 'F' and request.method == 'POST':
 			faculty = request.user.faculty
 			f = FacultyProfileForm(request.POST, request.FILES, instance=faculty)
 			photo = faculty.photo
@@ -71,20 +69,20 @@ def edit_create_faculty(request, **kwargs):
 			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
 # To handle initial creation form
-##		if request.user.type == 'F':
-		context = {}
-		if request.method == 'GET':
-			f = FacultyProfileForm(instance=request.user.faculty)
+		if request.user.type == 'F':
+			context = {}
+			if request.method == 'GET':
+				f = FacultyProfileForm(instance=request.user.faculty)
+			else:
+				f = FacultyProfileForm(request.POST, request.FILES, instance=request.user.faculty)
+				if f.is_valid():
+					f.save()
+					if f.has_changed():
+						context['update'] = True
+			context['faculty_edit_create_form'] = f
+			return render(request, 'faculty/edit_create.html', context)
 		else:
-			f = FacultyProfileForm(request.POST, request.FILES, instance=request.user.faculty)
-			if f.is_valid():
-				f.save()
-				if f.has_changed():
-					context['update'] = True
-		context['faculty_edit_create_form'] = f
-		return render(request, 'faculty/edit_create.html', context)
-##		else:
-##			return handle_user_type(request, redirect_request=True)
+			return handle_user_type(request, redirect_request=True)
 
 @require_user_types(['F'])
 @login_required
