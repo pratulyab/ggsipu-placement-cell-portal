@@ -776,4 +776,9 @@ form h5 {
    width: 100%;
 
 }
+
+#notifications_badge
+{
+  display: none;
+}
 }

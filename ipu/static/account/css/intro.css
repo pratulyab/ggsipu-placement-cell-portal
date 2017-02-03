@@ -1,4 +1,77 @@
-html
-{
-	background:white;
-}
+html, body, .block {
+        height: 100%;
+      }
+      nav ul li a:hover, nav ul li a.active {
+        background-color: rgba(0,0,0,.1);
+      }
+      footer {
+        padding-left: 0;
+      }
+
+      #corner-button
+      {
+        position: fixed;
+        top: 0px;
+        left: 20px;
+        z-index: 654654656515;
+      }
+
+      #data
+      {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        padding-top: 80px;
+      }
+      #data ul li
+      {
+        margin-top: 5px;
+        font-weight: bold;
+        font-size: 17px;
+        list-style-type: disc
+      }
+
+       #data-img
+      {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 10px;
+        padding-top: 70px;
+      }
+
+      #img-line
+      {
+        display: flex;
+        height: 300px;
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      #boxes
+      {
+        width: 100%;
+        display: flex;
+        margin-top: 80px;
+      }
+      .box
+      {
+        background-color: white;
+        margin: 2%;
+        width: 20%;
+        min-height: 50px;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 5px;
+        box-shadow: 10px 10px 5px #888888;
+        border-radius: 5%;
+      }
+      .box h5
+      {
+        font-size: 20px;
+        font-family: "Arial"
+      }

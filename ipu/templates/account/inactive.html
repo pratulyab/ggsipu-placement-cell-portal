@@ -3,18 +3,21 @@
 {% block title %}Account Inactive{% endblock title %}
 {% block head %} <link type="text/css" rel="stylesheet" href="{% static 'student/inactive.css'%}"  media="screen,projection"/> {% endblock %}
 {% block content %}
-	<div class="container blue-text">
+	<div class="container teal-text" id="main-box">
 		<div class="row">
 			<div class="col s8 offset-s2">
-				<h3> Oops... </h3>
-				<br>
-				<p> Your account is inactive. </p>
-				<p> We've emailed you the instructions for activating account to your registered email address {{ user.email }}.</p>
+				<h5 style="color: #1c262f;"> Your account is inactive. </h5>
+				<p> We've emailed you the instructions for activating the account to your registered email address {{ user.email }}.</p>
 				<p> If you don't receive an email, please make sure you've entered the correct email address you registered with, and check your spam folder. </p>
 			</div>
 		</div>
 		<div class="row">
-			<h2 class="col s8 offset-s2"> Hope to see you soon! </h2>
+			<h5 class="col s8 offset-s2" style="color: #1c262f;margin-bottom: 2px;"> Hope to see you soon! </h5>
+		</div>
+		<div class="row">
+			<a class="col s2 offset-s5 waves-effect waves-light btn" href="{% url 'auth' %}">Back</a>
 		</div>
 	</div>
 {% endblock content %}
+
+Red.carpet@009
