@@ -207,7 +207,7 @@ class EditCriteriaForm(forms.ModelForm):
 	)
 
 	def __init__(self, *args, **kwargs):
-		self.session = kwargs.pop('session')
+		self.session = kwargs.pop('session') # Required because instance will be SelectionCriteria
 		super(EditCriteriaForm, self).__init__(*args, **kwargs)
 		self.max_year = int(self.session.association.programme.years)
 		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.session.pk)
@@ -232,7 +232,7 @@ class EditCriteriaForm(forms.ModelForm):
 	def save(self, commit=True, *args, **kwargs):
 		# Won't be calling model form's save method
 		data = self.cleaned_data
-		criterion, created = SelectionCritera.objects.get_or_create(years=data['years'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
+		criterion, created = SelectionCriteria.objects.get_or_create(years=data['years'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
 		return criterion
 	
 	class Meta:

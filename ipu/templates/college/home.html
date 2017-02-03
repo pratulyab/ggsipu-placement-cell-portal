@@ -58,7 +58,7 @@
 {% block menu_icon_dropdown %}
 	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light3').style.display='flex';document.getElementById('fade3').style.display='flex'">Add Faculty</a></li>
 	<li class="divider"></li>
-	<li><a href="{% url 'manage_dummy' %}" >Manage Dummy Company</a></li>
+	<li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
 {% endblock %}
 
 {% block user_type %}
@@ -204,6 +204,7 @@
 	<script type="text/javascript" src="{% static 'notification/college.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/associate.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();
@@ -212,6 +213,7 @@
 			Settings.init(['edit-account-form', 'edit-profile-form', 'social-profile-form', 'create-faculty-form']);
 			Associate.init(['associate-form']);
 			Request.init();
+			Mobile.init();
 		});
 	</script>
 {% endblock scripts %}

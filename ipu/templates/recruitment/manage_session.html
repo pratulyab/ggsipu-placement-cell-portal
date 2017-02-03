@@ -16,13 +16,77 @@
 {% block tabs_content %}
 <!--                    -->
 <div id="session-details" class="col s12">
-	{{ association.str }}
+	<h4 class="center light-blue-text text-darken-4">{% if association.type == 'J' %}Job{% else %}Internship{% endif %} Session</h4>
+	<div class="col s12 m6">
+		<div class="card">
+			<div class="card-image waves-effect waves-block waves-light">
+				<img class="activator" height=250 width=250 src="" style="background-color:#e1f5fe" />
+			</div>
+				{% if user.type == 'C' %}
+					<div class="card-content">
+						<span class="card-title activator grey-text text-darken-4">{{ association.company }}<i class="fa fa-ellipsis-v right"></i></span>
+						<p><a href="{{ association.company.get_absolute_url }}">Company Profile</a></p>
+					</div>
+					<div class="card-reveal">
+						<span class="card-title grey-text text-darken-4">{{ association.company }}<i class="fa fa-times right"></i></span>
+						<p><b>Salary:</b> {{ association.salary }} Lakhs per annum</p>
+						<p><b>Status:</b> {{ session.status }} </p>
+						<p><b>Details:</b> {{ association.desc }} </p>
+						<p><b>Has The Session Ended? </b> {{ session.ended | yesno:"Yes,No"}} </p>
+						{% include 'recruitment/criteria.html' with criterion=session.selection_criteria %}
+					</div>
+				{% else %}
+					<div class="card-content">
+						<span class="card-title activator grey-text text-darken-4">{{ association.college }}<i class="fa fa-ellipsis-v right"></i></span>
+						<p><a href="{{ association.college.get_absolute_url }}">College Profile</a></p>
+					</div>
+					<div class="card-reveal">
+						<span class="card-title grey-text text-darken-4">{{ association.college }}<i class="fa fa-times right"></i></span>
+						<p><b>Salary:</b> {{ association.salary }} Lakhs per annum</p>
+						<p><b>Status:</b> {{ session.status }} </p>
+						<p><b>Details:</b> {{ association.desc }} </p>
+						<p><b>Has The Session Ended? </b> {{ session.ended | yesno:"Yes,No"}} </p>
+						{% include 'recruitment/criteria.html' with criterion=session.selection_criteria %}
+					</div>
+				{% endif %}
+		</div>
+	</div>
+	<div class="col s12 m6">
+		<div class="col s12">
+			<div class="card teal lighten-5">
+				<div class="card-content teal-text">
+					<span class="card-title"><b>{{ association.programme }}</b></span>
+					<p>{% for stream in association.streams.all %} {{ stream.name | title }},{% endfor %}</p>
+				</div>
+            </div>
+		</div>
+		<div class="col s12">
+			<div class="card deep-purple lighten-5">
+				<div class="card-content deep-purple-text">
+					<span class="card-title"><b>Enrolments</b></span>
+					{% with session.students.count as count %}
+						<p><b>{{ count }}</b> student{{ count | pluralize }} {{count|pluralize:"is,are"}} currently enrolled.</p>
+					{% endwith %}
+				</div>
+            </div>
+		</div>
+		<div class="col s12">
+			<div class="card pink lighten-5">
+				<div class="card-content pink-text">
+					<span class="card-title"><b>Application Deadline</b></span>
+					{% with session.application_deadline as deadline %}
+						<p>{{ deadline|date:"d F Y, l" }}{% if deadline >= deadline.today %}&emsp;({{ deadline|timeuntil }} left){% endif %}</p>
+					{% endwith %}
+				</div>
+            </div>
+		</div>
+	</div>
 </div>
 <!--                                     -->
 <div id="session-students" class="col s12 m10 offset-m1">
 	<div class="col s12">
 		<h4 class="center" style="color: goldenrod;">Alter Students' List</h4>
-		<form action="{% url 'manage_session_students' sess_hashid=sess_hashid %}" method='POST' class="col s12 m8 offset-m2" id="create-dummy-session-form">
+		<form action="{% url 'manage_session_students' sess_hashid=sess_hashid %}" method='POST' class="col s12 m8 offset-m2" id="manage-session-students-form">
 			{% csrf_token %}
 			{% form form=manage_session_students_form %}{% endform %}
 			<div class="row">
@@ -35,7 +99,7 @@
 	<div id="edit-criteria" class="col s12">
 		<div class="col s12">
 			<h4 class="center" style="color: goldenrod;">Edit Selection Criteria</h4>
-			<form action="{% url 'edit_criteria' sess_hashid=sess_hashid %}" method='POST' class="col s12 m8 offset-m2" id="create-dummy-session-form">
+			<form action="{% url 'edit_criteria' sess_hashid=sess_hashid %}" method='POST' class="col s12 m8 offset-m2" id="edit-criteria-form">
 				{% csrf_token %}
 				{% form form=edit_criteria_form %}{% endform %}
 				<div class="row">
@@ -48,7 +112,7 @@
 	<div id="edit-session" class="col s12">
 		<div class="col s12">
 			<h4 class="center" style="color: goldenrod;">Edit Session Details</h4>
-			<form action="{% url 'edit_session' sess_hashid=sess_hashid %}" method='POST' class="col s12 m8 offset-m2" id="create-dummy-session-form">
+			<form action="{% url 'edit_session' sess_hashid=sess_hashid %}" method='POST' class="col s12 m8 offset-m2" id="edit-session-form">
 				{% csrf_token %}
 				{% form form=edit_session_form %}{% endform %}
 				<div class="row">
@@ -59,15 +123,14 @@
 	</div>
 <!--                                     -->
 {% endblock tabs_content %}
-<!--
 {% block scripts %}
 
-	<script type="text/javascript" src="{# static 'common/settings.js' #}"></script>
-	<script type="text/javascript" src="{# static 'dummy_company/create_session.js' #}"></script>
+	<script type="text/javascript" src="{% static 'recruitment/manage.js' %}"></script>
+	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
-//		$(document).ready(function() {
-//			Settings.init(['create-dummy-company-form']);
-//			DSession.init();
-//		});
+		$(document).ready(function() {
+			ManageSession.init(['manage-session-students-form', 'edit-criteria-form', 'edit-session-form']);
+		});
 	</script>
-{% endblock %}-->
+{% endblock scripts %}
+

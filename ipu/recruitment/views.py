@@ -15,7 +15,7 @@ from college.models import College
 from company.models import Company
 from dummy_company.models import DummyCompany, DummySession
 from faculty.models import Faculty
-#from recruitment.forms import AssociationForm, SessionEditForm, DissociationForm, CreateSessionCriteriaForm, CriteriaEditForm
+from notification.models import Notification
 from recruitment.forms import AssociationForm, EditSessionForm, DissociationForm, CreateSessionCriteriaForm, EditCriteriaForm, ManageSessionStudentsForm
 from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
 from recruitment.utils import get_excel_structure
@@ -91,7 +91,7 @@ def edit_criteria(request, sess_hashid, **kwargs):
 		return JsonResponse(status=400, data={'error': 'It\'s not your placement session to manage!'})
 	POST = request.POST.copy()
 	POST['years'] = ','.join(POST.getlist('years'))
-	f = EditCriteriaForm(POST, instance=session.selection_criteria)
+	f = EditCriteriaForm(POST, instance=session.selection_criteria, session=session)
 	if f.is_valid():
 		criterion = f.save() # Not the typical save. Using get_or_create in form's save w/o calling super save
 		session.selection_criteria = criterion
@@ -99,8 +99,8 @@ def edit_criteria(request, sess_hashid, **kwargs):
 		session.save()
 	# Notifying the other party
 		actor, target = (profile, session.association.college) if user_type == 'CO' else (profile, session.association.company)
-		message = '%s updated the selection criteria for one of the placement session.' % (actor)
-		message += '\nTo review, visit http://%s' % (get_current_site(request) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
+		message = '%s updated %s for one of the placement session.' % (actor, ', '.join(f.changed_data))
+		message += '\nTo review, visit <a href="http://%s">this link.</a>' % (str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
 		Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
 		return JsonResponse(status=200, data={'success': True, 'success_msg': 'Selection Criteria has been updated successfully'})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
@@ -133,8 +133,8 @@ def edit_session(request, sess_hashid, **kwargs):
 		session.save()
 	# Notifying the other party
 		actor, target = (profile, session.association.college) if user_type == 'CO' else (profile, session.association.company)
-		message = '%s updated the placement session fields. ' % (actor)
-		message += "\nTo review, visit http://%s" % (get_current_site(request) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
+		message = '%s updated the placement session fields: %s. ' % (actor, ', '.join(f.changed_data))
+		message += '\nTo review, visit <a href="http://%s">this link.</a>' % (str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
 		Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
 		return JsonResponse(status=200, data={'success': True, 'success_msg': 'Placement Session has been updated successfully'})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
@@ -424,7 +424,7 @@ def mysessions(request):
 				assoc = s.association
 				data = {}
 				data['sessobj'] = s
-				data['sessid'] = settings.HASHID_PLACEMENTSESSION.encode(s.pk)
+				data['sess_hashid'] = settings.HASHID_PLACEMENTSESSION.encode(s.pk)
 				data['salary'] = "%d LPA" % assoc.salary
 				data['college'] = assoc.company.name.title()
 				data['type'] = "Internship" if assoc.type == 'I' else "Job"
