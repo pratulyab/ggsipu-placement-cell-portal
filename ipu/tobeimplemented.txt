@@ -1,7 +1,8 @@
 -- PRIMARY --
+Filter Students
+Search html
 Preloader
 Toasts
-Initials
 
 -- SECONDARY -- 
 Downloading resumes -- ZIP

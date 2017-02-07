@@ -8,6 +8,10 @@
 {% block home_url4 %}{% url 'college_home' %}{% endblock %}
 {% block pagetitle %}Manage Dummy Company{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
+
+{% endblock %}
 
 {% block user_photo2 %}
 	{% if college.photo %}
@@ -49,6 +53,21 @@
 	{{ college.profile.email }}
 {% endblock %}
 
+{% block lightbox_data %}
+	<div id="light3" class="white_content3">
+		<h4 style="color: goldenrod;">Notify All Students</h4>
+		<form method='POST' action="#!" id="notify-session-students-form">
+			{% csrf_token %}
+			{% form form=notify_session_students_form %}{% endform %}
+			<div class="row center">
+				<button class="btn btn-waves" style="width: 100%">Submit</button>
+			</div>
+		</form>
+		<a href = "javascript:void(0)" onclick = "document.getElementById('light3').style.display='none'; document.getElementById('fade3').style.display='none'; "><i class="fa fa-times fa-2x"></i></a>
+	</div>
+	<div id="fade3" class="black_overlay3"></div>
+ {% endblock %}
+
 {% block side_nav_links %}
 	<li><a class="waves-effect" href="#!"><i class="fa fa-home" aria-hidden="true"></i>
             Home</a></li>
@@ -70,7 +89,6 @@
 {% block tabs %}
 	<li class="tab col s3"><a class="active" href="#createdc">Create Dummy Company</a></li>
 	<li class="tab col s3"><a class="" href="#createds">Create Dummy Session</a></li>
-	<li class="tab col s3"><a class="" href="#edit">Edit Criteria</a></li>
 	<li id="dsessions" class="tab col s3"><a class="" href="#dsess">Dummy Sessions</a></li>
 {% endblock tabs %}
 {% block tabs_content %}
@@ -126,14 +144,13 @@
 	</div>
 </div>
 <!--                                     -->
-	<div id="edit" class="col s12"></div>
-<!--                                     -->
 	<div id="dsess" class="col s12"></div>
 <!--                                     -->
 {% endblock tabs_content %}
 {% block scripts %}
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
 	<script type="text/javascript" src="{% static 'dummy_company/create_session.js' %}"></script>
+	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Settings.init(['create-dummy-company-form']);

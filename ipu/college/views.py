@@ -14,6 +14,7 @@ from account.utils import handle_user_type, get_relevant_reversed_url
 from college.forms import CollegeCreationForm, CollegeEditForm
 from college.models import College
 from faculty.forms import FacultySignupForm
+from notification.forms import NotifySessionStudentsForm
 from notification.models import Notification
 from recruitment.models import PlacementSession
 from recruitment.forms import AssociationForm
@@ -81,7 +82,7 @@ def college_home(request, **kwargs):
 	context['college'] = college
 	context['edit_account_form'] = AccountForm(instance=user)
 	context['edit_college_form'] = CollegeEditForm(instance=college)
-	context['create_faculty_form'] = FacultySignupForm()
+	context['notify_session_students_form'] = NotifySessionStudentsForm()
 	context['association_form'] = AssociationForm(profile=college)
 	try:
 		context['social_profile_form'] = SocialProfileForm(instance=user.social)

@@ -8,13 +8,14 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
-from account.decorators import require_user_types
+from account.decorators import require_user_types, require_AJAX
 from account.utils import handle_user_type, get_relevant_reversed_url, get_type_created
 from college.models import College
 from company.models import Company
-from dummy_company.forms import CreateDummyCompanyForm, EditDummyCompanyForm, CreateDummySessionForm, EditDummySessionForm, ChooseDummyCompanyForm, CreateSelectionCriteriaForm
+from dummy_company.forms import CreateDummyCompanyForm, EditDummyCompanyForm, CreateDummySessionForm, EditDummySessionForm, ChooseDummyCompanyForm, CreateSelectionCriteriaForm, ManageDummySessionStudentsForm, EditDummySessionForm, EditDCriteriaForm
 from dummy_company.models import DummyCompany, DummySession
 from faculty.models import Faculty
+from notification.forms import NotifySessionStudentsForm
 from recruitment.models import SelectionCriteria
 from recruitment.utils import get_excel_structure
 from student.models import Student, Programme, Stream
@@ -30,7 +31,29 @@ def manage_dummy_company(request, **kwargs):
 	college = kwargs.pop('profile')
 	if user_type == 'F':
 		college = college.college
-	return render(request, 'dummy_company/manage_dummy_company.html', context={'create_dummy_company_form': CreateDummyCompanyForm(), 'choose_dummy_company_form': ChooseDummyCompanyForm(college=college), 'create_dummy_session_form': CreateDummySessionForm(college=college), 'create_selection_criteria_form': CreateSelectionCriteriaForm(), 'college': college})
+	return render(request, 'dummy_company/manage_dummy_company.html', context={'create_dummy_company_form': CreateDummyCompanyForm(), 'choose_dummy_company_form': ChooseDummyCompanyForm(college=college), 'create_dummy_session_form': CreateDummySessionForm(college=college), 'create_selection_criteria_form': CreateSelectionCriteriaForm(), 'college': college, 'notify_session_students_form': NotifySessionStudentsForm()})
+
+@require_user_types(['C', 'F'])
+@login_required
+@require_GET
+def manage_dummy_session(request, dsess_hashid, profile, user_type, **kwargs):
+	if user_type == 'F':
+		profile = profile.college
+	try:
+		dsession_pk = settings.HASHID_DUMMY_SESSION.decode(dsess_hashid)[0]
+		dsession = DummySession.objects.get(dummy_company__college=profile, pk=dsession_pk)
+	except:
+		return JsonResponse(status=400, data={'error': 'Sorry, there\'s nothing here to manage.'})
+	context = {
+		'dcompany': dsession.dummy_company,
+		'dsession': dsession,
+		'dsess_hashid': dsess_hashid,
+		'manage_dsession_students_form': ManageDummySessionStudentsForm(instance=dsession),
+		'edit_dcriteria_form': EditDCriteriaForm(instance=dsession.selection_criteria, dsession=dsession),
+		'edit_dsession_form': EditDummySessionForm(instance=dsession),
+		'home_url': reverse(settings.HOME_URL['C'] if user_type == 'C' else settings.HOME_URL['F']),
+	}
+	return render(request, 'dummy_company/manage_dummy_session.html', context=context)
 
 @require_user_types(['C', 'F'])
 @login_required
@@ -169,43 +192,6 @@ def create_dummy_session(request, **kwargs):
 
 @require_user_types(['C', 'F'])
 @login_required
-@require_http_methods(['GET', 'POST'])
-def edit_dummy_session(request, sess_hashid, **kwargs):
-	if request.is_ajax():
-		requester = get_type_created(request.user)
-		user_type = requester.pop('user_type')
-		if not requester:
-			return JsonResponse(status=403, data={'location': reverse(settings.PROFILE_CREATION_URL[user_type])})
-		post_hashid = request.POST.get('token', None)
-		if post_hashid != sess_hashid:
-			return JsonResponse(status=400, data={'error': 'Invalid request.'})
-		college = requester['profile']
-		if user_type == 'F':
-			college = college.college
-		try:
-			dsession_pk = settings.HASHID_DUMMY_SESSION.decode(sess_hashid)[0]
-			dsession = DummySession.objects.get(dummy_company__college=college, pk=dsession_pk)
-		except:
-			return JsonResponse(status=400, data={'error': 'Invalid request.'})
-		if request.method == 'POST':
-			f = EditDummySessionForm(request.POST, instance=dsession, college=college)
-			if f.is_valid():
-				f.save()
-				try:
-					f.save_m2m()
-				except IntegrityError as error:
-					return JsonResponse(status=400, data={'error': error.__str__()})
-				return JsonResponse(data={'success': True, 'location': '/'})
-			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
-		else:
-			f = EditDummySessionForm(instance=dsession, college=college)
-			context = {'edit_dsession_form': f}
-			return JsonResponse(data = {'success': True, 'html': render(request, 'dummy_company/edit_dsession.html', context).content.decode('utf-8')})
-	else:
-		raise PermissionDenied
-
-@require_user_types(['C', 'F'])
-@login_required
 @require_GET
 def dummy_excel(request, dsess, **kwargs):
 	requester = get_type_created(request.user)
@@ -269,7 +255,7 @@ def my_dummy_sessions(request, **kwargs):
 	for ds in dsessions:
 		data = {}
 		data['dsessobj'] = ds
-		data['dsessid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
+		data['dsess_hashid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
 		data['salary'] = "%d LPA" % ds.salary
 		data['dcompany'] = ds.dummy_company.name.title()
 		data['type'] = "Internship" if ds.type == 'I' else "Job"
@@ -278,3 +264,97 @@ def my_dummy_sessions(request, **kwargs):
 		dsessions_list.append(data)
 	html = render(request, 'dummy_company/dummy_sessions.html', {'dsessions': dsessions_list}).content.decode('utf-8')
 	return JsonResponse(status=200, data={'html': html})
+
+@require_user_types(['C', 'F'])
+@require_AJAX
+@login_required
+@require_POST
+def manage_dsession_students(request, dsess_hashid, user_type, profile, **kwargs):
+	if user_type == 'F':
+		profile = profile.college
+	token = request.POST.get('token', None)
+	if token != dsess_hashid:
+		return JsonResponse(status=400, data={'error': 'Invalid request.'})
+	try:
+		dsession_pk = settings.HASHID_DUMMY_SESSION.decode(dsess_hashid)[0]
+		dsession = DummySession.objects.get(pk=dsession_pk, dummy_company__college=profile)
+	except:
+		return JsonResponse(status=400, data={'error': 'Sorry, you can\'t make this request.'})
+	f = ManageDummySessionStudentsForm(request.POST, instance=dsession)
+	if f.is_valid():
+		f.save_m2m()
+		f.notify_disqualified_students(actor=profile.profile)
+		return JsonResponse(status=200, data={'success_msg': "List has been modified successfully"})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+	
+@require_user_types(['C', 'F'])
+@require_AJAX
+@login_required
+@require_POST
+def edit_dcriteria(request, dsess_hashid, user_type, profile, **kwargs):
+	if user_type == 'F':
+		profile = profile.college
+	token = request.POST.get('token', None)
+	if token != dsess_hashid:
+		return JsonResponse(status=400, data={'error': 'Invalid request.'})
+	try:
+		dsession_pk = settings.HASHID_DUMMY_SESSION.decode(dsess_hashid)[0]
+		dsession = DummySession.objects.get(pk=dsession_pk, dummy_company__college=profile)
+	except:
+		return JsonResponse(status=400, data={'error': 'Sorry, you can\'t make this request.'})
+	POST = request.POST.copy()
+	POST['years'] = ','.join(POST.getlist('years'))
+	f = EditDCriteriaForm(POST, instance=dsession.selection_criteria, dsession=dsession)
+	if f.is_valid():
+		criterion = f.save()
+		dsession.selection_criteria = criterion
+		dsession.save()
+		return JsonResponse(status=200, data={'success_msg': "Selection Criteria has been updated successfully"})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+
+@require_user_types(['C', 'F'])
+@require_AJAX
+@login_required
+@require_POST
+def edit_dummy_session(request, dsess_hashid, user_type, profile, **kwargs):
+	if user_type == 'F':
+		profile = profile.college
+	token = request.POST.get('token', None)
+	if token != dsess_hashid:
+		return JsonResponse(status=400, data={'error': 'Invalid request.'})
+	try:
+		dsession_pk = settings.HASHID_DUMMY_SESSION.decode(dsess_hashid)[0]
+		dsession = DummySession.objects.get(pk=dsession_pk, dummy_company__college=profile)
+	except:
+		return JsonResponse(status=400, data={'error': 'Sorry, you can\'t make this request.'})
+	f = EditDummySessionForm(request.POST, instance=dsession)
+	if f.is_valid():
+		f.save()
+		if 'ended' in f.changed_data:
+			message = "Congratulations! "
+			if dsession.type == 'J':
+				message += "You have been placed at %s. " % (dsession.dummy_company.name.title())
+			else:
+				message += "You have grabbed the internship at %s. " % (dsession.dummy_company.name.title())
+			for student in dsession.students.all():
+				Notification.objects.create(actor=profile, target=student.profile, message=message)
+		return JsonResponse(data={'success': True, 'success_msg': 'Session Details have been updated successfully'})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+
+@require_user_types(['C', 'F'])
+@require_AJAX
+@login_required
+@require_POST
+def notify_dsession(request, dsess_hashid, user_type, profile):
+	if user_type == 'F':
+		profile = profile.college
+	try:
+		dsession_pk = settings.HASHID_DUMMY_SESSION.decode(dsess_hashid)[0]
+		dsession = DummySession.objects.get(dummy_company__college=profile, pk=dsession_pk)
+	except:
+		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+	f = NotifySessionStudentsForm(request.POST)
+	if f.is_valid():
+		f.notify_all(students=dsession.students.all())
+		return JsonResponse(status=200, data={'success_msg': 'Done.'})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})

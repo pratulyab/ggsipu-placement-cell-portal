@@ -597,13 +597,19 @@ form#search input {
 
 .vertical-tabs .tabs .active {
 	color: #1c262f !important;
-	background-color: lightcoral !important;
+	background-color: rgba(51, 122, 183, 0.26) !important;
 	border-radius: 8px;
 }
 
 .vertical-tabs ul.tabs li.tab a:hover {
-	color: white !important;
-	background-color: #00bcba !important;
+	color: #02b3e4 !important;
+	background: none !important;
+	border-radius: 8px;
+}
+
+.vertical-tabs ul.tabs li.tab a.active:hover {
+	color: #02b3e4 !important;
+	background-color: rgba(51, 122, 183, 0.26) !important;
 	border-radius: 8px;
 }
 
@@ -618,7 +624,7 @@ form#search input {
 }
 
 .side-nav a {
-    font-size: 14px;
+    font-size: 14px !important;
     font-weight: 500;
     height: 48px;
     line-height: 48px;
@@ -776,4 +782,13 @@ form h5 {
    width: 100%;
 
 }
+
+form h5 {
+	text-align: center;
+}
+
+/*#main-tabs .collapsible-header i{
+	font-size: 1.2rem !important;
+}
+*/
 }

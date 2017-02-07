@@ -1,0 +1,12 @@
+{% load staticfiles %}
+{% load material_form %}
+<div class="col s12" style="margin-top: 7%">
+	<h4 class="center" style="color: goldenrod;">Choose Permissions</h4>
+<form action="{% url 'edit_faculty_perms' f_hashid %}" method='POST' class="col s12 m10 offset-m1" id="edit-faculty-perms-form">
+	{% csrf_token %}
+	{% form form=edit_faculty_perms_form %}{% endform %}
+	<div class="row">
+		<button class="btn btn-waves col s10 m8 offset-s1 offset-m2" type="submit">Modify Permissions</button>
+	</div>
+</form>
+</div>

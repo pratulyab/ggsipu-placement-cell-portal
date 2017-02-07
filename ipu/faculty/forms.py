@@ -1,12 +1,14 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth import password_validation
+from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser
 from faculty.models import Faculty
+#from recruitment.fields import ModelHashidChoiceField
 from student.models import Student
 import re
 from material import *
@@ -121,3 +123,27 @@ class EnrollmentForm(forms.Form):
 			except Student.DoesNotExist:
 				raise forms.ValidationError(_('Student hasn\'t created his profile. Ask him to create one by logging in from his account.'))
 		return self.cleaned_data
+
+class EditGroupsForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(EditGroupsForm, self).__init__(*args, **kwargs)
+		self.initial['token'] = settings.HASHID_FACULTY.encode(self.instance.pk)
+	
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
+
+	class Meta:
+		model = CustomUser
+		fields = ['groups']
+
+class ChooseFacultyForm(forms.Form):
+	faculty = forms.ModelChoiceField(label="Faculty", queryset=None , widget=forms.Select(), help_text=_("Choose Faculty To Edit"))
+	def __init__(self, *args, **kwargs):
+		self.college = kwargs.pop('college')
+		super(ChooseFacultyForm, self).__init__(*args, **kwargs)
+		faculties = self.college.faculties.all()
+		names_list = []; hashids_list = [];
+#		names_list.append('------------'); hashids_list.append('');
+		for f in faculties:
+			names_list.append(f.get_full_name())
+			hashids_list.append(settings.HASHID_FACULTY.encode(f.pk))
+		self.fields['faculty'].widget.choices = zip(hashids_list, names_list)

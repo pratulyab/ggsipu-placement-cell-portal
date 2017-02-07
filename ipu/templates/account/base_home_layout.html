@@ -116,19 +116,22 @@
 <!--navbar ends-->
 
 <!--sidebar begins-->
- 
+
  <ul id="slide-out" class="side-nav">
-    <li><div class="userView">
-      <div class="background">
-        <img src="{% static 'images/bgs2.jpg' %}" width="100%">
-      </div>
-      <a href="#!user">{% block user_photo %}{% endblock %}</a>
-      <a href="#!name"><span class="white-text name">{% block user_name_card %}{% endblock %}</span></a>
-      <a href="#!email"><span class="white-text email">{% block user_email_id %}{% endblock %}</span></a>
-    </div></li>
-    {% block side_nav_links %}
-    {% endblock %}
-      <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Logout</a></li>
+ 	<li>
+		<div class="userView">
+			<div class="background">
+				<img src="{% static 'images/bgs2.jpg' %}" width="100%">
+			</div>
+			<a href="#!user">{% block user_photo %}{% endblock %}</a>
+			<a href="#!name"><span class="white-text name">{% block user_name_card %}{% endblock %}</span></a>
+			<a href="#!email"><span class="white-text email">{% block user_email_id %}{% endblock %}</span></a>
+		</div>
+	</li>
+	<ul id="main-tabs">
+	    {% block side_nav_links %}{% endblock %}
+		<li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Logout</a></li>
+	</ul>
   </ul>
 
 <!--sidebar ends-->

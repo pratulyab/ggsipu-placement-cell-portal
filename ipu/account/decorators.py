@@ -5,27 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from account.utils import get_relevant_reversed_url, get_type_created, render_profile_creation
-'''
-def require_user_types(user_types_list):
-	"""
-		This decorator allows the logged in users of particular types, provided in the list.
-		It doesn't check for user authentication. Therefore, if authentication is required,
-		you MUST call this decorator after the login_required. (place above login_required)
-		Eg. 
-			@require_user_types(['C', 'F'])
-			@login_required
-			def foo:
-				...
-	"""
-	def decorator(func):
-		@wraps(func)
-		def inner(request, *args, **kwargs):
-			if request.user.type in user_types_list:
-				return func(request, *args, **kwargs)
-			return redirect(get_relevant_reversed_url(request))
-		return inner
-	return decorator
-'''
+
 def require_user_types(user_types_list):
 	"""
 		This decorator allows the logged in users of particular types, provided in the list.
@@ -37,10 +17,15 @@ def require_user_types(user_types_list):
 			def foo:
 				...
 		This also sets the user_type and profile of the user. If profile hasn't been created, user is automatically redirected to creation page.
+		
+		CAUTION: Don't use these for creation functions because this decorator redirects the user to creation url if he hasn't created his profile yet.
+				 Otherwise, multiple redirects.
 	"""
 	def decorator(func):
 		@wraps(func)
 		def inner(request, *args, **kwargs):
+			if request.user.is_anonymous():
+				return redirect(settings.LOGIN_URL)
 			if request.user.type in user_types_list:
 				requester = get_type_created(request.user)
 				user_type = requester.pop('user_type')

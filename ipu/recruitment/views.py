@@ -15,6 +15,7 @@ from college.models import College
 from company.models import Company
 from dummy_company.models import DummyCompany, DummySession
 from faculty.models import Faculty
+from notification.forms import NotifySessionStudentsForm
 from notification.models import Notification
 from recruitment.forms import AssociationForm, EditSessionForm, DissociationForm, CreateSessionCriteriaForm, EditCriteriaForm, ManageSessionStudentsForm
 from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
@@ -131,11 +132,24 @@ def edit_session(request, sess_hashid, **kwargs):
 		session = f.save(commit=False)
 		session.last_modified_by = 'CO' if user_type == 'CO' else 'C'
 		session.save()
+		if 'salary' in f.changed_data:
+			association = session.association
+			association.salary = f.cleaned_data['salary']
+			association.save()
 	# Notifying the other party
 		actor, target = (profile, session.association.college) if user_type == 'CO' else (profile, session.association.company)
 		message = '%s updated the placement session fields: %s. ' % (actor, ', '.join(f.changed_data))
 		message += '\nTo review, visit <a href="http://%s">this link.</a>' % (str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
 		Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
+		if 'ended' in f.changed_data:
+			association = session.association
+			message = "Congratulations! "
+			if association.type == 'J':
+				message += "You have been placed at %s. " % (association.company.name.title())
+			else:
+				message += "You have grabbed the internship at %s. " % (association.company.name.title())
+			for student in session.students.all():
+				Notification.objects.create(actor=profile.profile, target=student.profile, message=message)
 		return JsonResponse(status=200, data={'success': True, 'success_msg': 'Placement Session has been updated successfully'})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
@@ -160,6 +174,7 @@ def manage_session_students(request, sess_hashid, **kwargs):
 			session = PlacementSession.objects.get(association__college=profile, pk=session_pk)
 	except:
 		return JsonResponse(status=400, data={'error': 'It\'s not your placement session to manage!'})
+#	request.POST.setlist('students', ['gG8p6jZR']
 	f = ManageSessionStudentsForm(request.POST, instance=session)
 	if f.is_valid():
 		session = f.save(commit=False)
@@ -588,6 +603,27 @@ def generate_excel(request, sess, **kwargs):
 	response['Content-Disposition'] = 'attachment; filename=session_%s.xlsx' % Hashids(salt="AbhiKaSamay").encode(round(time.time()))
 	return response
 
+@require_user_types(['C', 'F', 'CO'])
+@require_AJAX
+@login_required
+@require_POST
+def notify_session(request, sess_hashid, user_type, profile):
+	if user_type == 'F':
+		profile = profile.college
+	try:
+		session_pk = settings.HASHID_PLACEMENTSESSION.decode(sess_hashid)[0]
+		session = None
+		if user_type == 'CO':
+			session = PlacementSession.objects.get(association__company=profile, pk=session_pk)
+		else:
+			session = PlacementSession.objects.get(association__college=profile, pk=session_pk)
+	except:
+		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+	f = NotifySessionStudentsForm(request.POST)
+	if f.is_valid():
+		f.notify_all(students=session.students.all())
+		return JsonResponse(status=200, data={'success_msg': 'Done.'})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
 # -------------------------------
 def validate_associator(request, association):

@@ -8,13 +8,13 @@ from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from account.decorators import require_user_types
+from account.decorators import require_user_types, require_AJAX
 from account.forms import AccountForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
 from account.utils import handle_user_type, get_relevant_reversed_url
 from college.models import College
-from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm
+from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm, EditGroupsForm, ChooseFacultyForm
 from faculty.models import Faculty
 from notification.models import Notification
 from student.forms import StudentEditForm, QualificationForm
@@ -138,3 +138,53 @@ def get_enrollment_number(request, **kwargs):
 			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 ##	else:
 ##		return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+
+@require_user_types(['C'])
+@require_AJAX
+@login_required
+@require_POST
+def delete_faculty(request, f_hashid, user_type, profile):
+	try:
+		faculty_pk = settings.HASHID_FACULTY.decode(f_hashid)[0]
+		faculty = profile.faculties.get(pk=faculty_pk)
+	except:
+		return JsonResponse(status=400, data={'error': 'Invalid request.'})
+	try:
+		faculty.profile.delete()
+	except:
+		return JsonResponse(status=400, data={'error': 'Sorry, couldn\'t complete the deletion request. Please try again after some time.'})
+	return JsonResponse(status=200, data={'success_msg': 'Deletion request successful'})
+
+@require_user_types(['C'])
+@require_AJAX
+@login_required
+@require_http_methods(['GET', 'POST'])
+def edit_perms(request, f_hashid, user_type, profile):
+	try:
+		faculty_pk = settings.HASHID_FACULTY.decode(f_hashid)[0]
+		faculty = profile.faculties.get(pk=faculty_pk)
+	except:
+		return JsonResponse(status=400, data={'error': 'Invalid request.'})
+	if request.method == 'POST':
+		f = EditGroupsForm(request.POST, instance=faculty.profile)
+		if f.is_valid():
+			f.save()
+			return JsonResponse(status=200, data={'success_msg': 'Permissions have been updated successfully.'})
+	else:
+		context = {'edit_faculty_perms_form': EditGroupsForm(instance=faculty.profile), 'f_hashid': f_hashid}
+		return JsonResponse(status=200, data={'html': render(request, 'faculty/edit_perms.html', context).content.decode('utf-8')})
+
+@require_user_types(['C'])
+@login_required
+@require_GET
+def manage(request, user_type, profile):
+	faculties = []
+	for faculty in profile.faculties.all():
+		faculties.append({'faculty': faculty, 'f_hashid': settings.HASHID_FACULTY.encode(faculty.pk)})
+	context = {
+		'create_faculty_form': FacultySignupForm(),
+		'choose_faculty_form': ChooseFacultyForm(college=profile),
+		'college': profile,
+		'faculties': faculties
+	}
+	return render(request, 'faculty/manage_faculty.html', context)
