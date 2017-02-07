@@ -93,6 +93,11 @@
 	border-left: 2px solid lightcoral;
 }
 
-.row .col.s2 {
-    width: 20% !important; 
+#mobile-noti-badge
+{
+  height: 60%;
+  margin-bottom: 7%;
+  margin-top: 7%;
+  line-height: 0.8rem;
+  padding-top: 8px
 }

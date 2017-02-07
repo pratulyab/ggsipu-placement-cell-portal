@@ -22,6 +22,7 @@ html
 {
 	color: black;
 	font-size: 25px;
+	font-weight:bold;
 }
 
 #steps
@@ -52,4 +53,18 @@ html
 .step p
 {
 	color: #404040;
+}
+
+@media (min-width:300px) and (max-width:992px) and (orientation: portrait){
+
+   .step p
+   {
+   	font-size: 25px;
+   }
+
+   #main-box h4
+{
+	color: black;
+	font-size: 35px;
+}
 }

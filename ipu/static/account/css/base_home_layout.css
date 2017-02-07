@@ -791,4 +791,8 @@ form h5 {
 	font-size: 1.2rem !important;
 }
 */
+#notifications_badge
+{
+  display: none;
+}
 }
