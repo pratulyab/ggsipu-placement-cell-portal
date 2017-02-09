@@ -1,0 +1,59 @@
+[
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Verifier",
+        "permissions": [
+            [
+                "verify_student",
+                "student",
+                "student"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Placement Handler",
+        "permissions": [
+            [
+                "handle_placement",
+                "recruitment",
+                "association"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Verifier With Student Deletion Privilege",
+        "permissions": [
+            [
+                "delete_student",
+                "student",
+                "student"
+            ],
+            [
+                "verify_student",
+                "student",
+                "student"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "fields": {
+        "name": "Notifications Manager",
+        "permissions": [
+            [
+                "manage_notification",
+                "notification",
+                "notification"
+            ]
+        ]
+    }
+}
+]
