@@ -10,10 +10,13 @@
   <body>
   
 <div id="corner-button">
-    <ul class="left hide-on-med-and-down">
-        <li><a href="{% url 'landing' %}"><i style="color: white;" class="fa fa-arrow-left fa-2x" aria-hidden="true"></i></a></li>
+    <ul class="left">
+        <li class="hide-on-med-and-down"><a href="{% url 'landing' %}"><i style="color: white;" class="fa fa-arrow-left fa-2x" aria-hidden="true"></i></a></li>
+        <li class="hide-on-large-only"><a href="{% url 'landing' %}"><i style="color: white;" class="fa fa-arrow-left fa-3x" aria-hidden="true"></i></a></li>
     </ul>
 </div>
+
+<a id="corner-button2" href="{% url 'auth' %}" class="waves-effect waves-light btn-large text-flow">Login / Sign Up</a>
 
 <div id="teal" class="block indigo lighten-5">
   <nav class="pushpin-demo-nav" data-target="teal">
@@ -24,8 +27,8 @@
     </div>
   </nav>
   <div id="data">
-  <img src="{% static 'images/ipu-logo.png' %}" height="100px" width="120px;">
-  <p style="padding: 10px;padding-top: 2px;font-size: 20px; padding-bottom: 0px;">
+  <img id="icon-college" src="{% static 'images/ipu-logo.png' %}">
+  <p style="">
 
 <b>Guru Gobind Singh Indraprastha University (GGSIPU)</b> is first University established in 1998 by Govt. of NCT of Delhi under the provisions of Guru Gobind Singh Indraprastha University Act, 1998 read with its Amendment in 1999 The University is recognized by University Grants Commission (UGC), India under section 12B of UGC Act.
 
@@ -55,7 +58,7 @@ In order to serve the broad purposes for which the University was established, i
    <div id="img-line">
      <img src="{% static 'images/intro/aca.JPG' %}">
    </div>
-  <p style="padding: 10px;padding-top: 2px;font-size: 20px; margin-top: 10px;">
+  <p>
 
 GGSIPU was established as an affiliating and teaching university to promote studies in the emerging areas of higher education. The university runs almost 50 courses of study as diverse as engineering, technology, business management, medicine, pharmacy, nursing, education, and law. There are more than 120 colleges affiliated to it which are run according to the rules and regulation set by the university.<br><br>
 <b>According to Times Ranking 2013 Indraprastha University is ranked 12th among the top universities of India.</b> University School of Law and Legal Studies also ranked amongst top 10 law school of the country. Faculty of Biotechnology of university-University School of Biotechnology is ranked sixth in the list of Premier Public Biotechnology Institutes of India.
@@ -83,7 +86,7 @@ GGSIPU was established as an affiliating and teaching university to promote stud
    <div id="img-line">
      <img src="{% static 'images/intro/sport.JPG' %}">
    </div>
-  <p style="padding: 10px;padding-top: 2px;font-size: 20px; margin-top: 10px;">
+  <p style="">
 
 Every year IPU conducts a student sports meet. Events include 100m, 200m, 5k, 10k, powerlifing, bodybuilding, weightlifting and athletics.<br><br>
 The campus has all the facilities to play various sports like cricket, football, basketball, etc. The students have been representing the university at various levels of inter college sports competetions.

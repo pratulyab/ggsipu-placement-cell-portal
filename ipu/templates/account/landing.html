@@ -12,25 +12,51 @@
 {% block header %}
 <div class="navbar-fixed">
     <nav>
-      <div class="nav-wrapper">
-        <a href="#!" class="brand-logo center hide-on-med-and-down">Training & Placement Cell</a>
-        <a href="#!" class="brand-logo left hide-on-large-only">Training & Placement Cell</a>
+
+      <div class="nav-wrapper hide-on-med-and-down">
+        <a class="brand-logo" id="brand-corner">
+                    <div class="left" style="margin-left: 1.5%;">
+                      <div id="logo">
+                        <img src="{% static 'images/ipu-logo.png' %}" style="height: 55px">
+                        <div id="inner-logo">
+                        <h4>Training & Placement cell</h4>
+                        <h6>Guru Gobind Singh Indraprastha University</h6> 
+                        </div>
+                      </div>
+                    </div>
+        </a>
+      <ul id="nav-mobile" class="right">
+        <li><a href="{% url 'intro' %}">Why GGSIPU</a></li>
+        <li><a href="{% url 'procedures' %}">Procedures</a></li>
+        <li><a href="{% url 'stats' %}">Placement Stats</a></li>
+      </ul>
       </div>
-    </nav>
+
+    <div class="nav-wrapper hide-on-large-only">
+      <a id="brand-corner">
+                    <div style="margin-left: 1.5%;">
+                      <div id="logo">
+                        <img src="{% static 'images/ipu-logo.png' %}" style="height: 60px">
+                        <div id="inner-logo">
+                        <h4>Training & Placement cell</h4>
+                        <h6>Guru Gobind Singh Indraprastha University</h6> 
+                        </div>
+                      </div>
+                    </div>
+      </a>
+      <ul id="mobile-links">
+        <li><a href="{% url 'intro' %}">Why GGSIPU</a></li>
+        <li><a href="{% url 'procedures' %}">Procedures</a></li>
+        <li><a href="{% url 'stats' %}">Placement Stats</a></li>
+      </ul>
+    </div>
+  </nav>
   </div>
 
   
 {% endblock header %}
 
-{% block content %}
-<div id="top-bar">
-<ul id="top-links">
-             <li><a href="{% url 'intro' %}">Why GGSIPU</a></li>
-             <li><a href="{% url 'procedures' %}">Procedures</a></li>
-             <li><a href="{% url 'stats' %}">Placement Stats</a></li>
-</ul>
-</div>
-                  
+{% block content %}                  
  <img id="icon-college" src="{% static 'account/images/ipu-logo.png' %}">
     
    <div class="parallax-container">

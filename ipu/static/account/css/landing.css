@@ -9,59 +9,78 @@
 
 nav{
     
-    height: 110px;
-    padding-top: 24px;
+    height: 150px;
+    padding-top: 10px;
+    background-color: #1a237e !important;
 
 }
 
-nav .brand-logo
+nav .brand-logo { 
+    font-family: "Times New Roman"; /* New */
+    text-transform: capitalize; /* New */
+    font-size: 1.6rem;
+}
+
+
+
+#logo
 {
-    font-size: 47px;
-    padding-left: 0px;
-    margin-left: 5px;
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+
+#inner-logo h4
+{
+  font-size:30px;
+  margin-bottom: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+#inner-logo h6
+{
+  
+  font-size: 16px;
+  margin-top: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+
+#brand-corner:hover
+{
+  cursor: pointer;
+}
+
 
 #corner-button
 {
-    position: fixed; right: 6px; 
-    top: 16px;
-    z-index: 50000000;
-    height: 70px;
-    line-height: 70px;
-    width: 250px;
-    font-size: 25px;
+    position: absolute; 
+    line-height: 75px;
+    font-size: 20px;
     padding: 1px;
     padding-bottom: 5px;
+    top: 40%;
+    left: 38%;
+    width: 24%;
+    height: 75px;
+    background-color: #1a237e !important;
+    margin-top: 25px;
 }
 
-#top-links
+#mobile-links
 {
-    margin-top: 37px;
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding-top: 5px;
+    justify-content: space-around;
 }
 
-#top-links a
+#mobile-links li a
 {
-    color:#8db0f2;
-    font-size: 32px;
-}
-
-#top-bar
-{
-    margin-bottom: 0px;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center; 
-    width: 100%;
-    padding: 20px;
-    padding-top: 5px;
-    padding-bottom: 0px;
+    font-size: 23px;
 }
 
 #img-mid
@@ -80,8 +99,19 @@ nav .brand-logo
 }
 
 .parallax-container {
-      height: 400px;
+      height: 510px;
     }
+#second-parallax-container
+{
+   height: 500px;
+
+}
+
+#last-parallax-container
+{
+   height: 750px;
+
+}
 .section
 {
     background-color: #f2f2f2;
@@ -91,14 +121,8 @@ nav .brand-logo
 #first-bo
 {
     position: absolute;
-    top: 80%;
+    top: 82%;
     left: 10%;
-}
-
-#first-bo h3
-{ 
-    font-size: 3.1rem;
-
 }
 
 #icon-college
@@ -106,7 +130,7 @@ nav .brand-logo
     height: 125px;
     width: 140px;
     position: absolute;
-    top: 27%;
+    top: 25%;
     left: 42.5%;
 }
 
@@ -214,18 +238,6 @@ nav .brand-logo
 {
   margin-left: 5px;
 }
-
-#last-parallax-container
-{
-   height: 750px;
-
-}
-
-#second-parallax-container
-{
-   height: 500px;
-
-}
  
 }
 
@@ -241,60 +253,79 @@ nav .brand-logo
 
 nav{
     
-    height: 64px;
+    height: 120px;
+    background-color: #1a237e !important;
     padding-top: 2px;
 
 
 }
 
-nav .brand-logo
-{
-    font-size: 35px;
-    padding-left: 0px;
-    margin-left: 0px;
-
+nav .brand-logo { 
+    font-family: "Times New Roman"; /* New */
+    text-transform: capitalize; /* New */
+  font-size: 1.6rem;
 }
+
+
+
+#logo
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+#inner-logo h4
+{
+  font-size:21px;
+  margin-bottom: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+#inner-logo h6
+{
+  
+  font-size: 14px;
+  margin-top: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+
+#brand-corner:hover
+{
+  cursor: pointer;
+}
+
 
 #corner-button
 {
-    position: fixed; right: 6px; 
-    top: 6px;
-    z-index: 50000000;
-    height: 54px;
-    line-height: 54px;
-    width: 170px;
+    position: absolute;
+    line-height: 58px;
     font-size: 15px;
     padding: 1px;
     padding-bottom: 5px;
+    top: 72%;
+    left: 42%;
+    width: 180px;
+    height: 58px;
+    background-color: #1a237e !important;
+    margin-top: 10px;
 }
 
-#top-links
+#mobile-links
 {
-    margin-top: -1px;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    width: 100%;
-    margin-bottom: 5px;
 }
 
-#top-links a
+#mobile-links li a
 {
-    color:#8db0f2;
-    font-size: 23px;
-}
-
-#top-bar
-{
-    margin-bottom: 0px;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center; 
-    width: 100%;
-    padding: 20px;
-    padding-top: 5px;
-    padding-bottom: 0px;
+    font-size: 15px;
 }
 
 #img-mid
@@ -324,7 +355,7 @@ nav .brand-logo
 #first-bo
 {
     position: absolute;
-    top: 50%;
+    top: 55%;
     left: 19%;
 }
 
@@ -346,8 +377,9 @@ nav .brand-logo
     height: 110px;
     width: 120px;
     position: absolute;
-    top: 38%;
+    top: 35%;
     left: 45%;
+    margin-bottom: 5px;
 }
 
 #second-box
@@ -466,58 +498,65 @@ nav{
     
     height: 64px;
     padding-top: 2px;
+    background-color: #1a237e !important;
+    padding-left: 20px;
 
 }
 
-nav .brand-logo
+nav .brand-logo { 
+    font-family: "Times New Roman"; /* New */
+    text-transform: capitalize; /* New */
+  font-size: 1.6rem;
+}
+
+
+
+#logo
 {
-    font-size: 40px;
-    padding-left: 0px;
-    margin-left: 0px;
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
+
+#inner-logo h4
+{
+  font-size:21px;
+  margin-bottom: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+#inner-logo h6
+{
+  
+  font-size: 14px;
+  margin-top: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+
+#brand-corner:hover
+{
+  cursor: pointer;
+}
+
 
 #corner-button
 {
-    position: fixed; right: 6px; 
-    top: 6px;
-    z-index: 50000000;
-    height: 54px;
-    line-height: 54px;
-    width: 170px;
-    font-size: 15px;
+    position: absolute;
+    line-height: 58px;
+    font-size: 16px;
     padding: 1px;
     padding-bottom: 5px;
+    top: 60%;
+    left: 43.5%;
+    width: 180px;
+    height: 58px;
+    background-color: #1a237e !important;
 }
 
-#top-links
-{
-    margin-top: -1px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    width: 100%;
-    margin-bottom: 5px;
-}
-
-#top-links a
-{
-    color:#8db0f2;
-    font-size: 23px;
-}
-
-#top-bar
-{
-    margin-bottom: 0px;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center; 
-    width: 100%;
-    padding: 20px;
-    padding-top: 5px;
-    padding-bottom: 0px;
-}
 
 #img-mid
 {
@@ -547,7 +586,7 @@ nav .brand-logo
 #first-bo
 {
     position: absolute;
-    top: 61%;
+    top: 65%;
     left: 19%;
 }
 

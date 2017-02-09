@@ -15,7 +15,7 @@ var GetNotification = (function()  {
 
 
         if (data.length>0) {
-            raw_html += '<div id="noti-foot"><a id="noti-foot-anchor" href="#notifications">See Older Notifications' + '</a></div>';    
+            raw_html += '<div id="noti-foot"><a id="noti-foot-anchor" href="#!" data-links="notifications">See Older Notifications' + '</a></div>';    
         }
         
 
@@ -25,6 +25,17 @@ var GetNotification = (function()  {
             $('#notification_button').trigger('click');
             console.log("yeah");
         });
+
+         $('#noti-foot a').each(function(i, a){
+                var el = $(a);
+                var target = el.data('links');
+                if (!target)
+                    return true;
+                var target_el = $('#tab-bar').find("[href='#" + target + "']");
+                if(!target_el.length)
+                    return true;
+                el.on('click', function(e){e.preventDefault();target_el[0].click();});
+            });
 	}
 
 
