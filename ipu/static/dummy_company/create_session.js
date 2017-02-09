@@ -1,5 +1,8 @@
 var DSession = (function() {
 	"use strict";
+	var	inProcess = {
+			'nss': false,
+		};
 	
 	var sessionCounter = 0;
 
@@ -79,6 +82,52 @@ var DSession = (function() {
 		Materialize.updateTextFields();
 	}
 
+	function notifySessionStudents(e) {
+		e.preventDefault();
+		var $envelope = $(this),
+			$lightbox = $('#light3'),
+			url = $envelope.attr('href'),
+			form = $lightbox.find('#notify-session-students-form');
+		$lightbox.css('display', 'flex');
+		form.on('submit', function(e){
+			e.preventDefault();
+			if (inProcess['nss'])
+				return;
+			form = $(form);
+			var form_id = '#'+form.attr('id');
+			clearErrors(form_id)
+			var form_data = new FormData($(this)[0]);
+			inProcess['nss'] = true;
+			$.ajax({
+				url: url,
+				type: 'POST',
+				data: form_data,
+				processData: false,
+				contentType: false,
+				success: function(data, status, xhr){
+					swal({
+							title: "Message has been sent successfully!",
+							text: "All the students of the chosen session have been notified",
+							type:"success",
+							allowEscapeKey: false,
+						},
+						function() {
+							window.location.href = '';
+					});
+					inProcess['nss'] = false;
+				},
+				error: function(xhr, status, error){
+					if (xhr.responseJSON['error']){
+						$(form).parent().prepend($('<small class="error">'+xhr.responseJSON['error']+'</small>'))
+					}
+					var form_errors = xhr.responseJSON['errors'];
+					addErrorsToForm(form_errors, form_id);
+					inProcess['nss'] = false;
+				}
+			});
+		});
+	}
+
 	function getSessions() {
 		sessionCounter++;
 		if (sessionCounter >= 10){
@@ -97,6 +146,7 @@ var DSession = (function() {
 					location.href = loc;
 				}
 				div.html(data['html']);
+				div.find('a.envelope').on('click', notifySessionStudents);
 			},
 			error: function(status, xhr, error){
 				div.html($('<p>' + "Sorry, couldn't retrieve your sessions.<br><br>" + '</p>'));

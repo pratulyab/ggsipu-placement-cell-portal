@@ -8,6 +8,7 @@ from company.models import Company
 from recruitment.fields import ModelHashidChoiceField, ModelMultipleHashidChoiceField
 from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
 from student.models import Student
+from decimal import Decimal
 from material import *
 import datetime, re
 
@@ -244,8 +245,10 @@ class EditSessionForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(EditSessionForm, self).__init__(*args, **kwargs)
 		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.instance.pk)
+		self.initial['salary'] = self.instance.association.salary
 	
 	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
+	salary = forms.DecimalField(max_digits=4, decimal_places=2, min_value=Decimal('0'), help_text=_('The other party will be notified about the changes made.'))
 	
 	def clean_application_deadline(self):
 		date = self.cleaned_data['application_deadline']

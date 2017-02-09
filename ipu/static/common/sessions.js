@@ -1,44 +1,94 @@
 var Session = (function() {
 	"use strict";
-	var sessionCounter = 0;
-	/*
-	function handleMultipleJquery(){
-		$('a').unbind('click'); // to prevent multiple fires because of reloading of jquery in the rendered template.
-		$('#dropdown3').on('click', function(e){e.stopPropagation();});
-		$('.dropdown-button').on('click', function(e){e.preventDefault()});
-		$('nav .brand-logo').on('click', function(e){location.href='';});
-		$('#dropdown1 a').each(function(i, a){
-			var el = $(a);
-			var target = el.data('links');
-			if (!target)
-				return true;
-			var target_el = $('#tab-bar').find("[href='#" + target + "']");
-			if(!target_el.length)
-				return true;
-			el.on('click', function(e){e.preventDefault();target_el[0].click();});
-		});
+	var sessionCounter = 0,
+		inProcess = {
+			'nss': false,
+			'sess': false
+		};
+
+	
+	function clearErrors(el){
+		$(el + ' .non-field-errors').remove();
+		$(el + ' .errors').remove();
+		$(el + ' .input-field').removeClass('has-error');
+		$(el + ' .input-field input').removeClass('invalid');
+		var form_div = $(el).parent().find('.error').remove();
 	}
-	*/
-/*
-	function generateExcel(e) {
+	
+	function addErrorsToForm(form_errors, el){
+		var form = $(el);
+		if(!form || !form_errors)
+			return;
+		
+		if ('__all__' in form_errors){
+			var non_field_errors = form_errors['__all__'];
+			var div = $('<div class="non-field-errors"/>');
+			for (var i=0; i<non_field_errors.length; i++){
+				div.append($('<small class="error">' + non_field_errors[i] + '</small>'));
+			}
+			$(form).prepend(div);
+			delete form_errors['__all__'];
+		}
+		for(var field_name in form_errors){
+			$(el + ' #id_'+field_name+'_container').addClass('has-error');
+			$(el + ' #id_'+field_name).addClass('invalid');
+			var div = $('<div class="errors"/>');
+			for(var i=0; i<form_errors[field_name].length; i++){
+				div.append($('<small class="error">' + form_errors[field_name][i] + '</small>'));
+			}
+			$(el + ' #id_'+field_name+'_container').append(div);
+		}
+	}
+
+	function notifySessionStudents(e) {
 		e.preventDefault();
-		var a = $(this);
-		var li = a.parent();
-		var sess = li.data('sess');
-		var url = a.attr('href');
-		$.ajax({
-			url: url,
-			type: 'GET',
-			async: true,
-			data: {'sess': sess},
-			success: function(data, status, xhr){
-				window.location = data;
-			},
-			error: function(status, xhr, error){;}
+		var $envelope = $(this),
+			$lightbox = $('#light3'),
+			url = $envelope.attr('href'),
+			form = $lightbox.find('#notify-session-students-form');
+		$lightbox.css('display', 'flex');
+		form.on('submit', function(e){
+			e.preventDefault();
+			if (inProcess['nss'])
+				return;
+			form = $(form);
+			var form_id = '#'+form.attr('id');
+			clearErrors(form_id)
+			var form_data = new FormData($(this)[0]);
+			inProcess['nss'] = true;
+			$.ajax({
+				url: url,
+				type: 'POST',
+				data: form_data,
+				processData: false,
+				contentType: false,
+				success: function(data, status, xhr){
+					swal({
+							title: "Message has been sent successfully!",
+							text: "All the students of the chosen session have been notified",
+							type:"success",
+							allowEscapeKey: false,
+						},
+						function() {
+							window.location.href = '';
+					});
+					inProcess['nss'] = false;
+				},
+				error: function(xhr, status, error){
+					if (xhr.responseJSON['error']){
+						$(form).parent().prepend($('<small class="error">'+xhr.responseJSON['error']+'</small>'))
+					}
+					var form_errors = xhr.responseJSON['errors'];
+					addErrorsToForm(form_errors, form_id);
+					inProcess['nss'] = false;
+				}
+			});
 		});
 	}
-*/
+
 	function getSessions() {
+		if (inProcess['sess'])
+			return;
 		sessionCounter++;
 		if (sessionCounter >= 10){
 			location.href = '';
@@ -46,6 +96,7 @@ var Session = (function() {
 		}
 		var li = $(this);
 		var div = $('#sessions');
+		inProcess['sess'] = true;
 		$.ajax({
 			url: '/recruitment/mysessions/',
 			type: 'GET',
@@ -57,6 +108,8 @@ var Session = (function() {
 					location.href = loc;
 				}
 				div.html(data['html']);
+				div.find('a.envelope').on('click', notifySessionStudents);
+				inProcess['sess'] = false;
 //				$('.excel').on('click', generateExcel);
 			},
 			error: function(status, xhr, error){
@@ -65,6 +118,7 @@ var Session = (function() {
 					var p = $('<p/>');
 					p.html(xhr['error']);
 				}
+				inProcess['sess'] = false;
 			}
 		});
 	}

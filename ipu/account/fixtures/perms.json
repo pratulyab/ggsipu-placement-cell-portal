@@ -1,0 +1,46 @@
+[
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can delete student",
+        "content_type": [
+            "student",
+            "student"
+        ],
+        "codename": "delete_student"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can verify student",
+        "content_type": [
+            "student",
+            "student"
+        ],
+        "codename": "verify_student"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can handle placement",
+        "content_type": [
+            "recruitment",
+            "association"
+        ],
+        "codename": "handle_placement"
+    }
+},
+{
+    "model": "auth.permission",
+    "fields": {
+        "name": "Can manage notifications",
+        "content_type": [
+            "notification",
+            "notification"
+        ],
+        "codename": "manage_notification"
+    }
+}
+]

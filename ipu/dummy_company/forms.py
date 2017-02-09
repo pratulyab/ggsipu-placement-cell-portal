@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from college.models import College, Programme, Stream
 from company.models import Company
 from dummy_company.models import DummyCompany, DummySession
+from recruitment.fields import ModelHashidChoiceField, ModelMultipleHashidChoiceField
 from recruitment.models import SelectionCriteria
 from student.models import Student
 from material import *
@@ -114,7 +115,7 @@ class CreateDummySessionForm(forms.ModelForm):
 		help_texts = {
 			'streams': _('Stream options change according to Programme chosen.')
 		}
-
+'''
 class EditDummySessionForm(forms.ModelForm):
 	def __init__(self, college=None, *args, **kwargs):
 		super(EditDummySessionForm, self).__init__(*args, **kwargs)
@@ -132,7 +133,7 @@ class EditDummySessionForm(forms.ModelForm):
 	class Meta:
 		model = DummySession
 		fields = ['students', 'application_deadline', 'status', 'desc', 'ended']
-
+'''
 class CreateSelectionCriteriaForm(forms.ModelForm):
 	
 	layout = Layout(
@@ -171,3 +172,109 @@ class CreateSelectionCriteriaForm(forms.ModelForm):
 		help_texts = {
 			'years': _('Number of years changes according to Programme chosen.'),
 		}
+
+
+class ManageDummySessionStudentsForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		self.students_queryset = kwargs.get('instance').students.all()
+		self.choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
+		kwargs.update(initial={'students': [c[0] for i,c in enumerate(self.choices) if i]})
+		super(ManageDummySessionStudentsForm, self).__init__(*args, **kwargs)
+		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('Note: Students can only be removed from the list. Removed students will be notified.'))
+		self.fields['students'].choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
+		self.initial['token'] = settings.HASHID_DUMMY_SESSION.encode(self.instance.pk)
+	
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
+
+	def notify_disqualified_students(self, actor):
+		shortlisted_pks = [s['pk'] for s in self.cleaned_data['students'].values('pk')]
+		disqualified = self.students_queryset.exclude(pk__in=shortlisted_pks)
+		self.disqualified = disqualified
+		message = "Sorry, your involvement in the %s session by %s was till here only!\
+					\nThanks for showing your interest.\
+					\nBest of luck for your future." % ("job" if self.instance.type == 'J' else "internship", self.instance.dummy_company.name)
+		for student in disqualified:
+			Notification.objects.create(actor=actor, target=student.profile, message=message)
+		# send mass email
+		
+	@staticmethod
+	def get_zipped_choices(queryset, hashid_name):
+		names, hashids = list(), list()
+		names.append('---------'); hashids.append('') # default
+		for q in queryset:
+			names.append(q.profile.username) # for STUDENT
+			hashids.append(getattr(settings, hashid_name).encode(q.pk))
+		return zip(hashids, names)
+	
+	class Meta:
+		model = DummySession
+		fields = ['students']
+
+
+class EditDummySessionForm(forms.ModelForm):
+	layout = Layout(
+			Row(Span6('application_deadline'), Span6('salary')),
+			Row(Span8('status'), Span4('ended')),
+			Row('desc')
+		)
+	def __init__(self, *args, **kwargs):
+		super(EditDummySessionForm, self).__init__(*args, **kwargs)
+		self.initial['token'] = settings.HASHID_DUMMY_SESSION.encode(self.instance.pk)
+		self.initial['salary'] = self.instance.salary
+	
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
+#	salary = forms.DecimalField(max_digits=4, decimal_places=2, min_value=Decimal('0'), help_text=_('The other party will be notified about the changes made.'))
+	
+	def clean_application_deadline(self):
+		date = self.cleaned_data['application_deadline']
+		if date and date <= datetime.date.today():
+			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
+		return date
+	
+	class Meta:
+		model = DummySession
+		fields = ['salary', 'application_deadline', 'status', 'desc', 'ended']
+		help_texts = {
+			'salary': _('The other party will be notified about the changes made.'),
+		}
+
+
+class EditDCriteriaForm(forms.ModelForm):
+	layout = Layout(
+			Row(Span8('years'), Span4('is_sub_back')),
+			Row(Span6('tenth'), Span6('twelfth')),
+			Row(Span4('graduation'), Span4('post_graduation'), Span4('doctorate')),
+	)
+
+	def __init__(self, *args, **kwargs):
+		self.dsession = kwargs.pop('dsession') # Required because instance will be SelectionCriteria
+		super(EditDCriteriaForm, self).__init__(*args, **kwargs)
+		self.max_year = int(self.dsession.programme.years)
+		self.initial['token'] = settings.HASHID_DUMMY_SESSION.encode(self.dsession.pk)
+		self.fields['years'].widget = forms.SelectMultiple(choices=(tuple(("%s"%i,"%s"%i) for i in range(1,self.max_year+1))))
+		self.initial['years'] = self.instance.years.split(',')
+	
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
+	years = forms.CharField(label=_('Which year students may apply'), max_length=30) # # # # # #
+	
+	def clean_years(self):
+		comma_separated_years = self.cleaned_data['years'].split('\'')[1:-1][0]
+		if not re.match(r'^([1-6](,[1-6])*)?$', comma_separated_years):
+			raise forms.ValidationError(_('Invalid years provided.'))
+		try:
+			chosen_years = [int(y) for y in comma_separated_years.split(',')]
+		except:
+			raise forms.ValidationError(_('Please provide valid years.'))
+		if max(chosen_years) > self.max_year:
+			raise forms.ValidationError(_('Please choose valid year(s). Maximum year value for this programme is %s.' % self.max_year))
+		return comma_separated_years
+	
+	def save(self, commit=True, *args, **kwargs):
+		# Won't be calling model form's save method
+		data = self.cleaned_data
+		criterion, created = SelectionCriteria.objects.get_or_create(years=data['years'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
+		return criterion
+	
+	class Meta:
+		model = SelectionCriteria
+		fields = ['is_sub_back','tenth', 'twelfth', 'graduation', 'post_graduation', 'doctorate']

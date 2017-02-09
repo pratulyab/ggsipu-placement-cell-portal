@@ -2,7 +2,7 @@ from django import forms
 from notification.models import Issue , IssueReply
 from django.utils.translation import ugettext_lazy as _
 
-from material import Layout, Row, Span3, Span9 , Fieldset , Span2 , Span7 , Span5
+from material import *
 from unidecode import unidecode
 
 class SelectStreamsForm(forms.Form):
@@ -173,11 +173,45 @@ class IssueReplyForm(forms.ModelForm):
 		'reply' : "Your reply for the Issue."
 		}
 
+class NotifySessionStudentsForm(forms.Form):
+	layout = Layout(
+			Row('subject'),
+			Row('message'),
+			Fieldset('Choose at least one', Span4('notification'), Span4('mail'), Span4('sms')),
+		)
 	
+	def __init__(self, *args, **kwargs):
+		super(NotifySessionStudentsForm, self).__init__(*args, **kwargs)
+		self.initial['notification'] = True
+	
+	subject = forms.CharField(max_length=256, required=True)
+	message = forms.CharField(widget=forms.Textarea, required=True)
+	notification = forms.BooleanField(label="Send Notification" , widget=forms.CheckboxInput(), required=False)
+	mail = forms.BooleanField(label="Send e-mail" , widget=forms.CheckboxInput(), required=False)
+	sms = forms.BooleanField(label="Send SMS" , widget=forms.CheckboxInput(), required=False)
 
+	def clean_subject(self):
+		subject = self.cleaned_data['subject']
+		if subject and '\n' in subject:
+			raise forms.ValidationError(_('New line is not allowed in subject field.'))
+		return subject
 
+	def clean(self):
+		data = self.cleaned_data
+		notification, mail, sms = data.get('notification', False), data.get('mail', False), data.get('sms', False)
+		if not (notification or mail or sms):
+			raise forms.ValidationError(_('You must choose at least one of the delivery methods'))
+		return self.cleaned_data
 
-
-
+	def notify_all(self, students):
+		if self.cleaned_data['sms']:
+			# Add SMS task
+			pass
+		if self.cleaned_data['mail']:
+			# Add mass_mail task
+			pass
+		if self.cleaned_data['notification']:
+			# Create Notification
+			pass
 
 #choice = forms.ModelChoiceField(queryset=MyChoices.Objects.all())
