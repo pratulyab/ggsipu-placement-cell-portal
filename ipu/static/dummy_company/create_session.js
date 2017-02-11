@@ -86,9 +86,11 @@ var DSession = (function() {
 		e.preventDefault();
 		var $envelope = $(this),
 			$lightbox = $('#light3'),
+			$fade = $('#fade3'),
 			url = $envelope.attr('href'),
 			form = $lightbox.find('#notify-session-students-form');
 		$lightbox.css('display', 'flex');
+		$fade.css('display', 'flex');
 		form.on('submit', function(e){
 			e.preventDefault();
 			if (inProcess['nss'])

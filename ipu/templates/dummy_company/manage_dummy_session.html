@@ -7,13 +7,33 @@
 {% block home_url3 %}{{ home_url }}{% endblock %}
 {% block home_url4 %}{{ home_url }}{% endblock %}
 {% block pagetitle %}Manage Dummy Session{% endblock %}
+{% block menu_icon_dropdown %}
+                <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+{% endblock %}
+
 {% block tabs %}
 	<li class="tab col s2"><a class="active" href="#dsession-details">Details</a></li>
-	<li class="tab col s2"><a class="" href="#dsession-students">Manage Session Students</a></li>
-	<li class="tab col s2"><a class="" href="#edit-criteria">Edit Selection Criteria</a></li>
+	<li class="tab col s3"><a class="" href="#dsession-students">Manage Session Students</a></li>
+	<li class="tab col s3"><a class="" href="#edit-criteria">Edit Selection Criteria</a></li>
 	<li id="dsessions" class="tab col s2"><a class="" href="#edit-dsession">Edit Session</a></li>
 {% endblock tabs %}
 {% block tabs_content %}
+<!-- Removes tooltip from card -->
+<style type="text/css">
+	.card::after {
+    content: " ";
+    position: absolute;
+    display: none;
+    top: 2%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 7px;
+    border-style: solid;
+    border-color: transparent #546e7a transparent transparent;
+}
+</style>
 <!--                    -->
 <div id="dsession-details" class="col s12">
 	<h4 class="center light-blue-text text-darken-4">[DUMMY] {% if dsession.type == 'J' %}Job{% else %}Internship{% endif %} Posting</h4>

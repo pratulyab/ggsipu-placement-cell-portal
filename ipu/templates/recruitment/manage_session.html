@@ -7,6 +7,11 @@
 {% block home_url3 %}{{ home_url }}{% endblock %}
 {% block home_url4 %}{{ home_url }}{% endblock %}
 {% block pagetitle %}Manage Placement Session{% endblock %}
+{% block menu_icon_dropdown %}
+                <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+{% endblock %}
 {% block tabs %}
 	<li class="tab col s2"><a class="active" href="#session-details">Details</a></li>
 	<li class="tab col s2"><a class="" href="#session-students">Manage Session Students</a></li>

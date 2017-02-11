@@ -17,6 +17,17 @@ nav .button-collapse {
     margin-left: 5px;
 }
 
+.card::after {
+    content: " ";
+    position: absolute;
+    display: none;
+    top: 2%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 7px;
+    border-style: solid;
+    border-color: transparent #546e7a transparent transparent;
+}
 
 #brand-corner:hover
 {

@@ -7,6 +7,11 @@
 {% block home_url3 %}{% url 'college_home' %}{% endblock %}
 {% block home_url4 %}{% url 'college_home' %}{% endblock %}
 {% block pagetitle %}Manage Faculty{% endblock %}
+{% block menu_icon_dropdown %}
+                <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+{% endblock %}
 
 {% block head %}
 <link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
