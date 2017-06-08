@@ -2,6 +2,10 @@
 {% load staticfiles %}
 {% load material_form %}
 
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
+{% endblock %}
+
 {% block user_photo %}
 	{% if faculty.photo %}
 		<img class="circle" src="{{ faculty.photo.url }}">
@@ -261,6 +265,7 @@
 	<script type="text/javascript" src="{% static 'faculty/verify.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
+	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();

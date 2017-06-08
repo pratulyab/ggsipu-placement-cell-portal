@@ -23,7 +23,8 @@ class AssociationForm(forms.ModelForm):
 		
 		if self.who == 'College':
 			del self.fields['college']
-			company_queryset = Company.objects.exclude(pk__in = [d.company.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
+#			company_queryset = Company.objects.exclude(pk__in = [d.company.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
+			company_queryset = Company.objects.exclude(pk__in = [d['pk'] for d in self.profile.dissociations.values('pk')])
 			programmes_queryset = self.profile.get_programmes_queryset()
 			self.fields['company'] = ModelHashidChoiceField(company_queryset, 'HASHID_COMPANY')
 			self.fields['company'].widget.choices = self.get_zipped_choices(company_queryset, 'HASHID_COMPANY')
@@ -59,7 +60,8 @@ class AssociationForm(forms.ModelForm):
 		
 		elif self.who == 'Company':
 			del self.fields['company']
-			college_queryset = College.objects.exclude(pk__in = [d.college.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
+#			college_queryset = College.objects.exclude(pk__in = [d.college.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
+			college_queryset = College.objects.exclude(pk__in = [d['pk'] for d in self.profile.dissociations.values('pk')])
 			self.fields['college'] = ModelHashidChoiceField(college_queryset, 'HASHID_COLLEGE')
 			self.fields['college'].widget.choices = self.get_zipped_choices(college_queryset, 'HASHID_COLLEGE')
 			self.fields['programme'].choices= ()
@@ -105,14 +107,16 @@ class AssociationForm(forms.ModelForm):
 		college = self.cleaned_data.get('college', None)
 		company = self.cleaned_data.get('company', None)
 		if self.who == 'College' and company:
-			dissoc = Dissociation.objects.filter(college=self.profile, company=company, duration__gte=datetime.date.today())
+#			dissoc = Dissociation.objects.filter(college=self.profile, company=company, duration__gte=datetime.date.today())
+			dissoc = Dissociation.objects.filter(college=self.profile, company=company)
 			if dissoc:
 				if dissoc[0].initiator == 'CO':
 					raise ValidationError(_('Sorry, %s has temporarily blocked you from contacting it.' % (company.name.title())))
 				else:
 					raise ValidationError(_('You have blocked %s from contacting you. To unblock it, delete the dissociation.' % (company.name.title())))
 		elif self.who == 'Company' and college:
-			dissoc = Dissociation.objects.filter(college=college, company=self.profile, duration__gte=datetime.date.today())
+#			dissoc = Dissociation.objects.filter(college=college, company=self.profile, duration__gte=datetime.date.today())
+			dissoc = Dissociation.objects.filter(college=college, company=self.profile)
 			if dissoc:
 				if dissoc[0].initiator == 'C':
 					raise ValidationError(_('Sorry, %s has temporarily blocked you from contacting it.' % (college.name.title())))
@@ -348,4 +352,5 @@ class DissociationForm(forms.ModelForm):
 	
 	class Meta:
 		model = Dissociation
-		fields = ['company', 'college', 'duration']
+#		fields = ['company', 'college', 'duration']
+		fields = ['company', 'college', 'reason']

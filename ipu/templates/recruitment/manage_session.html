@@ -2,10 +2,10 @@
 {% load staticfiles %}
 {% load material_form %}
 {% block title %}Manage Placement Session{% endblock %}
-{% block home_url1 %}{{ home_url }}{% endblock %}
-{% block home_url2 %}{{ home_url }}{% endblock %}
-{% block home_url3 %}{{ home_url }}{% endblock %}
-{% block home_url4 %}{{ home_url }}{% endblock %}
+{% block home_url1 %}{% url 'college_home' %}{% endblock %}
+{% block home_url2 %}{% url 'college_home' %}{% endblock %}
+{% block home_url3 %}{% url 'college_home' %}{% endblock %}
+{% block home_url4 %}{% url 'college_home' %}{% endblock %}
 {% block pagetitle %}Manage Placement Session{% endblock %}
 {% block menu_icon_dropdown %}
                 <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>

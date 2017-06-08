@@ -232,8 +232,18 @@ def apply_to_dummy_company(request, dsess, **kwargs):
 		if student.stream not in dsession.streams.all() or dsession.application_deadline < datetime.date.today():
 			return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
 		criterion = dsession.selection_criteria
-		if not criterion.check_eligibility(student):
-			return JsonResponse(status=400, data={'error': 'Sorry, you are not eligible for this %s.' % 'job' if dsession.type == 'J' else 'internship'})
+		eligibility = criterion.check_eligibility(student)
+		if eligibility is None:
+			return JsonResponse(status=400, data={'error': 'You need to fill the qualifications form before applying.'})
+		message = 'Please get your %s verified by the placement cell faculty first.'
+		if not student.qualifications.is_verified or not student.qualifications.verified_by: # Qualifications.DoesNotExist has been taken care of by 'eligibility is None' condition
+			message = message % 'qualifications'
+			return JsonResponse(status=400, data={'error': message})
+		elif not student.is_verified or not student.verified_by:
+			message = message % 'profile'
+			return JsonResponse(status=400, data={'error': message})
+		if eligibility == False:
+			return JsonResponse(status=400, data={'error': 'Sorry, you are not eligible for this %s.' % ('job' if dsession.type == 'J' else 'internship')})
 		student_dummy_sessions = student.dummy_sessions.all()
 		if dsession not in student_dummy_sessions:
 			student.dummy_sessions.add(dsession)

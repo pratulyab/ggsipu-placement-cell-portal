@@ -122,24 +122,33 @@
 				</div>
 				<div class=" col s8 offset-s1">
 					<div id="account-settings" class="col s12">
+						<h4 class="center" style="color: goldenrod"> Account Settings </h4>
 						<form method="POST" action="{% url 'edit_account' %}" id="edit-account-form">
 							{% csrf_token %}
 							{% form form=edit_account_form %}{% endform %}
-							<button class="btn btn-waves" type="submit">Update Account</button>
+							<div class="row">
+								<button class="col s8 offset-s2 btn btn-waves" type="submit">Update Account</button>
+							</div>
 						</form>
 					</div>
 					<div id="profile-settings" class="col s12">
+						<h4 class="center" style="color: goldenrod"> Profile Settings </h4>
 						<form method="POST" action="{% url 'edit_company_profile' %}" id="edit-profile-form">
 							{% csrf_token %}
 							{% form form=edit_company_form %}{% endform %}
-							<button class="btn btn-waves" type="submit">Update Profile</button>
+							<div class="row">
+								<button class="col s8 offset-s2 btn btn-waves" type="submit">Update Profile</button>
+							</div>
 						</form>
 					</div>
 					<div id="social-settings" class="col s12">
+						<h4 class="center" style="color: goldenrod"> Social Profile </h4>
 						<form method="POST" action="{% url 'social_profile' %}" id="social-profile-form">
 							{% csrf_token %}
 							{% form form=social_profile_form %}{% endform %}
-							<button class="btn btn-waves" type="submit">Update</button>
+							<div class="row">
+								<button class="col s8 offset-s2 btn btn-waves" type="submit">Update Profile</button>
+							</div>
 						</form>
 					</div>
 				</div>

@@ -187,8 +187,8 @@ class AccountForm(forms.ModelForm):
 		model = CustomUser
 		fields = ['username', 'email']
 		help_texts = {
-			'username': 'Readonly.',
-			'email': 'Readonly.',
+			'username': 'Readonly. You cannot edit this field.',
+			'email': 'Readonly. This field cannot be edited.',
 		}
 
 class ForgotPasswordForm(forms.Form):
@@ -198,8 +198,8 @@ class ForgotPasswordForm(forms.Form):
 	email = forms.EmailField(max_length = 254, help_text=_('Enter your registered email address'))
 	def clean_email(self):
 		data_email = self.cleaned_data.get('email', None)
-		if data_email and CustomUser.objects.filter(email = data_email).count() == 0:
-			raise forms.ValidationError(_("User with this email has not registered with us."))
+		if not data_email:
+			raise forms.ValidationError(_("Please enter an email-address."))
 		return data_email
 
 class SetPasswordForm(forms.Form):

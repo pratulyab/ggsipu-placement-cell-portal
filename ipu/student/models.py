@@ -41,6 +41,17 @@ class Student(models.Model):
 	is_sub_back = models.BooleanField(_('Any Subject Back(s)'), default=False)
 	is_verified = models.NullBooleanField(default=None)
 	verified_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name="profiles_verified")
+	'''
+		is_verified
+		None -> initial, skipped by faculty
+		False -> unverified, waiting for re-evaluation
+		True -> verified
+		
+		verified_by
+		Object -> faculty
+		None -> verification process not yet initiated. Therefore, it's not known whether the student is a valid one.
+		Thus, unverified page is shown until student is not verified_by some faculty. i.e. not None
+	'''
 
 # Placement Specific
 	SALARY_CHOICES = tuple( ( (i, "%s and above" % i) for i in range(2,14,2) ) )
@@ -51,6 +62,7 @@ class Student(models.Model):
 	salary_expected = models.PositiveSmallIntegerField(_('Minimum salary expected (Lakhs P.A.)'), blank=False, null=True, choices=SALARY_CHOICES, 
 			help_text = _('Caution: You won\'t be able to appear for companies offering salary less than the minimum you choose. Also, you won\'t be able to change this again.'),
 		)
+#	applied_to = models.ManyToManyField(Session, blank=True, related_name="applications")
 
 	def get_enrollment_no(self):
 		return self.profile.username

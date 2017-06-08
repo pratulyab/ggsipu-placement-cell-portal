@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404, JsonResponse
@@ -9,14 +9,16 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from account.decorators import require_user_types, require_AJAX
-from account.forms import AccountForm, SocialProfileForm
+from account.forms import AccountForm, SocialProfileForm, SetPasswordForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
+from account.tokens import faculty_activation_token_generator
 from account.utils import handle_user_type, get_relevant_reversed_url
 from college.models import College
 from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm, EditGroupsForm, ChooseFacultyForm
 from faculty.models import Faculty
 from notification.models import Notification
+from student.models import Qualification
 from student.forms import StudentEditForm, QualificationForm
 import re
 
@@ -32,8 +34,9 @@ def faculty_signup(request):
 			f.instance.type = 'F'
 			if f.is_valid():
 				faculty = f.save()
+				f.save_m2m()
 				Faculty.objects.create(profile=faculty, college=user.college)
-				faculty = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
+				#faculty = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 				send_activation_email_task.delay(faculty.pk, get_current_site(request).domain)
 				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['C'])})
 			else:
@@ -108,22 +111,24 @@ def faculty_home(request, **kwargs):
 ##	else:
 ##		return handle_user_type(request, redirect_request=True)
 
+#@user_passes_test(lambda u: u.groups.filter(name='Verifier')) cant use this because need to return Jsonresp
 @require_user_types(['F'])
 @login_required
 @require_http_methods(['GET','POST'])
-def get_enrollment_number(request, **kwargs):
+def get_enrollment_number(request, profile, user_type):
 	if not request.is_ajax():
 		return handle_user_type(request)
-##	if request.user.type == 'F':
+	if not request.user.groups.filter(name='Verifier'):
+		return JsonResponse(status=403, data={'error': 'Permission Denied. You cannot verify students'})
 	if request.method == 'GET':
 		try:
 			del request.session['enrollmentno']
 		except KeyError:
 			pass
-		return render(request, 'faculty/verify.html', {'enroll_form': EnrollmentForm(faculty=request.user.faculty)})
+		return render(request, 'faculty/verify.html', {'enroll_form': EnrollmentForm(faculty=profile)})
 		
 	else:
-		f = EnrollmentForm(request.POST, faculty=request.user.faculty)
+		f = EnrollmentForm(request.POST, faculty=profile)
 		if f.is_valid():
 			request.session['enrollmentno'] = f.cleaned_data['enroll']
 			student = CustomUser.objects.get(username=request.session['enrollmentno']).student
@@ -136,8 +141,6 @@ def get_enrollment_number(request, **kwargs):
 			return HttpResponse(profile_form+"<<<>>>"+qual_form)
 		else:
 			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
-##	else:
-##		return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 
 @require_user_types(['C'])
 @require_AJAX
@@ -188,3 +191,26 @@ def manage(request, user_type, profile):
 		'faculties': faculties
 	}
 	return render(request, 'faculty/manage_faculty.html', context)
+
+@require_http_methods(['GET','POST'])
+def activate(request, user_hashid, token):
+	''' Activates faculty by allowing to set a usable password '''
+	if request.user.is_authenticated():
+		return redirect(settings.HOME_URL[request.user.type])
+	try:
+		user = CustomUser.objects.get(pk=settings.HASHID_CUSTOM_USER.decode(user_hashid)[0])
+	except (IndexError, CustomUser.DoesNotExist):
+		return render(request, 'faculty/activation.html', {'invalid': True})
+	if user.has_usable_password() or not faculty_activation_token_generator.check_token(user, token):
+		''' This means that the activation link for the faculty has already been used. '''
+		return render(request, 'faculty/activation.html', {'invalid': True})
+	if request.method == 'GET':
+		f = SetPasswordForm()
+	else:
+		f = SetPasswordForm(request.POST)
+		if f.is_valid():
+			user.set_password(f.cleaned_data['password2'])
+			user.is_active = True
+			user.save()
+			return render(request, 'faculty/activation.html', {'successful': True})
+	return render(request, 'faculty/activation.html', {'set_password_form': f, 'user_hashid': user_hashid, 'token': token})

@@ -42,8 +42,8 @@ var Mobile = (function () {
 
 	return {
 		init: function () {
-//			if (! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
-			if (!(window.innerWidth <= 800 && window.innerHeight <= 600))
+			if (! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+//			if (!(window.innerWidth <= 800 && window.innerHeight <= 600))
 				return;
 			$tabContentDivs = $('#tabs-data-div > div');
 			$sideBarLis = $('#main-tabs li').not('.no-padding').not('.expandable');

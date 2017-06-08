@@ -48,6 +48,8 @@ def manage_session(request, sess_hashid, **kwargs):
 	profile = kwargs.pop('profile')
 	user_type = kwargs.pop('user_type')
 	if user_type == 'F':
+		if not request.user.groups.filter(name='Placement Handler'):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		profile = profile.college
 	try:
 		session_pk = settings.HASHID_PLACEMENTSESSION.decode(sess_hashid)[0]
@@ -77,6 +79,8 @@ def edit_criteria(request, sess_hashid, **kwargs):
 	profile = kwargs.pop('profile')
 	user_type = kwargs.pop('user_type')
 	if user_type == 'F':
+		if not request.user.groups.filter(name='Placement Handler'):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		profile = profile.college
 	token = request.POST.get('token', None)
 	if token != sess_hashid:
@@ -114,6 +118,8 @@ def edit_session(request, sess_hashid, **kwargs):
 	profile = kwargs.pop('profile')
 	user_type = kwargs.pop('user_type')
 	if user_type == 'F':
+		if not request.user.groups.filter(name='Placement Handler'):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		profile = profile.college
 	token = request.POST.get('token', None)
 	if token != sess_hashid:
@@ -161,6 +167,8 @@ def manage_session_students(request, sess_hashid, **kwargs):
 	profile = kwargs.pop('profile')
 	user_type = kwargs.pop('user_type')
 	if user_type == 'F':
+		if not request.user.groups.filter(name='Placement Handler'):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		profile = profile.college
 	token = request.POST.get('token', None)
 	if token != sess_hashid:
@@ -241,6 +249,8 @@ def create_session(request, **kwargs):
 				return JsonResponse(status=400, data={'location': creation})
 			if not requester.get('authorized', True):
 				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
+			if association.initiator == type: # Validating that the requester is not the one accepting
+				return JsonResponse(status=400, data={'error': 'You cannot make this request.'})
 			f = CreateSessionCriteriaForm(association=association)
 			html = render(request, 'recruitment/create_session.html', {'session_creation_form': f}).content.decode('utf-8')
 			return JsonResponse(status=200, data={'html':html})
@@ -258,6 +268,8 @@ def create_session(request, **kwargs):
 				return JsonResponse(status=400, data={'location': creation})
 			if not requester.get('authorized', True):
 				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
+			if association.initiator == type: # Validating that the requester is not the one accepting
+				return JsonResponse(status=400, data={'error': 'You cannot make this request.'})
 			try:
 				association.session
 				return JsonResponse(status=400, data={'error': 'Session already exists'})
@@ -279,116 +291,7 @@ def create_session(request, **kwargs):
 	
 	else:
 		return handle_user_type(request, redirect_request=True)
-'''
-@require_user_types(['C', 'F', 'CO'])
-@login_required
-@require_http_methods(['GET','POST'])
-def edit_session(request, sess, **kwargs):
-	if request.is_ajax():
-		type = kwargs.pop('user_type')
-		if request.method == 'POST':
-			sess_post = request.POST.get('token', None)
-			if sess != sess_post:
-				return JsonResponse(status=400, data={'error': 'Invalid session requested'})
-			try:
-				session_id = settings.HASHID_PLACEMENTSESSION.decode(sess)[0]
-				session = PlacementSession.objects.get(pk=session_id)
-			except:
-				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
-			print(request.POST.getlist('students'))
-			# validating whether the college/company is making request for its own association
-			requester = validate_associator(request, session.association)
-			creation = requester.get('creation', False)
-			if creation:
-				return JsonResponse(status=400, data={'location': creation})
-			if not requester.get('authorized', True):
-				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
-			f = SessionEditForm(request.POST, instance=session)
-			if f.is_valid():
-				session = f.save(commit=False)
-				session.last_modified_by = type
-				session.save()
-				f.save_m2m()
-				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[type])})
-			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
-		else:
-			return JsonResponse(status=405, data={'error': 'Method Not Allowed'})
-	else:
-		if request.method == 'GET':
-			try:
-#				sess = request.GET.get('sess') 
-				session_id = settings.HASHID_PLACEMENTSESSION.decode(sess)[0]
-				session = PlacementSession.objects.get(pk=session_id)
-			except: #To account for both KeyError as well as PlacementSession.DoesNotExist
-				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
-			# validating whether the college/company is making request for its own association
-			requester = validate_associator(request, session.association)
-			creation = requester.get('creation', False)
-			if creation:
-				return redirect(creation)
-			if not requester.get('authorized', True):
-				return redirect(reverse(settings.HOME_URL[requester['type']]))
-			f = SessionEditForm(instance=session)
-			return render(request, 'recruitment/edit_session.html', {'session_edit_form': f, 'sessid': sess})
-		else:
-			return handle_user_type(request)
 
-@require_user_types(['F', 'C', 'CO'])
-@login_required
-@require_http_methods(['GET','POST'])
-def edit_criteria(request, sess, **kwargs):
-	if request.is_ajax():
-		type = kwargs.pop('user_type')
-		if request.method == 'POST':
-			sess_post = request.POST.get('token', None)
-			if sess != sess_post:
-				return JsonResponse(status=400, data={'error': 'Invalid session requested'})
-			try:
-				session_id = settings.HASHID_PLACEMENTSESSION.decode(sess)[0]
-				session = PlacementSession.objects.get(pk=session_id)
-			except:
-				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
-			# validating whether the college/company is making request for its own association
-			requester = validate_associator(request, session.association)
-			creation = requester.get('creation', False)
-			if creation:
-				return JsonResponse(status=400, data={'location': creation})
-			if not requester.get('authorized', True):
-				return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
-			POST = request.POST.copy()
-			POST['years'] = ','.join(POST.getlist('years'))
-			f = CriteriaEditForm(POST, session=session, instance=session.selection_criteria)
-			if f.is_valid():
-				data = f.cleaned_data
-				criterion,created = SelectionCriteria.objects.get_or_create(years=data['years'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
-				session.selection_criteria = criterion
-#				session.last_modified_by = type
-				session.save()
-				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[type])})
-			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
-		else:
-			return JsonResponse(status=405, data={'error': 'Method Not Allowed'})
-	else:
-		if request.method == 'GET':
-			try:
-				session_id = settings.HASHID_PLACEMENTSESSION.decode(sess)[0]
-				session = PlacementSession.objects.get(pk=session_id)
-			except: #To account for both KeyError as well as PlacementSession.DoesNotExist
-				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
-			# validating whether the college/company is making request for its own association
-			requester = validate_associator(request, session.association)
-			creation = requester.get('creation', False)
-			if creation:
-				return redirect(creation)
-			if not requester.get('authorized', True):
-				return redirect(reverse(settings.HOME_URL[requester['type']]))
-			f = CriteriaEditForm(session=session, instance=session.selection_criteria)
-			return render(request, 'recruitment/edit_criteria.html', {'criteria_edit_form': f, 'sessid': sess})
-		else:
-			return handle_user_type(request)
-'''
 @login_required
 @require_GET
 def mysessions(request):
@@ -460,6 +363,8 @@ def mysessions(request):
 					verdict = True
 				if verdict:
 					return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['F'])})
+				if not request.user.groups.filter(name='Placement Handler'):
+					return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 				college = faculty.college
 			elif type == 'C':
 				try:
@@ -537,7 +442,39 @@ def dissociate(request, **kwargs):
 	
 	else:
 		return handle_user_type(request, redirect_request=True)
+'''
 
+@require_user_types(['C', 'CO'])
+@require_AJAX
+@login_required
+@require_http_methods(['GET', 'POST'])
+def dissociate(request, profile, user_type, **kwargs):
+	try:
+		assoc_pk = settings.HASHID_ASSOCIATION.decode(request.GET.get('token') if request.method=='GET' else request.POST.get('token'))[0]
+		if user_type == 'C':
+			association = Association.objects.get(pk=assoc_pk, college=profile)
+		else:
+			association = Association.objects.get(pk=assoc_pk, company=profile)
+	except:
+		return JsonResponse(status=400, data={'error': 'Invalid Request'})
+	if Dissociation.objects.filter(college=association.college, company=association.company).values('pk'):
+		return JsonResponse(status=400, data={'error': 'You\'ve already blocked this user'})
+	if request.method == 'POST':
+		POST = request.POST.copy()
+		POST['college'] = association.college.pk
+		POST['company'] = association.company.pk
+		f = DissociationForm(POST, association=association)
+		if f.is_valid():
+			f.save()
+			if f.cleaned_data['delete_all_association_requests']:
+				f.delete_all_association_requests()
+			association.approved = False
+			association.save()
+			return JsonResponse(status=200, data={})
+	else:
+		html = render(request, 'recruitment/dissociate.html', {'dissociation_form': DissociationForm(association=association)}).content.decode('utf-8')
+		return JsonResponse(status=200, data={'html': html})
+'''
 @require_user_types(['C', 'F', 'CO'])
 @login_required
 @require_GET
@@ -549,6 +486,8 @@ def view_association_requests(request, **kwargs):
 		if user_type == 'C':
 			associations = associations.filter( Q(college=profile) & Q(approved=None) )
 		elif user_type == 'F':
+			if not request.user.groups.filter(name='Placement Handler'):
+				return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 			associations = associations.filter( Q(college=profile.college) & Q(approved=None) )
 		else:
 			associations = associations.filter( Q(company=profile) & Q(approved=None) )
@@ -588,6 +527,8 @@ def generate_excel(request, sess, **kwargs):
 		elif user_type == 'C':
 			session = PlacementSession.objects.get(association__college=profile, pk=session_id)
 		else:
+			if not request.user.groups.filter(name='Placement Handler'):
+				return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 			session = PlacementSession.objects.get(association__college=profile.college, pk=session_id)
 	except: #To account for both KeyError as well as PlacementSession.DoesNotExist
 		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
@@ -609,6 +550,8 @@ def generate_excel(request, sess, **kwargs):
 @require_POST
 def notify_session(request, sess_hashid, user_type, profile):
 	if user_type == 'F':
+		if not request.user.groups.filter(name='Placement Handler'):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		profile = profile.college
 	try:
 		session_pk = settings.HASHID_PLACEMENTSESSION.decode(sess_hashid)[0]

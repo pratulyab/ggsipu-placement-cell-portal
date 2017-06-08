@@ -78,7 +78,7 @@ class SelectionCriteria(models.Model):
 		try:
 			report_card = student.qualifications
 		except Qualification.DoesNotExist:
-			return False
+			return None
 		fields = ['tenth', 'twelfth', 'graduation', 'post_graduation', 'doctorate']
 		if getattr(student, 'current_year') not in getattr(self, 'years'):
 			return False
@@ -113,12 +113,15 @@ class PlacementSession(models.Model):
 		return self.association.company.__str__() + ' placement session in ' + self.association.college.__str__()
 
 class Dissociation(models.Model):
+	''' Block '''
 	company = models.ForeignKey(Company, related_name="dissociations")
 	college = models.ForeignKey(College, related_name="dissociations")
-	duration = models.DateField(null=True, blank=True,
-		help_text = "Choose the date till when you want to block this user from contacting you. Leave it blank in order to decline just the current request."
-	)
-	initiator = models.CharField(_('Who caused it'), choices=SOURCE, max_length=2, default=SOURCE[0][0])
+#	duration = models.DateField(null=True, blank=True,
+#		help_text = "Choose the date till when you want to block this user from contacting you. Leave it blank in order to decline just the current request."
+#	)
+	reason = models.CharField(_('Reason(s)'), blank=True, max_length=1024)
+	initiator = models.CharField(_('Who initiated it'), choices=SOURCE, max_length=2, default=SOURCE[0][0])
+	when = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		""" Returns the name of initiator first, then the other """

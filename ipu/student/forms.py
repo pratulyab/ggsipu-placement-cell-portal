@@ -14,7 +14,7 @@ import re
 from material import *
 
 class StudentLoginForm(forms.Form):
-	username = forms.CharField(label=_('Enrollment Number'), max_length=11, widget=forms.TextInput(attrs={'placeholder': _('or email address'), 'auto_focus':''}))
+	username = forms.CharField(label=_('Enrollment Number'), max_length=11, widget=forms.TextInput(attrs={'placeholder': _('Enter your enrollment number'), 'auto_focus':''}))
 	password = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder':_('Enter password')}))
 
 	def __init__(self, *args, **kwargs):
@@ -301,7 +301,7 @@ class QualificationForm(forms.ModelForm):
 		student = kwargs.pop('student', None)
 		if student:
 			qual.student = student
-		qual.is_verified = kwargs.pop('verified', None)
+		qual.is_verified = kwargs.pop('verified', False)
 		qual.verified_by = kwargs.pop('verifier', None)
 		if commit:
 			qual.save()
@@ -404,6 +404,16 @@ class FileUploadForm(forms.ModelForm):
 		}
 
 class PaygradeForm(forms.ModelForm):
+	'''
+		To make sure that paygrade info is updated only once.
+	def save(self, commit=True, *args, **kwargs):
+		try:
+			self.instance.paygrade
+		except:
+			if commit:
+				super(self, PaygradeForm).save(*args, **kwargs)
+		return self.instance.paygrade
+	'''
 	class Meta:
 		model = Student
 		fields = ['salary_expected']

@@ -1,0 +1,27 @@
+{% autoescape off %}
+{{ greeting }}
+<br>
+To activate your <u>GGSIPU Training &amp; Placement Cell</u> account,
+click the link below:<br><br>
+{% if type == 'F' %}
+	<a href="{{ protocol }}://{{ domain }}{% url 'faculty_activation' user_hashid=user_hashid token=token %}">{{ protocol }}://{{ domain }}{% url 'faculty_activation' user_hashid=user_hashid token=token %}</a>
+<br><br>
+	If clicking the link above doesn't work, then please copy and paste the URL in a new browser window instead.
+<br><br>
+	<b>Note:</b> Please open the link in a safe environment as you'll be required to set a new password.
+{% else %}
+	{{ protocol }}://{{ domain }}{% url 'activate' user_hashid=user_hashid token=token %}
+	<a href="{{ protocol }}://{{ domain }}{% url 'activate' user_hashid=user_hashid token=token %}">{{ protocol }}://{{ domain }}{% url 'activate' user_hashid=user_hashid token=token %}</a>
+<br><br>
+	If clicking the link above doesn't work, then please copy and paste the URL in a new browser window instead.
+<br><br>
+	<b>Note:</b> The activation link will be valid only for <b>{{ days }}</b> day{{ days|pluralize }}.
+{% endif %}
+<br>
+<br>
+Sincerely,
+<br><br>
+Development &amp; Maintenance Team<br>
+Training &amp; Placement Cell<br>
+Guru Gobind Singh Indraprastha University<br>
+{% endautoescape %}

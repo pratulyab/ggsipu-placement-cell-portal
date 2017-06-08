@@ -120,9 +120,11 @@ def forgot_password(request):
 	if request.method == 'POST':
 		f = ForgotPasswordForm(request.POST)
 		if f.is_valid():
-			user = CustomUser.objects.get(email = f.cleaned_data['email'])
-			send_forgot_password_email_task.delay(user.pk, get_current_site(request).domain)
-			context = { 'email' : user.email }
+			email = f.cleaned_data['email']
+			user = CustomUser.objects.filter(email=email).values('pk')
+			if user.exists():
+				send_forgot_password_email_task.delay(user[0]['pk'], get_current_site(request).domain)
+			context = { 'email' : email }
 			return render(request, 'account/forgot_password_email_sent.html',context)
 	context = {'forgot_password_form' : f}
 	return render(request, 'account/forgot_password.html', context)

@@ -43,14 +43,14 @@ class CustomPasswordValidator(object):
 		4) Minimum length of 8 characters
 	'''
 	def validate(self, password, user=None):
-		if not re.match(r'(?=.*[a-z])(?=.*[A-Z])', password):
-			raise ValidationError(_('Password must be a combination of lower and upper characters. Eg. abC'))
+#		if not re.match(r'(?=.*[a-z])(?=.*[A-Z])', password):
+#			raise ValidationError(_('Password must be a combination of lower and upper characters. Eg. abC'))
 		if not re.match(r'(?=.*\d)', password):
-			raise ValidationError(_('Password must contain at least one digit (0-9). Eg. aBc7'))
-#		if not re.match(r'(?=.*[@#$%!])', password):
-#			raise ValidationError(_('Password must contain at least one of the special characters @#$%!. Eg. abC@7'))
+			raise ValidationError(_('Password must contain at least one digit (0-9).'))
+		if not re.match(r'(?=.*[@#$%.!])', password):
+			raise ValidationError(_('Password must contain at least one of the special characters @ # $ % . !'))
 		if not re.match(r'.{8,}', password):
 			raise ValidationError(_('Password must be at least 8 characters long.'))
 
 	def get_help_text(self):
-		return _("Your password must be a combination of lower and upper characters, digits (0-9) and special characters (@#$%!).")
+		return _("Your password must be a combination of letters, digits (0-9) and special characters (@ # $ % . !).")

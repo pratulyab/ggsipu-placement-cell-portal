@@ -13,7 +13,7 @@
 				<p><b>{{ e.date|timeuntil }}</b> left to withdraw application</p>
 			</div>
 			<div class="card-action">
-				<a class="change-enrollment" href="{% url 'applyd' e.dsessid %}">Withdraw Application</a>
+				<a class="change-enrollment" data-timeleft="{{ e.date|timeuntil }}" href="{% url 'applyd' e.dsessid %}">Withdraw Application</a>
 			</div>
 			<div class="card-reveal">
 				<span class="card-title grey-text text-darken-4"><b>Details</b><i class="material-icons right">close</i></span>
@@ -46,7 +46,7 @@
 				<p><b>{{ u.date|timeuntil }}</b> left to apply</p>
 			</div>
 			<div class="card-action">
-				<a class="change-enrollment" href="{% url 'applyd' u.dsessid %}">Apply</a>
+				<a class="change-enrollment" data-timeleft="{{ u.date|timeuntil }}" href="{% url 'applyd' u.dsessid %}">Apply</a>
 			</div>
 			<div class="card-reveal">
 				<span class="card-title grey-text text-darken-4"><b>Details</b><i class="material-icons right">close</i></span>
