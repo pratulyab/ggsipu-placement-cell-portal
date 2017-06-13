@@ -102,7 +102,7 @@ class StudentSignupForm(forms.ModelForm):
 		labels = {'username': _('Enrollment Number')}
 		help_texts = {
 			'username': _('Enter your 11 digit enrollment number.'),
-			'email': _('An activation email will be sent to the registered email address.'),
+			'email': _('You\'ll need to verify this email address. Make sure you have access to it.'),
 		}
 
 class StudentCreationForm(forms.ModelForm):
@@ -223,21 +223,18 @@ class StudentEditForm(forms.ModelForm):
 	def clean_college(self):
 		clg = self.cleaned_data.get('college', None)
 		if clg and self.instance.college != clg:
-			print('---')
 			raise forms.ValidationError(_('Error. College has been changed'))
 		return clg
 
 	def clean_programme(self):
 		prog = self.cleaned_data.get('programme', None)
 		if prog and self.instance.programme != prog:
-			print('---')
 			raise forms.ValidationError(_('Error. Programme has been changed'))
 		return prog
 
 	def clean_stream(self):
 		strm = self.cleaned_data.get('stream', None)
 		if strm and self.instance.stream != strm:
-			print('---')
 			raise forms.ValidationError(_('Error. Stream has been changed'))
 		return strm
 	

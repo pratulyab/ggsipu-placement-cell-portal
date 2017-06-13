@@ -5,6 +5,8 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser
 
+from utils import get_hashed_filename
+
 # Create your models here.
 
 class Programme(models.Model):
@@ -47,7 +49,7 @@ class College(models.Model):
 	details = models.TextField(_('Other details'), blank=True)
 	contact = models.TextField(_('Contact details'), blank=True)
 	website = models.URLField(_('College website'), blank=True)
-	photo = models.ImageField(_('Photo'), upload_to='college/photo', blank=True)
+	photo = models.ImageField(_('Photo'), upload_to=get_hashed_filename, blank=True)
 
 	streams = models.ManyToManyField(Stream, related_name="colleges")
 

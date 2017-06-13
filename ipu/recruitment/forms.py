@@ -256,7 +256,7 @@ class EditSessionForm(forms.ModelForm):
 	
 	def clean_application_deadline(self):
 		date = self.cleaned_data['application_deadline']
-		if date and date <= datetime.date.today():
+		if date and date <= datetime.date.today() and 'application_deadline' in self.changed_data:
 			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
 		return date
 	
@@ -354,3 +354,52 @@ class DissociationForm(forms.ModelForm):
 		model = Dissociation
 #		fields = ['company', 'college', 'duration']
 		fields = ['company', 'college', 'reason']
+
+class SessionFilterForm(forms.Form):
+
+	def __init__(self, *args, **kwargs):
+		self.profile = kwargs.pop('profile')
+		self.who = self.profile.__class__.__name__
+		super(SessionFilterForm, self).__init__(*args, **kwargs)
+		
+		if self.who == 'College':
+			company_queryset = Company.objects.filter(pk__in = [a['company__pk'] for a in self.profile.associations.values('company__pk')])
+			self.fields['company'] = ModelMultipleHashidChoiceField(company_queryset, 'HASHID_COMPANY', required=False)
+			self.fields['company'].choices = self.get_zipped_choices(company_queryset, 'HASHID_COMPANY')
+		elif self.who == 'Company':
+			college_queryset = College.objects.filter(pk__in = [a['college__pk'] for a in self.profile.associations.values('college__pk')])
+			self.fields['college'] = ModelMultipleHashidChoiceField(college_queryset, 'HASHID_COLLEGE', required=False)
+			self.fields['college'].choices = self.get_zipped_choices(college_queryset, 'HASHID_COLLEGE')
+		else:
+			raise ValidationError(_('Permission Denied.'))
+		
+		TYPE_CHOICES = (('', 'Choose one'), Association.PLACEMENT_TYPE[0], Association.PLACEMENT_TYPE[1])
+		self.fields['type'] = forms.ChoiceField(choices=TYPE_CHOICES, required=False)
+		self.fields['has_ended'] = forms.BooleanField(required=False)
+
+	def get_filtered_sessions(self):
+		company = self.cleaned_data.get('company', None)
+		college = self.cleaned_data.get('college', None)
+		associations = self.profile.associations.all()
+		type =  self.cleaned_data.get('type', '')
+		if type:
+			associations = associations.filter(type=type)
+		if self.who == 'College':
+			company = self.cleaned_data.get('company', None)
+			if company:
+				associations = associations.filter(company__pk__in=[c.pk for c in company])
+		else:
+			college = self.cleaned_data.get('college', None)
+			if college:
+				associations = associations.filter(college__pk__in=[c.pk for c in college])
+		sessions = PlacementSession.objects.filter(association__pk__in=[a.pk for a in associations], ended=self.cleaned_data.get('has_ended', False))
+		return sessions
+			
+	@staticmethod
+	def get_zipped_choices(queryset, hashid_name):
+		names, hashids = list(), list()
+		names.append('---------'); hashids.append('') # default
+		for q in queryset:
+			names.append(q.name) # COLLEGE, COMPANY, PROGRAMME, STREAM use 'name'
+			hashids.append(getattr(settings, hashid_name).encode(q.pk))
+		return zip(hashids, names)

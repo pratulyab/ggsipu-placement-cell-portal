@@ -15,11 +15,11 @@ from account.tasks import send_activation_email_task
 from account.tokens import faculty_activation_token_generator
 from account.utils import handle_user_type, get_relevant_reversed_url
 from college.models import College
-from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm, EditGroupsForm, ChooseFacultyForm
+from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm, EditGroupsForm, ChooseFacultyForm, VerifyStudentProfileForm
 from faculty.models import Faculty
 from notification.models import Notification
 from student.models import Qualification
-from student.forms import StudentEditForm, QualificationForm
+from student.forms import QualificationForm
 import re
 
 # Create your views here.
@@ -132,7 +132,7 @@ def get_enrollment_number(request, profile, user_type):
 		if f.is_valid():
 			request.session['enrollmentno'] = f.cleaned_data['enroll']
 			student = CustomUser.objects.get(username=request.session['enrollmentno']).student
-			profile_form = render(request, 'faculty/verify_profile_form.html', {'profile_form': StudentEditForm(instance=student)}).content.decode('utf-8')
+			profile_form = render(request, 'faculty/verify_profile_form.html', {'profile_form': VerifyStudentProfileForm(instance=student)}).content.decode('utf-8')
 			try:
 				q = QualificationForm(instance=student.qualifications)
 			except Qualification.DoesNotExist:

@@ -3,7 +3,9 @@ var Session = (function() {
 	var sessionCounter = 0,
 		inProcess = {
 			'nss': false,
-			'sess': false
+			'sess': false,
+			'filter_sessions': false,
+			'filter_dsessions': false
 		};
 
 	
@@ -95,7 +97,7 @@ var Session = (function() {
 			return;
 		}
 		var li = $(this);
-		var div = $('#sessions');
+		var div = $('#sessions_div');
 		inProcess['sess'] = true;
 		$.ajax({
 			url: '/recruitment/mysessions/',
@@ -109,11 +111,11 @@ var Session = (function() {
 				}
 				div.html(data['html']);
 				div.find('a.envelope').on('click', notifySessionStudents);
-				inProcess['sess'] = false;
+				inProcess['sess'] = false;	
 //				$('.excel').on('click', generateExcel);
 			},
 			error: function(status, xhr, error){
-				div.html($('<p>' + "Sorry, couldn't retrieve your sessions.<br><br>" + '</p>'));
+				div.html($('<p class="red-text center-align">' + "Sorry, couldn't retrieve your sessions.<br><br>" + '</p>'));
 				if (xhr['error']){
 					var p = $('<p/>');
 					p.html(xhr['error']);
@@ -123,10 +125,45 @@ var Session = (function() {
 		});
 	}
 
+	function filterSessions(e) {
+		e.preventDefault();
+		var form = $(this),
+			div_id = form.data('filter'),
+			$div = $('#' + div_id),
+			form_data = new FormData(form[0]),
+			semaphore = 'filter_' + div_id;
+		if (inProcess[semaphore]){
+			console.log('returned');
+			return
+		}
+		else
+			inProcess[semaphore] = true
+		$('#filter-preloader').html($('<div class="progress"><div class="indeterminate"></div></div>'));
+		$.ajax({
+			url: form.attr('action'),
+			type: 'POST',
+			data: form_data,
+			processData: false,
+			contentType: false,
+			success: function(data, status, xhr){
+				$('#filter-preloader').empty();
+				$div.html(data['html']);
+				Materialize.toast($('<span class="flow-text green-text" />').html('Filtered successfully!').css('fontWeight', 'bold'), 5000);
+				inProcess[semaphore] = false;
+			},
+			error: function(xhr, status, error){
+				$('#filter-preloader').empty();
+				Materialize.toast($('<span class="flow-text red-text" />').html('Error occurred while filtering.').css('fontWeight', 'bold'), 5000);
+				inProcess[semaphore] = false;
+			}
+		});
+	}
+
 	return {
 		init: function() {
 			var li = $('#session');
 			li.on('click', getSessions);
+			$('.session-filter-form').on('submit', filterSessions);
 		}
 	};
 })();

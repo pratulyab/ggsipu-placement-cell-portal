@@ -51,9 +51,20 @@ var VerifyStu = (function() {
 		}
 	}
 
+	function reset_verification_forms(){
+		console.log('reset');
+		$('#profile-div').html('<h4 class="center-align" style="color: goldenrod">Student Profile</h4>');
+		$('#qual-div').html('<h4 class="center-align" style="color: goldenrod">Student Qualifications</h4>');
+		$('#id_enroll').off('input');
+//					$('#delete-btn').off('click');
+		$('#delete-div form').off('submit');
+		tabs[0].click();
+	}
+
 	function getEnrollment(e) {
 		e.preventDefault();
 		clearErrors('#enrollment-div');
+		reset_verification_forms();
 		var form = $(this);
 		var url = form.attr('action');
 		var form_data = new FormData(form[0]);
@@ -68,14 +79,7 @@ var VerifyStu = (function() {
 				data = data.split('<<<>>>');
 				$('#profile-div').append(data[0]);
 				$('#qual-div').append(data[1]);
-				$('#id_enroll').on('input', function(e){
-					$('#profile-div').html('<h4 class="center-align" style="color: goldenrod">Student Profile</h4>');
-					$('#qual-div').html('<h4 class="center-align" style="color: goldenrod">Student Qualifications</h4>');
-					$('#id_enroll').off('input');
-//					$('#delete-btn').off('click');
-					$('#delete-div form').off('submit');
-					tabs[0].click();
-				});
+				$('#id_enroll').on('input', reset_verification_forms);
 				$('#profile-form').on('submit', updateProfile);
 				$('#qual-form').on('submit', updateQual);
 //				$('#delete-btn').on('click', delete_button);

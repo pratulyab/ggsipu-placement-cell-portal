@@ -207,6 +207,15 @@ main img
       left: 10px;
     }
 
+.required > label:after {
+	content: '* ' !important;
+	font-weight: bold !important;
+}
+
+.help-block {
+    font-size: 0.80rem;
+}
+
 }
 
 
@@ -486,6 +495,15 @@ main img
       width: 50px;
     } 
 
+.required > label:after {
+	content: '* ' !important;
+	font-weight: bold !important;
+}
+
+.help-block {
+    font-size: 0.80rem;
+}
+
 }
 
 @media (min-width:992px){
@@ -691,5 +709,14 @@ main img
       top: 20px;
       left: 20px;
     }
+
+.required > label:after {
+	content: '* ' !important;
+	font-weight: bold !important;
+}
+
+.help-block {
+    font-size: 0.80rem;
+}
 
 }

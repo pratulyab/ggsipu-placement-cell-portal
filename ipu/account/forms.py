@@ -28,14 +28,17 @@ class LoginForm(forms.Form):
 			queryset = CustomUser.objects.filter(~Q(type='S') & Q(is_superuser=False))
 			if '@' in username:
 				try:
-					username = queryset.get(email=username).username
+					user = queryset.get(email=username)
+					username = user.username
 				except CustomUser.DoesNotExist:
 					raise forms.ValidationError(_('User with this email address does not exist'))
 			else:
 				try:
-					queryset.get(username=username)
+					user = queryset.get(username=username)
 				except CustomUser.DoesNotExist:
 					raise forms.ValidationError(_('Invalid username'))
+			if user.is_disabled:
+				raise forms.ValidationError(_('Access Disallowed. Please contact the college.'))
 			self.user_cache = authenticate(username=username, password=password)
 			if self.user_cache is None:
 				raise forms.ValidationError(_('Invalid username or password'))
@@ -82,7 +85,7 @@ class SignupForm(forms.ModelForm):
 		fields = ['username', 'email']
 		help_texts = {
 			'username': _('Required. 30 characters or fewer. Letters, digits and ./+/-/_ only.'),
-			'email': _('An activation email will be sent to the registered email address.'),
+			'email': _('You\'ll need to verify this email address. Make sure you have access to it.'),
 		}
 
 

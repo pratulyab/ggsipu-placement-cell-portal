@@ -26,6 +26,11 @@ class CustomUser(AbstractUser):
 		('CO', _('Company')),
 	)
 	type = models.CharField(_('Type'), choices=USER_TYPES, max_length=2, default=USER_TYPES[2][0])
+	'''
+		Use 'disabled' field to restrict a user's access to the portal, since 'is_active' is used for different purpose.
+		If a student has graduated from college, or block recruiter etc.
+	'''
+	is_disabled = models.BooleanField(default=False)
 
 	def clean(self, *args, **kwargs):
 		super(CustomUser, self).clean()

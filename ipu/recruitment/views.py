@@ -17,7 +17,7 @@ from dummy_company.models import DummyCompany, DummySession
 from faculty.models import Faculty
 from notification.forms import NotifySessionStudentsForm
 from notification.models import Notification
-from recruitment.forms import AssociationForm, EditSessionForm, DissociationForm, CreateSessionCriteriaForm, EditCriteriaForm, ManageSessionStudentsForm
+from recruitment.forms import AssociationForm, EditSessionForm, DissociationForm, CreateSessionCriteriaForm, EditCriteriaForm, ManageSessionStudentsForm, SessionFilterForm
 from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
 from recruitment.utils import get_excel_structure
 from student.models import Student, Programme, Stream
@@ -307,28 +307,31 @@ def mysessions(request):
 			sessions = student.sessions.all()
 			dsessions = student.dummy_sessions.all()
 			sessions_list = []
+			dsessions_list = []
 			for s in sessions:
 				assoc = s.association
 				data = {}
 				data['sessobj'] = s
-#				data['sessid'] = settings.HASHID_PLACEMENTSESSION.encode(s.pk)
+				data['sessid'] = settings.HASHID_PLACEMENTSESSION.encode(s.pk)
 				data['salary'] = "%d LPA" % assoc.salary
 				data['company'] = assoc.company.name.title()
 				data['type'] = "Internship" if assoc.type == 'I' else "Job"
 				data['photo'] = assoc.company.photo
 				data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
 				data['students'] = s.students.count()
-				data['is_dummy'] = False
+#				data['is_dummy'] = False
 				sessions_list.append(data)
 			for ds in dsessions:
+				data = {}
 				data['dsessobj'] = ds
-#				data['dsessid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
+				data['dsessid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
 				data['salary'] = "%d LPA" % ds.salary
 				data['company'] = ds.dummy_company.name.title()
 				data['type'] = "Internship" if ds.type == 'I' else "Job"
 				data['streams'] = ', '.join([s.name.title() for s in ds.streams.all()])
 				data['students'] = ds.students.count()
-				data['is_dummy'] = True
+#				data['is_dummy'] = True
+				dsessions_list.append(data)
 			html = render(request, 'student/mysessions.html', {'sessions': sessions_list}).content.decode('utf-8')
 		elif type == 'CO':
 			try:
@@ -567,6 +570,36 @@ def notify_session(request, sess_hashid, user_type, profile):
 		f.notify_all(students=session.students.all())
 		return JsonResponse(status=200, data={'success_msg': 'Done.'})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+
+@require_user_types(['C', 'F', 'CO'])
+@require_AJAX
+@login_required
+@require_POST
+def filter_sessions(request, user_type, profile):
+	if user_type == 'F':
+		if not request.user.groups.filter(name='Placement Handler'):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
+		profile = profile.college
+	f = SessionFilterForm(request.POST, profile=profile)
+	if f.is_valid():
+		sessions = f.get_filtered_sessions()
+		sessions_list = []
+		for s in sessions:
+			assoc = s.association
+			data = {}
+			data['sessobj'] = s
+			data['sess_hashid'] = settings.HASHID_PLACEMENTSESSION.encode(s.pk)
+			data['salary'] = "%d LPA" % assoc.salary
+			data['company'] = assoc.company.name.title()
+			data['type'] = "Internship" if assoc.type == 'I' else "Job"
+			data['photo'] = assoc.company.photo
+			data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
+			data['students'] = s.students.count()
+			sessions_list.append(data)
+		html = render(request, 'college/sessions_snippet.html', {'sessions': sessions_list, 'filtering': True}).content.decode('utf-8')
+		return JsonResponse(status=200, data={'html': html})
+	else:
+		return JsonResponse(status=400, data={})
 
 # -------------------------------
 def validate_associator(request, association):

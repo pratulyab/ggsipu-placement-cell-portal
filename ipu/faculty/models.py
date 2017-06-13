@@ -8,6 +8,8 @@ from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser
 from college.models import College
 
+from utils import get_hashed_filename
+
 # Create your models here.
 
 class Faculty(models.Model):
@@ -21,7 +23,7 @@ class Faculty(models.Model):
 			error_messages={'invalid_number': _('Invalid IN Phone Number. Don\'t Prefix The Number With +91 or 0.')},
 			null=True
 	)
-	photo = models.ImageField(_('Photo'),upload_to='faculty/photo', blank=True)
+	photo = models.ImageField(_('Photo'),upload_to=get_hashed_filename, blank=True)
 
 	def get_full_name(self):
 		try:

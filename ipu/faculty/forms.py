@@ -151,3 +151,60 @@ class ChooseFacultyForm(forms.Form):
 			names_list.append(f.get_full_name())
 			hashids_list.append(settings.HASHID_FACULTY.encode(f.pk))
 		self.fields['faculty'].widget.choices = zip(hashids_list, names_list)
+
+class VerifyStudentProfileForm(forms.ModelForm):
+	layout = Layout(
+		Fieldset('Personal Details', 
+			Row(Span6('firstname'), Span6('lastname')),
+			Row(Span3('gender'), Span4('dob'), Span5('phone_number')),
+		),
+		Fieldset('Educational Details', 
+			Row('college'),
+			Row(Span6('programme'), Span6('stream')),
+			Row(Span6('current_year'), Span6('is_sub_back')),
+		),
+	)
+	def __init__(self, *args, **kwargs):
+		super(VerifyStudentProfileForm, self).__init__(*args, **kwargs)
+		self.initial['college'] = self.instance.college.pk
+		self.fields['college'].widget.attrs['disabled'] = 'disabled'
+		self.initial['programme'] = self.instance.programme.pk
+		self.fields['programme'].widget.attrs['disabled'] = 'disabled'
+		self.initial['stream'] = self.instance.stream.pk
+		self.fields['stream'].widget.attrs['disabled'] = 'disabled'
+
+	def clean_college(self):
+		clg = self.cleaned_data.get('college', None)
+		if clg and self.instance.college != clg:
+			raise forms.ValidationError(_('Error. College has been changed'))
+		return clg
+
+	def clean_programme(self):
+		prog = self.cleaned_data.get('programme', None)
+		if prog and self.instance.programme != prog:
+			raise forms.ValidationError(_('Error. Programme has been changed'))
+		return prog
+
+	def clean_stream(self):
+		strm = self.cleaned_data.get('stream', None)
+		if strm and self.instance.stream != strm:
+			raise forms.ValidationError(_('Error. Stream has been changed'))
+		return strm
+	
+	def save(self, commit=True, *args, **kwargs):
+		student = super(VerifyStudentProfileForm, self).save(commit=False)
+		student.is_verified = kwargs.pop('verified', False)
+		student.verified_by = kwargs.pop('verifier', None)
+		if commit:
+			try:
+				student.save()
+			except IntegrityError:
+				raise forms.ValidationError(_('Verification error.'))
+			except ValidationError as error:
+				print(error)
+				raise forms.ValidationError(_('Error Occcurred'))
+		return student
+
+	class Meta:
+		model = Student
+		fields = ['firstname', 'lastname', 'gender', 'dob', 'phone_number', 'college', 'programme', 'stream', 'is_sub_back', 'current_year']

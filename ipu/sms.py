@@ -1,7 +1,13 @@
 import requests, re, json
+import os, sys
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ipu.settings")
+from django.core.management import execute_from_command_line
+
+from django.conf import settings
 
 # Check SMS Credits Balance
-def check_credits_balance(api_key):
+def check_credits_balance():
+	api_key = settings.TWOFACTOR_API_KEY
 	if not isinstance(api_key, str):
 		return None
 	url = "http://2factor.in/API/V1/%s/ADDON_SERVICES/BAL/TRANSACTIONAL_SMS" % api_key
@@ -17,7 +23,8 @@ def check_credits_balance(api_key):
 	return int(r['Details'])
 
 # Send SMS
-def send_sms(api_key, recipients_list, msg, sender='GGSIPU'):
+def send_sms(recipients_list, msg, sender='GGSIPU'):
+	api_key = settings.TWOFACTOR_API_KEY
 	if not isinstance(api_key, str):
 		return None
 	if len(sender) > 6:
@@ -35,7 +42,7 @@ def send_sms(api_key, recipients_list, msg, sender='GGSIPU'):
 		return None
 	if not msg:
 		return None
-	if check_credits_balance(api_key) < len(recipients_list):
+	if check_credits_balance() < len(recipients_list):
 		return None
 	url = "http://2factor.in/API/V1/%s/ADDON_SERVICES/SEND/TSMS" % api_key
 	payload = {
@@ -44,9 +51,10 @@ def send_sms(api_key, recipients_list, msg, sender='GGSIPU'):
 		'Msg': msg
 	}
 	try:
-		r = requests.POST(url, data=payload)
+		r = requests.post(url, data=payload)
 	except:
 		return None
+	print(r.text)
 	if r.status_code != 200:
 		return False
 	print(r.text)

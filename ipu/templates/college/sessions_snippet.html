@@ -1,0 +1,32 @@
+<div id="sessions" class="scrollspy">
+	<ul class="collection">
+		{% for session in sessions %}
+			<li class="collection-item avatar" data-sess="{{ session.sess_hashid }}">
+				{% if session.photo %}
+					<img src="{{ session.photo.url }}" alt="Recruiter" class="circle" />
+				{% endif %}
+				<span class="title">{{ session.company }} for {{ session.type|title }} </span>
+				<p>
+					{{ session.salary }}
+					<br>
+					<p>
+						{{ session.streams }}
+					</p>
+					<br>
+						{{ session.students }} student{{ session.students|pluralize }} in the session
+				</p>
+				<span class="secondary-content">
+					<a href="{% url 'manage_session' session.sess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>
+					<a href="{% url 'notify_session' session.sess_hashid %}" class="envelope"><i class="fa fa-2x fa-envelope"></i></a>
+					<a href="{% url 'excel' session.sess_hashid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
+				</span>
+			</li>
+		{% empty %}
+			{% if filtering %}
+				<b><h1 class="center flow-text teal-text text-accent-4">No sessions found that match the filtering conditions.</h1></b>
+			{% else %}
+				<b><h1 class="center flow-text teal-text text-accent-4">You are currently not enrolled in any sessions.</h1></b>
+			{% endif %}
+		{% endfor %}
+	</ul>
+</div>

@@ -177,6 +177,9 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'Training & Placement Cell'
 
+# SMS
+TWOFACTOR_API_KEY = '31cce076-19ed-11e7-9462-00163ef91450'
+
 # FILE UPLOAD CONSTRAINTS
 FILE_CONTENT_TYPE = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 FILE_MAX_SIZE = 2*1024*1024 #2MB

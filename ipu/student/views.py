@@ -17,6 +17,7 @@ from account.tasks import send_activation_email_task
 from account.utils import handle_user_type, get_relevant_reversed_url
 from college.models import College, Stream
 from dummy_company.models import DummyCompany, DummySession
+from faculty.forms import VerifyStudentProfileForm
 from notification.models import Notification
 from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm, FileUploadForm, PaygradeForm
 from recruitment.models import Association, PlacementSession
@@ -191,7 +192,7 @@ def edit_student(request, **kwargs):
 			POST['college'] = student.college.pk
 			POST['programme'] = student.programme.pk
 			POST['stream'] = student.stream.pk
-			f = StudentEditForm(POST, request.FILES, instance=student)
+			f = VerifyStudentProfileForm(POST, request.FILES, instance=student)
 			verdict = False
 			if 'continue' == request.POST.get('true', ''):
 				verdict = True
@@ -200,15 +201,9 @@ def edit_student(request, **kwargs):
 			else:
 				# Button names/values changed
 				return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
-			photo, resume = student.photo, student.resume
 			if f.is_valid():
 				student = f.save(verifier=request.user, verified=verdict)
-				# Removing old files
-				if 'photo' in f.changed_data:
-					delete_old_filefield(photo, student.photo)
-				if 'resume' in f.changed_data:
-					delete_old_filefield(resume, student.resume)
-				context = {'profile_form': StudentEditForm(instance=student), 'success_msg': 'Student profile has been updated successfully!'}
+				context = {'profile_form': VerifyStudentProfileForm(instance=student), 'success_msg': 'Student profile has been updated successfully!'}
 				return HttpResponse(render(request, 'faculty/verify_profile_form.html', context).content) # for RequestContext() to set csrf value in form
 #			return HttpResponse(render_to_string('faculty/verify_profile_form.html', context))
 			else:
@@ -501,6 +496,7 @@ def apply_to_company(request, sess, **kwargs): # handling withdrawl as well
 #			Better! => 1. Complexity 2. m2m changed signal discrepancy handled because implementing below code will cause reverse=True :D
 		if session not in students_sessions:
 			student.sessions.add(session)
+			student.sessions_applied_to.add(session) # stores sessions the student had applied to
 			return JsonResponse(status=200, data={'enrolled': True})
 		else:
 			student.sessions.remove(session)
