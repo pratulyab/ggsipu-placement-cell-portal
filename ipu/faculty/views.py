@@ -15,9 +15,11 @@ from account.tasks import send_activation_email_task
 from account.tokens import faculty_activation_token_generator
 from account.utils import handle_user_type, get_relevant_reversed_url
 from college.models import College
+from dummy_company.forms import DummySessionFilterForm
 from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm, EditGroupsForm, ChooseFacultyForm, VerifyStudentProfileForm
 from faculty.models import Faculty
 from notification.models import Notification
+from recruitment.forms import SessionFilterForm
 from student.models import Qualification
 from student.forms import QualificationForm
 import re
@@ -102,6 +104,8 @@ def faculty_home(request, **kwargs):
 	context['edit_account_form'] = AccountForm(instance=user)
 	context['edit_faculty_form'] = FacultyProfileForm(instance=faculty)
 	context['enrollment_form'] = EnrollmentForm(faculty=faculty)
+	context['session_filter_form'] = SessionFilterForm(profile=faculty.college)
+	context['dsession_filter_form'] = DummySessionFilterForm(college=faculty.college)
 	try:
 		context['social_profile_form'] = SocialProfileForm(instance=user.social)
 	except SocialProfile.DoesNotExist:

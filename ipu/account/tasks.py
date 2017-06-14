@@ -29,7 +29,7 @@ def send_activation_email_task(user_pk, domain):
 		'type': user.type,
 		'token': account_activation_token_generator.make_token(user),
 		'user_hashid': settings.HASHID_CUSTOM_USER.encode(user.pk),
-		'protocol': 'https' if settings.USE_HTTPS_PROTOCOL else 'http',
+		'protocol': 'https' if settings.USE_HTTPS else 'http',
 		'domain': domain,
 		'days': settings.PASSWORD_RESET_TIMEOUT_DAYS,
 		'greeting': ''
@@ -49,7 +49,7 @@ def send_forgot_password_email_task(user_pk, domain):
 	email_body_context = {
 		'token': default_token_generator.make_token(user),
 		'user_hashid' : settings.HASHID_CUSTOM_USER.encode(user.pk),
-		'protocol': 'https' if settings.USE_HTTPS_PROTOCOL else 'http',
+		'protocol': 'https' if settings.USE_HTTPS else 'http',
 		'domain' : domain,
 		'days': settings.PASSWORD_RESET_TIMEOUT_DAYS,
 		'greeting': ''

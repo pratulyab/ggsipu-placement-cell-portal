@@ -341,15 +341,14 @@ def edit_dummy_session(request, dsess_hashid, user_type, profile, **kwargs):
 	f = EditDummySessionForm(request.POST, instance=dsession)
 	if f.is_valid():
 		f.save()
-		if 'ended' in f.changed_data:
-			message = "Congratulations! "
-			if dsession.type == 'J':
-				message += "You have been placed at %s. " % (dsession.dummy_company.name.title())
-			else:
-				message += "You have grabbed the internship at %s. " % (dsession.dummy_company.name.title())
-			for student in dsession.students.all():
-				Notification.objects.create(actor=profile, target=student.profile, message=message)
-		return JsonResponse(data={'success': True, 'success_msg': 'Session Details have been updated successfully'})
+		success_msg = 'Session Details have been updated successfully.'
+		if f.should_notify_students():
+			try:
+				f.notify_selected_students(actor=profile.profile)
+			except:
+				return JsonResponse(status=400, data={'error': 'Sorry, error occurred while notifying students'})
+			success_msg += ' Students have been notified.'
+		return JsonResponse(data={'success': True, 'success_msg': success_msg})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
 @require_user_types(['C', 'F'])

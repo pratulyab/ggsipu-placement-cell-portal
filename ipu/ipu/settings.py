@@ -32,12 +32,12 @@ if socket.gethostname() == 'usict-tnp':
 	# SSL
 	SESSION_COOKIE_SECURE = True
 	CSRF_COOKIE_SECURE = True
-	USE_HTTPS_PROTOCOL = True # Self defined boolean
+	USE_HTTPS = True # Self defined boolean
 else:
 	DEBUG = True
 	ALLOWED_HOSTS = []
 	db_password = ''
-	USE_HTTPS_PROTOCOL = False
+	USE_HTTPS = False
 
 
 AUTH_USER_MODEL = 'account.CustomUser'
@@ -172,7 +172,7 @@ EMAIL_USE_TLS = True
 """
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_HOST_USER = 'pratulya'
-EMAIL_HOST_PASSWORD = '$3ndGrid'
+EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'Training & Placement Cell'

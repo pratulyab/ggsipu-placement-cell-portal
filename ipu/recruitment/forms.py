@@ -5,9 +5,11 @@ from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from college.models import College, Programme, Stream
 from company.models import Company
+from notification.models import Notification
 from recruitment.fields import ModelHashidChoiceField, ModelMultipleHashidChoiceField
 from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
 from student.models import Student
+from datetime import date
 from decimal import Decimal
 from material import *
 import datetime, re
@@ -205,6 +207,11 @@ class CreateSessionCriteriaForm(forms.ModelForm):
 
 
 class EditCriteriaForm(forms.ModelForm):
+	FIELDS_VERBOSE_NAME = {
+		'is_sub_back': 'whether students with subject back(s) are allowed',
+		'years': 'which year students are allowed',
+	}
+
 	layout = Layout(
 			Row(Span8('years'), Span4('is_sub_back')),
 			Row(Span6('tenth'), Span6('twelfth')),
@@ -233,6 +240,20 @@ class EditCriteriaForm(forms.ModelForm):
 		if max(chosen_years) > self.max_year:
 			raise forms.ValidationError(_('Please choose valid year(s). Maximum year value for this programme is %s.' % self.max_year))
 		return comma_separated_years
+
+	def notify_other_party(self, actor, target, link):
+		if self.changed_data:
+			changed_fields = []
+			marks_fields = []
+			for field in self.changed_data:
+				if field in self.FIELDS_VERBOSE_NAME:
+					changed_fields.insert(0, self.FIELDS_VERBOSE_NAME[field])
+				else:
+					marks_fields.append(field)
+			if marks_fields:
+				changed_fields.append('marks requirements for %s' % (','.join(marks_fields)))
+			message = '%s updated %s for <a href="%s">this </a> placement session.' % (actor, ', '.join(changed_fields), link)
+			Notification.objects.create(actor=actor, target=target, message=message)
 	
 	def save(self, commit=True, *args, **kwargs):
 		# Won't be calling model form's save method
@@ -246,6 +267,13 @@ class EditCriteriaForm(forms.ModelForm):
 
 
 class EditSessionForm(forms.ModelForm):
+	FIELDS_VERBOSE_NAME = {
+		'ended': 'whether the session has ended',
+		'application_deadline': 'Application Deadline',
+		'status': 'Status',
+		'salary': 'Salary Offered'
+	}
+
 	def __init__(self, *args, **kwargs):
 		super(EditSessionForm, self).__init__(*args, **kwargs)
 		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.instance.pk)
@@ -259,6 +287,33 @@ class EditSessionForm(forms.ModelForm):
 		if date and date <= datetime.date.today() and 'application_deadline' in self.changed_data:
 			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
 		return date
+
+	def notify_other_party(self, actor, target, link):
+		if self.changed_data:
+			changed_fields = []
+			for field in self.changed_data:
+				if field == 'ended':
+					changed_fields.insert(0, (self.FIELDS_VERBOSE_NAME[field]))
+				else:
+					changed_fields.append(self.FIELDS_VERBOSE_NAME[field])
+			message = '%s updated %s for <a href="%s">this</a> placement session.' % (actor, ', '.join(changed_fields), link)
+			Notification.objects.create(actor=actor, target=target, message=message)
+
+	def should_notify_students(self):
+		if 'ended' in self.changed_data and self.cleaned_data['ended'] and self.cleaned_data['application_deadline'] < date.today():
+			return True
+		return False
+
+	def notify_selected_students(self, actor):
+		print(self.instance)
+		association = self.instance.association
+		message = "Congratulations! "
+		if association.type == 'J':
+			message += "You have been placed at %s. " % (association.company.name.title())
+		else:
+			message += "You have grabbed the internship at %s. " % (association.company.name.title())
+		for student in self.instance.students.all():
+			Notification.objects.create(actor=actor, target=student.profile, message=message)
 	
 	class Meta:
 		model = PlacementSession
@@ -271,7 +326,7 @@ class ManageSessionStudentsForm(forms.ModelForm):
 		self.choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 		kwargs.update(initial={'students': [c[0] for i,c in enumerate(self.choices) if i]})
 		super(ManageSessionStudentsForm, self).__init__(*args, **kwargs)
-		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('Note: Students can only be removed from the list. Removed students will be notified.'))
+		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('CAUTION: Students can only be removed from the list. Removed students will be notified.'))
 		self.fields['students'].choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 #		self.fields['students'].initial = (settings.HASHID_STUDENT.encode(s.pk) for s in self.students_queryset)
 #		Why wouldn't this work? Passing initial to MMHC's super isn't working either
@@ -285,7 +340,7 @@ class ManageSessionStudentsForm(forms.ModelForm):
 		self.disqualified = disqualified
 		message = "Sorry, your involvement in the placement session %s was till here only!\
 					\nThanks for showing your interest.\
-					\nBest of luck for your future." % (self.instance)
+					\nBest of luck for your future endeavours." % (self.instance)
 		for student in disqualified:
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
 		# send mass email

@@ -77,7 +77,7 @@
 	{% endif %}
 
 	{% if perms.recruitment.handle_placement %}
-	<li data-main_div="#sessions"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
+	<li data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
             Sessions</a></li>
 	{% endif %}  
     {% if perms.notification.manage_notification %}        
@@ -116,7 +116,7 @@
 	{% endif %}
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 	{% if perms.recruitment.handle_placement %}
-		<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
+		<li id="session" class="tab col s2"><a href="#sessions_div">Sessions</a></li>
 	{% endif %}
 {% endblock %}
 
@@ -247,13 +247,41 @@
 		</div>
 	</div>
 {% if perms.recruitment.handle_placement %}
-	<div id="sessions" class="col s12"></div>
+	<div id="sessions_div" class="col s12"></div>
 {% endif %}
 
 {% if perms.notification.manage_notification %}
 	{% if badge %}
 		<span class="badge" id="notifications_badge">{{ badge }}</span>
 	{% endif %}
+{% endif %}
+
+{% if perms.recruitment.handle_placement %}
+<!-- Session Filter Forms' SideNav -->
+<ul id="session-filter-forms-out" class="side-nav">
+	<li>
+		<form data-filter="sessions" class="session-filter-form col s12 m10 offset-m1" method="POST" action="{% url 'filter_sessions' %}">
+			{% csrf_token %}
+			<h1 class="subheader">Session Filter Form</h1>
+			{% form form=session_filter_form %}{% endform %}
+			<div class="row">
+				<button class="col s12 btn btn-waves" type="submit">Filter</button>
+			</div>
+		</form>
+	</li>
+	<li><div class="divider"></div></li>
+	<li>
+		<form data-filter="dsessions" class="session-filter-form col s12 m10 offset-m1" method="POST" action="{% url 'filter_dsessions' %}">
+			{% csrf_token %}
+			<h1 class="subheader">Dummy Session Filter Form</h1>
+			{% form form=dsession_filter_form %}{% endform %}
+			<div class="row">
+				<button class="col s12 btn btn-waves" type="submit">Filter</button>
+			</div>
+		</form>
+	</li>
+  </ul>
+  <!-- -->
 {% endif %}
 {% endblock %}
 

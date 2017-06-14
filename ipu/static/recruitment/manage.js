@@ -35,6 +35,35 @@ var ManageSession = (function() {
 		}
 	}
 
+	function show_ended_warnings(){
+		var checked = this.checked,
+			heading = 'Heading',
+			message = 'Message',
+			type = 'warning',
+			application_deadline = new Date($(this).parents('form').find('#id_application_deadline').val()),
+			deadline_passed;
+		deadline_passed = (new Date()) > application_deadline;
+		if (deadline_passed){
+			if (checked) {
+				heading = 'You have ticked the box';
+				message = 'All the students currently in the session, if any, will be notified that they have been selected. To save changes, submit the form.';
+			} else {
+				heading = 'You have unticked the box';
+				message = 'To end the session and to notify the students currently in the session, if any, that they have been selected, tick the box and submit  the form.';
+			}
+		} else {
+			if (checked){
+				heading = 'Info';
+				message = 'Since application deadline hasn\'t been reached yet, marking the session as ended will have no effect.';
+				this.checked = false;
+			} else {
+				heading = 'Info';
+				message = 'To save changes, submit the form.'
+			}
+		}
+		swal(heading, message, type)
+	}
+
 	function handleAJAX(form, form_id) {
 		clearErrors(form_id);
 		var url = $(form).attr('action');
@@ -83,7 +112,9 @@ var ManageSession = (function() {
 	return {
 		init: function(forms){
 			for(var i=0; i<forms.length; i++){
-				$('#' + forms[i]).on('submit', submitForm);
+				var $form = $('#' + forms[i]);
+				$form.on('submit', submitForm);
+				$form.find('#id_ended').on('change', show_ended_warnings);
 			}
 		}
 	};

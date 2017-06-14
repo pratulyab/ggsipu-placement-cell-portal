@@ -147,6 +147,8 @@ var Session = (function() {
 			contentType: false,
 			success: function(data, status, xhr){
 				$('#filter-preloader').empty();
+				if (!$div.length)
+					$div = $('#sessions_div');
 				$div.html(data['html']);
 				Materialize.toast($('<span class="flow-text green-text" />').html('Filtered successfully!').css('fontWeight', 'bold'), 5000);
 				inProcess[semaphore] = false;

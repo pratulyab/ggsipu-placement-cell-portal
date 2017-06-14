@@ -104,9 +104,9 @@ def edit_criteria(request, sess_hashid, **kwargs):
 		session.save()
 	# Notifying the other party
 		actor, target = (profile, session.association.college) if user_type == 'CO' else (profile, session.association.company)
-		message = '%s updated %s for one of the placement session.' % (actor, ', '.join(f.changed_data))
-		message += '\nTo review, visit <a href="http://%s">this link.</a>' % (str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
-		Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
+		link = "%s://%s" % (('https' if settings.USE_HTTPS else 'http'), str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
+		f.notify_other_party(actor=actor.profile, target=target.profile, link=link)
+	######
 		return JsonResponse(status=200, data={'success': True, 'success_msg': 'Selection Criteria has been updated successfully'})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
@@ -144,19 +144,17 @@ def edit_session(request, sess_hashid, **kwargs):
 			association.save()
 	# Notifying the other party
 		actor, target = (profile, session.association.college) if user_type == 'CO' else (profile, session.association.company)
-		message = '%s updated the placement session fields: %s. ' % (actor, ', '.join(f.changed_data))
-		message += '\nTo review, visit <a href="http://%s">this link.</a>' % (str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
-		Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
-		if 'ended' in f.changed_data:
-			association = session.association
-			message = "Congratulations! "
-			if association.type == 'J':
-				message += "You have been placed at %s. " % (association.company.name.title())
-			else:
-				message += "You have grabbed the internship at %s. " % (association.company.name.title())
-			for student in session.students.all():
-				Notification.objects.create(actor=profile.profile, target=student.profile, message=message)
-		return JsonResponse(status=200, data={'success': True, 'success_msg': 'Placement Session has been updated successfully'})
+		link = "%s://%s" % (('https' if settings.USE_HTTPS else 'http'), str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
+		f.notify_other_party(actor=actor.profile, target=target.profile, link=link)
+	########
+		success_msg = 'Placement Session has been updated successfully.'
+		if f.should_notify_students():
+			try:
+				f.notify_selected_students(actor=profile.profile)
+			except:
+				return JsonResponse(status=400, data={'error': 'Sorry, error occurred while notifying students.'})
+			success_msg += ' Students have been notified.'
+		return JsonResponse(status=200, data={'success': True, 'success_msg': success_msg})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
 @require_user_types(['C', 'F', 'CO'])
@@ -596,7 +594,10 @@ def filter_sessions(request, user_type, profile):
 			data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
 			data['students'] = s.students.count()
 			sessions_list.append(data)
-		html = render(request, 'college/sessions_snippet.html', {'sessions': sessions_list, 'filtering': True}).content.decode('utf-8')
+		if user_type == 'CO':
+			html = render(request, 'company/mysessions.html', {'sessions': sessions_list, 'filtering': True}).content.decode('utf-8')
+		else:
+			html = render(request, 'college/sessions_snippet.html', {'sessions': sessions_list, 'filtering': True}).content.decode('utf-8')
 		return JsonResponse(status=200, data={'html': html})
 	else:
 		return JsonResponse(status=400, data={})

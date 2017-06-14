@@ -96,7 +96,7 @@
 		<li data-main_div="#qualifications"><a class="waves-effect" href="#!"><i class="fa fa-book" aria-hidden="true"></i>Update Qualifications*</a></li>  
 	{% endif %}
 	<li data-main_div="#companies"><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>Companies Visiting</a></li>
-	<li data-main_div="#sessions"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i> Sessions</a></li>
+	<li data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i> Sessions</a></li>
 	<li data-main_div="#notifications"><a class="waves-effect" href="#!">
 		<i class="fa fa-bell" aria-hidden="true"></i>Notifications<span class="new badge" id="mobile-noti-badge">1</span></a>
 	</li>
@@ -128,7 +128,7 @@
 <!--	<li class="tab col s2"><a href="#tab2">Status</a></li> -->
 	<li id = "notification" class="tab col s2" url="{% url 'submit_issue' %}"><a href="#notifications">Notification</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
-	<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
+	<li id="session" class="tab col s2"><a href="#sessions_div">Sessions</a></li>
 {% endblock %}
 
 {% block tabs_content %}
@@ -241,7 +241,7 @@
 		</div>
 	</div>
 
-	<div id="sessions" class="col s12"></div>
+	<div id="sessions_div" class="col s12"></div>
 
 	{% if badge %}
 		<span class="badge" id="notifications_badge">{{ badge }}</span>

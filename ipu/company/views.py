@@ -16,7 +16,7 @@ from company.forms import CompanyCreationForm, CompanyEditForm
 from company.models import Company
 from notification.models import Notification
 from recruitment.models import PlacementSession
-from recruitment.forms import AssociationForm
+from recruitment.forms import AssociationForm, SessionFilterForm
 
 # Create your views here.
 
@@ -74,6 +74,7 @@ def company_home(request, **kwargs):
 	context['edit_account_form'] = AccountForm(instance=user)
 	context['edit_company_form'] = CompanyEditForm(instance=company)
 	context['association_form'] = AssociationForm(profile=company)
+	context['session_filter_form'] = SessionFilterForm(profile=company)
 	try:
 		context['social_profile_form'] = SocialProfileForm(instance=user.social)
 	except SocialProfile.DoesNotExist:

@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from college.models import College, Programme, Stream
 from company.models import Company
 from dummy_company.models import DummyCompany, DummySession
+from notification.models import Notification
 from recruitment.fields import ModelHashidChoiceField, ModelMultipleHashidChoiceField
 from recruitment.models import SelectionCriteria
 from student.models import Student
@@ -195,7 +196,7 @@ class ManageDummySessionStudentsForm(forms.ModelForm):
 		self.choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 		kwargs.update(initial={'students': [c[0] for i,c in enumerate(self.choices) if i]})
 		super(ManageDummySessionStudentsForm, self).__init__(*args, **kwargs)
-		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('Note: Students can only be removed from the list. Removed students will be notified.'))
+		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('CAUTION: Students can only be removed from the list. Removed students will be notified.'))
 		self.fields['students'].choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 		self.initial['token'] = settings.HASHID_DUMMY_SESSION.encode(self.instance.pk)
 	
@@ -245,6 +246,21 @@ class EditDummySessionForm(forms.ModelForm):
 		if date and date <= datetime.date.today() and 'application_deadline' in self.changed_data:
 			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
 		return date
+
+	def should_notify_students(self):
+		if 'ended' in self.changed_data and self.cleaned_data['ended'] and self.cleaned_data['application_deadline'] < datetime.date.today():
+			return True
+		return False
+
+	def notify_selected_students(self, actor):
+		dsession = self.instance
+		message = "Congratulations! "
+		if dsession.type == 'J':
+			message += "You have been placed at %s. " % (dsession.dummy_company.name.title())
+		else:
+			message += "You have grabbed the internship at %s. " % (dsession.dummy_company.name.title())
+		for student in dsession.students.all():
+			Notification.objects.create(actor=actor, target=student.profile, message=message)
 	
 	class Meta:
 		model = DummySession
