@@ -305,7 +305,6 @@ class EditSessionForm(forms.ModelForm):
 		return False
 
 	def notify_selected_students(self, actor):
-		print(self.instance)
 		association = self.instance.association
 		message = "Congratulations! "
 		if association.type == 'J':

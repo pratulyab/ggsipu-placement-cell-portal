@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
@@ -26,10 +26,14 @@ import os
 
 @require_http_methods(['GET','POST'])
 def college_signup(request):
+	'''
 	if request.user.is_anonymous:
 		return redirect('landing')
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_response=True)
+	'''
+	if not request.user.is_superuser:
+		return Http404()
 	if request.method == 'GET':
 		f = SignupForm()
 	else:

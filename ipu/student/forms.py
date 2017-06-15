@@ -72,6 +72,15 @@ class StudentSignupForm(forms.ModelForm):
 			raise forms.ValidationError(_('Invalid enrollment number'))
 		return username
 
+	def clean_email(self):
+		email = self.cleaned_data['email']
+		if email:
+			domain = '.'.join(email.split('@')[-1].split('.')[:-1]).lower()
+			for blacklisted in settings.DISALLOWED_EMAIL_DOMAINS: # Because a few of these provide subdomains. FOOBAR.domainname.com
+				if blacklisted in domain:
+					raise forms.ValidationError(_('This email domain is not allowed. Please enter email of different domain.'))
+		return email
+
 	def clean(self, *args, **kwargs):
 		super(StudentSignupForm, self).clean(*args, **kwargs)
 		pwd1 = self.cleaned_data.get('password1', None)

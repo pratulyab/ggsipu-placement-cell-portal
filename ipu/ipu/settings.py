@@ -227,3 +227,6 @@ PROFILE_CREATION_URL = {
 # SESSIONS
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 1 * (60 * 60 * 24)
+
+DISALLOWED_USERNAMES = ['account', 'notification', 'student', 'faculty', 'company', 'college', 'dcompany', 'recruitment']
+DISALLOWED_EMAIL_DOMAINS = ['mailinator', 'discard.email', 'thraml', 'mintemail', 'mailcatch']

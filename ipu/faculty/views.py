@@ -84,6 +84,7 @@ def edit_create_faculty(request, **kwargs):
 					f.save()
 					if f.has_changed():
 						context['update'] = True
+					return redirect(settings.HOME_URL['F'])
 			context['faculty_edit_create_form'] = f
 			return render(request, 'faculty/edit_create.html', context)
 		else:

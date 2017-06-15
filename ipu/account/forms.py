@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
@@ -7,6 +8,7 @@ from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser, SocialProfile
 from urllib.parse import urlparse
+from utils import validate_username_for_urls
 import re
 from material import *
 
@@ -64,6 +66,25 @@ class SignupForm(forms.ModelForm):
 				raise forms.ValidationError(_('Passwords do not match.'))
 			password_validation.validate_password(pwd1)
 		return self.cleaned_data
+
+	def clean_username(self):
+		username = self.cleaned_data['username']
+		'''
+		if username and username in settings.DISALLOWED_USERNAMES:
+			raise forms.ValidationError(_('You cannot take this username'))
+		'''
+		if username and not validate_username_for_urls(username):
+			raise forms.ValidationError(_('You cannot take this username'))
+		return username
+
+	def clean_email(self):
+		email = self.cleaned_data['email']
+		if email:
+			domain = '.'.join(email.split('@')[-1].split('.')[:-1]).lower()
+			for blacklisted in settings.DISALLOWED_EMAIL_DOMAINS: # Because a few of these provide subdomains. FOOBAR.domainname.com
+				if blacklisted in domain:
+					raise forms.ValidationError(_('This email domain is not allowed. Please enter email of different domain.'))
+		return email
 
 	def save(self, commit=True, *args, **kwargs):
 		self.user_type = kwargs.pop('user_type')
