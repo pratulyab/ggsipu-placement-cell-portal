@@ -3,8 +3,8 @@
 
 To activate your GGSIPU Training & Placement Cell account,
 click the link below:
-{% if type == 'F' %}
-	{{ protocol }}://{{ domain }}{% url 'faculty_activation' user_hashid=user_hashid token=token %}
+{% if type == 'F' or type == 'C' %}
+	{{ protocol }}://{{ domain }}{% url 'usable_pwd_activation' user_hashid=user_hashid token=token %}
 
 	If clicking the link above doesn't work, then please copy and paste the URL in a new browser window instead.
 

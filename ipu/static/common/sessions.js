@@ -139,6 +139,7 @@ var Session = (function() {
 		else
 			inProcess[semaphore] = true
 		$('#filter-preloader').html($('<div class="progress"><div class="indeterminate"></div></div>'));
+		$('.session-filter-forms-sideNav').sideNav('hide');
 		$.ajax({
 			url: form.attr('action'),
 			type: 'POST',

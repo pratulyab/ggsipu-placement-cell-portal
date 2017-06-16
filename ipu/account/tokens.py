@@ -12,9 +12,9 @@ class AccountActivationTokenGenerator(PasswordResetTokenGenerator):
 			# Therefore, the token expires as soon as it is clicked or the timestamp expires
 		)
 
-class FacultyActivationTokenGenerator(AccountActivationTokenGenerator):
+class TimeUnboundedActivationTokenGenerator(AccountActivationTokenGenerator):
 	'''
-		Same as account activation token, but without the no of days constraint
+		Same as account activation token, but without the no of days constraint while checking validity
 	'''
 	def check_token(self, user, token):
 		if not (user and token):
@@ -42,4 +42,4 @@ class FacultyActivationTokenGenerator(AccountActivationTokenGenerator):
 		return True
 
 account_activation_token_generator = AccountActivationTokenGenerator()
-faculty_activation_token_generator = FacultyActivationTokenGenerator()
+time_unbounded_activation_token_generator = TimeUnboundedActivationTokenGenerator()

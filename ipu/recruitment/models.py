@@ -133,18 +133,6 @@ class Dissociation(models.Model):
 	class Meta:
 		unique_together = ['company', 'college']
 
-
-@receiver(m2m_changed, sender=Association.streams.through)
-def verify_assoc_stream_uniqueness(sender, **kwargs):
-	association = kwargs.get('instance', None)
-	action = kwargs.get('action', None)
-	streams = kwargs.get('pk_set', None)
-	if action == 'pre_add':
-		association_streams = Association.objects.filter(company=association.company, college=association.college)
-		for stream in streams:
-			if association_streams.filter(streams=stream):
-				raise IntegrityError(_('Association between (%s, %s) already exists for chosen stream' % (association.college, association.company)))
-
 @receiver(m2m_changed, sender=PlacementSession.students.through)
 def validating_students(sender, **kwargs):
 	session = kwargs.get('instance', None)
@@ -203,3 +191,23 @@ def request_accepted_notification(sender, **kwargs):
 		message = "%s accepted your association request for %s session.\n%s" % (college.name.title(), type, streams)
 	Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
 	
+# # # # # # # #
+# This validation offers a drawback to the required scheme.
+# 1) There might be use cases to create multiple association with same attributes.
+# 2) Also, to re-associate the same association to a new session, the old session has to be removed because O2O.
+# Even though there is a way around for 2), still it is better to not increase complexity.
+# way around => (by migrating the ended session to an ArchivedAssociation object). But 1) can creep in anytime. i.e. a need for new session while existing one has not yet been marked ended.
+'''
+# Enables to validate that only 1 association exists between a college and company for particular stream(s)
+@receiver(m2m_changed, sender=Association.streams.through)
+def verify_assoc_stream_uniqueness(sender, **kwargs):
+	association = kwargs.get('instance', None)
+	action = kwargs.get('action', None)
+	streams = kwargs.get('pk_set', None)
+	if action == 'pre_add':
+		association_streams = Association.objects.filter(company=association.company, college=association.college)
+		for stream in streams:
+			if association_streams.filter(streams=stream):
+				raise IntegrityError(_('Association between (%s, %s) already exists for chosen stream' % (association.college, association.company)))
+'''
+# # # # # # # #

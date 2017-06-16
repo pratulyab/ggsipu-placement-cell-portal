@@ -11,7 +11,7 @@ from account.forms import SignupForm, AccountForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
 from account.utils import handle_user_type, get_relevant_reversed_url
-from college.forms import CollegeCreationForm, CollegeEditForm
+from college.forms import CollegeCreationForm, CollegeEditForm, CollegeSignupForm
 from college.models import College
 from dummy_company.forms import DummySessionFilterForm
 from faculty.forms import FacultySignupForm
@@ -24,16 +24,34 @@ import os
 
 # Create your views here.
 
+@login_required
+@require_http_methods(['GET','POST'])
+def college_signup_by_superuser(request):
+	if not request.user.is_superuser:
+		return Http404()
+	if request.method == 'GET':
+		af = CollegeSignupForm()
+		pf = CollegeCreationForm()
+	else:
+		af = CollegeSignupForm(request.POST)
+		pf = CollegeCreationForm(request.POST, request.FILES)
+		af.instance.type = 'C'
+		if af.is_valid() and pf.is_valid():
+			user = af.save()
+			college = pf.save(profile=user)
+			for stream in af.cleaned_data.get('streams', []):
+				college.streams.add(stream)
+			send_activation_email_task.delay(user.pk, get_current_site(request).domain)
+			return HttpResponse('Success! Visit admin page to make sure everything\'s been entered correctly.')
+	return render(request, 'college/signup_by_superuser.html', {'account_form': af, 'profile_form': pf})
+
 @require_http_methods(['GET','POST'])
 def college_signup(request):
-	'''
 	if request.user.is_anonymous:
 		return redirect('landing')
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_response=True)
-	'''
-	if not request.user.is_superuser:
-		return Http404()
+	
 	if request.method == 'GET':
 		f = SignupForm()
 	else:

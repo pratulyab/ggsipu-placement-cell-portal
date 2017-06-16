@@ -12,7 +12,7 @@ from account.decorators import require_user_types, require_AJAX
 from account.forms import AccountForm, SocialProfileForm, SetPasswordForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
-from account.tokens import faculty_activation_token_generator
+from account.tokens import time_unbounded_activation_token_generator
 from account.utils import handle_user_type, get_relevant_reversed_url
 from college.models import College
 from dummy_company.forms import DummySessionFilterForm
@@ -196,26 +196,3 @@ def manage(request, user_type, profile):
 		'faculties': faculties
 	}
 	return render(request, 'faculty/manage_faculty.html', context)
-
-@require_http_methods(['GET','POST'])
-def activate(request, user_hashid, token):
-	''' Activates faculty by allowing to set a usable password '''
-	if request.user.is_authenticated():
-		return redirect(settings.HOME_URL[request.user.type])
-	try:
-		user = CustomUser.objects.get(pk=settings.HASHID_CUSTOM_USER.decode(user_hashid)[0])
-	except (IndexError, CustomUser.DoesNotExist):
-		return render(request, 'faculty/activation.html', {'invalid': True})
-	if user.has_usable_password() or not faculty_activation_token_generator.check_token(user, token):
-		''' This means that the activation link for the faculty has already been used. '''
-		return render(request, 'faculty/activation.html', {'invalid': True})
-	if request.method == 'GET':
-		f = SetPasswordForm()
-	else:
-		f = SetPasswordForm(request.POST)
-		if f.is_valid():
-			user.set_password(f.cleaned_data['password2'])
-			user.is_active = True
-			user.save()
-			return render(request, 'faculty/activation.html', {'successful': True})
-	return render(request, 'faculty/activation.html', {'set_password_form': f, 'user_hashid': user_hashid, 'token': token})

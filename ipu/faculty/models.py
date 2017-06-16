@@ -14,7 +14,7 @@ from utils import get_hashed_filename
 
 class Faculty(models.Model):
 	profile = models.OneToOneField(CustomUser, related_name="faculty")
-	firstname = models.CharField(_('First name'), max_length=128, null=True)
+	firstname = models.CharField(_('First name'), max_length=128)
 	lastname = models.CharField(_('Last name'), max_length=128, blank=True)
 	employee_id = models.CharField(_('Employee ID'), max_length=64, blank=True)
 	college = models.ForeignKey(College, related_name="faculties")
