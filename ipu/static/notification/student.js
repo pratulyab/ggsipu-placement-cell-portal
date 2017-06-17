@@ -136,7 +136,7 @@ function fieldEvaluator(input_field , max_length){
 		for(var i=0; i<(data.length);i++){
 			if(data[i].is_solved === true) {
 				icon = '<i class="material-icons circle blue">done_all</i>' ;
-				reply_anchor = '<div class="col s3 itemBox"><a href="" identifier='+ data[i].identifier +'><i class="material-icons ">reply</i><div class="caption">View Reply</div></a></div>';
+				reply_anchor = '<div class="col s3 itemBox center-align"><a href="" identifier='+ data[i].identifier +'><i class="material-icons ">reply</i><div class="caption">View Reply</div></a></div>';
 			}
 			else {
 				icon = '<i class="material-icons circle grey">indeterminate_check_box</i>';
@@ -148,8 +148,8 @@ function fieldEvaluator(input_field , max_length){
 				issue_type = 'Placement';
 			else if(data[i].issue_type === 'G')
 				issue_type = 'General';
-			raw_html+= '<li identifier class="collection-item avatar">' + icon +
-				'<div class="row"><div class="col s9"><span class="title">' + "Issue Type :   " + issue_type + "</span>" +
+			raw_html+= '<li class="collection-item avatar">' + icon +
+				'<div class="row" style="margin-bottom : 0%"><div class="col s9"><span class="title">' + "Issue Type :   " + issue_type + "</span>" +
 				'<p>' + "Subject :   " + data[i].subject + '</p></div>' + reply_anchor +'</div></li>'
 		}
 		
@@ -204,20 +204,53 @@ function fieldEvaluator(input_field , max_length){
     function populateNotificationDiv(data) {
         var raw_html = '';  
         var icon = '';
+        var reply_anchor = '';
+        var subject = ''; // Handles subject for notification and message for ping.
+        var anchor_space = 'col s12';
         if(data.length === 0){
             icon = '<i class="material-icons circle">report_problem</i>' 
             raw_html = '<li class="collection-item avatar">' + icon + '<span class="title">' + 'None' + '</span>' + '<p>' + 'No notifications found.' + '</p>' + '</li>';
             $('#your-notifications-div-ul').html(raw_html);
             return;
         }                   
-        for(var i = 0 ; i < data.length ; i++){
+    	for(var i = 0 ; i < data.length ; i++){
+    		if(!data[i].if_ping){
+    			reply_anchor = '<div class="col s3 itemBox center-align"><a href="" identifier='+ data[i].identifier +'><i class="material-icons ">reply</i><div class="caption">View Details</div></a></div>';
+    			subject = data[i].subject;
+    			anchor_space = 'col s9';
+    		}
+    		else{
+    			reply_anchor = '';
+    			subject = data[i].message
+    		}
             icon = ( (data[i].read === true) ? '<i class="material-icons circle blue">done_all</i>' : '<i class="material-icons circle red">fiber_new</i>');
-            raw_html += '<li class="collection-item avatar">' + icon + 
-                '<span class="title">' + data[i].actor + '</span>' + '<p>' + data[i].message + '</p>' + '</li>';
-        }
+            raw_html += '<li class="collection-item avatar">' + icon +
+				'<div class="row" style="margin-bottom : 0%"><div class="' + anchor_space + '"><span class="title">' + data[i].actor + "</span>" +
+				'<p>' + subject + '</p></div>' + reply_anchor +'</div></li>';
         $('#your-notifications-div-ul').html(raw_html);
+        $('#your-notifications-div-ul').find('a').on('click' , function(e) {
+			e.preventDefault();
+			var param = '';
+			param = $(this).attr('identifier');
 
-
+			viewNotificationDetails(param);
+			});
+    	}
+    }
+    function viewNotificationDetails(identifier){
+    	var url = $('#your-notifications').attr('detail-url');
+    	$.ajax({
+    		url : url,
+    		type : 'GET',
+    		data : {
+				'identifier' : identifier,
+			},
+			success : function(data , status , xhr){
+				$('#notification-model-heading').html(data.subject);
+				$('#notification-model-text').html(data.message);		
+				document.getElementById('notification-detail-model-trigger').click();
+			}
+    	});
     }
 
 	function viewNotifications(e) {
