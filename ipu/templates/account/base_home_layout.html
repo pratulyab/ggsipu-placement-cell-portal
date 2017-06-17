@@ -128,7 +128,7 @@
 			<a href="#!email"><span class="white-text email">{% block user_email_id %}{% endblock %}</span></a>
 		</div>
 	</li>
-	<ul id="main-tabs">
+	<ul id="sideNav-tabs">
 	    {% block side_nav_links %}{% endblock %}
 		<li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Logout</a></li>
 	</ul>
@@ -141,9 +141,9 @@
         <main>
             <!--Tabs bar begins--> 
             <div id="tab-bar">
-                <div class="row">
-                    <div class="col s12 hide-on-med-and-down">
-                        <ul class="tabs">
+                <div>
+                    <div class="row hide-on-med-and-down">
+                        <ul class="tabs" id="main-tabs">
                             <!--naming for tabs-->
                             {% block tabs %}
                             <!--each li  represents a new tab with the name-->
@@ -161,24 +161,52 @@
             {% block mobile_content %}
             {% endblock %}
 
-          </main>
+<!-- Floating Button containg info and reload btns -->
+		<div id="fixed-action-button">
+			<div class="fixed-action-btn">
+				<a class="btn-floating btn-large red darken-1"><i class="fa fa-plus"></i> </a>
+				<ul>
+					<li>
+						<a class="reload-btn btn-floating waves-effect waves-light teal lighten-1" style="transform: scaleX(0.4) scaleY(0.4) translateY(40px); opacity: 0;"><i class="fa fa-refresh"></i></a>
+					</li>
+					<li>
+						<a class="info-btn btn-floating waves-effect waves-light blue lighten-1" style="transform: scaleX(0.4) scaleY(0.4) translateY(40px); opacity: 0;"><i class="fa fa-info"></i></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+<!-- -->
+<!-- Info Modal Structure -->
+		<div id="info-modal" class="modal modal-fixed-footer">
+			<div class="modal-content">
+				<h4 class="heading">Information</h4>
+				<p>No information to display</p>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat">Close</a>
+			</div>
+		</div>
+	</main>
 
 
         <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
         {% include 'material/includes/material_js.html' %}
         {% block scripts %}{% endblock %}
         <script type="text/javascript" src="{% static 'notification/get_notification.js' %}"></script>
+		<script type="text/javascript" src="{% static 'common/utils.js' %}"></script>
         <script type="text/javascript">
-      			$(document).ready(function(e) {
-      	            $('#dropdown3').on('click', function(e){e.stopPropagation();});
-          	        $('.dropdown-button').on('click', function(e){e.preventDefault()});
-      				$('nav .brand-logo').on('click', function(e){location.href='';});
-            		GetNotification.init();
-                $('.button-collapse').sideNav({
-                  menuWidth: 240, 
-                  closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
-                    });
-      	});
+      		$(document).ready(function(e) {
+				$('#dropdown3').on('click', function(e){e.stopPropagation();});
+				$('.dropdown-button').on('click', function(e){e.preventDefault()});
+				$('nav .brand-logo').on('click', function(e){location.href='';});
+				GetNotification.init();
+				$('.button-collapse').sideNav({
+					menuWidth: 240, 
+					closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+					draggable: true,
+			});
+				Utils.init({'fab': true});
+});
 		
 		// Mapping dropdown links to tabs
 		    $('#dropdown1 a').each(function(i, a){
@@ -191,6 +219,17 @@
       				return true;
       			el.on('click', function(e){e.preventDefault();target_el[0].click();});
       		});
+
+		// Info modal
+			$('#info-modal').modal({
+				dismissible: true, // Modal can be dismissed by clicking outside of the modal
+				opacity: .5, // Opacity of modal background
+				inDuration: 200, // Transition in duration
+				outDuration: 100, // Transition out duration
+				startingTop: '4%', // Starting top style attribute
+				endingTop: '10%', // Ending top style attribute
+			});
+    
         </script>
         
        {% block lightbox_data %}

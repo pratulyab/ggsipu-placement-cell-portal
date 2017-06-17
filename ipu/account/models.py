@@ -67,3 +67,24 @@ class SocialProfile(models.Model):
 		self.full_clean()
 		profile = super(SocialProfile, self).save()
 		return profile
+
+
+# Since these don't involve user interaction, not putting much validations
+class UnsuccessfulEmail(models.Model):
+	is_activation_email = models.BooleanField(default=False)
+	is_forgot_password_email = models.BooleanField(default=False)
+	subject = models.CharField(max_length=512, blank=True)
+	message = models.TextField(blank=True)
+	domain = models.CharField(max_length=64, default='placements.ggsipu.ac.in') # I know it's hard coded. But it's apt. Can't set it nullable because it is required in activation email and forgot password
+	users = models.ManyToManyField(CustomUser, related_name='unsuccessful_emails', blank=True)
+	created_on = models.DateTimeField(auto_now_add=True)
+	reattempt_on = models.DateTimeField(auto_now=True)
+
+class UnsuccessfulSMS(models.Model):
+	message = models.CharField(max_length=512, blank=True)
+	phone_numbers = models.TextField(validators=[validators.RegexValidator(r'^([7-9]\d{9}(,[7-9]\d{9})*)$')], help_text="Comma Separated") # Store comma separated string
+	sender = models.CharField(max_length=6, default='GGSIPU')
+	template_name = models.CharField(max_length=100, blank=True)
+	created_on = models.DateTimeField(auto_now_add=True)
+	reattempt_on = models.DateTimeField(auto_now=True)
+	template_vars = models.CharField(max_length=256, blank=True, help_text="Comma Separated") # Comma separated string
