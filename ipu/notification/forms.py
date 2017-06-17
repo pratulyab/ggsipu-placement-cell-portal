@@ -23,13 +23,13 @@ class SelectStreamsForm(forms.Form):
 		}
 
 
-class SelectYearForm(forms.Form):
+class CreateNotificationForm(forms.Form):
 	def __init__(self , *args , **kwargs):
 		college = kwargs.pop('college',None)
 		programme_to_year = kwargs.pop('programme_to_year' , None)
 		self.programme_to_year = programme_to_year
 		self.college = college
-		super(SelectYearForm , self).__init__(*args , **kwargs)
+		super(CreateNotificationForm , self).__init__(*args , **kwargs)
 		if college:
 			self.fields['stream'].queryset = college.streams.all()
 
@@ -52,9 +52,9 @@ class SelectYearForm(forms.Form):
 					Fieldset('Select Year',
 					*year_fields),
 					Fieldset('Select Students' , Row(Span9('students') , Fieldset('', 'if_all'))),
-					Fieldset('Message' ,  Row('message')),
-					Fieldset('' ,  Row(Span3('if_email') , Span3('if_sms')),
-					))
+					Fieldset('Message' ,Row('subject') , Row('message')),
+					Fieldset('' ,  Row(Span3('if_email') , Span3('if_sms'))),
+					Row('sms_message'))
 
 	options = (
 		(None , None),
@@ -62,9 +62,11 @@ class SelectYearForm(forms.Form):
 	stream = forms.ModelChoiceField(label = "Select Stream of the Students" ,queryset = None , widget=forms.SelectMultiple())
 	if_all = forms.BooleanField(label = "Notify All Students" , widget = forms.CheckboxInput())
 	students = forms.MultipleChoiceField(label = "Select Students" , choices=options, widget=forms.SelectMultiple())
+	subject = forms.CharField(label = "Subject" , max_length = 256 , required = True)
 	message = forms.CharField(widget=forms.Textarea)
 	if_email = forms.BooleanField(label = "Send E-Mail" , widget = forms.CheckboxInput())
 	if_sms = forms.BooleanField(label = "Send SMS" , widget = forms.CheckboxInput())
+	sms_message = forms.CharField(label = "Write SMS" , max_length = 128 , required = False)
 
 	class Meta:
 		help_texts = {
@@ -158,7 +160,6 @@ class IssueReplyForm(forms.ModelForm):
 
 	def save(self):
 		form_instance = super(IssueReplyForm , self).save(commit = False)
-		form_instance.actor = self.faculty
 		form_instance.root_issue = self.root_issue
 		form_instance.save()
 

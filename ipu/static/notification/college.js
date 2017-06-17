@@ -75,6 +75,9 @@ var Notification = (function() {
             success : function(data , status , xhr){
 				handleMultipleJquery();
                 $('#notify-students-div').html(data);
+                $('#id_sms_message_container').hide();
+                $("#id_subject").attr('length' , '256');
+                $("#id_sms_message").attr('length' , '128');
                 $('#id_if_all').on('change' , function(){
                     var el = $('#id_students_container').find('select');
                     if ($(this).is(':checked')) {         
@@ -83,6 +86,14 @@ var Notification = (function() {
                   } else {
                         el.removeAttr("disabled");
                         el.material_select();
+                  }
+                });
+                $('#id_if_sms').on('change' , function(){
+                    if ($(this).is(':checked')) {
+                        removeError($('#id_sms_message'));
+                        $('#id_sms_message_container').show();
+                  } else {
+                        $('#id_sms_message_container').hide();
                   }
                 });
                 $('#create_notification-form').on('submit' , getStudentsSelected);
@@ -163,38 +174,92 @@ var Notification = (function() {
         if(sphr_create_notification){
             sphr_create_notification = false;
             var url = $('#create_notification-form').attr('action')
+            var select_students = $('#id_students')
             var message = $('#id_message').val();
+            var subject = $('#id_subject');
+            var sms_message = $('#id_sms_message');
             var token = $('input[name = csrfmiddlewaretoken]').val();
             var if_all = $('#id_if_all').prop('checked');
+            var if_email = $('#id_if_email').prop('checked');
+            var if_sms = $('#id_if_sms').prop('checked');
+            fieldEvaluator(subject , 256)
+            if(if_sms){
+                fieldEvaluator(sms_message , 128);
+            }
             if(if_all === true){
                 student_list.length = 0;
                 $('#id_students option').each(function(){
                     student_list.push($(this).text());
                 });
             }
-            var if_email = $('#id_if_email').prop('checked');
-            var if_sms = $('#id_if_sms').prop('checked');
+            if(student_list.length === 0){
+                addErrors(select_students , "Please select at least 1 Student.")
+                sphr_create_notification = true;
+                return;
+            }
+            if(student_list.length > 0){
+                removeError(select_students);
+            }
+            if(fieldEvaluator(subject , 256)){
+                $.ajax({
+                    url : url,
+                    type : 'POST',
+                    data : { 
+                        'csrfmiddlewaretoken' : token , 
+                        'student_list' :student_list,
+                        'message' : message,
+                        'subject' : subject.val(),
+                        'if_sms' : if_sms,
+                        'sms_message' : sms_message.val(),
+                        'if_email' : if_email,
+                    },
+                    success : function(data , status , xhr){
+                        //handleMultipleJquery();
+                        $('#your-notifications').trigger('click');
+                        alert("Successful ! " + data + " students are notified");
 
-            $.ajax({
-                url : url,
-                type : 'POST',
-                data : { 
-                    'csrfmiddlewaretoken' : token , 
-                    'student_list' :student_list,
-                    'message' : message,
-                    'if_sms' : if_sms,
-                    'if_email' : if_email,
-                },
-                success : function(data , status , xhr){
-                    //handleMultipleJquery();
-                    $('#your-notifications').trigger('click');
-                    alert("Successful ! " + data + " students are notified");
-
-                }
-            });
+                    }
+                });
+            }
             sphr_create_notification = true;
         }
     }
+
+function fieldEvaluator(input_field , max_length){
+    if(!input_field.val()){
+            if(!input_field.closest('div').has('small').length){
+                addErrors(input_field , "Required Field");
+                return 0;
+            }
+            else
+                return 0;
+        }
+    if(input_field.val()){
+        if(input_field.val().length>max_length){
+                addErrors(input_field , "Field exceeds it's limit.");
+                return 0;
+            }
+        else{
+                removeError(input_field)
+                return 1;
+            }
+        }
+
+
+}
+
+function addErrors(field , error){
+    var field_container = $('#' + field.attr('id') + '_container');
+    if(!field_container.has('small').length){
+        field_container.append('<small class="help-block error">'+ error +'</small>');
+    }
+}
+
+function removeError(field){
+    var field_container = $('#' + field.attr('id') + '_container');
+    field_container.find('small').remove();
+
+}
 //Create Notification Ends.
 
 
@@ -226,7 +291,7 @@ var Notification = (function() {
         for(var i = 0 ; i < data.length ; i++){
             icon = ( (data[i].read === true) ? '<i class="material-icons circle blue">done_all</i>' : '<i class="material-icons circle red">fiber_new</i>');
             raw_html += '<li class="collection-item avatar">' + icon + 
-                '<span class="title">' + data[i].actor + '</span>' + '<p>' + data[i].message + '</p>' + '</li>';
+                '<span class="title">' + data[i].actor + '</span>' + '<p><b>'+ data[i].subject +'</b><p>' + data[i].message + '</p></p>' + '</li>';
         }
         $('#your-notifications-div-ul').html(raw_html);
 
@@ -242,8 +307,8 @@ var Notification = (function() {
 	return {
 		init: function() {
             document.getElementById('create-notifications').addEventListener('click', generateNewForm);
-            $('#notification').on('click' , viewNotifications);
-			$('#your-notifications').on('click' , viewNotifications);
+            document.getElementById('notification').addEventListener('click' , viewNotifications);
+			document.getElementById('your-notifications').addEventListener('click' , viewNotifications);
 		}
 	}
 

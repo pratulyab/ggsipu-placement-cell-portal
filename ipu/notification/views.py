@@ -1,13 +1,13 @@
 from django.shortcuts import render ,  get_object_or_404
 from django.http import HttpResponseForbidden , HttpResponse , JsonResponse , Http404
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from .forms import SelectStreamsForm , SelectYearForm , IssueForm , IssueReplyForm
+from .forms import SelectStreamsForm , CreateNotificationForm , IssueForm , IssueReplyForm
 from django.core.exceptions import PermissionDenied
 from account.models import CustomUser
 from faculty.models import Faculty
 from student.models import Student
 from college.models import College , Stream
-from .models import Notification , Issue , IssueReply
+from .models import NotificationData , Notification , Issue , IssueReply
 from django.core import serializers
 from recruitment.models import PlacementSession
 from django.contrib.auth.decorators import login_required
@@ -57,7 +57,7 @@ def select_streams(request):
 						
 				else:
 					pass	
-			form_object = SelectYearForm(college = college ,programme_to_year = programme_to_year_list, initial={ 'stream' : indices })
+			form_object = CreateNotificationForm(college = college ,programme_to_year = programme_to_year_list, initial={ 'stream' : indices })
 			raw_html = render(request , 'notification/create_notification.html' , {'create_notification' : form_object})
 						
 
@@ -71,7 +71,6 @@ def select_streams(request):
 @login_required
 def select_years(request):
 	if request.user.type == 'C' or request.user.type == 'F':
-		form_object = SelectStreamsForm(request.POST)
 		if request.user.type == 'F':
 			college = request.user.faculty.college
 		else:
@@ -114,17 +113,21 @@ def create_notification(request):
 			else:
 				college_object = request.user.college 
 			students_selected = request.POST.getlist('student_list[]')
-			message = request.POST['message']
+			subject = request.POST.get('subject')
+			message = request.POST.get('message')
 			if_sms = request.POST.get('if_sms')
-			if_email = request.POST.get('if_email')		
+			if_email = request.POST.get('if_email')
+			sms_message = request.POST.get('sms_message')		
 			college_customuser_object = college_object.profile
 			college_students_queryset = college_object.students.all()
-			
+			if not field_length_test(subject , 256):
+				return JsonResponse(status = 400 , data = {"error" : "Length Exceeded."})
 			student_objects = college_students_queryset.filter(profile__username__in = students_selected)
-			
+			notification_data_object = NotificationData.objects.create(subject = subject , message = message , sms_message = sms_message)
+			notification_data_object.save()
 			for student_object in student_objects:
 				student_customeuser_object = student_object.profile
-				notification_object = Notification.objects.create(actor = college_customuser_object, target = student_customeuser_object, message = message )
+				notification_object = Notification.objects.create(actor = college_customuser_object, target = student_customeuser_object , notification_data = notification_data_object)
 				notification_object.save()
 
 			return HttpResponse(len(students_selected))
@@ -140,7 +143,7 @@ def create_notification(request):
 def get_notifications(request):
 	user = request.user
 	data_list = list()
-	notification_object_queryset = Notification.objects.filter(target = user).order_by('creation_time').reverse()
+	notification_object_queryset = Notification.objects.filter(target = user).order_by('-creation_time')
 	notifications = serializers.serialize("json", notification_object_queryset, indent = 4)
 	for notification_object in notification_object_queryset:
 		data_dict = dict()
@@ -148,19 +151,35 @@ def get_notifications(request):
 		if notification_object.is_read == False:
 			notification_object.is_read = True
 			notification_object.save()
-		message = notification_object.message
-		if notification_object.actor.type == 'C':
-			actor_name = notification_object.actor.college
-		elif notification_object.actor.type =='F':
-			actor_name = notification_object.actor.faculty.college
+		if notification_object.notification_data is not None:
+			data = notification_object.notification_data
+			subject = data.subject
+			message = data.message
+			data_dict['identifier'] = notification_pk_encoder(notification_object.pk)
+			data_dict['subject'] = subject
+			data_dict['if_ping'] = False
 		else:
-			actor_name = notification_object.actor.company
-		data_dict['message'] = message
-		data_dict['actor'] = str(actor_name)
+			data_dict['message'] = notification_object.message
+			data_dict['if_ping'] = True
+		data_dict['actor'] = str(get_notification_actor_name(notification_object))
 		data_list.append(data_dict)
-
 	return JsonResponse(data_list , safe = False)
 
+@require_GET
+@login_required
+def notification_detail(request):
+	user = request.user
+	identifier = request.GET.get('identifier' , None)
+	notification_object = notification_pk_decoder(identifier)
+	data_dict = dict()
+	if notification_object.notification_data is not None:
+		data = notification_object.notification_data
+		data_dict['subject'] = data.subject
+		data_dict['message'] = data.message
+		data_dict['date'] = notification_object.creation_time
+	else:
+		raise Http404
+	return JsonResponse(data_dict , safe = False)
 
 
 @require_http_methods(['GET','POST'])
@@ -351,11 +370,41 @@ def get_issue_name(issue_symbol):
 		raise Http404
 
 
+def field_length_test(field , length):
+	if not field:
+		return False
+	if len(field) <= length:
+		return True
+	else:
+		return False
 
 
+def get_notification_actor_name(notification_object):
+	if notification_object.actor.type == 'C':
+		actor_name = notification_object.actor.college.name
+	if notification_object.actor.type == 'F':
+		actor_name = notification_object.actor.faculty.college.name
+	if	notification_object.actor.type == 'CO':
+		actor_name = notification_object.actor.company
+	return actor_name
 
 
+def notification_pk_encoder(pk):
+	int_pk = int(pk)
+	hashids = Hashids("MysteryTomato")
+	pk_id = int_pk*5754853343
+	pk_id = hashids.encode(pk_id)
+	return pk_id
 
+def notification_pk_decoder(identifier):
+	hashids = Hashids("MysteryTomato")
+	pk_tuple = hashids.decode(identifier)
+	pk_list = list(pk_tuple)		
+	possible_pk = pk_list[0]/5754853343
+	if not possible_pk.is_integer():
+		raise Http404
+	notification_object = get_object_or_404(Notification , pk = possible_pk)
+	return notification_object		
 
 
 

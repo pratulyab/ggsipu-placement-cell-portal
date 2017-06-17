@@ -139,9 +139,9 @@
 			<div class="row">
 				<div class="col s3">
 					<ul class="tabs">
-						<li class="tab col s12"><a id = "your-notifications" class="active" href="#your-notifications-div">Your Notifications</a></li>
+						<li class="tab col s12"><a id = "your-notifications" class="active" href="#your-notifications-div" detail-url = "{% url 'notification_detail' %}">Your Notifications</a></li>
 						<li class="tab col s12"><a id = "help" href="#help-div">Help !</a></li>
-						<li class="tab col s12"><a id = "view-issues" href="#view-issues-div" url="{%url 'view_solution_list' %}">Your Issues</a></li>
+						<li class="tab col s12"><a id = "view-issues" href="#view-issues-div" url="{% url 'view_solution_list' %}">Your Issues</a></li>
 					</ul>
 				</div>
 				<div class=" col s8 offset-s1">
@@ -157,9 +157,20 @@
 							  <ul id = "view-issues-div-ul" class="collection">
 							  </ul>
 					</div>
-					</div>
 				</div>
 			</div>
+		</div>
+		<div id="notification-detail-model" class="modal modal-fixed-footer">
+    		<div class="modal-content">
+     	 		<h4 id="notification-model-heading">Error</h4>
+      			<p id="notification-model-text">Please check the Internet connection and then reload.</p>
+    		</div>
+    		<div class="modal-footer">
+    			<div class="col s4"><p>7th July, 2016</p></div>
+      			<div class="col s8 right-align"><a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Ok</a></div>
+    		</div>
+  		</div>
+  		<button id="notification-detail-model-trigger" data-target="notification-detail-model" style="display: none;"></button>
 		</div>
 	<!-- -->
 	{% if edit_qual_form %}
@@ -266,6 +277,7 @@
 			Settings.init(['edit-account-form', 'upload-file-form', 'social-profile-form', 'tech-profile-form']);
 			Update.init(['edit-student-form', 'edit-qual-form']);
 			Mobile.init();
+			$('.modal').modal();
 		});
 	</script>
 {% endblock scripts %}
