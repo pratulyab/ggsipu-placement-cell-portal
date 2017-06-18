@@ -171,7 +171,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 """
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'pratulya'
+EMAIL_HOST_USER = 'placements.ggsipu'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
