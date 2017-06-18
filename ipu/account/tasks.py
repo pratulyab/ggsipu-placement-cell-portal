@@ -40,7 +40,9 @@ def send_email_message(user, email_message, unsuccessful_email_pk, domain, is_ac
 					UnsuccessfulEmail.objects.get(pk=unsuccessful_email_pk).delete()
 				except:
 					pass
+			break # Break if successful
 		except:
+			# Error thrown on the last retry. Therefore, unsuccessful.
 			if tries == MAX_RETRIES-1:
 				logger.error("%s email could not be sent to %s" % (email_type, user.username))
 				if unsuccessful_email_pk:
@@ -51,7 +53,7 @@ def send_email_message(user, email_message, unsuccessful_email_pk, domain, is_ac
 					except:
 						unsuccessful_obj = UnsuccessfulEmail.objects.create(is_activation_email=is_activation_email, is_forgot_password_email=is_forgot_password_email, domain=domain)
 						unsuccessful_obj.users.add(user)
-			continue
+			# Continue with the loop if tries still in range
 	return
 
 @task(name="send_activation_email_task")
@@ -122,7 +124,7 @@ def send_mass_mail_task(subject, message, user_pks_list, unsuccessful_email_pk=N
 			for tries in range(MAX_RETRIES):
 				try:
 					email.send(fail_silently=False)
-					if unsuccessful_email:
+					if unsuccessful_email: # i.e. UnsuccessfulEmail object or this function call is a reattempt to send UnsuccessfulEmail
 						unsuccessful_email.users.remove(user)
 					break
 				except Exception as e:
@@ -130,8 +132,9 @@ def send_mass_mail_task(subject, message, user_pks_list, unsuccessful_email_pk=N
 						logger.error(e)
 						logger.critical('Failed to send email to %s' % (user.email))
 						unsuccessful_users.append(user)
-					continue
+					# Continue with the loop
 		# Loop ends
+
 		if unsuccessful_users and not unsuccessful_email: # i.e. failed attempts for a new task i.e. not a reattempt
 			unsuccessful_obj = UnsuccessfulEmail.objects.create(subject=subject, message=message)
 			for user in unsuccessful_users:
@@ -144,7 +147,7 @@ def send_mass_mail_task(subject, message, user_pks_list, unsuccessful_email_pk=N
 				unsuccessful_email.save() # i.e. still failed attempts. Therefore, Update modification time 
 
 	except Exception as e:
-		logger.error(e)
+		logger.error(e) # Maybe ConnectionError/SMTPError
 	finally:
 		connection.close()
 
@@ -170,7 +173,7 @@ def send_mass_sms_task(message, to_list, unsuccessful_sms_pk=None, sender='GGSIP
 						unsuccessful_sms.save()
 					except:
 						UnsuccessfulSMS.objects.create(message=message, phone_numbers=','.join(set(to_list)), template_name=template_name, sender=sender, template_vars=(','.join(VAR)))
-			continue
+#			Continue with the loop
 		else:
 			# It was a success. Atleast, the request was sent to the API. Not concerned with the Status of session_id.
 			# That is a concern of callback url.
@@ -179,3 +182,4 @@ def send_mass_sms_task(message, to_list, unsuccessful_sms_pk=None, sender='GGSIP
 					unsuccessful_sms = UnsuccessfulSMS.objects.get(pk=unsuccessful_sms_pk).delete()
 				except:
 					pass
+			break
