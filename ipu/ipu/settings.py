@@ -28,6 +28,8 @@ if socket.gethostname() == 'usict-tnp':
 	DEBUG = False
 	ALLOWED_HOSTS = ['placements.ggsipu.ac.in']
 	db_password = 'P30R1024$1089'
+	EMAIL_HOST_USER = 'placements.ggsipu'
+	EMAIL_HOST_PASSWORD = ''
 	
 	# SSL
 	SESSION_COOKIE_SECURE = True
@@ -38,6 +40,8 @@ else:
 	ALLOWED_HOSTS = []
 	db_password = ''
 	USE_HTTPS = False
+	EMAIL_HOST_USER = 'pratulya'
+	EMAIL_HOST_PASSWORD = ''
 
 
 AUTH_USER_MODEL = 'account.CustomUser'
@@ -171,11 +175,9 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 """
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'placements.ggsipu'
-EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'Training & Placement Cell'
+DEFAULT_FROM_EMAIL = 'noreply@placements.ggsipu.ac.in'
 
 # SMS
 TWOFACTOR_API_KEY = '31cce076-19ed-11e7-9462-00163ef91450'
