@@ -2,6 +2,10 @@
 {% load staticfiles %}
 {% load material_form %}
 
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
+{% endblock %}
+
 {% block user_photo %}
 	{% if faculty.photo %}
 		<img class="circle" src="{{ faculty.photo.url }}">
@@ -73,7 +77,7 @@
 	{% endif %}
 
 	{% if perms.recruitment.handle_placement %}
-	<li data-main_div="#sessions"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
+	<li data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
             Sessions</a></li>
 	{% endif %}  
     {% if perms.notification.manage_notification %}        
@@ -112,7 +116,7 @@
 	{% endif %}
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 	{% if perms.recruitment.handle_placement %}
-		<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
+		<li id="session" class="tab col s2"><a href="#sessions_div">Sessions</a></li>
 	{% endif %}
 {% endblock %}
 
@@ -126,6 +130,7 @@
 			{% endfor %}
 		{% endif %}
 		<div class="row" id="student-div">
+			<p style="display: none" class="info">{# include 'info/verify.html' #}</p>
 			<div class="vertical-tabs">
 				<div class="row">
 					<div class="col s3">
@@ -139,7 +144,7 @@
 						</ul>
 					</div>
 					<div class=" col s8 offset-s1">
-						<div class="col s12 m10 offset-s1 card-panel" id="enrollment-div">
+						<div class="col s12 m10 offset-m1 card-panel" id="enrollment-div">
 							<h4 class="row center" style="color: goldenrod">Verify Student</h4>
 								<form action="{% url 'verify' %}" id="enroll-form">
 									{% csrf_token %}
@@ -243,13 +248,41 @@
 		</div>
 	</div>
 {% if perms.recruitment.handle_placement %}
-	<div id="sessions" class="col s12"></div>
+	<div id="sessions_div" class="col s12"></div>
 {% endif %}
 
 {% if perms.notification.manage_notification %}
 	{% if badge %}
 		<span class="badge" id="notifications_badge">{{ badge }}</span>
 	{% endif %}
+{% endif %}
+
+{% if perms.recruitment.handle_placement %}
+<!-- Session Filter Forms' SideNav -->
+<ul id="session-filter-forms-out" class="side-nav">
+	<li>
+		<form data-filter="sessions" class="session-filter-form col s12 m10 offset-m1" method="POST" action="{% url 'filter_sessions' %}">
+			{% csrf_token %}
+			<h1 class="subheader">Session Filter Form</h1>
+			{% form form=session_filter_form %}{% endform %}
+			<div class="row">
+				<button class="col s12 btn btn-waves" type="submit">Filter</button>
+			</div>
+		</form>
+	</li>
+	<li><div class="divider"></div></li>
+	<li>
+		<form data-filter="dsessions" class="session-filter-form col s12 m10 offset-m1" method="POST" action="{% url 'filter_dsessions' %}">
+			{% csrf_token %}
+			<h1 class="subheader">Dummy Session Filter Form</h1>
+			{% form form=dsession_filter_form %}{% endform %}
+			<div class="row">
+				<button class="col s12 btn btn-waves" type="submit">Filter</button>
+			</div>
+		</form>
+	</li>
+  </ul>
+  <!-- -->
 {% endif %}
 {% endblock %}
 
@@ -261,6 +294,7 @@
 	<script type="text/javascript" src="{% static 'faculty/verify.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
+	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();

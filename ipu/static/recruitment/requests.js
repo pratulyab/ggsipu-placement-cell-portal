@@ -67,7 +67,7 @@ var Request = (function() {
 					location.href = data['location'];
 					return;
 				}
-				handleMultipleJquery();
+//				handleMultipleJquery();
 				var form_div = $(form).parent();
 				form_div.html(data['render']);
 				$(form_id).on('submit', submitForm);
@@ -106,10 +106,13 @@ var Request = (function() {
 			type: 'GET',
 			data: {'ass': data},
 			success: function(data, status, xhr){
-				handleMultipleJquery();
+//				handleMultipleJquery();
 				var div = a.parents('.request-content');
 				div.html(data['html']);
 				div.find('form').on('submit', submitForm);
+				div.find('select').each(function(i){
+					$(this).material_select();
+				});
 			}
 		});
 	}
@@ -123,7 +126,7 @@ var Request = (function() {
 			processData: false,
 			contentType: false,
 			success: function(data, status, xhr){
-				handleMultipleJquery();
+//				handleMultipleJquery();
 				$('#requests').html(data['html']);
 				$('#requests .card-action a').on('click', implementRequests);
 			},

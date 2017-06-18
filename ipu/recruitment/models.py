@@ -78,7 +78,7 @@ class SelectionCriteria(models.Model):
 		try:
 			report_card = student.qualifications
 		except Qualification.DoesNotExist:
-			return False
+			return None
 		fields = ['tenth', 'twelfth', 'graduation', 'post_graduation', 'doctorate']
 		if getattr(student, 'current_year') not in getattr(self, 'years'):
 			return False
@@ -113,12 +113,15 @@ class PlacementSession(models.Model):
 		return self.association.company.__str__() + ' placement session in ' + self.association.college.__str__()
 
 class Dissociation(models.Model):
+	''' Block '''
 	company = models.ForeignKey(Company, related_name="dissociations")
 	college = models.ForeignKey(College, related_name="dissociations")
-	duration = models.DateField(null=True, blank=True,
-		help_text = "Choose the date till when you want to block this user from contacting you. Leave it blank in order to decline just the current request."
-	)
-	initiator = models.CharField(_('Who caused it'), choices=SOURCE, max_length=2, default=SOURCE[0][0])
+#	duration = models.DateField(null=True, blank=True,
+#		help_text = "Choose the date till when you want to block this user from contacting you. Leave it blank in order to decline just the current request."
+#	)
+	reason = models.CharField(_('Reason(s)'), blank=True, max_length=1024)
+	initiator = models.CharField(_('Who initiated it'), choices=SOURCE, max_length=2, default=SOURCE[0][0])
+	when = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		""" Returns the name of initiator first, then the other """
@@ -129,18 +132,6 @@ class Dissociation(models.Model):
 	
 	class Meta:
 		unique_together = ['company', 'college']
-
-
-@receiver(m2m_changed, sender=Association.streams.through)
-def verify_assoc_stream_uniqueness(sender, **kwargs):
-	association = kwargs.get('instance', None)
-	action = kwargs.get('action', None)
-	streams = kwargs.get('pk_set', None)
-	if action == 'pre_add':
-		association_streams = Association.objects.filter(company=association.company, college=association.college)
-		for stream in streams:
-			if association_streams.filter(streams=stream):
-				raise IntegrityError(_('Association between (%s, %s) already exists for chosen stream' % (association.college, association.company)))
 
 @receiver(m2m_changed, sender=PlacementSession.students.through)
 def validating_students(sender, **kwargs):
@@ -200,3 +191,23 @@ def request_accepted_notification(sender, **kwargs):
 		message = "%s accepted your association request for %s session.\n%s" % (college.name.title(), type, streams)
 	Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
 	
+# # # # # # # #
+# This validation offers a drawback to the required scheme.
+# 1) There might be use cases to create multiple association with same attributes.
+# 2) Also, to re-associate the same association to a new session, the old session has to be removed because O2O.
+# Even though there is a way around for 2), still it is better to not increase complexity.
+# way around => (by migrating the ended session to an ArchivedAssociation object). But 1) can creep in anytime. i.e. a need for new session while existing one has not yet been marked ended.
+'''
+# Enables to validate that only 1 association exists between a college and company for particular stream(s)
+@receiver(m2m_changed, sender=Association.streams.through)
+def verify_assoc_stream_uniqueness(sender, **kwargs):
+	association = kwargs.get('instance', None)
+	action = kwargs.get('action', None)
+	streams = kwargs.get('pk_set', None)
+	if action == 'pre_add':
+		association_streams = Association.objects.filter(company=association.company, college=association.college)
+		for stream in streams:
+			if association_streams.filter(streams=stream):
+				raise IntegrityError(_('Association between (%s, %s) already exists for chosen stream' % (association.college, association.company)))
+'''
+# # # # # # # #

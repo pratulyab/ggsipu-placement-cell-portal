@@ -2,16 +2,20 @@
 {% load staticfiles %}
 {% load material_form %}
 {% block title %}Manage Placement Session{% endblock %}
-{% block home_url1 %}{{ home_url }}{% endblock %}
-{% block home_url2 %}{{ home_url }}{% endblock %}
-{% block home_url3 %}{{ home_url }}{% endblock %}
-{% block home_url4 %}{{ home_url }}{% endblock %}
+{% block home_url1 %}{% url 'college_home' %}{% endblock %}
+{% block home_url2 %}{% url 'college_home' %}{% endblock %}
+{% block home_url3 %}{% url 'college_home' %}{% endblock %}
+{% block home_url4 %}{% url 'college_home' %}{% endblock %}
 {% block pagetitle %}Manage Placement Session{% endblock %}
 {% block menu_icon_dropdown %}
                 <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
                 <li class="divider"></li>
                 <li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
 {% endblock %}
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
+{% endblock head %}
+
 {% block tabs %}
 	<li class="tab col s2"><a class="active" href="#session-details">Details</a></li>
 	<li class="tab col s2"><a class="" href="#session-students">Manage Session Students</a></li>

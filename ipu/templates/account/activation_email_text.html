@@ -1,0 +1,26 @@
+{% autoescape off %}
+{{ greeting }}
+
+To activate your GGSIPU Training & Placement Cell account,
+click the link below:
+{% if type == 'F' or type == 'C' %}
+	{{ protocol }}://{{ domain }}{% url 'usable_pwd_activation' user_hashid=user_hashid token=token %}
+
+	If clicking the link above doesn't work, then please copy and paste the URL in a new browser window instead.
+
+	Note: Please open the link in a safe environment as you'll be required to set a new password.
+{% else %}
+	{{ protocol }}://{{ domain }}{% url 'activate' user_hashid=user_hashid token=token %}
+
+	If clicking the link above doesn't work, then please copy and paste the URL in a new browser window instead.
+
+	Note: The activation link will be valid only for {{ days }} day{{ days|pluralize }}.
+{% endif %}
+
+
+Sincerely,
+
+Development & Maintenance Team
+Training & Placement Cell
+Guru Gobind Singh Indraprastha University
+{% endautoescape %}

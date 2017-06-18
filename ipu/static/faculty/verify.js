@@ -51,9 +51,20 @@ var VerifyStu = (function() {
 		}
 	}
 
+	function reset_verification_forms(){
+		console.log('reset');
+		$('#profile-div').html('<h4 class="center-align" style="color: goldenrod">Student Profile</h4>');
+		$('#qual-div').html('<h4 class="center-align" style="color: goldenrod">Student Qualifications</h4>');
+		$('#id_enroll').off('input');
+//					$('#delete-btn').off('click');
+		$('#delete-div form').off('submit');
+		tabs[0].click();
+	}
+
 	function getEnrollment(e) {
 		e.preventDefault();
 		clearErrors('#enrollment-div');
+		reset_verification_forms();
 		var form = $(this);
 		var url = form.attr('action');
 		var form_data = new FormData(form[0]);
@@ -68,14 +79,7 @@ var VerifyStu = (function() {
 				data = data.split('<<<>>>');
 				$('#profile-div').append(data[0]);
 				$('#qual-div').append(data[1]);
-				$('#id_enroll').on('input', function(e){
-					$('#profile-div').html('<h4 class="center-align" style="color: goldenrod">Student Profile</h4>');
-					$('#qual-div').html('<h4 class="center-align" style="color: goldenrod">Student Qualifications</h4>');
-					$('#id_enroll').off('input');
-//					$('#delete-btn').off('click');
-					$('#delete-div form').off('submit');
-					tabs[0].click();
-				});
+				$('#id_enroll').on('input', reset_verification_forms);
 				$('#profile-form').on('submit', updateProfile);
 				$('#qual-form').on('submit', updateQual);
 //				$('#delete-btn').on('click', delete_button);
@@ -164,30 +168,47 @@ var VerifyStu = (function() {
 
 	function delete_button(e) {
 		e.preventDefault();
-//		var btn = $(this);
 		var form = $(this);
 		var form_data = new FormData(form[0]);
-		var verdict = confirm('Are you sure you want to delete the student?');
-		if(!verdict)
-			return;
-//		$(this).off('click');
-		$(this).off('submit');
-		$.ajax({
-			url: '/student/delete/',
-//			type: 'DELETE',  REST
-			type: 'POST',
-			data: form_data,
-			contentType: false,
-			processData: false,
-			success: function(data, xhr, status){
-				location.href = '/faculty/verify/';
+		swal({
+			title: "Are you sure?",
+			text: "This action is irreversible. Your action will be recorded for reference purposes.",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Yes, delete student!",
+			closeOnConfirm: false,
+			showLoaderOnConfirm: true,
+			allowEscapeKey: false,
+			allowOutsideClick: true,
 			},
-			error: function(xhr, status, error){
-				addErrors(xhr.responseJSON('error'), '#delete-div');
-//				btn.on('click', delete_button);
-				form.on('submit', delete_button);
+			function(){
+				$.ajax({
+					url: '/student/delete/',
+					type: 'POST',
+					data: form_data,
+					contentType: false,
+					processData: false,
+					success: function(data, xhr, status){
+						swal({
+							title: "Deleted!",
+							text: "The student has been deleted.",
+							type: "success",
+							allowEscapeKey: false,
+							},function(){window.location.href = '';});
+					},
+					error: function(xhr, status, error){
+						if (xhr.status >= 400 && xhr.status < 500) {
+							addErrors(xhr.responseJSON('error'), '#delete-div');
+							var error_msg = xhr.responseJSON['error'] ? xhr.responseJSON['error'] : "Error Occurred.";
+							swal("Error!", error_msg, "error");
+						} else if (xhr.status > 500) {
+							swal("Oops..", "Sorry, an unexpected error occurred. Please try again after sometime.", "error");
+						}
+					}
+				});
 			}
-		});
+		);
 	}
 	return {
 		init: function(){

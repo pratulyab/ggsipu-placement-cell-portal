@@ -151,7 +151,10 @@ var Apply = (function() {
 	
 	return {
 		init: function() {
-			$('#apply').on('click', getOpportunities);
+			$('#apply').on({
+				'click': getOpportunities,
+				'reload': function(){console.log('Add reload function')},
+			});
 			
 			initialTimeout = setTimeout( function(){
 				$('li#apply').click();

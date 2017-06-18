@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -17,6 +17,7 @@ from account.tasks import send_activation_email_task
 from account.utils import handle_user_type, get_relevant_reversed_url
 from college.models import College, Stream
 from dummy_company.models import DummyCompany, DummySession
+from faculty.forms import VerifyStudentProfileForm
 from notification.models import Notification
 from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm, FileUploadForm, PaygradeForm
 from recruitment.models import Association, PlacementSession
@@ -108,12 +109,15 @@ def student_home(request, **kwargs):
 	except Student.DoesNotExist:
 		return redirect(settings.PROFILE_CREATION_URL['S'])
 	context['student'] = student
-	if student.is_verified == False and student.verified_by == None:
+	
+	if not student.is_verified and student.verified_by is None:
+		# Can't permit to home page, because authenticity of student can't be identified
 		try:
 			student.qualifications
 		except Qualification.DoesNotExist:
 			context['qual_form'] = QualificationForm()
 		return render(request, 'student/unverified.html', context)
+	
 	context['edit_account_form'] = AccountForm(instance=user)
 	context['upload_file_form'] = FileUploadForm(instance=student)
 	if student.is_verified is None:
@@ -167,26 +171,28 @@ def edit_student(request, **kwargs):
 #			context = {}
 #			context['message'] = "Your profile has been updated. Please contact your college's TPC faculty for verification."
 #			return JsonResponse(status=200, data={'render': render(request, 'student/home.html', context).content.decode('utf-8')})
-				toast_msg = "Your profile has been updated successfully! Contact your college's TPC faculty for verification."
+				toast_msg = "Your profile has been updated successfully! Contact your college's Training & Placement Cell's faculty for verification."
 				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['S']), 'toast_msg': toast_msg})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 			
 		elif request.user.type == 'F' and request.is_ajax():
-			enroll = request.session['enrollmentno']
+			if not request.user.groups.filter(name='Verifier'):
+				return JsonResponse(status=403, data={'error': 'Permission Denied. You cannot verify students'})
+			enroll = request.session.get('enrollmentno', None)
 			if not enroll:
 #				Http404(_('Cookie has been deleted'))
 				return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
 			try:
 				student = CustomUser.objects.get(username=enroll)
 				student = student.student
-			except Student.DoesNotExist:
+			except (CustomUser.DoesNotExist, Student.DoesNotExist):
 				return JsonResponse(status=400, data={'error': 'Student with this enrollment number does not exist'})
 			POST = request.POST.copy()
 			POST['college'] = student.college.pk
 			POST['programme'] = student.programme.pk
 			POST['stream'] = student.stream.pk
-			f = StudentEditForm(POST, request.FILES, instance=student)
+			f = VerifyStudentProfileForm(POST, request.FILES, instance=student)
 			verdict = False
 			if 'continue' == request.POST.get('true', ''):
 				verdict = True
@@ -195,13 +201,9 @@ def edit_student(request, **kwargs):
 			else:
 				# Button names/values changed
 				return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
-			photo, resume = student.photo, student.resume
 			if f.is_valid():
 				student = f.save(verifier=request.user, verified=verdict)
-				# Removing old files
-				delete_old_filefield(photo, student.photo)
-				delete_old_filefield(resume, student.resume)
-				context = {'profile_form': StudentEditForm(instance=student), 'success_msg': 'Student profile has been updated successfully!'}
+				context = {'profile_form': VerifyStudentProfileForm(instance=student), 'success_msg': 'Student profile has been updated successfully!'}
 				return HttpResponse(render(request, 'faculty/verify_profile_form.html', context).content) # for RequestContext() to set csrf value in form
 #			return HttpResponse(render_to_string('faculty/verify_profile_form.html', context))
 			else:
@@ -234,7 +236,9 @@ def edit_qualifications(request, **kwargs):
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 		
 		elif request.user.type == 'F' and request.is_ajax():
-			enroll = request.session['enrollmentno']
+			if not request.user.groups.filter(name='Verifier'):
+				return JsonResponse(status=403, data={'error': 'Permission Denied. You cannot verify students'})
+			enroll = request.session.get('enrollmentno', None)
 			if not enroll:
 #				Http404(_('Cookie has been deleted'))
 				return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
@@ -273,6 +277,7 @@ def edit_qualifications(request, **kwargs):
 	else:
 		handle_user_type(request, redirect_request=True)
 
+#@user_passes_test(lambda u: u.groups.filter(name='Verifier With Student Deletion Privilege')) cant use this because need to return jsonresponse
 @require_user_types(['F'])
 @login_required
 @require_POST
@@ -283,6 +288,8 @@ def delete_student(request, **kwargs):
 			faculty = request.user.faculty
 		except Faculty.DoesNotExist:
 			return redirect(settings.PROFILE_CREATION_URL['F'])
+		if not request.user.groups.filter(name='Verifier With Student Deletion Privilege'):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You don\'t have permission to delete students.'})
 		enroll = request.session['enrollmentno']
 		if not enroll:
 			return JsonResponse(status=403, data={'error': 'Cookie Error. Couldn\'t complete request'})
@@ -456,8 +463,18 @@ def apply_to_company(request, sess, **kwargs): # handling withdrawl as well
 			return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
 		association = session.association
 		criterion = session.selection_criteria
-		if not criterion.check_eligibility(student):
-			return JsonResponse(status=400, data={'error': 'Sorry, you are not eligible for this %s.' % 'job' if association.type == 'J' else 'internship'})
+		eligibility = criterion.check_eligibility(student)
+		if eligibility is None:
+			return JsonResponse(status=400, data={'error': 'You need to fill the qualifications form before applying.'})
+		message = 'Please get your %s verified by the placement cell faculty first.'
+		if not student.qualifications.is_verified or not student.qualifications.verified_by: # Qualifications.DoesNotExist has been taken care of by 'eligibility is None' condition
+			message = message % 'qualifications'
+			return JsonResponse(status=400, data={'error': message})
+		elif not student.is_verified or not student.verified_by:
+			message = message % 'profile'
+			return JsonResponse(status=400, data={'error': message})
+		if eligibility == False:
+			return JsonResponse(status=400, data={'error': 'Sorry, you are not eligible for this %s.' % ('job' if association.type == 'J' else 'internship')})
 		"""
 		if (association.type == 'J' and student.is_placed) or (association.type == 'I' and student.is_intern):
 			type = dict(association.PLACEMENT_TYPE)[association.type]
@@ -479,6 +496,7 @@ def apply_to_company(request, sess, **kwargs): # handling withdrawl as well
 #			Better! => 1. Complexity 2. m2m changed signal discrepancy handled because implementing below code will cause reverse=True :D
 		if session not in students_sessions:
 			student.sessions.add(session)
+			student.sessions_applied_to.add(session) # stores sessions the student had applied to
 			return JsonResponse(status=200, data={'enrolled': True})
 		else:
 			student.sessions.remove(session)

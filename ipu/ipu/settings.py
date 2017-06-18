@@ -24,14 +24,24 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'yc55$ws@*mj)q8q&-!bwg6@44ua@7l2^&+!vd$9uje!shpwlxy'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if socket.gethostname() == 'TPC':
+if socket.gethostname() == 'usict-tnp':
 	DEBUG = False
-	ALLOWED_HOSTS = ['10.102.18.18']
+	ALLOWED_HOSTS = ['placements.ggsipu.ac.in']
 	db_password = 'P30R1024$1089'
+	EMAIL_HOST_USER = 'placements.ggsipu'
+	EMAIL_HOST_PASSWORD = ''
+	
+	# SSL
+	SESSION_COOKIE_SECURE = True
+	CSRF_COOKIE_SECURE = True
+	USE_HTTPS = True # Self defined boolean
 else:
 	DEBUG = True
 	ALLOWED_HOSTS = []
 	db_password = ''
+	USE_HTTPS = False
+	EMAIL_HOST_USER = 'pratulya'
+	EMAIL_HOST_PASSWORD = ''
 
 
 AUTH_USER_MODEL = 'account.CustomUser'
@@ -165,11 +175,12 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 """
 EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'TnP@GGSIPU'
+DEFAULT_FROM_EMAIL = 'noreply@placements.ggsipu.ac.in'
+
+# SMS
+TWOFACTOR_API_KEY = '31cce076-19ed-11e7-9462-00163ef91450'
 
 # FILE UPLOAD CONSTRAINTS
 FILE_CONTENT_TYPE = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
@@ -218,3 +229,6 @@ PROFILE_CREATION_URL = {
 # SESSIONS
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 1 * (60 * 60 * 24)
+
+DISALLOWED_USERNAMES = ['account', 'notification', 'student', 'faculty', 'company', 'college', 'dcompany', 'recruitment']
+DISALLOWED_EMAIL_DOMAINS = ['mailinator', 'discard.email', 'thraml', 'mintemail', 'mailcatch']

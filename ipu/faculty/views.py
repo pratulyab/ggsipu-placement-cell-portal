@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404, JsonResponse
@@ -9,15 +9,19 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from account.decorators import require_user_types, require_AJAX
-from account.forms import AccountForm, SocialProfileForm
+from account.forms import AccountForm, SocialProfileForm, SetPasswordForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
+from account.tokens import time_unbounded_activation_token_generator
 from account.utils import handle_user_type, get_relevant_reversed_url
 from college.models import College
-from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm, EditGroupsForm, ChooseFacultyForm
+from dummy_company.forms import DummySessionFilterForm
+from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm, EditGroupsForm, ChooseFacultyForm, VerifyStudentProfileForm
 from faculty.models import Faculty
 from notification.models import Notification
-from student.forms import StudentEditForm, QualificationForm
+from recruitment.forms import SessionFilterForm
+from student.models import Qualification
+from student.forms import QualificationForm
 import re
 
 # Create your views here.
@@ -32,8 +36,9 @@ def faculty_signup(request):
 			f.instance.type = 'F'
 			if f.is_valid():
 				faculty = f.save()
+				f.save_m2m()
 				Faculty.objects.create(profile=faculty, college=user.college)
-				faculty = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
+				#faculty = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 				send_activation_email_task.delay(faculty.pk, get_current_site(request).domain)
 				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['C'])})
 			else:
@@ -79,6 +84,7 @@ def edit_create_faculty(request, **kwargs):
 					f.save()
 					if f.has_changed():
 						context['update'] = True
+					return redirect(settings.HOME_URL['F'])
 			context['faculty_edit_create_form'] = f
 			return render(request, 'faculty/edit_create.html', context)
 		else:
@@ -99,6 +105,8 @@ def faculty_home(request, **kwargs):
 	context['edit_account_form'] = AccountForm(instance=user)
 	context['edit_faculty_form'] = FacultyProfileForm(instance=faculty)
 	context['enrollment_form'] = EnrollmentForm(faculty=faculty)
+	context['session_filter_form'] = SessionFilterForm(profile=faculty.college)
+	context['dsession_filter_form'] = DummySessionFilterForm(college=faculty.college)
 	try:
 		context['social_profile_form'] = SocialProfileForm(instance=user.social)
 	except SocialProfile.DoesNotExist:
@@ -108,26 +116,28 @@ def faculty_home(request, **kwargs):
 ##	else:
 ##		return handle_user_type(request, redirect_request=True)
 
+#@user_passes_test(lambda u: u.groups.filter(name='Verifier')) cant use this because need to return Jsonresp
 @require_user_types(['F'])
 @login_required
 @require_http_methods(['GET','POST'])
-def get_enrollment_number(request, **kwargs):
+def get_enrollment_number(request, profile, user_type):
 	if not request.is_ajax():
 		return handle_user_type(request)
-##	if request.user.type == 'F':
+	if not request.user.groups.filter(name='Verifier'):
+		return JsonResponse(status=403, data={'error': 'Permission Denied. You cannot verify students'})
 	if request.method == 'GET':
 		try:
 			del request.session['enrollmentno']
 		except KeyError:
 			pass
-		return render(request, 'faculty/verify.html', {'enroll_form': EnrollmentForm(faculty=request.user.faculty)})
+		return render(request, 'faculty/verify.html', {'enroll_form': EnrollmentForm(faculty=profile)})
 		
 	else:
-		f = EnrollmentForm(request.POST, faculty=request.user.faculty)
+		f = EnrollmentForm(request.POST, faculty=profile)
 		if f.is_valid():
 			request.session['enrollmentno'] = f.cleaned_data['enroll']
 			student = CustomUser.objects.get(username=request.session['enrollmentno']).student
-			profile_form = render(request, 'faculty/verify_profile_form.html', {'profile_form': StudentEditForm(instance=student)}).content.decode('utf-8')
+			profile_form = render(request, 'faculty/verify_profile_form.html', {'profile_form': VerifyStudentProfileForm(instance=student)}).content.decode('utf-8')
 			try:
 				q = QualificationForm(instance=student.qualifications)
 			except Qualification.DoesNotExist:
@@ -136,8 +146,6 @@ def get_enrollment_number(request, **kwargs):
 			return HttpResponse(profile_form+"<<<>>>"+qual_form)
 		else:
 			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
-##	else:
-##		return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 
 @require_user_types(['C'])
 @require_AJAX

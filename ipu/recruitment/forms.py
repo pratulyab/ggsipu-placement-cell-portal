@@ -5,9 +5,11 @@ from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from college.models import College, Programme, Stream
 from company.models import Company
+from notification.models import Notification
 from recruitment.fields import ModelHashidChoiceField, ModelMultipleHashidChoiceField
 from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
 from student.models import Student
+from datetime import date
 from decimal import Decimal
 from material import *
 import datetime, re
@@ -23,7 +25,8 @@ class AssociationForm(forms.ModelForm):
 		
 		if self.who == 'College':
 			del self.fields['college']
-			company_queryset = Company.objects.exclude(pk__in = [d.company.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
+#			company_queryset = Company.objects.exclude(pk__in = [d.company.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
+			company_queryset = Company.objects.exclude(pk__in = [d['pk'] for d in self.profile.dissociations.values('pk')])
 			programmes_queryset = self.profile.get_programmes_queryset()
 			self.fields['company'] = ModelHashidChoiceField(company_queryset, 'HASHID_COMPANY')
 			self.fields['company'].widget.choices = self.get_zipped_choices(company_queryset, 'HASHID_COMPANY')
@@ -59,7 +62,8 @@ class AssociationForm(forms.ModelForm):
 		
 		elif self.who == 'Company':
 			del self.fields['company']
-			college_queryset = College.objects.exclude(pk__in = [d.college.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
+#			college_queryset = College.objects.exclude(pk__in = [d.college.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
+			college_queryset = College.objects.exclude(pk__in = [d['pk'] for d in self.profile.dissociations.values('pk')])
 			self.fields['college'] = ModelHashidChoiceField(college_queryset, 'HASHID_COLLEGE')
 			self.fields['college'].widget.choices = self.get_zipped_choices(college_queryset, 'HASHID_COLLEGE')
 			self.fields['programme'].choices= ()
@@ -105,14 +109,16 @@ class AssociationForm(forms.ModelForm):
 		college = self.cleaned_data.get('college', None)
 		company = self.cleaned_data.get('company', None)
 		if self.who == 'College' and company:
-			dissoc = Dissociation.objects.filter(college=self.profile, company=company, duration__gte=datetime.date.today())
+#			dissoc = Dissociation.objects.filter(college=self.profile, company=company, duration__gte=datetime.date.today())
+			dissoc = Dissociation.objects.filter(college=self.profile, company=company)
 			if dissoc:
 				if dissoc[0].initiator == 'CO':
 					raise ValidationError(_('Sorry, %s has temporarily blocked you from contacting it.' % (company.name.title())))
 				else:
 					raise ValidationError(_('You have blocked %s from contacting you. To unblock it, delete the dissociation.' % (company.name.title())))
 		elif self.who == 'Company' and college:
-			dissoc = Dissociation.objects.filter(college=college, company=self.profile, duration__gte=datetime.date.today())
+#			dissoc = Dissociation.objects.filter(college=college, company=self.profile, duration__gte=datetime.date.today())
+			dissoc = Dissociation.objects.filter(college=college, company=self.profile)
 			if dissoc:
 				if dissoc[0].initiator == 'C':
 					raise ValidationError(_('Sorry, %s has temporarily blocked you from contacting it.' % (college.name.title())))
@@ -201,6 +207,11 @@ class CreateSessionCriteriaForm(forms.ModelForm):
 
 
 class EditCriteriaForm(forms.ModelForm):
+	FIELDS_VERBOSE_NAME = {
+		'is_sub_back': 'whether students with subject back(s) are allowed',
+		'years': 'which year students are allowed',
+	}
+
 	layout = Layout(
 			Row(Span8('years'), Span4('is_sub_back')),
 			Row(Span6('tenth'), Span6('twelfth')),
@@ -229,6 +240,20 @@ class EditCriteriaForm(forms.ModelForm):
 		if max(chosen_years) > self.max_year:
 			raise forms.ValidationError(_('Please choose valid year(s). Maximum year value for this programme is %s.' % self.max_year))
 		return comma_separated_years
+
+	def notify_other_party(self, actor, target, link):
+		if self.changed_data:
+			changed_fields = []
+			marks_fields = []
+			for field in self.changed_data:
+				if field in self.FIELDS_VERBOSE_NAME:
+					changed_fields.insert(0, self.FIELDS_VERBOSE_NAME[field])
+				else:
+					marks_fields.append(field)
+			if marks_fields:
+				changed_fields.append('marks requirements for %s' % (','.join(marks_fields)))
+			message = '%s updated %s for <a href="%s">this </a> placement session.' % (actor, ', '.join(changed_fields), link)
+			Notification.objects.create(actor=actor, target=target, message=message)
 	
 	def save(self, commit=True, *args, **kwargs):
 		# Won't be calling model form's save method
@@ -242,6 +267,13 @@ class EditCriteriaForm(forms.ModelForm):
 
 
 class EditSessionForm(forms.ModelForm):
+	FIELDS_VERBOSE_NAME = {
+		'ended': 'whether the session has ended',
+		'application_deadline': 'Application Deadline',
+		'status': 'Status',
+		'salary': 'Salary Offered'
+	}
+
 	def __init__(self, *args, **kwargs):
 		super(EditSessionForm, self).__init__(*args, **kwargs)
 		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.instance.pk)
@@ -252,9 +284,35 @@ class EditSessionForm(forms.ModelForm):
 	
 	def clean_application_deadline(self):
 		date = self.cleaned_data['application_deadline']
-		if date and date <= datetime.date.today():
+		if date and date <= datetime.date.today() and 'application_deadline' in self.changed_data:
 			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
 		return date
+
+	def notify_other_party(self, actor, target, link):
+		if self.changed_data:
+			changed_fields = []
+			for field in self.changed_data:
+				if field == 'ended':
+					changed_fields.insert(0, (self.FIELDS_VERBOSE_NAME[field]))
+				else:
+					changed_fields.append(self.FIELDS_VERBOSE_NAME[field])
+			message = '%s updated %s for <a href="%s">this</a> placement session.' % (actor, ', '.join(changed_fields), link)
+			Notification.objects.create(actor=actor, target=target, message=message)
+
+	def should_notify_students(self):
+		if 'ended' in self.changed_data and self.cleaned_data['ended'] and self.cleaned_data['application_deadline'] < date.today():
+			return True
+		return False
+
+	def notify_selected_students(self, actor):
+		association = self.instance.association
+		message = "Congratulations! "
+		if association.type == 'J':
+			message += "You have been placed at %s. " % (association.company.name.title())
+		else:
+			message += "You have grabbed the internship at %s. " % (association.company.name.title())
+		for student in self.instance.students.all():
+			Notification.objects.create(actor=actor, target=student.profile, message=message)
 	
 	class Meta:
 		model = PlacementSession
@@ -267,7 +325,7 @@ class ManageSessionStudentsForm(forms.ModelForm):
 		self.choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 		kwargs.update(initial={'students': [c[0] for i,c in enumerate(self.choices) if i]})
 		super(ManageSessionStudentsForm, self).__init__(*args, **kwargs)
-		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('Note: Students can only be removed from the list. Removed students will be notified.'))
+		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('CAUTION: Students can only be removed from the list. Removed students will be notified.'))
 		self.fields['students'].choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 #		self.fields['students'].initial = (settings.HASHID_STUDENT.encode(s.pk) for s in self.students_queryset)
 #		Why wouldn't this work? Passing initial to MMHC's super isn't working either
@@ -281,7 +339,7 @@ class ManageSessionStudentsForm(forms.ModelForm):
 		self.disqualified = disqualified
 		message = "Sorry, your involvement in the placement session %s was till here only!\
 					\nThanks for showing your interest.\
-					\nBest of luck for your future." % (self.instance)
+					\nBest of luck for your future endeavours." % (self.instance)
 		for student in disqualified:
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
 		# send mass email
@@ -348,4 +406,54 @@ class DissociationForm(forms.ModelForm):
 	
 	class Meta:
 		model = Dissociation
-		fields = ['company', 'college', 'duration']
+#		fields = ['company', 'college', 'duration']
+		fields = ['company', 'college', 'reason']
+
+class SessionFilterForm(forms.Form):
+
+	def __init__(self, *args, **kwargs):
+		self.profile = kwargs.pop('profile')
+		self.who = self.profile.__class__.__name__
+		super(SessionFilterForm, self).__init__(*args, **kwargs)
+		
+		if self.who == 'College':
+			company_queryset = Company.objects.filter(pk__in = [a['company__pk'] for a in self.profile.associations.values('company__pk')])
+			self.fields['company'] = ModelMultipleHashidChoiceField(company_queryset, 'HASHID_COMPANY', required=False)
+			self.fields['company'].choices = self.get_zipped_choices(company_queryset, 'HASHID_COMPANY')
+		elif self.who == 'Company':
+			college_queryset = College.objects.filter(pk__in = [a['college__pk'] for a in self.profile.associations.values('college__pk')])
+			self.fields['college'] = ModelMultipleHashidChoiceField(college_queryset, 'HASHID_COLLEGE', required=False)
+			self.fields['college'].choices = self.get_zipped_choices(college_queryset, 'HASHID_COLLEGE')
+		else:
+			raise ValidationError(_('Permission Denied.'))
+		
+		TYPE_CHOICES = (('', 'Choose one'), Association.PLACEMENT_TYPE[0], Association.PLACEMENT_TYPE[1])
+		self.fields['type'] = forms.ChoiceField(choices=TYPE_CHOICES, required=False)
+		self.fields['has_ended'] = forms.BooleanField(required=False)
+
+	def get_filtered_sessions(self):
+		company = self.cleaned_data.get('company', None)
+		college = self.cleaned_data.get('college', None)
+		associations = self.profile.associations.all()
+		type =  self.cleaned_data.get('type', '')
+		if type:
+			associations = associations.filter(type=type)
+		if self.who == 'College':
+			company = self.cleaned_data.get('company', None)
+			if company:
+				associations = associations.filter(company__pk__in=[c.pk for c in company])
+		else:
+			college = self.cleaned_data.get('college', None)
+			if college:
+				associations = associations.filter(college__pk__in=[c.pk for c in college])
+		sessions = PlacementSession.objects.filter(association__pk__in=[a.pk for a in associations], ended=self.cleaned_data.get('has_ended', False))
+		return sessions
+			
+	@staticmethod
+	def get_zipped_choices(queryset, hashid_name):
+		names, hashids = list(), list()
+		names.append('---------'); hashids.append('') # default
+		for q in queryset:
+			names.append(q.name) # COLLEGE, COMPANY, PROGRAMME, STREAM use 'name'
+			hashids.append(getattr(settings, hashid_name).encode(q.pk))
+		return zip(hashids, names)

@@ -89,39 +89,35 @@
 {% endblock %}
 
 {% block side_nav_links %}
-    <li data-main_div="#profile"><a class="waves-effect" href="#!"><i class="fa fa-user" aria-hidden="true"></i>
-          Update Profile</a></li>
-    <li data-main_div="#qualifications"><a class="waves-effect" href="#!"><i class="fa fa-book" aria-hidden="true"></i> 
-          Update Qualifications</a></li>  
-    <li data-main_div="#companies"><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>
-          Companies Visiting</a></li>
-    <li data-main_div="#sessions"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
-            Sessions</a></li>
-    <li data-main_div="#notifications"><a class="waves-effect" href="#!"><i class="fa fa-bell" aria-hidden="true"></i>Notifications<span class="new badge" id="mobile-noti-badge">1</span></a></li>
-    <li class="no-padding">
-        <ul class="collapsible collapsible-accordion">
-          <li data-main_div="#settings" class="expandable">
-            <a class="collapsible-header"><i class="fa fa-cog" aria-hidden="true"></i>
-            Settings</a>
-            <div class="collapsible-body">
-              <ul>
-                <li class="child-li" data-child_div="#account-settings"><a href="#!"><i class="fa fa-sliders" aria-hidden="true"></i>
-                    Account Settings</a></li>
-                <li class="child-li" data-child_div="#upload-settings"><a href="#!"><i class="fa fa-upload" aria-hidden="true"></i>
-                  Upload Image/Resume</a></li>
-                <li class="child-li" data-child_div="#social-settings"><a href="#!"><i class="fa fa-users" aria-hidden="true"></i>
-                      Social Profile Settings</a></li>
-                <li class="child-li" data-child_div="#tech-settings"><a href="#!"><i class="fa fa-wrench" aria-hidden="true"></i>
-                  Technical Profile Settings</a></li>
-              </ul>
-            </div>
-          </li>
-        </ul>
-      </li>
-      
+	{% if edit_profile_form %}
+		<li data-main_div="#profile"><a class="waves-effect" href="#!"><i class="fa fa-user" aria-hidden="true"></i>Update Profile*</a></li>
+	{% endif %}
+	{% if edit_qual_form %}
+		<li data-main_div="#qualifications"><a class="waves-effect" href="#!"><i class="fa fa-book" aria-hidden="true"></i>Update Qualifications*</a></li>  
+	{% endif %}
+	<li data-main_div="#companies"><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>Companies Visiting</a></li>
+	<li data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i> Sessions</a></li>
+	<li data-main_div="#notifications"><a class="waves-effect" href="#!">
+		<i class="fa fa-bell" aria-hidden="true"></i>Notifications<span class="new badge" id="mobile-noti-badge">1</span></a>
+	</li>
+	<li class="no-padding">
+		<ul class="collapsible collapsible-accordion">
+			<li data-main_div="#settings" class="expandable">
+				<a class="collapsible-header"><i class="fa fa-cog" aria-hidden="true"></i>Settings</a>
+				<div class="collapsible-body">
+					<ul>
+						<li class="child-li" data-child_div="#account-settings"><a href="#!"><i class="fa fa-sliders" aria-hidden="true"></i>Account Settings</a></li>
+						<li class="child-li" data-child_div="#upload-settings"><a href="#!"><i class="fa fa-upload" aria-hidden="true"></i>Upload Image/Resume</a></li>
+						<li class="child-li" data-child_div="#social-settings"><a href="#!"><i class="fa fa-users" aria-hidden="true"></i>Social Profile Settings</a></li>
+						<li class="child-li" data-child_div="#tech-settings"><a href="#!"><i class="fa fa-wrench" aria-hidden="true"></i>Technical Profile Settings</a></li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</li>
 {% endblock %}
 
-{% block tabs%}
+{% block tabs %}
 	{% if edit_profile_form %}
 		<li class="tab col s2"><a href="#profile" style="color: #9c27b0 !important">Update Profile*</a></li>
 	{% endif %}
@@ -132,7 +128,7 @@
 <!--	<li class="tab col s2"><a href="#tab2">Status</a></li> -->
 	<li id = "notification" class="tab col s2" url="{% url 'submit_issue' %}"><a href="#notifications">Notification</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
-	<li id="session" class="tab col s2"><a href="#sessions">Sessions</a></li>
+	<li id="session" class="tab col s2"><a href="#sessions_div">Sessions</a></li>
 {% endblock %}
 
 {% block tabs_content %}
@@ -143,9 +139,9 @@
 			<div class="row">
 				<div class="col s3">
 					<ul class="tabs">
-						<li class="tab col s12"><a id = "your-notifications" class="active" href="#your-notifications-div">Your Notifications</a></li>
+						<li class="tab col s12"><a id = "your-notifications" class="active" href="#your-notifications-div" detail-url = "{% url 'notification_detail' %}">Your Notifications</a></li>
 						<li class="tab col s12"><a id = "help" href="#help-div">Help !</a></li>
-						<li class="tab col s12"><a id = "view-issues" href="#view-issues-div" url="{%url 'view_solution_list' %}">Your Issues</a></li>
+						<li class="tab col s12"><a id = "view-issues" href="#view-issues-div" url="{% url 'view_solution_list' %}">Your Issues</a></li>
 					</ul>
 				</div>
 				<div class=" col s8 offset-s1">
@@ -161,26 +157,41 @@
 							  <ul id = "view-issues-div-ul" class="collection">
 							  </ul>
 					</div>
-					</div>
 				</div>
 			</div>
 		</div>
+		<div id="notification-detail-model" class="modal modal-fixed-footer">
+    		<div class="modal-content">
+     	 		<h4 id="notification-model-heading">Error</h4>
+      			<p id="notification-model-text">Please check the Internet connection and then reload.</p>
+    		</div>
+    		<div class="modal-footer">
+    			<div class="col s4"><p>7th July, 2016</p></div>
+      			<div class="col s8 right-align"><a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Ok</a></div>
+    		</div>
+  		</div>
+  		<button id="notification-detail-model-trigger" data-target="notification-detail-model" style="display: none;"></button>
+		</div>
 	<!-- -->
 	{% if edit_qual_form %}
-		<div id="qualifications" class="col s12">
+		<div id="qualifications" class="col s12 m10 offset-m1">
 			<form method="POST" action="{% url 'student_qual' %}" id="edit-qual-form">
 				{% csrf_token %}
 				{% form form=edit_qual_form %}{% endform %}
-				<button class="btn btn-waves" type="submit">Update Qualifications</button>
+				<div class="row">
+					<button class="col s8 offset-s2 btn btn-waves" type="submit">Update Qualifications</button>
+				</div>
 			</form>
 		</div>
 	{% endif %}
 	{% if edit_profile_form %}
-		<div id="profile" class="col s12">
+		<div id="profile" class="col s12 m10 offset-m1">
 			<form method="POST" action="{% url 'edit_student_profile' %}" id="edit-student-form" enctype="multipart/form-data">
 				{% csrf_token %}
 				{% form form=edit_profile_form %}{% endform %}
-				<button class="btn btn-waves" type="submit">Update Profile</button>
+				<div class="row">
+					<button class="col s8 offset-s2 btn btn-waves" type="submit">Update Profile</button>
+				</div>
 			</form>
 		</div>
 	{% endif %}
@@ -197,31 +208,43 @@
 				</div>
 				<div class=" col s8 offset-s1">
 					<div id="account-settings" class="col s12">
+						<h4 class="center" style="color: goldenrod"> Account Settings </h4>
 						<form method="POST" action="{% url 'edit_account' %}" id="edit-account-form">
 							{% csrf_token %}
 							{% form form=edit_account_form %}{% endform %}
-							<button class="btn btn-waves" type="submit">Update Account</button>
+							<div class="row">
+								<button class="col s8 offset-s2 btn btn-waves" type="submit">Update Account</button>
+							</div>
 						</form>
 					</div>
 					<div id="upload-settings" class="col s12">
+						<h4 class="center" style="color: goldenrod"> Upload Files </h4>
 						<form method="POST" action="{% url 'upload_file' %}" id="upload-file-form" enctype="multipart/form-data">
 							{% csrf_token %}
 							{% form form=upload_file_form %}{% endform %}
-							<button class="btn btn-waves" type="submit">Upload</button>
+							<div class="row">
+								<button class="col s8 offset-s2 btn btn-waves" type="submit">Upload</button>
+							</div>
 						</form>
 					</div>
 					<div id="social-settings" class="col s12">
+						<h4 class="center" style="color: goldenrod"> Social Profile </h4>
 						<form method="POST" action="{% url 'social_profile' %}" id="social-profile-form">
 							{% csrf_token %}
 							{% form form=social_profile_form %}{% endform %}
-							<button class="btn btn-waves" type="submit">Update</button>
+							<div class="row">
+								<button class="col s8 offset-s2 btn btn-waves" type="submit">Update Profile</button>
+							</div>
 						</form>
 					</div>
 					<div id="tech-settings" class="col s12">
+						<h4 class="center" style="color: goldenrod"> Technical Profile </h4>
 						<form method="POST" action="{% url 'tech_profile' %}" id="tech-profile-form">
 							{% csrf_token %}
 							{% form form=tech_profile_form %}{% endform %}
-							<button class="btn btn-waves" type="submit">Update</button>
+							<div class="row">
+								<button class="col s8 offset-s2 btn btn-waves" type="submit">Update Profile</button>
+							</div>
 						</form>
 					</div>
 				</div>
@@ -229,7 +252,7 @@
 		</div>
 	</div>
 
-	<div id="sessions" class="col s12"></div>
+	<div id="sessions_div" class="col s12"></div>
 
 	{% if badge %}
 		<span class="badge" id="notifications_badge">{{ badge }}</span>
@@ -254,6 +277,7 @@
 			Settings.init(['edit-account-form', 'upload-file-form', 'social-profile-form', 'tech-profile-form']);
 			Update.init(['edit-student-form', 'edit-qual-form']);
 			Mobile.init();
+			$('.modal').modal();
 		});
 	</script>
 {% endblock scripts %}

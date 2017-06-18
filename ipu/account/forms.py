@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
@@ -7,6 +8,7 @@ from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser, SocialProfile
 from urllib.parse import urlparse
+from utils import validate_username_for_urls
 import re
 from material import *
 
@@ -28,14 +30,17 @@ class LoginForm(forms.Form):
 			queryset = CustomUser.objects.filter(~Q(type='S') & Q(is_superuser=False))
 			if '@' in username:
 				try:
-					username = queryset.get(email=username).username
+					user = queryset.get(email=username)
+					username = user.username
 				except CustomUser.DoesNotExist:
 					raise forms.ValidationError(_('User with this email address does not exist'))
 			else:
 				try:
-					queryset.get(username=username)
+					user = queryset.get(username=username)
 				except CustomUser.DoesNotExist:
 					raise forms.ValidationError(_('Invalid username'))
+			if user.is_disabled:
+				raise forms.ValidationError(_('Access Disallowed. Please contact the college.'))
 			self.user_cache = authenticate(username=username, password=password)
 			if self.user_cache is None:
 				raise forms.ValidationError(_('Invalid username or password'))
@@ -62,6 +67,25 @@ class SignupForm(forms.ModelForm):
 			password_validation.validate_password(pwd1)
 		return self.cleaned_data
 
+	def clean_username(self):
+		username = self.cleaned_data['username']
+		'''
+		if username and username in settings.DISALLOWED_USERNAMES:
+			raise forms.ValidationError(_('You cannot take this username'))
+		'''
+		if username and not validate_username_for_urls(username):
+			raise forms.ValidationError(_('You cannot take this username'))
+		return username
+
+	def clean_email(self):
+		email = self.cleaned_data['email']
+		if email:
+			domain = '.'.join(email.split('@')[-1].split('.')[:-1]).lower()
+			for blacklisted in settings.DISALLOWED_EMAIL_DOMAINS: # Because a few of these provide subdomains. FOOBAR.domainname.com
+				if blacklisted in domain:
+					raise forms.ValidationError(_('This email domain is not allowed. Please enter email of different domain.'))
+		return email
+
 	def save(self, commit=True, *args, **kwargs):
 		self.user_type = kwargs.pop('user_type')
 		user = super(SignupForm, self).save(commit=False)
@@ -82,7 +106,7 @@ class SignupForm(forms.ModelForm):
 		fields = ['username', 'email']
 		help_texts = {
 			'username': _('Required. 30 characters or fewer. Letters, digits and ./+/-/_ only.'),
-			'email': _('An activation email will be sent to the registered email address.'),
+			'email': _('You\'ll need to verify this email address. Make sure you have access to it.'),
 		}
 
 
@@ -187,8 +211,8 @@ class AccountForm(forms.ModelForm):
 		model = CustomUser
 		fields = ['username', 'email']
 		help_texts = {
-			'username': 'Readonly.',
-			'email': 'Readonly.',
+			'username': 'Readonly. You cannot edit this field.',
+			'email': 'Readonly. This field cannot be edited.',
 		}
 
 class ForgotPasswordForm(forms.Form):
@@ -198,8 +222,8 @@ class ForgotPasswordForm(forms.Form):
 	email = forms.EmailField(max_length = 254, help_text=_('Enter your registered email address'))
 	def clean_email(self):
 		data_email = self.cleaned_data.get('email', None)
-		if data_email and CustomUser.objects.filter(email = data_email).count() == 0:
-			raise forms.ValidationError(_("User with this email has not registered with us."))
+		if not data_email:
+			raise forms.ValidationError(_("Please enter an email-address."))
 		return data_email
 
 class SetPasswordForm(forms.Form):

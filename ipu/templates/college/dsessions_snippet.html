@@ -1,0 +1,29 @@
+<div id="dsessions" class="scrollspy">
+	<ul class="collection">
+		{% for dsession in dsessions %}
+			<li class="collection-item avatar" data-sess="{{ dsession.dsess_hashid }}">
+				<span class="title">{{ dsession.dcompany }} for {{ dsession.type|title }} </span>
+				<p>
+					{{ dsession.salary }}
+					<br>
+					<p>
+						{{ dsession.streams }}
+					</p>
+					<br>
+						{{ dsession.students }} student{{ dsession.students|pluralize }} in the session
+				</p>
+				<span class="secondary-content">
+					<a href="{% url 'manage_dsession' dsession.dsess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>
+					<a href="{% url 'notify_dsession' dsession.dsess_hashid %}" class="envelope"><i class="fa fa-2x fa-envelope"></i></a>
+					<a href="{% url 'dexcel' dsession.dsess_hashid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
+				</span>
+			</li>
+		{% empty %}
+			{% if filtering %}
+				<b><h1 class="center flow-text teal-text text-accent-4">No dummy sessions found that match the filtering conditions.</h1></b>
+			{% else %}
+				<b><h1 class="center flow-text teal-text text-accent-4">You have not created any dummy sessions.</h1></b>
+			{% endif %}
+		{% endfor %}
+	</ul>
+</div>

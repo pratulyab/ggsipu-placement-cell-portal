@@ -12,7 +12,7 @@ from account.decorators import require_user_types, require_AJAX
 from account.utils import handle_user_type, get_relevant_reversed_url, get_type_created
 from college.models import College
 from company.models import Company
-from dummy_company.forms import CreateDummyCompanyForm, EditDummyCompanyForm, CreateDummySessionForm, EditDummySessionForm, ChooseDummyCompanyForm, CreateSelectionCriteriaForm, ManageDummySessionStudentsForm, EditDummySessionForm, EditDCriteriaForm
+from dummy_company.forms import CreateDummyCompanyForm, EditDummyCompanyForm, CreateDummySessionForm, EditDummySessionForm, ChooseDummyCompanyForm, CreateSelectionCriteriaForm, ManageDummySessionStudentsForm, EditDummySessionForm, EditDCriteriaForm, DummySessionFilterForm
 from dummy_company.models import DummyCompany, DummySession
 from faculty.models import Faculty
 from notification.forms import NotifySessionStudentsForm
@@ -132,7 +132,7 @@ def get_dummy_session_streams(request, **kwargs):
 		if user_type == 'F':
 			college = college.college
 		try:
-			programme_pk = request.GET['programme']
+			programme_pk = settings.HASHID_PROGRAMME.decode(request.GET['programme'])[0]
 			programme = college.get_programmes_queryset().get(pk=programme_pk)
 		except:
 			return JsonResponse(status=400, data={'error': 'Invalid programme chosen.'})
@@ -140,7 +140,7 @@ def get_dummy_session_streams(request, **kwargs):
 		data = []
 		years = []
 		for s in streams:
-			data.append({'html':s.name, 'value': s.pk})
+			data.append({'html':s.name, 'value': settings.HASHID_STREAM.encode(s.pk)})
 		for i in range(1, int(programme.years) + 1):
 			years.append({'html': i, 'value': i})
 		return JsonResponse(data={'streams':data, 'years': years})
@@ -157,7 +157,7 @@ def create_dummy_session(request, **kwargs):
 		if user_type == 'F':
 			college = college.college
 		try:
-			programme_pk = request.POST['programme']
+			programme_pk = settings.HASHID_PROGRAMME.decode(request.POST['programme'])[0]
 			programme = college.get_programmes_queryset().get(pk=programme_pk)
 		except:
 			return JsonResponse(status=400, data={'error': 'Invalid programme chosen.'})
@@ -232,11 +232,22 @@ def apply_to_dummy_company(request, dsess, **kwargs):
 		if student.stream not in dsession.streams.all() or dsession.application_deadline < datetime.date.today():
 			return JsonResponse(status=403, data={'error': 'You cannot make this request.'})
 		criterion = dsession.selection_criteria
-		if not criterion.check_eligibility(student):
-			return JsonResponse(status=400, data={'error': 'Sorry, you are not eligible for this %s.' % 'job' if dsession.type == 'J' else 'internship'})
+		eligibility = criterion.check_eligibility(student)
+		if eligibility is None:
+			return JsonResponse(status=400, data={'error': 'You need to fill the qualifications form before applying.'})
+		message = 'Please get your %s verified by the placement cell faculty first.'
+		if not student.qualifications.is_verified or not student.qualifications.verified_by: # Qualifications.DoesNotExist has been taken care of by 'eligibility is None' condition
+			message = message % 'qualifications'
+			return JsonResponse(status=400, data={'error': message})
+		elif not student.is_verified or not student.verified_by:
+			message = message % 'profile'
+			return JsonResponse(status=400, data={'error': message})
+		if eligibility == False:
+			return JsonResponse(status=400, data={'error': 'Sorry, you are not eligible for this %s.' % ('job' if dsession.type == 'J' else 'internship')})
 		student_dummy_sessions = student.dummy_sessions.all()
 		if dsession not in student_dummy_sessions:
 			student.dummy_sessions.add(dsession)
+			student.dsessions_applied_to.add(dsession)
 			return JsonResponse(status=200, data={'enrolled': True})
 		else:
 			student.dummy_sessions.remove(dsession)
@@ -330,15 +341,14 @@ def edit_dummy_session(request, dsess_hashid, user_type, profile, **kwargs):
 	f = EditDummySessionForm(request.POST, instance=dsession)
 	if f.is_valid():
 		f.save()
-		if 'ended' in f.changed_data:
-			message = "Congratulations! "
-			if dsession.type == 'J':
-				message += "You have been placed at %s. " % (dsession.dummy_company.name.title())
-			else:
-				message += "You have grabbed the internship at %s. " % (dsession.dummy_company.name.title())
-			for student in dsession.students.all():
-				Notification.objects.create(actor=profile, target=student.profile, message=message)
-		return JsonResponse(data={'success': True, 'success_msg': 'Session Details have been updated successfully'})
+		success_msg = 'Session Details have been updated successfully.'
+		if f.should_notify_students():
+			try:
+				f.notify_selected_students(actor=profile.profile)
+			except:
+				return JsonResponse(status=400, data={'error': 'Sorry, error occurred while notifying students'})
+			success_msg += ' Students have been notified.'
+		return JsonResponse(data={'success': True, 'success_msg': success_msg})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
 @require_user_types(['C', 'F'])
@@ -358,3 +368,32 @@ def notify_dsession(request, dsess_hashid, user_type, profile):
 		f.notify_all(students=dsession.students.all())
 		return JsonResponse(status=200, data={'success_msg': 'Done.'})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+
+@require_user_types(['C', 'F'])
+@require_AJAX
+@login_required
+@require_POST
+def filter_dsessions(request, user_type, profile):
+	if user_type == 'F':
+		if not request.user.groups.filter(name='Placement Handler'):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
+		profile = profile.college
+	f = DummySessionFilterForm(request.POST, college=profile)
+	if f.is_valid():
+		dsessions = f.get_filtered_dsessions()
+		dsessions_list = []
+		for ds in dsessions:
+			data = {}
+			data['dsessobj'] = ds
+			data['dsess_hashid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
+			data['salary'] = "%d LPA" % ds.salary
+			data['dcompany'] = ds.dummy_company.name.title()
+			data['type'] = "Internship" if ds.type == 'I' else "Job"
+			data['streams'] = ', '.join([s.name.title() for s in ds.streams.all()])
+			data['students'] = ds.students.count()
+			dsessions_list.append(data)
+		html = render(request, 'college/dsessions_snippet.html', {'dsessions': dsessions_list, 'filtering': True}).content.decode('utf-8')
+		return JsonResponse(status=200, data={'html': html})
+	else:
+		return JsonResponse(status=400, data={})
+

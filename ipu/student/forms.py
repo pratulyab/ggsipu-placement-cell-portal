@@ -14,7 +14,7 @@ import re
 from material import *
 
 class StudentLoginForm(forms.Form):
-	username = forms.CharField(label=_('Enrollment Number'), max_length=11, widget=forms.TextInput(attrs={'placeholder': _('or email address'), 'auto_focus':''}))
+	username = forms.CharField(label=_('Enrollment Number'), max_length=11, widget=forms.TextInput(attrs={'placeholder': _('Enter your enrollment number'), 'auto_focus':''}))
 	password = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder':_('Enter password')}))
 
 	def __init__(self, *args, **kwargs):
@@ -72,6 +72,15 @@ class StudentSignupForm(forms.ModelForm):
 			raise forms.ValidationError(_('Invalid enrollment number'))
 		return username
 
+	def clean_email(self):
+		email = self.cleaned_data['email']
+		if email:
+			domain = '.'.join(email.split('@')[-1].split('.')[:-1]).lower()
+			for blacklisted in settings.DISALLOWED_EMAIL_DOMAINS: # Because a few of these provide subdomains. FOOBAR.domainname.com
+				if blacklisted in domain:
+					raise forms.ValidationError(_('This email domain is not allowed. Please enter email of different domain.'))
+		return email
+
 	def clean(self, *args, **kwargs):
 		super(StudentSignupForm, self).clean(*args, **kwargs)
 		pwd1 = self.cleaned_data.get('password1', None)
@@ -102,7 +111,7 @@ class StudentSignupForm(forms.ModelForm):
 		labels = {'username': _('Enrollment Number')}
 		help_texts = {
 			'username': _('Enter your 11 digit enrollment number.'),
-			'email': _('An activation email will be sent to the registered email address.'),
+			'email': _('You\'ll need to verify this email address. Make sure you have access to it.'),
 		}
 
 class StudentCreationForm(forms.ModelForm):
@@ -223,21 +232,18 @@ class StudentEditForm(forms.ModelForm):
 	def clean_college(self):
 		clg = self.cleaned_data.get('college', None)
 		if clg and self.instance.college != clg:
-			print('---')
 			raise forms.ValidationError(_('Error. College has been changed'))
 		return clg
 
 	def clean_programme(self):
 		prog = self.cleaned_data.get('programme', None)
 		if prog and self.instance.programme != prog:
-			print('---')
 			raise forms.ValidationError(_('Error. Programme has been changed'))
 		return prog
 
 	def clean_stream(self):
 		strm = self.cleaned_data.get('stream', None)
 		if strm and self.instance.stream != strm:
-			print('---')
 			raise forms.ValidationError(_('Error. Stream has been changed'))
 		return strm
 	
@@ -301,7 +307,7 @@ class QualificationForm(forms.ModelForm):
 		student = kwargs.pop('student', None)
 		if student:
 			qual.student = student
-		qual.is_verified = kwargs.pop('verified', None)
+		qual.is_verified = kwargs.pop('verified', False)
 		qual.verified_by = kwargs.pop('verifier', None)
 		if commit:
 			qual.save()
@@ -404,6 +410,16 @@ class FileUploadForm(forms.ModelForm):
 		}
 
 class PaygradeForm(forms.ModelForm):
+	'''
+		To make sure that paygrade info is updated only once.
+	def save(self, commit=True, *args, **kwargs):
+		try:
+			self.instance.paygrade
+		except:
+			if commit:
+				super(self, PaygradeForm).save(*args, **kwargs)
+		return self.instance.paygrade
+	'''
 	class Meta:
 		model = Student
 		fields = ['salary_expected']

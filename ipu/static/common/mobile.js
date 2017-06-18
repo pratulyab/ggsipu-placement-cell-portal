@@ -1,10 +1,12 @@
+is_mobile_view = false; // Global
+
 var Mobile = (function () {
 	var $tabContentDivs,
 		$sideBarLis,
 		$currentParentLi,
 		$currentChildLi,
-		PARENT_LI_COLOR_CLASS = 'blue lighten-5',
-		CHILD_LI_COLOR_CLASS = 'teal lighten-5';
+		PARENT_LI_COLOR_CLASS = 'blue lighten-5 active',
+		CHILD_LI_COLOR_CLASS = 'teal lighten-5 active';
 
 	function handleDisplay(e) {
 		var $li = $(this),
@@ -42,11 +44,12 @@ var Mobile = (function () {
 
 	return {
 		init: function () {
-//			if (! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
-			if (!(window.innerWidth <= 800 && window.innerHeight <= 600))
+			if (! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+//			if (!(window.innerWidth <= 800 && window.innerHeight <= 600))
 				return;
+			is_mobile_view = true;
 			$tabContentDivs = $('#tabs-data-div > div');
-			$sideBarLis = $('#main-tabs li').not('.no-padding').not('.expandable');
+			$sideBarLis = $('#sideNav-tabs li').not('.no-padding').not('.expandable');
 			$sideBarLis.on('click', handleDisplay);
 			$currentParentLi = $sideBarLis.first();
 			$currentParentLi.addClass(PARENT_LI_COLOR_CLASS);

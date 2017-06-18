@@ -12,6 +12,9 @@
                 <li class="divider"></li>
                 <li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
 {% endblock %}
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
+{% endblock head %}
 
 {% block tabs %}
 	<li class="tab col s2"><a class="active" href="#dsession-details">Details</a></li>

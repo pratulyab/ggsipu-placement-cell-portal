@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from .views import manage_dummy_company, create_dummy_company, get_edit_dcompany_form, edit_dummy_company, get_dummy_session_streams, create_dummy_session, edit_dummy_session, dummy_excel, my_dummy_sessions, manage_dummy_session, manage_dsession_students, edit_dcriteria, notify_dsession
+from .views import manage_dummy_company, create_dummy_company, get_edit_dcompany_form, edit_dummy_company, get_dummy_session_streams, create_dummy_session, edit_dummy_session, dummy_excel, my_dummy_sessions, manage_dummy_session, manage_dsession_students, edit_dcriteria, notify_dsession, filter_dsessions
 
 urlpatterns = [
 	url(r'^manage_dcompany/$', manage_dummy_company, name='manage_dcompany'),
@@ -15,4 +15,5 @@ urlpatterns = [
 	url(r'^manage_dsession_students/(?P<dsess_hashid>[a-zA-Z0-9]{9,})/$', manage_dsession_students, name='manage_dsession_students'),
 	url(r'^edit_criteria/(?P<dsess_hashid>[a-zA-Z0-9]{9,})/$', edit_dcriteria, name='edit_dcriteria'),
 	url(r'^notify/(?P<sess_hashid>[a-zA-Z0-9]{9,})/$', notify_dsession, name='notify_dsession'),
+	url(r'^filter_dsessions/$', filter_dsessions, name='filter_dsessions'),
 ]

@@ -1,72 +1,24 @@
 {% load staticfiles %}
-<!--
-<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
-<script src="{% static 'material/js/materialize.js' %}"></script>
--->
+<div class="col s12">
+	<div id="filter-preloader" class="col s6 offset-s2"></div>
+	<div class="col s2 offset-s2">
+		<a href="#" data-activates="session-filter-forms-out" class="session-filter-forms-sideNav btn">Filter&nbsp;<i class="fa fa-filter fa-3x"></i></a>
+	</div>
+</div>
 <div id="all-sessions" class="col s12 m9 l10">
-	<div id="sessions" class="scrollspy">
-		<ul class="collection">
-			{% for session in sessions %}
-				<li class="collection-item avatar" data-sess="{{ session.sess_hashid }}">
-					{% if session.photo %}
-						<img src="{{ session.photo.url }}" alt="Recruiter" class="circle" />
-					{% endif %}
-					<span class="title">{{ session.company }} for {{ session.type|title }} </span>
-					<p>
-						{{ session.salary }}
-						<br>
-						<p>
-							{{ session.streams }}
-						</p>
-						<br>
-							{{ session.students }} student{{ session.students|pluralize }} in the session
-					</p>
-					<span class="secondary-content">
-						<a href="{% url 'manage_session' session.sess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>
-						<a href="{% url 'notify_session' session.sess_hashid %}" class="envelope"><i class="fa fa-2x fa-envelope"></i></a>
-						<a href="{% url 'excel' session.sess_hashid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
-					</span>
-				</li>
-			{% empty %}
-				<b><h1 class="center flow-text teal-text text-accent-4">You are currently not enrolled in any sessions.</h1></b>
-			{% endfor %}
-		</ul>
-	</div>
+	{% include 'college/sessions_snippet.html' with sessions=sessions %}
 	<hr><hr><hr>
-	<div id="dsessions" class="scrollspy">
-		<ul class="collection">
-			{% for dsession in dsessions %}
-				<li class="collection-item avatar" data-sess="{{ dsession.dsess_hashid }}">
-					<span class="title">{{ dsession.dcompany }} for {{ dsession.type|title }} </span>
-					<p>
-						{{ dsession.salary }}
-						<br>
-						<p>
-							{{ dsession.streams }}
-						</p>
-						<br>
-							{{ dsession.students }} student{{ dsession.students|pluralize }} in the session
-					</p>
-					<span class="secondary-content">
-						<a href="{% url 'manage_dsession' dsession.dsess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>
-						<a href="{% url 'notify_dsession' dsession.dsess_hashid %}" class="envelope"><i class="fa fa-2x fa-envelope"></i></a>
-						<a href="{% url 'dexcel' dsession.dsess_hashid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
-					</span>
-				</li>
-			{% empty %}
-				<b><h1 class="center flow-text teal-text text-accent-4">You are currently not enrolled in any sessions.</h1></b>
-			{% endfor %}
-		</ul>
-	</div>
+	{% include 'college/dsessions_snippet.html' with dsessions=dsessions %}
 </div>
 <script>
 	$(document).ready(function(){
 		var pushpin = '<div class="col hide-on-small-only m3 l2"><div class="toc-wrapper"><ul class="table-of-contents"><li><a href="#sessions">Sessions</a></li><li><a href="#dsessions">Dummy Sessions</a></li></ul></div></div>';
 		var parsedPushpin = $.parseHTML(pushpin);
-		var div = $('#sessions');
+		var div = $('#sessions_div');
 		div.append(parsedPushpin);
 		var top = div.offset().top;
 		$('.toc-wrapper').pushpin({top: top, offset:top});
 		$('.scrollspy').scrollSpy();
+		$(".session-filter-forms-sideNav").sideNav();
 	});
 </script>

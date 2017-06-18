@@ -1,9 +1,12 @@
 {% load staticfiles %}
-<!--
-<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
-<script src="{% static 'material/js/materialize.js' %}"></script>
--->
 {% if sessions %}
+<div class="col s12">
+	<div id="filter-preloader" class="col s6 offset-s2"></div>
+	<div class="col s2 offset-s2">
+		<a href="#" data-activates="session-filter-forms-out" class="session-filter-forms-sideNav btn">Filter&nbsp;<i class="fa fa-filter fa-3x"></i></a>
+	</div>
+</div>
+
 <ul class="collection col s8 offset-s2">
 	{% for session in sessions %}
 		<li class="collection-item avatar" data-sess="{{ session.sess_hashid }}">
@@ -29,5 +32,12 @@
 	{% endfor %}
 </ul>
 {% else %}
-	<p>You are currently not enrolled in any sessions.</p>
+	{% if filtering %}
+		<b><h1 class="center flow-text teal-text text-accent-4">No sessions found that match the filtering conditions.</h1></b>
+	{% else %}
+		<b><h1 class="center flow-text teal-text text-accent-4">You are currently not enrolled in any sessions.</h1></b>
+	{% endif %}
 {% endif %}
+<script>
+	$(".session-filter-forms-sideNav").sideNav();
+</script>

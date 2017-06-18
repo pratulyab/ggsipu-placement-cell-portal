@@ -23,7 +23,7 @@ var Auth = (function() {
 			var non_field_errors = form_errors['__all__'];
 			var div = $('<div class="non-field-errors"/>');
 			for (var i=0; i<non_field_errors.length; i++){
-				div.append($('<small class="error">' + non_field_errors[i] + '</small>'));
+				div.append($('<p class="red-text" style="display: block">' + non_field_errors[i] + '</p>'));
 			}
 			$(form).prepend(div);
 			delete form_errors['__all__'];

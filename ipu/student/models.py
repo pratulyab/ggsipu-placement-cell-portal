@@ -8,6 +8,7 @@ from college.models import (College, Programme, Stream)
 from urllib.parse import urlparse
 
 from decimal import Decimal
+from utils import get_hashed_filename
 
 # Create your models here.
 
@@ -25,7 +26,7 @@ class Student(models.Model):
 	)
 	gender = models.CharField(_('Gender'), choices=GENDER_CHOICES, max_length=1, default=GENDER_CHOICES[0][0])
 	dob = models.DateField(_('Date Of Birth'), null=True, blank=False)
-	photo = models.ImageField(_('Photo'),upload_to='student/photo', blank=True)
+	photo = models.ImageField(_('Photo'),upload_to=get_hashed_filename, blank=True)
 	phone_number = models.CharField(_('Mobile Number'), max_length=10, help_text='Enter 10 Digit IN Mobile Number', 
 			validators=[validators.RegexValidator(r'^[7-9]\d{9}$')], 
 			error_messages={'invalid_number': _('Invalid IN Phone Number. Don\'t Prefix The Number With +91 or 0.')},
@@ -41,16 +42,29 @@ class Student(models.Model):
 	is_sub_back = models.BooleanField(_('Any Subject Back(s)'), default=False)
 	is_verified = models.NullBooleanField(default=None)
 	verified_by = models.ForeignKey(CustomUser, blank=True, null=True, related_name="profiles_verified")
+	'''
+		is_verified
+		None -> initial, skipped by faculty
+		False -> unverified, waiting for re-evaluation
+		True -> verified
+		
+		verified_by
+		Object -> faculty
+		None -> verification process not yet initiated. Therefore, it's not known whether the student is a valid one.
+		Thus, unverified page is shown until student is not verified_by some faculty. i.e. not None
+	'''
 
 # Placement Specific
 	SALARY_CHOICES = tuple( ( (i, "%s and above" % i) for i in range(2,14,2) ) )
-	resume = models.FileField(_('Resume'), upload_to='student/resume', blank=True)
+	resume = models.FileField(_('Resume'), upload_to=get_hashed_filename, blank=True)
 	is_intern = models.BooleanField(_('Currently Intern'), default=False)
 	is_placed = models.BooleanField(_('Currently Placed'), default=False)
 	is_barred = models.BooleanField(_('Bar the student from applying to companies'), default=False, help_text="This will prevent the student from applying to companies for jobs as well as for internships.")
 	salary_expected = models.PositiveSmallIntegerField(_('Minimum salary expected (Lakhs P.A.)'), blank=False, null=True, choices=SALARY_CHOICES, 
 			help_text = _('Caution: You won\'t be able to appear for companies offering salary less than the minimum you choose. Also, you won\'t be able to change this again.'),
 		)
+	sessions_applied_to = models.ManyToManyField('recruitment.PlacementSession', blank=True, related_name="applications")
+	dsessions_applied_to = models.ManyToManyField('dummy_company.DummySession', blank=True, related_name="applications")
 
 	def get_enrollment_no(self):
 		return self.profile.username
@@ -63,6 +77,9 @@ class Student(models.Model):
 	
 	def get_absolute_url(self):
 		return "/%s/" % self.profile.username
+
+	def is_not_interested(self):
+		return not bool(sessions_applied_to.count() or dsessions_applied_to.count()) # Whether the student ever applied for an opportunity
 
 class Qualification(models.Model):
 	student = models.OneToOneField(Student, related_name="qualifications")

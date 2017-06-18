@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from college.models import College, Programme, Stream
 from company.models import Company
 from dummy_company.models import DummyCompany, DummySession
+from notification.models import Notification
 from recruitment.fields import ModelHashidChoiceField, ModelMultipleHashidChoiceField
 from recruitment.models import SelectionCriteria
 from student.models import Student
@@ -73,9 +74,15 @@ class CreateDummySessionForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		self.college = kwargs.pop('college')
 		super(CreateDummySessionForm, self).__init__(*args, **kwargs)
-		self.fields['dummy_company'].queryset = self.college.dummy_companies.all()
-		self.fields['programme'].queryset = self.college.get_programmes_queryset()
-		self.fields['streams'].queryset = Stream.objects.none()
+#		self.fields['dummy_company'].queryset = self.college.dummy_companies.all()
+		dcompany_queryset = self.college.dummy_companies.all()
+		self.fields['dummy_company'] = ModelHashidChoiceField(dcompany_queryset, 'HASHID_DUMMY_COMPANY')
+		self.fields['dummy_company'].widget.choices = self.get_zipped_choices(dcompany_queryset, 'HASHID_DUMMY_COMPANY')
+		programmes_queryset = self.college.get_programmes_queryset()
+		self.fields['programme'] = ModelHashidChoiceField(programmes_queryset, 'HASHID_PROGRAMME')
+		self.fields['programme'].choices = self.get_zipped_choices(programmes_queryset, 'HASHID_PROGRAMME')
+		self.fields['streams'] = ModelMultipleHashidChoiceField(Stream.objects.all(), 'HASHID_STREAM', help_text='Changes according to the Programme chosen')
+		self.fields['streams'].choices = ()
 		self.fields['streams'].widget.attrs['disabled'] = 'disabled'
 		
 	def clean_dummy_company(self):
@@ -108,6 +115,15 @@ class CreateDummySessionForm(forms.ModelForm):
 		if date and date <= datetime.date.today():
 			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
 		return date
+	
+	@staticmethod
+	def get_zipped_choices(queryset, hashid_name):
+		names, hashids = list(), list()
+		names.append('---------'); hashids.append('') # default
+		for q in queryset:
+			names.append(q.name) # COLLEGE, COMPANY, PROGRAMME, STREAM use 'name'
+			hashids.append(getattr(settings, hashid_name).encode(q.pk))
+		return zip(hashids, names)
 
 	class Meta:
 		model = DummySession
@@ -180,7 +196,7 @@ class ManageDummySessionStudentsForm(forms.ModelForm):
 		self.choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 		kwargs.update(initial={'students': [c[0] for i,c in enumerate(self.choices) if i]})
 		super(ManageDummySessionStudentsForm, self).__init__(*args, **kwargs)
-		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('Note: Students can only be removed from the list. Removed students will be notified.'))
+		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('CAUTION: Students can only be removed from the list. Removed students will be notified.'))
 		self.fields['students'].choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 		self.initial['token'] = settings.HASHID_DUMMY_SESSION.encode(self.instance.pk)
 	
@@ -227,9 +243,24 @@ class EditDummySessionForm(forms.ModelForm):
 	
 	def clean_application_deadline(self):
 		date = self.cleaned_data['application_deadline']
-		if date and date <= datetime.date.today():
+		if date and date <= datetime.date.today() and 'application_deadline' in self.changed_data:
 			raise forms.ValidationError(_('Please choose a date greater than today\'s'))
 		return date
+
+	def should_notify_students(self):
+		if 'ended' in self.changed_data and self.cleaned_data['ended'] and self.cleaned_data['application_deadline'] < datetime.date.today():
+			return True
+		return False
+
+	def notify_selected_students(self, actor):
+		dsession = self.instance
+		message = "Congratulations! "
+		if dsession.type == 'J':
+			message += "You have been placed at %s. " % (dsession.dummy_company.name.title())
+		else:
+			message += "You have grabbed the internship at %s. " % (dsession.dummy_company.name.title())
+		for student in dsession.students.all():
+			Notification.objects.create(actor=actor, target=student.profile, message=message)
 	
 	class Meta:
 		model = DummySession
@@ -278,3 +309,34 @@ class EditDCriteriaForm(forms.ModelForm):
 	class Meta:
 		model = SelectionCriteria
 		fields = ['is_sub_back','tenth', 'twelfth', 'graduation', 'post_graduation', 'doctorate']
+
+class DummySessionFilterForm(forms.Form):
+	def __init__(self, *args, **kwargs):
+		self.college = kwargs.pop('college')
+		super(DummySessionFilterForm, self).__init__(*args, **kwargs)
+		dcompany_queryset = self.college.dummy_companies.all()
+		self.fields['dummy_company'] = ModelMultipleHashidChoiceField(dcompany_queryset, 'HASHID_DUMMY_COMPANY', required=False)
+		self.fields['dummy_company'].choices = self.get_zipped_choices(dcompany_queryset, 'HASHID_DUMMY_COMPANY')
+		TYPE_CHOICES = (('', 'Choose one'), DummySession.PLACEMENT_TYPE[0], DummySession.PLACEMENT_TYPE[1])
+		self.fields['type'] = forms.ChoiceField(choices=TYPE_CHOICES, required=False)
+		self.fields['ended'] = forms.BooleanField(required=False)
+		self.fields['ended'].label = 'Has ended'
+
+	def get_filtered_dsessions(self):
+		dcompany = self.cleaned_data.get('dummy_company', None)
+		type =  self.cleaned_data.get('type', '')
+		dsessions = DummySession.objects.all()
+		if type:
+			dsessions = dsessions.filter(type=type)
+		if dcompany:
+			dsessions = dsessions.filter(dummy_company__pk__in=[c.pk for c in dcompany])
+		return dsessions
+			
+	@staticmethod
+	def get_zipped_choices(queryset, hashid_name):
+		names, hashids = list(), list()
+		names.append('---------'); hashids.append('') # default
+		for q in queryset:
+			names.append(q.name) # COLLEGE, COMPANY, PROGRAMME, STREAM use 'name'
+			hashids.append(getattr(settings, hashid_name).encode(q.pk))
+		return zip(hashids, names)
