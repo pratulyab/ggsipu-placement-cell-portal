@@ -118,7 +118,9 @@ def send_mass_mail_task(subject, message, user_pks_list, unsuccessful_email_pk=N
 # # # # #
 	try:
 		connection = mail.get_connection()
-		connection.open()
+		opened = connection.open()
+		if not opened:
+			raise Exception('Connection could not be opened')
 		for user in users:
 			email = mail.EmailMessage(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email], connection=connection)
 			for tries in range(MAX_RETRIES):
@@ -147,7 +149,10 @@ def send_mass_mail_task(subject, message, user_pks_list, unsuccessful_email_pk=N
 				unsuccessful_email.save() # i.e. still failed attempts. Therefore, Update modification time 
 
 	except Exception as e:
-		logger.error(e) # Maybe ConnectionError/SMTPError
+		logger.error(e) # Maybe ConnectionError/SMTPError or connection is not avilable.. whatever
+		obj = UnsuccessfulEmail.objects.create(subject=subject, message=message)
+		for user in users:
+			obj.users.add(user)
 	finally:
 		connection.close()
 
