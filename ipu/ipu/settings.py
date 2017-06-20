@@ -35,72 +35,12 @@ if socket.gethostname() == 'usict-tnp':
 	SESSION_COOKIE_SECURE = True
 	CSRF_COOKIE_SECURE = True
 	USE_HTTPS = True # Self defined boolean
-# LOGGING CONFIGURATION
-	LOGGING = {
-		'version': 1,
-		'disable_existing_loggers': False,
-		'formatters': {
-			'verbose': {
-				'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-			},
-			'simple': {
-				'format': '%(levelname)s %(message)s'
-			},
-			'standard': {
-				'format': '%(asctime)s - %(module)s - [%(levelname)s] - %(message)s'
-			},
-		},
-		'filters': {
-			'require_debug_true': {
-				'()': 'django.utils.log.RequireDebugTrue',
-			},
-		},
-		'handlers': {
-			'console': {
-				'level': 'INFO',
-				'filters': ['require_debug_true'],
-				'class': 'logging.StreamHandler',
-				'formatter': 'simple'
-			},
-			'mail_admins': {
-				'level': 'ERROR',
-				'class': 'django.utils.log.AdminEmailHandler',
-			},
-			'error_log': {
-				'level': 'WARNING',
-				'class': 'logging.handlers.RotatingFileHandler',
-				'filename': '/var/logs/ipu/error.log',
-				'maxBytes': 5 * 1024 * 1024, # 5 MB
-				'backupCount': 5,
-				'formatter': 'standard'
-			},
-			'faculty': {
-				'level': 'INFO',
-				'class': 'logging.handlers.RotatingFileHandler',
-				'filename': '/var/logs/ipu/faculty.log',
-				'maxBytes': 5 * 1024 * 1024, # 5 MB
-				'backupCount': 5,
-				'formatter': 'standard'
-			}
-		},
-		'loggers': {
-			'django': {
-				'handlers': ['console'],
-				'level': 'DEBUG',
-				'propagate': True,
-			},
-			'django.request': {
-				'handlers': ['mail_admins', 'error_log'],
-				'level': 'WARNING',
-				'propagate': False,
-			},
-			'faculty.views': {
-				'handlers': ['faculty'],
-				'level': 'DEBUG',
-				'propagate': False,
-			} 
-		}
-	}
+
+	# LOGGING CONFIGURATION
+	from .logging import configure_logging
+	LOGGING_CONFIG = None
+	configure_logging()
+	
 else:
 	DEBUG = True
 	ALLOWED_HOSTS = []
@@ -108,7 +48,6 @@ else:
 	USE_HTTPS = False
 	EMAIL_HOST_USER = 'ggsipu'
 	EMAIL_HOST_PASSWORD = 'Whit3Label' # 100 emails / day
-
 	
 AUTH_USER_MODEL = 'account.CustomUser'
 
