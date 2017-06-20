@@ -35,15 +35,81 @@ if socket.gethostname() == 'usict-tnp':
 	SESSION_COOKIE_SECURE = True
 	CSRF_COOKIE_SECURE = True
 	USE_HTTPS = True # Self defined boolean
+# LOGGING CONFIGURATION
+	LOGGING = {
+		'version': 1,
+		'disable_existing_loggers': False,
+		'formatters': {
+			'verbose': {
+				'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+			},
+			'simple': {
+				'format': '%(levelname)s %(message)s'
+			},
+			'standard': {
+				'format': '%(asctime)s - %(module)s - [%(levelname)s] - %(message)s'
+			},
+		},
+		'filters': {
+			'require_debug_true': {
+				'()': 'django.utils.log.RequireDebugTrue',
+			},
+		},
+		'handlers': {
+			'console': {
+				'level': 'INFO',
+				'filters': ['require_debug_true'],
+				'class': 'logging.StreamHandler',
+				'formatter': 'simple'
+			},
+			'mail_admins': {
+				'level': 'ERROR',
+				'class': 'django.utils.log.AdminEmailHandler',
+			},
+			'error_log': {
+				'level': 'WARNING',
+				'class': 'logging.handlers.RotatingFileHandler',
+				'filename': '/var/logs/ipu/error.log',
+				'maxBytes': 5 * 1024 * 1024, # 5 MB
+				'backupCount': 5,
+				'formatter': 'standard'
+			},
+			'faculty': {
+				'level': 'INFO',
+				'class': 'logging.handlers.RotatingFileHandler',
+				'filename': '/var/logs/ipu/faculty.log',
+				'maxBytes': 5 * 1024 * 1024, # 5 MB
+				'backupCount': 5,
+				'formatter': 'standard'
+			}
+		},
+		'loggers': {
+			'django': {
+				'handlers': ['console'],
+				'level': 'DEBUG',
+				'propagate': True,
+			},
+			'django.request': {
+				'handlers': ['mail_admins', 'error_log'],
+				'level': 'WARNING',
+				'propagate': False,
+			},
+			'faculty.views': {
+				'handlers': ['faculty'],
+				'level': 'DEBUG',
+				'propagate': False,
+			} 
+		}
+	}
 else:
 	DEBUG = True
 	ALLOWED_HOSTS = []
 	db_password = ''
 	USE_HTTPS = False
-	EMAIL_HOST_USER = 'pratulya'
-	EMAIL_HOST_PASSWORD = ''
+	EMAIL_HOST_USER = 'ggsipu'
+	EMAIL_HOST_PASSWORD = 'Whit3Label' # 100 emails / day
 
-
+	
 AUTH_USER_MODEL = 'account.CustomUser'
 
 # Application definition
@@ -148,7 +214,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-#urls.W001 warns against use of '$' in regex of admin; used to override .com/admin lookup in /username url
+# urls.W001 warns against use of '$' in regex of admin; used to override .com/admin lookup in /username url
 SILENCED_SYSTEM_CHECKS = ["urls.W001",]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -167,13 +233,6 @@ LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = 'home'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-"""
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = '@gmail.com'
-EMAIL_HOST_PASSWORD = ''
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-"""
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
@@ -186,12 +245,13 @@ TWOFACTOR_API_KEY = '31cce076-19ed-11e7-9462-00163ef91450'
 FILE_CONTENT_TYPE = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 FILE_MAX_SIZE = 2*1024*1024 #2MB
 
-#IMAGE UPLOAD CONSTRAINTS
+# IMAGE UPLOAD CONSTRAINTS
 IMAGE_CONTENT_TYPE = ['image/jpeg', 'image/png']
 IMAGE_MAX_SIZE = 1*1024*1024 #1MB
 
-#HASHIDS
+# HASHIDS
 HASHID_ASSOCIATION = hashids.Hashids(salt="Sammelan", min_length=10)
+HASHID_DISSOCIATION = hashids.Hashids(salt="Takraar", min_length=11)
 HASHID_COLLEGE = hashids.Hashids(salt="mahavidyalya", min_length=8)
 HASHID_COMPANY = hashids.Hashids(salt="NoIdea", min_length=8)
 HASHID_CUSTOM_USER = hashids.Hashids(salt="ThinkRandomly", min_length=13)
@@ -230,5 +290,6 @@ PROFILE_CREATION_URL = {
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 1 * (60 * 60 * 24)
 
+# # # 
 DISALLOWED_USERNAMES = ['account', 'notification', 'student', 'faculty', 'company', 'college', 'dcompany', 'recruitment']
 DISALLOWED_EMAIL_DOMAINS = ['mailinator', 'discard.email', 'thraml', 'mintemail', 'mailcatch']
