@@ -2,6 +2,10 @@
 {% load staticfiles %}
 {% load material_form %}
 
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
+{% endblock %}
+
 {% block user_photo %}
 	{% if company.photo %}
 		<img src="{{ company.photo.url }}" class="circle" height="64" width="64">
@@ -23,7 +27,7 @@
 	{% if company.photo %}
 		<img src="{{ company.photo.url }}" class="circle" height="90" width="90">
 	{% else %}
-		<img src="{% static 'images/company2.png' %}" class="circle" height="90" width="90">
+		<img src="{% static 'images/company.png' %}" class="circle" height="90" width="90">
 	{% endif %}
 {% endblock %}
 
@@ -40,8 +44,8 @@
 {% endblock %}
 
 {% block menu_icon_dropdown %}
-	<li><a href="#">wrgwearg</a></li>
-    <li class="divider"></li>
+	<li><a href="{% url 'manage_dissociation' %}">Block/Unblock Colleges</a></li>
+	<li class="divider"></li>
 {% endblock %}
 
 {% block user_type %}
@@ -56,7 +60,7 @@
 	{% if company.photo %}
 		<img src="{{ company.photo.url }}" class="circle" height="30" width="30" id="img-corner">
 	{% else %}
-		<img src="{% static 'images/company2.png' %}" class="circle" height="30" width="30" id="img-corner">
+		<img src="{% static 'images/company.png' %}" class="circle" height="30" width="30" id="img-corner">
 	{% endif %}
 {% endblock %}
 
@@ -64,6 +68,8 @@
     <li data-main_div="#associate"><a class="waves-effect" href="#!" style=""><i class="fa fa-building" aria-hidden="true"></i>
           Associate Colleges</a></li>
     <li data-main_div="#requests"><a class="waves-effect" href="#!"><i class="fa fa-envelope" aria-hidden="true"></i> 
+          Association Requests</a></li>      
+    <li data-main_div="#myrequests"><a class="waves-effect" href="#!"><i class="fa fa-envelope" aria-hidden="true"></i> 
           Association Requests</a></li>      
     <li data-main_div="#notifications"><a class="waves-effect" href="#!"><i class="fa fa-bell" aria-hidden="true"></i>Notifications</a></li>     
     <li data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
@@ -93,8 +99,9 @@
 
 
 {% block tabs%}
-	<li class="tab col s3"><a class="active" href="#associate">Associate with colleges</a></li>
-	<li id = "request" class="tab col s3" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
+	<li class="tab col s3"><a class="active" href="#associate">Associate With Colleges</a></li>
+	<li id = "request" class="tab col s2" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
+	<li id = "myrequest" class="tab col s2" data-url="/recruitment/myrequests/"><a href="#myrequests">My Requests</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 	<li id="session" class="tab col s2"><a href="#sessions_div">Sessions</a></li>
 {% endblock %}
@@ -110,6 +117,7 @@
 		</form>
 	</div>
 	<div id="requests" class="col s12"></div>
+	<div id="myrequests" class="col s12"></div>
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">
@@ -185,6 +193,7 @@
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/associate.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
+	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Search.init();

@@ -11,6 +11,8 @@
                 <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
                 <li class="divider"></li>
                 <li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Companies</a></li>
 {% endblock %}
 
 {% block head %}
@@ -91,9 +93,11 @@
 				{% else %}
 					<img src="" alt="Profile Picture" class="circle" style="background-color:{% cycle '#02b3e4' '#1c262f'%}" />
 				{% endif %}
-				<span class="title">{{ f.faculty.get_full_name }}</span>
-				<p> {{ f.faculty.profile.email }} <br>
-					{% for group in f.faculty.profile.groups.all %}{{ group }}, {% endfor %}
+				<p>
+					<b>Name: </b>{% if f.faculty.firstname %} <span class="title">{{ f.faculty.get_full_name }}</span>{% else %}<small>User has not created his/her profile yet.</small>{% endif %}<br>
+					<b>Username: </b><span class="title">&lt;{{ f.faculty.profile.username }}&gt;</span><br>
+					<b>Email: </b>{{ f.faculty.profile.email }}<br>
+					<b>Permissions: </b>{% for group in f.faculty.profile.groups.all %}{{ group }}, {% endfor %}
 				</p>
 				<span class="secondary-content">
 {#<!--					<a href="{% url 'edit_faculty_perms' f.f_hashid %}" class="edit-faculty-perms"><i class="fa fa-pencil fa-2x"></i></a>-->#}
@@ -101,8 +105,8 @@
 				</span>
 			</li>
 		{% empty %}
-			<p class="flow-text teal-text text-lighten-1">You haven't yet created any faculty.</p>
-			<p class="flow-text teal-text text-lighten-1">To create one, move to "Add Faculty" tab.</p>
+			<p class="flow-text teal-text text-lighten-1 center-align">You haven't yet created any faculty.</p>
+			<p class="flow-text teal-text text-lighten-1 center-align">To create one, move to "Add Faculty" tab.</p>
 		{% endfor %}
 	</ul>
 </div>

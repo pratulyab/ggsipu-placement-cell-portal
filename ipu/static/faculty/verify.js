@@ -199,7 +199,7 @@ var VerifyStu = (function() {
 					},
 					error: function(xhr, status, error){
 						if (xhr.status >= 400 && xhr.status < 500) {
-							addErrors(xhr.responseJSON('error'), '#delete-div');
+							addErrors(xhr.responseJSON['errors'], '#delete-div');
 							var error_msg = xhr.responseJSON['error'] ? xhr.responseJSON['error'] : "Error Occurred.";
 							swal("Error!", error_msg, "error");
 						} else if (xhr.status > 500) {

@@ -37,11 +37,13 @@
 			<div class="col s12" id="delete-div">
 				<form>
 					{% csrf_token %}
+					<input name="reason" id="delete_reason" placeholder="Reasons (if any)">
+					<label for="delete_reason">Reason(s)</label>
 					<button type="submit" class="btn btn-waves red" style="width: 100%" id="delete-btn">Delete Student</button>
 				</form>
 			</div>
 			<div class="col s12">
-				<small class="center-align">Careful, the student's account will be deleted forever. Your action will be logged for reference purposes.</small>
+				<small class="red center-align">Careful, the student's account will be deleted forever. Your action will be logged for reference purposes.</small>
 			</div>
 		</div>
 	</div>

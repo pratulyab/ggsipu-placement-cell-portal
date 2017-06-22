@@ -39,9 +39,9 @@ var Utils = (function() {
 				var $reload_btn = $('.reload-btn'),
 					$info_btn = $('.info-btn');
 				// Tooltips + Click Event
-				$reload_btn.tooltip({delay: 50, 'tooltip': 'Reload', 'position': 'left'});
+				$reload_btn.tooltip({'delay': 50, 'tooltip': 'Reload', 'position': 'left'});
 				$reload_btn.on('click', reloadContent);
-				$info_btn.tooltip({delay: 50, 'tooltip': 'Information', 'position': 'left'});
+				$info_btn.tooltip({'delay': 50, 'tooltip': 'Information', 'position': 'left'});
 				$info_btn.on('click', displayInfoModal);
 			}
 		}

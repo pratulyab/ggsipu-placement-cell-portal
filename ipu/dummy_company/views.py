@@ -20,8 +20,11 @@ from recruitment.models import SelectionCriteria
 from recruitment.utils import get_excel_structure
 from student.models import Student, Programme, Stream
 
-import openpyxl as excel, datetime, time
+import openpyxl as excel, datetime, time, logging
 from hashids import Hashids
+
+dummyLogger = logging.getLogger('dummy')
+studentLogger = logging.getLogger('student')
 
 @require_user_types(['C', 'F'])
 @login_required
@@ -73,6 +76,9 @@ def create_dummy_company(request, **kwargs):
 				dcompany = f.save(college=college)
 			except ValidationError as error:
 				return JsonResponse(status=400, data={'error': error.__str__()})
+			# LOG
+			dummyLogger('[%s] - [%s : %s] - Created Dummy Company [%s]' % (college.code, user_type, request.user.username, dcompany.name))
+			# # #
 			return JsonResponse(data = {'success': True, 'location': '/'})
 		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 	else:
@@ -115,6 +121,9 @@ def edit_dummy_company(request, dummy_hashid, **kwargs):
 		f = EditDummyCompanyForm(request.POST, instance=dcompany)
 		if f.is_valid():
 			dcompany = f.save()
+			# LOG
+			dummyLogger('[%s] - [%s : %s] - Edited Dummy Company [%s]' % (college.code, user_type, request.user.username, dcompany.name))
+			# # #
 			context = {'edit_dcompany_form': EditDummyCompanyForm(instance=dcompany), 'dsess': dummy_hashid, 'success_msg': 'Dummy Company\'s details have been updated.'}
 			return JsonResponse(data={'success': True, 'html': render(request, 'dummy_company/edit_dcompany.html', context).content.decode('utf-8')})
 		else:
@@ -177,6 +186,9 @@ def create_dummy_session(request, **kwargs):
 				f.save_m2m()
 			except IntegrityError as error:
 				return JsonResponse(status=400, data={'error': error.__str__()})
+			# LOG
+			dummyLogger('[%s] - [%s : %s] - Created Dummy Session [%d]' % (college.code, user_type, request.user.username, dsession.pk))
+			# # #
 			return JsonResponse(data={'success': True, 'location': '/'})
 		f = dict(f.errors.items())
 		if f:
@@ -251,6 +263,9 @@ def apply_to_dummy_company(request, dsess, **kwargs):
 			return JsonResponse(status=200, data={'enrolled': True})
 		else:
 			student.dummy_sessions.remove(dsession)
+			# LOG
+			studentLogger.info('[%s] - Withdrew from %d dummy session [%s]' % (request.user.username, dsession.pk, dsession.type))
+			# # #
 			return JsonResponse(status=200, data={'enrolled': False})
 	else:
 		raise PermissionDenied
@@ -293,7 +308,7 @@ def manage_dsession_students(request, dsess_hashid, user_type, profile, **kwargs
 		return JsonResponse(status=400, data={'error': 'Sorry, you can\'t make this request.'})
 	f = ManageDummySessionStudentsForm(request.POST, instance=dsession)
 	if f.is_valid():
-		f.save_m2m()
+		f.save()
 		f.notify_disqualified_students(actor=profile.profile)
 		return JsonResponse(status=200, data={'success_msg': "List has been modified successfully"})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
@@ -320,6 +335,10 @@ def edit_dcriteria(request, dsess_hashid, user_type, profile, **kwargs):
 		criterion = f.save()
 		dsession.selection_criteria = criterion
 		dsession.save()
+		# LOG
+		dummyLogger.info('[%s] - [%s : %s] - Edited Criteria for [%d] - [%s]' % \
+				(profile.code, user_type, request.user.username, dsession.pk, ','.join(f.changed_data)))
+		# # #
 		return JsonResponse(status=200, data={'success_msg': "Selection Criteria has been updated successfully"})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
@@ -348,6 +367,9 @@ def edit_dummy_session(request, dsess_hashid, user_type, profile, **kwargs):
 			except:
 				return JsonResponse(status=400, data={'error': 'Sorry, error occurred while notifying students'})
 			success_msg += ' Students have been notified.'
+		# LOG
+		dummyLogger.info('[%s] - [%s : %s] - Edited Session for [%d] - [%s]' % (profile.code, user_type, request.user.username, dsession.pk, ','.join(f.changed_data)))
+		# # #
 		return JsonResponse(data={'success': True, 'success_msg': success_msg})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 

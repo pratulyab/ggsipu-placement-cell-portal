@@ -37,7 +37,7 @@ class StudentLoginForm(forms.Form):
 				try:
 					queryset.get(username=username)
 				except CustomUser.DoesNotExist:
-					raise forms.ValidationError(_('Invalid enrollment number. Student doesn\'t exist.'))
+					raise forms.ValidationError(_('Invalid enrollment number or password'))
 			self.user_cache = authenticate(username=username, password=password)
 			if self.user_cache is None:
 				raise forms.ValidationError(_('Invalid enrollment number or password'))

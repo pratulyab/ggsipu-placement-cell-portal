@@ -113,32 +113,82 @@ var Request = (function() {
 				div.find('select').each(function(i){
 					$(this).material_select();
 				});
+				$('#id_application_deadline_container').find('[data-form-control="date"]').each(function () {
+					$(this).datetimepicker({
+						format: this.dataset.dateFormat,
+						timepicker: false,
+						mask: false,
+						scrollInput: false
+					})
+				});
 			}
 		});
 	}
 	
 	function getRequests(e) {
-		var li = $(this);
+		e.preventDefault();
+		var li = $(this),
+			$content_div = $(li.children('a').first().attr('href'));
 		$.ajax({
 			url: li.data('url'),
 			type: 'GET',
 			data: {},
-			processData: false,
+			processData: true,
 			contentType: false,
 			success: function(data, status, xhr){
-//				handleMultipleJquery();
-				$('#requests').html(data['html']);
-				$('#requests .card-action a').on('click', implementRequests);
+				$content_div.html(data['html']);
+				$content_div.find('.card-action a').on('click', implementRequests);
+				$(".delete-request").on('click', deleteMyRequest);
+				$('.delete-request').tooltip({'delay':50, 'tooltip': 'Delete request', 'position': 'bottom'});
 			},
 			error: function(xhr, status, error){
-				$('#requests').html('Error Occurred');
+				$content_div.html('Error Occurred');
 			}
 		});
 	}
 
+	function deleteMyRequest(e){
+		var url = $(this).attr('href');
+		e.preventDefault();
+		swal({
+			title: "Are you sure?",
+			text: "This action is irreversible. Your action might be recorded for reference purposes.",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Yes, delete it!",
+			closeOnConfirm: false,
+			showLoaderOnConfirm: true,
+			allowEscapeKey: false,
+			allowOutsideClick: true,
+			},
+			function(){
+				$.ajax({
+					url: url,
+					type: 'POST',
+					data: {'csrfmiddlewaretoken': $('input[name = csrfmiddlewaretoken]').first().val()},
+					success: function(data, status, xhr){
+						swal({
+							title: "Deleted!",
+							text: "The request has been deleted.",
+							type: "success",
+							allowEscapeKey: false,
+							},function(){window.location.href = '';}
+						);
+					},
+					error: function(xhr, status, error){
+						var error_msg = xhr.responseJSON['error'] ? xhr.responseJSON['error'] : "Error Occurred.";
+						swal("Error!", error_msg, "error");
+					},
+				});
+			});
+	}
+
+
 	return {
 		init: function(){
 			$("#request").on('click', getRequests);
+			$("#myrequest").on('click', getRequests);
 		}
 	};
 })();

@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from college.models import College, Programme, Stream
@@ -12,7 +13,11 @@ from student.models import Student
 from datetime import date
 from decimal import Decimal
 from material import *
-import datetime, re
+import datetime, re, logging
+
+collegeLogger = logging.getLogger('college')
+companyLogger = logging.getLogger('company')
+recruitmentLogger = logging.getLogger('recruitment')
 
 class AssociationForm(forms.ModelForm):
 	layout = Layout() # fields vary according to the requester
@@ -113,17 +118,17 @@ class AssociationForm(forms.ModelForm):
 			dissoc = Dissociation.objects.filter(college=self.profile, company=company)
 			if dissoc:
 				if dissoc[0].initiator == 'CO':
-					raise ValidationError(_('Sorry, %s has temporarily blocked you from contacting it.' % (company.name.title())))
+					raise ValidationError(_('Sorry, %s has temporarily blocked you from contacting them.' % (company.name.title())))
 				else:
-					raise ValidationError(_('You have blocked %s from contacting you. To unblock it, delete the dissociation.' % (company.name.title())))
+					raise ValidationError(_('You have blocked %s from contacting you. To send request, unblock them.' % (company.name.title())))
 		elif self.who == 'Company' and college:
 #			dissoc = Dissociation.objects.filter(college=college, company=self.profile, duration__gte=datetime.date.today())
 			dissoc = Dissociation.objects.filter(college=college, company=self.profile)
 			if dissoc:
 				if dissoc[0].initiator == 'C':
-					raise ValidationError(_('Sorry, %s has temporarily blocked you from contacting it.' % (college.name.title())))
+					raise ValidationError(_('Sorry, %s has temporarily blocked you from contacting them.' % (college.name.title())))
 				else:
-					raise ValidationError(_('You have blocked %s from contacting you. To unblock it, delete the dissociation.' % (company.name.title())))
+					raise ValidationError(_('You have blocked %s from contacting you. To send request, unblock them.' % (company.name.title())))
 		return self.cleaned_data
 	
 	def save(self, commit=True, *args, **kwargs):
@@ -243,6 +248,9 @@ class EditCriteriaForm(forms.ModelForm):
 
 	def notify_other_party(self, actor, target, link):
 		if self.changed_data:
+			# Log
+			recruitmentLogger.info('%s updated %s [Session: %d]' % (actor.username, ','.join(self.changed_data), self.session.pk))
+			# # #
 			changed_fields = []
 			marks_fields = []
 			for field in self.changed_data:
@@ -290,6 +298,9 @@ class EditSessionForm(forms.ModelForm):
 
 	def notify_other_party(self, actor, target, link):
 		if self.changed_data:
+			# Log
+			recruitmentLogger.info('%s updated %s [Session: %d]' % (actor.username, ','.join(self.changed_data), self.instance.pk))
+			# # #
 			changed_fields = []
 			for field in self.changed_data:
 				if field == 'ended':
@@ -311,8 +322,13 @@ class EditSessionForm(forms.ModelForm):
 			message += "You have been placed at %s. " % (association.company.name.title())
 		else:
 			message += "You have grabbed the internship at %s. " % (association.company.name.title())
-		for student in self.instance.students.all():
+		students = self.instance.students.all()
+		student_usernames = ','.join([s['profile__username'] for s in students.values('profile__username')])
+		for student in students:
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
+		# Log
+		recruitmentLogger.info('%s - Students selected %s - [S: %d]' % (actor.username, student_usernames, self.instance.pk))
+		# # #
 	
 	class Meta:
 		model = PlacementSession
@@ -334,15 +350,29 @@ class ManageSessionStudentsForm(forms.ModelForm):
 	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
 
 	def notify_disqualified_students(self, actor):
-		shortlisted_pks = [s['pk'] for s in self.cleaned_data['students'].values('pk')]
-		disqualified = self.students_queryset.exclude(pk__in=shortlisted_pks)
+		students = self.cleaned_data['students'].values('pk')
+		shortlisted_pks = [s['pk'] for s in students]
+		original_students_pks = [s.pk for s in self.students_queryset]
+		disqualified_pks = set(original_students_pks).difference(set(shortlisted_pks))
+#		disqualified = self.students_queryset.exclude(pk__in=shortlisted_pks) Somehow this isn't working __-__
+		disqualified = Student.objects.filter(pk__in=disqualified_pks)
 		self.disqualified = disqualified
-		message = "Sorry, your involvement in the placement session %s was till here only!\
+		student_disq_usernames = ','.join([s['profile__username'] for s in disqualified.values('profile__username')])
+		message = "Sorry, your involvement in the placement session with %s was till here only!\
 					\nThanks for showing your interest.\
-					\nBest of luck for your future endeavours." % (self.instance)
+					\nBest of luck for your future endeavours." % (self.instance.association.company.name)
 		for student in disqualified:
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
+		
 		# send mass email
+		# association = self.instance.association
+		# subject = '%s session with %s % ('Internship if association.type == 'I' else 'Job', self.association.company.name)'
+		#
+		# send_mass_mail_task.delay(subject, message, disqualified)
+
+		# Log
+		recruitmentLogger.info('%s - Students disqualified %s - [S: %d]' % (actor.username, student_disq_usernames, self.instance.pk))
+		# # #
 		
 	@staticmethod
 	def get_zipped_choices(queryset, hashid_name):
@@ -356,58 +386,6 @@ class ManageSessionStudentsForm(forms.ModelForm):
 	class Meta:
 		model = PlacementSession
 		fields = ['students']
-
-
-class DissociationForm(forms.ModelForm):
-	def __init__(self, *args, **kwargs):
-		self.association = kwargs.pop('association')
-		super(DissociationForm, self).__init__(*args, **kwargs)
-		if self.association.initiator == 'CO':
-			del self.fields['college']
-			self.fields['company'].queryset = Company.objects.filter(pk=self.association.company.pk)
-			self.initial['company'] = self.association.company.pk
-			self.fields['company'].widget.attrs['disabled'] = 'disabled'
-		else:
-			del self.fields['company']
-			self.fields['college'].queryset = College.objects.filter(pk=self.association.college.pk)
-			self.initial['college'] = self.association.college.pk
-			self.fields['college'].widget.attrs['disabled'] = 'disabled'
-		self.initial['token'] = settings.HASHID_ASSOCIATION.encode(self.association.pk)
-	
-	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': 'True'}))
-
-	def clean_college(self):
-		college = self.cleaned_data.get('college', None)
-		if college and college != self.association.college:
-			raise forms.ValidationError(_('Unexpected error occurred. Request cannot be completed'))
-		return college
-	
-	def clean_company(self):
-		company = self.cleaned_data.get('company', None)
-		if company and company != self.association.company:
-			raise forms.ValidationError(_('Unexpected error occurred. Request cannot be completed'))
-		return company
-
-	def save(self, commit=True):
-		dissociation = super(DissociationForm, self).save(commit=False)
-		dissociation.initiator = self.association.initiator
-		if self.association.initiator == 'CO':
-			dissociation.college = self.association.college
-		else:
-			dissociation.company = self.association.company
-		if commit:
-			try:
-				dissociation.save()
-			except IntegrityError as error:
-				raise forms.ValidationError(_('Error occurred.'))
-			except ValidationError as error:
-				raise forms.ValidationError(_('Error occurred.'))
-		return dissociation
-	
-	class Meta:
-		model = Dissociation
-#		fields = ['company', 'college', 'duration']
-		fields = ['company', 'college', 'reason']
 
 class SessionFilterForm(forms.Form):
 
@@ -457,3 +435,111 @@ class SessionFilterForm(forms.Form):
 			names.append(q.name) # COLLEGE, COMPANY, PROGRAMME, STREAM use 'name'
 			hashids.append(getattr(settings, hashid_name).encode(q.pk))
 		return zip(hashids, names)
+
+class DeclineForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		self.association = kwargs.pop('association')
+		super(DeclineForm, self).__init__(*args, **kwargs)
+		if self.association.initiator == 'CO':
+			del self.fields['college']
+			self.fields['company'].queryset = Company.objects.filter(pk=self.association.company.pk)
+			self.initial['company'] = self.association.company.pk
+			self.fields['company'].widget.attrs['disabled'] = 'disabled'
+		else:
+			del self.fields['company']
+			self.fields['college'].queryset = College.objects.filter(pk=self.association.college.pk)
+			self.initial['college'] = self.association.college.pk
+			self.fields['college'].widget.attrs['disabled'] = 'disabled'
+		self.initial['token'] = settings.HASHID_ASSOCIATION.encode(self.association.pk)
+	
+	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': 'True'}))
+
+	def clean_college(self):
+		college = self.cleaned_data.get('college', None)
+		if college and college != self.association.college:
+			raise forms.ValidationError(_('Unexpected error occurred. Request cannot be completed'))
+		return college
+	
+	def clean_company(self):
+		company = self.cleaned_data.get('company', None)
+		if company and company != self.association.company:
+			raise forms.ValidationError(_('Unexpected error occurred. Request cannot be completed'))
+		return company
+
+	def save(self, commit=True):
+		# no super save call because association already exists in db
+		association = self.association
+		association.initiator = self.association.initiator
+		if self.association.initiator == 'CO':
+			association.college = self.association.college
+		else:
+			association.company = self.association.company
+		association.approved = False
+		association.decline_message = self.cleaned_data.get('decline_message', '')
+		if commit:
+			try:
+				association.save()
+			except IntegrityError as error:
+				raise forms.ValidationError(_('Error occurred.'))
+			except ValidationError as error:
+				raise forms.ValidationError(_('Error occurred.'))
+		return association
+	
+	class Meta:
+		model = Association
+		fields = ['company', 'college', 'decline_message']
+
+
+class DissociationForm(forms.ModelForm):
+
+	def __init__(self, *args, **kwargs):
+		self.profile = kwargs.pop('profile')
+		self.initiator = kwargs.pop('user_type')
+		super(DissociationForm, self).__init__(*args, **kwargs)
+		if self.initiator == 'C':
+			del self.fields['college']
+			company_queryset = Company.objects.exclude(pk__in=[d['company__pk'] for d in self.profile.dissociations.values('company__pk')])
+			self.fields['company'] = ModelHashidChoiceField(company_queryset, 'HASHID_COMPANY')
+			self.fields['company'].widget.choices = self.get_zipped_choices(company_queryset, 'HASHID_COMPANY')
+		else:
+			del self.fields['company']
+			college_queryset = College.objects.exclude(pk__in=[d['college__pk'] for d in self.profile.dissociations.values('college__pk')])
+			self.fields['college'] = ModelHashidChoiceField(college_queryset, 'HASHID_COLLEGE')
+			self.fields['college'].widget.choices = self.get_zipped_choices(college_queryset, 'HASHID_COLLEGE')
+	
+	def save(self, commit=True):
+		dissociation = super(DissociationForm, self).save(commit=False)
+		dissociation.initiator = self.initiator
+		if self.initiator == 'CO':
+			dissociation.company = self.profile
+		else:
+			dissociation.college = self.profile
+		if commit:
+			try:
+				dissociation.save()
+			except (IntegrityError,ValidationError) as error:
+				raise forms.ValidationError(_('You have already blocked the user.'))
+		return dissociation
+
+	def delete_all_pending_associations(self):
+		dissociation = self.instance
+		associations = Association.objects.filter(college=dissociation.college, company=dissociation.company).filter(~Q(approved=True))
+		associations_pks = ','.join([str(a.pk) for a in associations])
+		associations.delete()
+		# LOG
+		recruitmentLogger.info('%s Pending Associations Deleted %s - [D: %d]' % \
+				((self.instance.college.name if self.instance.initiator == 'C' else self.instance.company.name), associations_pks, self.instance.pk))
+		# # #
+	
+	@staticmethod
+	def get_zipped_choices(queryset, hashid_name):
+		names, hashids = list(), list()
+		names.append('---------'); hashids.append('') # default
+		for q in queryset:
+			names.append(q.name) # COLLEGE, COMPANY, PROGRAMME, STREAM use 'name'
+			hashids.append(getattr(settings, hashid_name).encode(q.pk))
+		return zip(hashids, names)
+	
+	class Meta:
+		model = Dissociation
+		fields = ['company', 'college', 'reason']
