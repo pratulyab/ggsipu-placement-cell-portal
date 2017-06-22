@@ -26,6 +26,64 @@
 
       }
 
+      #side-nav-head
+{
+  font-size: 32px;
+  font-weight: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #337ab7;
+}
+
+#noti-div
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  padding: 2px;
+}
+
+#noti-heading
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  width: 85%;
+
+
+}
+
+#noti-div h3,h4,h5
+{
+   font-size: 14px;
+}
+
+#noti-div h3
+{
+  font-weight: bold;
+}
+
+#noti-content
+{
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+#noti-button
+{
+  font-size: 20px;
+  font-weight: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #337ab7;
+
+}
+
 
     </style>
 
@@ -56,6 +114,36 @@
             <!--every li here represents a notifcations. header and body for notifications repectively-->    
     
         </ul>
+
+ <ul id="slide-out2" class="side-nav">
+    
+    <h3 id="side-nav-head">Notifications</h3>
+    <li><div class="divider"></div></li>
+    <li>
+    
+    <div id="noti-div">
+      <div id="noti-heading">
+      <h3>From : Sender</h3>
+      <h4>Date</h4>
+      </div>
+      <div id="noti-content">
+      <h5>Message Message Message Message Message Message Message Message Mess </h5>
+      </div>
+    </div>
+      
+    </li>
+    <li><div class="divider"></div></li>
+    <li><div class="divider"></div></li>
+   
+
+    <li><a href="" id="noti-button">See older notifications</a></li>
+  
+</ul>
+
+
+
+
+
 <!--Search box-->
         <div id="light" class="white_content"> 
          <div id="box-search">
@@ -88,8 +176,14 @@
                     <ul class="right">
                    	<li><a style="padding-right: 5px;" href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
                   	</li>
-                  	<li class="hide-on-med-and-down">
+                    <!--Older notification button
+                  <li class="hide-on-med-and-down">
                     	<a id = 'notification_button' class="dropdown-button tooltipped" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3" data-position="left" data-delay="20" data-tooltip="Notifications"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
+                  </li>
+                  -->
+                  <!--New notifications button-->
+                  <li class="hide-on-med-and-down">
+                    <a href="#" data-activates="slide-out2" class="button-collapse2"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
                   </li>
 
                   <li class="hide-on-med-and-down">
@@ -245,6 +339,14 @@
 				startingTop: '4%', // Starting top style attribute
 				endingTop: '10%', // Ending top style attribute
 			});
+
+       $('.button-collapse2').sideNav({
+      menuWidth: 300, // Default is 300
+      edge: 'right', // Choose the horizontal origin
+      closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+      draggable: true // Choose whether you can drag to open on touch screens
+    }
+  );
     
         </script>
         

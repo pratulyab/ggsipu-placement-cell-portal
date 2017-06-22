@@ -176,7 +176,7 @@ nav .brand-logo {
 
 #third-section
 {
-    height: 390px;
+    height: 150px;
     background-color: rgba(0, 0, 0, 0.8);
 }
 
@@ -191,42 +191,9 @@ nav .brand-logo {
 #third-box>h3
 {
     color: white;
-    font-size: 45px;
-    margin-bottom: 30px;
-    margin-top: 7px;
-}
-#third-box-images
-{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px;
-    margin-top: 0px;
-    width: 80%;
-}
-
-.team-member
-{
-    display: flex;
-    flex-direction: column;
-    margin-top: 3px;
-    justify-content: center;
-    align-items: center;
-}
-.team-member>h5
-{
-   font-size: 30px;
-   color: white;
-}
-
-.team-member>img
-{
-    border-width: 3px;
-    border-style: solid;
-    border-color: white;
-    height: 150px;
-    width: 150px;
+    font-size: 25px;
+    margin-bottom: 20px;
+    margin-top: 15px;
 }
 
 #icons
@@ -415,8 +382,8 @@ nav .brand-logo {
 
 #third-section
 {
-    height: 300px;
-    background-color: rgba(0, 0, 0, 0.8);
+    height: 100px;
+    background-color: rgba(0, 0, 0, 0.9);
 }
 
 #third-box
@@ -430,43 +397,11 @@ nav .brand-logo {
 #third-box>h3
 {
     color: white;
-    font-size: 32px;
+    font-size: 20px;
     margin-bottom: 9px;
-    margin-top: 7px;
-}
-#third-box-images
-{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px;
-    margin-top: 0px;
-    width: 80%;
+    margin-top: 25px;
 }
 
-.team-member
-{
-    display: flex;
-    flex-direction: column;
-    margin-top: 3px;
-    justify-content: center;
-    align-items: center;
-}
-.team-member>h5
-{
-   font-size: 20px;
-   color: white;
-}
-
-.team-member>img
-{
-    border-width: 3px;
-    border-style: solid;
-    border-color: white;
-    height: 120px;
-    width: 120px;
-}
 
 #last-parallax-container
 {
@@ -646,7 +581,7 @@ nav .brand-logo {
 
 #third-section
 {
-    height: 300px;
+    height: 100px;
     background-color: rgba(0, 0, 0, 0.9);
 }
 
@@ -661,42 +596,9 @@ nav .brand-logo {
 #third-box>h3
 {
     color: white;
-    font-size: 32px;
-    margin-bottom: 9px;
-    margin-top: 7px;
-}
-#third-box-images
-{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px;
-    margin-top: 0px;
-    width: 80%;
-}
-
-.team-member
-{
-    display: flex;
-    flex-direction: column;
-    margin-top: 3px;
-    justify-content: center;
-    align-items: center;
-}
-.team-member>h5
-{
-   font-size: 20px;
-   color: white;
-}
-
-.team-member>img
-{
-    border-width: 3px;
-    border-style: solid;
-    border-color: white;
-    height: 120px;
-    width: 120px;
+    font-size: 20px;
+    margin-bottom: 5px;
+    margin-top: 25px;
 }
 
 #last-parallax-container
