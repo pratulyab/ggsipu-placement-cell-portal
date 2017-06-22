@@ -17,6 +17,9 @@ def get_hashed_filename(instance, filename):
 
 def validate_username_for_urls(username):
 	''' allows username that don't clash with ipu.urls
+		
+		Validates against only the topmost url name i.e. domain.com/top-most/..
+		
 		Assumption => username has already been cleaned for not allowing slashes
 		Invalidates 'admin' as username, but validates 'adminblah' (given there is no url as ^adminblah/$ or ^adminblah/)
 
@@ -27,13 +30,19 @@ def validate_username_for_urls(username):
 
 		Make sure to add all the wildcard regex patterns in WILDCARD_REGEX_URL_NAMES.
 	'''
-	WILDCARD_REGEX_URL_NAMES = ['view_profile']
+	WILDCARD_REGEX_URL_NAMES = ['']
+	COMMONLY_DISALLOWED_NAMES = ['admin']
+	
 	from ipu.urls import urlpatterns # ImportError -.-'
 	for each in urlpatterns:
 		if getattr(each, 'name', False) and each.name in WILDCARD_REGEX_URL_NAMES:
 			continue
+		if username in COMMONLY_DISALLOWED_NAMES:
+			return False
 		try:
-			pattern = each.regex.pattern.replace('/', '/?')
+			pattern = each.regex.pattern
+			patterns = pattern.split('/')
+			pattern = patterns[0]
 		except:
 			continue
 		if not pattern.endswith('$'):

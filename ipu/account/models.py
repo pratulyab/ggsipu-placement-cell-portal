@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core import validators
+from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import six
@@ -49,6 +51,9 @@ class CustomUser(AbstractUser):
 
 	def get_absolute_url(self):
 		return "/%s/" % self.username
+	
+	def get_home_url(self):
+		return reverse(settings.HOME_URL[self.type])
 
 class SocialProfile(models.Model):
 	user = models.OneToOneField(CustomUser, related_name="social")
