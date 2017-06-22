@@ -1,0 +1,63 @@
+{% extends 'account/nav-landing.html' %}
+{% load staticfiles %}
+
+
+
+{% block head %}
+  <link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
+  <link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
+  <link type="text/css" rel="stylesheet" href="{% static 'account/css/team.css' %}" />
+{% endblock %}
+
+{% block main %}
+  <div id="main-box">
+   <h3>Meet the Team</h3>
+   
+   <div id="main-inside">
+  
+   <div class="box">
+     <div class="pic z-depth-3"><img src="{% static 'account/images/team/bob.jpg' %}"></div>
+     <div class="info">
+       
+       <h4>Pratulya Bubna</h4>
+       <h5>USICT</h5>
+       <div class="icons">
+       <i class="fa fa-google-plus-square fa-2x" aria-hidden="true"></i>
+       <i class="fa fa-facebook-square fa-2x" aria-hidden="true"></i>
+         <i class="fa fa-linkedin-square fa-2x" aria-hidden="true"></i>
+         </div>
+    </div>
+   </div>
+     
+
+   <div class="box">
+     <div class="pic z-depth-3"><img src="{% static 'account/images/team/shivam.jpg' %}"></div>
+     <div class="info">
+      <h4>Shivam Sharma</h4>
+       <h5>USICT</h5>
+       <div class="icons">
+       <i class="fa fa-google-plus-square fa-2x" aria-hidden="true"></i>
+       <i class="fa fa-facebook-square fa-2x" aria-hidden="true"></i>
+         <i class="fa fa-linkedin-square fa-2x" aria-hidden="true"></i>
+         </div>
+     </div>
+   </div>
+
+
+   <div class="box">
+     <div class="pic z-depth-3"><img src="{% static 'account/images/team/rajjo.jpg' %}"></div>
+     <div class="info">
+      <h4>Rajneesh Sharma</h4>
+       <h5>USICT</h5>
+       <div class="icons">
+       <i class="fa fa-google-plus-square fa-2x" aria-hidden="true"></i>
+       <i class="fa fa-facebook-square fa-2x" aria-hidden="true"></i>
+         <i class="fa fa-linkedin-square fa-2x" aria-hidden="true"></i>
+         </div>
+     </div>
+   </div>
+     
+      
+  </div>
+  </div>
+{% endblock %}

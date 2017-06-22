@@ -2,79 +2,145 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>500</title>
-	<link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
+	<title>400</title>
+  <link type="text/css" rel="stylesheet" href="../static/error.css" />
 </head>
 
+
 <style type="text/css">
-	body
-	{
-		padding: 50px;
-		padding-top: 100px;
-		display: flex;
-	}
-	#error
-	{
-		display: flex;
-		flex-direction: column;
-		justify-content: flex-start;
-		align-items: center;
-		width: 45%;
-		margin-left: 5%;
+  html
+  {
 
-	}
-	#error h2
-	{
-		font-size: 45px;
-		font-family: "Times New Roman";
-		margin-bottom: 25px;
-	}
+    height: 100%;
+  }
+  body{
 
-	#error-body
-	{
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-	#home-icon
-	{
-		color: #b22222;
-	}
+    background-color: #00bcd4;
+    height: 90%;
 
-	#home-icon:hover
-	{
-		cursor: pointer;
-		color: #ffd700;
-	}
-	@media (min-width:300px) and (orientation: portrait){
-		body{
-			flex-direction: column;
-		}
-		#error
-		{
-			width: 99%;
-		}
-	}
-	
+  }
+  #center-box
+  {
+    height: 60%;
+    width: 50%;
+    position: absolute;
+    left: 25%;
+    top: 20%;
+    background-color: white;
+  }
+
+  #top-bar
+  {
+    width: 100%;
+    background-color: #dfdfde;
+    height: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  #second-top-bar
+  {
+    width: 100%;
+    background-color: #E57373;
+    height: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #second-top-bar h4
+  {
+    font-weight: 100;
+    color: white;
+    font-size: 25px;
+    margin: 0px;
+  }
+  #center-inner-box
+  {
+    width: 100%;
+    background-color: #26a69a;
+    height: 75%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #center-inner-box h2
+  {
+    color: white;
+    font-weight: bold;
+    font-size: 150px;
+    text-shadow: rgb(29, 125, 116) 1px 1px, rgb(29, 125, 116) 2px 2px, rgb(29, 125, 116) 3px 3px, rgb(29, 125, 116) 4px 4px, rgb(29, 125, 116) 5px 5px, rgb(29, 125, 116) 6px 6px, rgb(29, 125, 116) 7px 7px, rgb(29, 125, 116) 8px 8px, rgb(29, 125, 116) 9px 9px, rgb(29, 125, 116) 10px 10px, rgb(29, 125, 116) 11px 11px, rgb(29, 125, 116) 12px 12px, rgb(29, 125, 116) 13px 13px, rgb(29, 125, 116) 14px 14px, rgb(29, 126, 117) 15px 15px, rgb(29, 128, 119) 16px 16px, rgb(30, 130, 120) 17px 17px, rgb(30, 132, 122) 18px 18px, rgb(30, 133, 124) 19px 19px, rgb(31, 135, 125) 20px 20px, rgb(31, 137, 127) 21px 21px, rgb(32, 139, 129) 22px 22px, rgb(32, 141, 130) 23px 23px, rgb(32, 142, 132) 24px 24px, rgb(33, 144, 134) 25px 25px, rgb(33, 146, 135) 26px 26px, rgb(34, 148, 137) 27px 27px, rgb(34, 149, 139) 28px 28px, rgb(34, 151, 140) 29px 29px, rgb(35, 153, 142) 30px 30px, rgb(35, 155, 144) 31px 31px, rgb(36, 157, 145) 32px 32px, rgb(36, 158, 147) 33px 33px, rgb(36, 160, 149) 34px 34px, rgb(37, 162, 150) 35px 35px, rgb(37, 164, 152) 36px 36px, rgb(38, 166, 154) 37px 37px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+  }
+
+  #center-inner-box p
+  {
+    font-weight: 100;
+    color: white;
+  }
+
+  #first-circle
+  {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    background-color: #FF5C5A;
+    margin-right: 5px;
+
+  }
+
+  #second-circle
+  {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    background-color: #FFBB50;
+    margin-right: 5px;
+
+  }
+  #third-circle
+  {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    background-color: #1BC656;
+    margin-right: 5px;
+
+  }
+
+  .button {
+    background-color: #1344a0; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
 </style>
+
 <body>
 
-<div id="error">
-	<div id="error-head">
-		<h2 style="color: #b22222;">500 : Internal Server Error</h2>
-	</div>
+<div id="center-box">
+  <div id="top-bar">
+    <div id="first-circle"></div>
+    <div id="second-circle"></div>
+    <div id="third-circle"></div>
+  </div>
+  <div id="second-top-bar">
+   <h4 style="margin-top: 0px;">INTERNAL SERVER ERROR</h4>
+  </div>
+  <div id="center-inner-box">
+    <h2>500</h2>
+    <p>Sorry, but the web server encountered an unexpected condition.</p>
+    <a href="" class="button">HOMEPAGE</a>
+  </div>
 
-	<div id="error-body">
-		<p style="font-size: 20px;">
-			The web server encountered an unexpected condition that prevented it from fulfilling the request by you.<br><br> The server might be a machine but it is still human made. You can still go back to your home by clicking the icon below.
-		</p>
-		<a id="home-icon"><i class="fa fa-home fa-4x" aria-hidden="true"></i></a>
-	</div>
-	
 </div>
-
-<img src="{% static 'images/bee.gif' %}" height="40%" width="40%">
 
 
 </body>

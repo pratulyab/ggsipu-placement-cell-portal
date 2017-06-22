@@ -3,7 +3,6 @@ from notification.models import Issue , IssueReply
 from django.utils.translation import ugettext_lazy as _
 
 from material import *
-from unidecode import unidecode
 
 class SelectStreamsForm(forms.Form):
 	def __init__(self, *args , **kwargs):
