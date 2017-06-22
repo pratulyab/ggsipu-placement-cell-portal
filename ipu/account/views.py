@@ -41,10 +41,10 @@ def landing(request):
 	return render(request, 'account/landing.html', {})
 
 @require_GET
-def procedures(request):
+def team(request):
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_request=True)
-	return render(request, 'account/procedures.html', {})
+	return render(request, 'account/team.html', {})
 
 @require_GET
 def stats(request):

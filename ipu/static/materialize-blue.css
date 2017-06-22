@@ -241,9 +241,6 @@ input[type=range]::-ms-thumb {
 .side-nav.fixed .collapsible-body li.active {
   background-color: #02b3e4 !important; }
 
-.spinner-layer {
-  border-color: #337ab7 !important; }
-
 
 /* ==========================================================================
    CUSTOM MATERIALIZE STYLES

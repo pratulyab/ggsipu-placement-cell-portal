@@ -153,6 +153,13 @@ USE_L10N = True
 
 USE_TZ = True
 
+#Google recaptcha 
+GOOGLE_RECAPTCHA_SECRET_KEY = '6Lf15yUUAAAAAAqiR-42Dd97yqAUqdab0jW3KK4M'
+GOOGLE_RECAPTCHA_VERIFICATION_URL = 'https://www.google.com/recaptcha/api/siteverify'
+
+
+#urls.W001 warns against use of '$' in regex of admin; used to override .com/admin lookup in /username url
+
 # urls.W001 warns against use of '$' in regex of admin; used to override .com/admin lookup in /username url
 SILENCED_SYSTEM_CHECKS = ["urls.W001",]
 

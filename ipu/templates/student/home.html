@@ -67,8 +67,9 @@
     <li class="divider"></li>
     {% if student.resume %}
     <li><a href = "javascript:void(0)" onclick = "document.getElementById('light4').style.display='flex';document.getElementById('fade4').style.display='flex'">Uploaded resume</a></li>
-    <li class="divider"></li>
     {% endif %}
+    <li class="divider"></li>
+	<li><a href="">Report</a></li>
 {% endblock %}
 
 
@@ -146,7 +147,7 @@
 				</div>
 				<div class=" col s8 offset-s1">
 					<div id="your-notifications-div" class="col s12">
-		
+					<p class="info" style="display: none;">Information sent to you by college is displayed here. Interact with college officials.</p>
 							<ul id = "your-notifications-div-ul" class="collection">
 							</ul>
 					</div>
@@ -160,17 +161,17 @@
 				</div>
 			</div>
 		</div>
-		<div id="notification-detail-model" class="modal modal-fixed-footer">
+		<div id="notification-detail-modal" class="modal modal-fixed-footer">
     		<div class="modal-content">
-     	 		<h4 id="notification-model-heading">Error</h4>
-      			<p id="notification-model-text">Please check the Internet connection and then reload.</p>
+     	 		<h4 id="notification-modal-heading">Error</h4>
+      			<p id="notification-modal-text">Please check the Internet connection and then reload.</p>
     		</div>
     		<div class="modal-footer">
-    			<div class="col s4"><p>7th July, 2016</p></div>
+    			<div class="col s4"><p id='notification-modal-date'>Please Reload</p></div>
       			<div class="col s8 right-align"><a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Ok</a></div>
     		</div>
   		</div>
-  		<button id="notification-detail-model-trigger" data-target="notification-detail-model" style="display: none;"></button>
+  		<button id="notification-detail-modal-trigger" data-target="notification-detail-modal" style="display: none;"></button>
 		</div>
 	<!-- -->
 	{% if edit_qual_form %}
@@ -277,7 +278,7 @@
 			Settings.init(['edit-account-form', 'upload-file-form', 'social-profile-form', 'tech-profile-form']);
 			Update.init(['edit-student-form', 'edit-qual-form']);
 			Mobile.init();
-			$('.modal').modal();
+			$('#notification-detail-modal').modal();
 		});
 	</script>
 {% endblock scripts %}

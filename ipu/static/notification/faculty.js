@@ -32,8 +32,13 @@ var Notification = (function() {
             url : url,
             type : 'GET',
             async : true,
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
+            },
             success : function(data, status, xhr){
-                handleMultipleJquery();
                 $("#notify-students-div").html(data); 
                 $('#select_streams-form').on('submit' , getStreamsSelected);    
                 
@@ -65,8 +70,13 @@ var Notification = (function() {
                      'stream_list' : stream_list,
                      'indices' : indices,
              },
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
+            },
             success : function(data , status , xhr){
-                handleMultipleJquery();
                 $('#notify-students-div').html(data);
                 $('#id_sms_message_container').hide();
                 $("#id_subject").attr('length' , '256');
@@ -126,6 +136,12 @@ var Notification = (function() {
                 'csrfmiddlewaretoken' : token , 
                 'stream_to_year' : stream_to_year,
                 'indices' : indices,
+            },
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
             },
             success : function(data , status , xhr){
                 $('#id_stream').on('change' , generateNewForm);
@@ -206,8 +222,13 @@ var Notification = (function() {
                         'sms_message' : sms_message.val(),
                         'if_email' : if_email,
                     },
+                    beforeSend: function() {
+                        showPreloader();
+                    },
+                    complete: function() {
+                        removePreloader();  
+                    },
                     success : function(data , status , xhr){
-                        //handleMultipleJquery();
                         $('#your-notifications').trigger('click');
                         alert("Successful ! " + data + " students are notified");
 
@@ -263,8 +284,13 @@ function removeError(field){
 		$.ajax({
 			url:url,
 			type : 'GET',
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
+            },
 			success: function(data , status , xhr){
-				//handleMultipleJquery();
 				populateHelpDiv(data);
 			}
 		});
@@ -330,9 +356,14 @@ function removeError(field){
             data : {
                 'identifier' : identifier,
             },
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
+            },
             success : function(data , status , xhr){
-                //handleMultipleJquery();
-                $('#view-issues').trigger('click');
+                document.getElementById('view-issues').click();
             }
         });
 
@@ -346,6 +377,12 @@ function removeError(field){
 			data : {
 				'identifier' : identifier,
 			},
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
+            },
 			success : function(data , status , xhr){
 				handleMultipleJquery();
 				$('#view-issues-div').html(data);
@@ -362,25 +399,32 @@ function removeError(field){
         if($('#id_if_email').prop("checked")){
             email = true
         }
+        var message_field = $('#id_reply');
         var message = $('#id_reply').val();
-        $.ajax({
-            url : url,
-            type : 'POST',
-            data : { 
-                'csrfmiddlewaretoken' : token , 
-                'identifier' : identifier,
-                'reply' : message,
-                'if_email' : email,
-            },
-            success : function(data , status , xhr){
-                //For some reason handleMultipleJquery wasn't working here. Manually brought the listener
-                //in this function.
-                $('#view-issues').on('click' , getIssuesList);
-                $('#view-issues').trigger('click');
-                alert("Successful! Your solution is submitted.");
+        fieldEvaluator(message_field , 4095);
+        if(fieldEvaluator(message_field , 4095)){
+            $.ajax({
+                url : url,
+                type : 'POST',
+                data : { 
+                    'csrfmiddlewaretoken' : token , 
+                    'identifier' : identifier,
+                    'reply' : message,
+                    'if_email' : email,
+                },
+                beforeSend: function() {
+                    showPreloader();
+                },
+                complete: function() {
+                    removePreloader();  
+                },
+                success : function(data , status , xhr){
+                    document.getElementById('view-issues').click();
+                    alert("Successful! Your solution is submitted.");
 
-            }
-        });
+                }
+            });
+        }
     }
 
 //==============================================================================//
@@ -391,6 +435,12 @@ function removeError(field){
             url : url,
             type : 'GET',
             async : true,
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
+            },
             success : function(data, status, xhr){
                 populateDiv(data);                
             }
@@ -411,7 +461,6 @@ function removeError(field){
             raw_html += '<li class="collection-item avatar">' + icon + 
                 '<span class="title">' + data[i].actor + '</span>' + '<p>' + data[i].message + '</p>' + '</li>';
         }
-        //handleMultipleJquery();
         $('#your-notifications-div-ul').html(raw_html);
 
 
@@ -422,7 +471,6 @@ function removeError(field){
     function generateNewForm(e) {
             e.preventDefault();
             $('#notify-students-div').html(" ");
-            //handleMultipleJquery();
             getForm();
 
         }
@@ -438,9 +486,9 @@ function removeError(field){
 	return {
 		init: function() {
             document.getElementById('create-notifications').addEventListener('click', generateNewForm);
-            $('#notification').on('click' , viewNotifications);
-			$('#your-notifications').on('click' , viewNotifications);
-			$('#view-issues').on('click' , getIssuesList)
+            document.getElementById('notification').addEventListener('click' , viewNotifications);
+			document.getElementById('your-notifications').addEventListener('click' , viewNotifications);
+			document.getElementById('view-issues').addEventListener('click' , getIssuesList);
 		}
 	}
 

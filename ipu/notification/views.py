@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.shortcuts import render ,  get_object_or_404
+from django.template.loader import render_to_string
 from django.http import HttpResponseForbidden , HttpResponse , JsonResponse , Http404
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from .forms import SelectStreamsForm , CreateNotificationForm , IssueForm , IssueReplyForm
@@ -11,9 +13,11 @@ from .models import NotificationData , Notification , Issue , IssueReply
 from django.core import serializers
 from recruitment.models import PlacementSession
 from django.contrib.auth.decorators import login_required
+from hashids import Hashids
+import requests
 import itertools
 import json
-from hashids import Hashids
+
 
 
 #from recruitment.forms import SessionInfoForm
@@ -176,7 +180,8 @@ def notification_detail(request):
 		data = notification_object.notification_data
 		data_dict['subject'] = data.subject
 		data_dict['message'] = data.message
-		data_dict['date'] = notification_object.creation_time
+		date = render_to_string('notification/date_formatter.html' , {'date' : notification_object.creation_time})
+		data_dict['date'] = date
 	else:
 		raise Http404
 	return JsonResponse(data_dict , safe = False)
@@ -192,11 +197,22 @@ def submit_issue(request):
 			return HttpResponse(raw_html)
 		if request.method == 'POST':
 			form_object = IssueForm(request.POST , user = request.user.student , college = request.user.student.college)
-			if form_object.is_valid():
-				form_object.save()
-				return HttpResponse(status = 201)
+			recaptcha_response = request.POST.get('recaptcha_response' , None)
+			recaptcha_data = {
+				'secret' : settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+				'response' : recaptcha_response
+			}
+			recaptcha_verification_url = settings.GOOGLE_RECAPTCHA_VERIFICATION_URL
+			request = requests.post(recaptcha_verification_url , recaptcha_data)
+			status = request.json()
+			if status['success']:
+				if form_object.is_valid():
+					form_object.save()
+					return HttpResponse(status = 201)
+				else:
+					raise Http404
 			else:
-				raise Http404
+				return JsonResponse(status = 403 , data = {'errors' : 'Recaptcha authorization failed. Please try again.'} , safe = False)
 	else:
 		raise PermissionDenied
 

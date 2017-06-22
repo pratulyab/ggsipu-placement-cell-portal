@@ -1,14 +1,4 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html>
-<head>
-  <title>400</title>
-  <link type="text/css" rel="stylesheet" href="../static/error.css" />
-</head>
-
-
-<style type="text/css">
-  html
+ html
   {
 
     height: 100%;
@@ -21,11 +11,11 @@
   }
   #center-box
   {
-    height: 60%;
+    height: 54%;
     width: 50%;
     position: absolute;
     left: 25%;
-    top: 20%;
+    top: 23%;
     background-color: white;
   }
 
@@ -109,39 +99,3 @@
     margin-right: 5px;
 
   }
-
-  .button {
-    background-color: #1344a0; /* Green */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-}
-
-</style>
-
-<body>
-
-<div id="center-box">
-  <div id="top-bar">
-    <div id="first-circle"></div>
-    <div id="second-circle"></div>
-    <div id="third-circle"></div>
-  </div>
-  <div id="second-top-bar">
-   <h4 style="margin-top: 0px;">PAGE NOT FOUND</h4>
-  </div>
-  <div id="center-inner-box">
-    <h2>404</h2>
-    <p>Sorry but the page you are looking for cannot be found.</p>
-    <a href="" class="button">HOMEPAGE</a>
-  </div>
-
-</div>
-
-
-</body>
-</html>
