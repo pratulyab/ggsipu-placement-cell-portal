@@ -63,6 +63,7 @@ class Report(models.Model):
 			('FDBK' , _('Feedback')),
 			('RQFR' , _('Request Feature')),
 			('REBG' , _('Report Bug')),
+			('CTAM' , _('Contact Admin')),
 		)
 	type = models.CharField(_('Report Type') , max_length = 4 , choices = REPORT_TYPE , default = None)
 	message = models.CharField(_('Message') , max_length = 4096 , blank = False)
