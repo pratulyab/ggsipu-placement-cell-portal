@@ -160,6 +160,8 @@ class IssueReplyForm(forms.ModelForm):
 	def save(self):
 		form_instance = super(IssueReplyForm , self).save(commit = False)
 		form_instance.root_issue = self.root_issue
+		form_instance.solved_by = self.faculty.get_full_name()
+		form_instance.solver_username = self.faculty.profile.username
 		form_instance.save()
 
 	if_email = forms.BooleanField(label = "Send E-Mail" , widget = forms.CheckboxInput() , initial = False ,  required = False)
