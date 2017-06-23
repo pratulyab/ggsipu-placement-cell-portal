@@ -11,6 +11,8 @@
                 <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
                 <li class="divider"></li>
                 <li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Companies</a></li>
 {% endblock %}
 {% block head %}
 	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
@@ -48,6 +50,9 @@
 				<div class="card-content">
 					<span class="card-title activator grey-text text-darken-4">{{ dcompany.name | title }}<i class="fa fa-ellipsis-v right"></i></span>
 					<p><a href="{% if dcompany.website %}{{ dcompany.website }}{% else %}#!{% endif %}">Website</a></p>
+				</div>
+				<div class="card-action">
+					<a href="{% url 'dexcel' dsess_hashid %}" class="excel">Download Excel  <i class="fa fa-file-excel-o"></i></a>
 				</div>
 				<div class="card-reveal">
 					<span class="card-title grey-text text-darken-4">{{ dcompany.name | title }}<i class="fa fa-times right"></i></span>

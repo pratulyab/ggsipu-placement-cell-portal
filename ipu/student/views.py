@@ -24,8 +24,11 @@ from recruitment.models import Association, PlacementSession
 from student.models import Student, TechProfile, Qualification
 from . import scrape
 
-import os, re, datetime
+import os, re, datetime, logging
 from bs4 import BeautifulSoup
+
+facultyLogger = logging.getLogger('faculty')
+studentLogger = logging.getLogger('student')
 
 # Create your views here.
 
@@ -124,7 +127,7 @@ def student_home(request, **kwargs):
 		context['edit_profile_form'] = StudentEditForm(instance=student)
 	try:
 		qual = student.qualifications
-		if qual.is_verified is None:
+		if qual.is_verified is None or (qual.is_verified == False and qual.verified_by is None):
 			context['edit_qual_form'] = QualificationForm(instance=qual)
 	except Qualification.DoesNotExist:
 		context['edit_qual_form'] = QualificationForm()
@@ -168,6 +171,9 @@ def edit_student(request, **kwargs):
 			f = StudentEditForm(POST, request.FILES, instance=student)
 			if f.is_valid():
 				f.save(verified=False, verifier=student.verified_by)
+				# LOG
+				studentLogger.info('[%s] - Updated Profile - %s' % (username, ','.join(f.changed_data)))
+				###
 #			context = {}
 #			context['message'] = "Your profile has been updated. Please contact your college's TPC faculty for verification."
 #			return JsonResponse(status=200, data={'render': render(request, 'student/home.html', context).content.decode('utf-8')})
@@ -203,6 +209,13 @@ def edit_student(request, **kwargs):
 				return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
 			if f.is_valid():
 				student = f.save(verifier=request.user, verified=verdict)
+				# LOG
+				if student.is_verified:
+					message = "[%s] - %s verified %s profile - Changed fields [%s]"
+				else:
+					message = "[%s] - %s skipped %s profile - Changed fields [%s]"
+				facultyLogger.info(message % (kwargs.get('profile').college.code, request.user.username, student.profile.username, ','.join(f.changed_data)))
+				# # #
 				context = {'profile_form': VerifyStudentProfileForm(instance=student), 'success_msg': 'Student profile has been updated successfully!'}
 				return HttpResponse(render(request, 'faculty/verify_profile_form.html', context).content) # for RequestContext() to set csrf value in form
 #			return HttpResponse(render_to_string('faculty/verify_profile_form.html', context))
@@ -230,6 +243,9 @@ def edit_qualifications(request, **kwargs):
 				f = QualificationForm(request.POST)
 			if f.is_valid():
 				f.save(student=student, verified=False, verifier=student.verified_by)
+				# LOG
+				studentLogger.info('[%s] - Updated Qualifications - %s' % (student.profile.username, ','.join(f.changed_data)))
+				# # #
 				toast_msg = "Qualifications have been updated successfully! Contact your college's TPC faculty for verification."
 				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['S']), 'toast_msg': toast_msg})
 			else:
@@ -265,9 +281,16 @@ def edit_qualifications(request, **kwargs):
 				verifier = request.user
 				verified = verdict
 				if qual:
-					student = f.save(verifier=verifier, verified=verified)
+					qualifications = f.save(verifier=verifier, verified=verified)
 				else:
-					student = f.save(student=student, verifier=verifier, verified=verified)
+					qualifications = f.save(student=student, verifier=verifier, verified=verified)
+				# LOG
+				if qualifications.is_verified:
+					message = "[%s] - %s verified %s qualifications - Changed fields [%s]"
+				else:
+					message = "[%s] - %s skipped %s qualifications - Changed fields [%s]"
+				facultyLogger.info(message % (kwargs.get('profile').college.code, request.user.username, student.profile.username, ','.join(f.changed_data)))
+				# # #
 				context = {'qual_form': f, 'success_msg': 'Student profile has been updated successfully!'}
 				form_html = render(request, 'faculty/verify_qual_form.html', context).content.decode('utf-8')
 				return HttpResponse(form_html)
@@ -299,6 +322,10 @@ def delete_student(request, **kwargs):
 			return JsonResponse(status=400, data={'error': 'Student with this enrollment number does not exist'})
 		try:
 			user.delete()
+			print(request.POST)
+			# LOG
+			facultyLogger.info('[%s] - %s deleted %s - %s' % (faculty.college.code, faculty.profile.username, user.username, request.POST.get('reason', 'No reasons given')))
+			# # #
 			return redirect('verify')
 		except:
 			return JsonResponse(status=500, data={'error': 'Error occurred while deleting student'})
@@ -318,6 +345,8 @@ def paygrade(request, **kwargs):
 		f = PaygradeForm(request.POST, instance=student)
 		if f.is_valid():
 			f.save()
+			if f.changed_data:
+				studentLogger.info('[%s] - Paygrade - %d LPA' % (student.profile.username, student.salary_expected))
 			return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['S'])})
 		else:
 			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
@@ -500,6 +529,9 @@ def apply_to_company(request, sess, **kwargs): # handling withdrawl as well
 			return JsonResponse(status=200, data={'enrolled': True})
 		else:
 			student.sessions.remove(session)
+			# LOG
+			studentLogger.info('[%s] - Withdrew from %s session [%s]' % (request.user.username, str(session), session.association.type))
+			# # #
 			return JsonResponse(status=200, data={'enrolled': False})
 ##		else:
 ##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})

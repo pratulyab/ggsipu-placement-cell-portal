@@ -1,0 +1,72 @@
+{% load staticfiles %}
+<div id="all-requests" class="col s12 m9 l10">
+	<h4 class="center" style="color: #337ab7; font-weight: 600">Pending Requests</h4>
+	<div id="pending" class="scrollspy">
+		<ul class="collection">
+			{% for pending in requests.pending %}
+				<li class="collection-item avatar">
+					{% if pending.photo %}
+						<img src="{{ pending.photo.url }}" alt="Photo" class="circle" />
+					{% endif %}
+					<span class="title">{{ pending.who }} for {{ pending.type|title }} </span>
+					<p>
+						{{ pending.salary }}
+						<br>
+						<p>
+							{{ pending.streams }}
+						</p>
+						<br>
+					</p>
+					<p><b>Created On:</b> {{ pending.created_on }}</p>
+					<p><b>Pending Since:</b> {{ pending.created_on|timesince }}</p>
+					<span class="secondary-content">
+						<a href="{% url 'delete_request' pending.hashid %}" class="delete-request"><i class="fa fa-2x fa-close"></i></a>
+					</span>
+				</li>
+			{% empty %}
+				<b><h1 class="center flow-text teal-text text-accent-4">You don't have any pending requests.</h1></b>
+			{% endfor %}
+		</ul>
+	</div>
+	<hr><hr><hr>
+	<h4 class="center" style="color: #337ab7; font-weight: 600">Declined Requests</h4>
+	<div id="declined" class="scrollspy">
+		<ul class="collection">
+			{% for declined in requests.declined %}
+				<li class="collection-item avatar">
+					{% if declined.photo %}
+						<img src="{{ declined.photo.url }}" alt="Photo" class="circle" />
+					{% endif %}
+					<span class="title">{{ declined.who }} for {{ declined.type|title }} </span>
+					<p>
+						{{ declined.salary }}
+						<br>
+						<p>
+							{{ declined.streams }}
+						</p>
+						<br>
+					</p>
+					<p><b>Decline Reason: </b>{{ declined.decline_message }}</p>
+					<p><b>Created On:</b> {{ declined.created_on }}</p>
+					<p><b>Time Elapsed:</b> {{ declined.created_on|timesince }}</p>
+					<span class="secondary-content">
+						<a href="{% url 'delete_request' declined.hashid %}" class="delete-request"><i class="fa fa-2x fa-close"></i></a>
+					</span>
+				</li>
+			{% empty %}
+				<b><h1 class="center flow-text teal-text text-accent-4">You don't have any declined requests.</h1></b>
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+<script>
+	$(document).ready(function(){
+		var pushpin = '<div class="col hide-on-small-only m3 l2"><div class="toc-wrapper"><ul class="table-of-contents"><li><a href="#pending">Pending</a></li><li><a href="#declined">Declined</a></li></ul></div></div>';
+		var parsedPushpin = $.parseHTML(pushpin);
+		var div = $('#myrequests');
+		div.append(parsedPushpin);
+		var top = div.offset().top;
+		$('.toc-wrapper').pushpin({top: top, offset:top});
+		$('.scrollspy').scrollSpy();
+	});
+</script>

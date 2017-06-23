@@ -8,7 +8,6 @@ from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser
 from faculty.models import Faculty
-#from recruitment.fields import ModelHashidChoiceField
 from student.models import Student
 import re
 from material import *
@@ -19,24 +18,8 @@ class FacultySignupForm(forms.ModelForm):
 		self.fields['email'].required = True
 		self.fields['groups'].required = True
 	
-	#password1 = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder': _('Enter password')}))
-	#password2 = forms.CharField(label=_('Re-enter Password'), widget=forms.PasswordInput(attrs={'placeholder': _('Confirm password')}))
-
-	def clean(self, *args, **kwargs):
-		super(FacultySignupForm, self).clean(*args, **kwargs)
-		'''
-		pwd1 = self.cleaned_data.get('password1', None)
-		pwd2 = self.cleaned_data.get('password2', None)
-		if pwd1 and pwd2:
-			if pwd1 != pwd2:
-				raise forms.ValidationError(_('Passwords do not match.'))
-			password_validation.validate_password(pwd1)
-		'''
-		return self.cleaned_data
-
 	def save(self, commit=True, *args, **kwargs):
 		faculty = super(FacultySignupForm, self).save(commit=False)
-		#faculty.set_password(self.cleaned_data.get('password2'))
 		faculty.is_active = False
 		faculty.type = 'F'
 		# Setting unusable password for the account. Barring the college from the headache of setting passwords. Allowing faculty to set password. By sending the faculty the link to set password rather than activation link.
@@ -58,20 +41,6 @@ class FacultySignupForm(forms.ModelForm):
 			'groups': _('Faculty may belong to one or more groups.'),
 		}
 
-"""
-class FacultyFormset(forms.BaseModelFormSet):
-# for Faculty Account  model = CustomUser
-	def clean(self):
-		super(FacultyFormset, self).clean()
-
-		for form in self.forms:
-			pwd1 = form.cleaned_data.get('password1', None)
-			pwd2 = form.cleaned_data.get('password2', None)
-			if pwd1 and pwd2 and pwd1!=pwd2:
-				raise forms.ValidationError(_('Passwords do not match'))
-# save conditions to be added in views
-# while saving, create faculty profile and set its profile and college fields
-"""
 class FacultyProfileForm(forms.ModelForm):
 # Serves as both Creation, as well as Edit form
 	layout = Layout(

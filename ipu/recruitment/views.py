@@ -17,27 +17,41 @@ from dummy_company.models import DummyCompany, DummySession
 from faculty.models import Faculty
 from notification.forms import NotifySessionStudentsForm
 from notification.models import Notification
-from recruitment.forms import AssociationForm, EditSessionForm, DissociationForm, CreateSessionCriteriaForm, EditCriteriaForm, ManageSessionStudentsForm, SessionFilterForm
+from recruitment.forms import AssociationForm, EditSessionForm, DissociationForm, CreateSessionCriteriaForm, EditCriteriaForm, ManageSessionStudentsForm, SessionFilterForm, DeclineForm
 from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
 from recruitment.utils import get_excel_structure
 from student.models import Student, Programme, Stream
 
-import openpyxl as excel, time
+import openpyxl as excel, time, logging
 from hashids import Hashids
+
+collegeLogger = logging.getLogger('college')
+companyLogger = logging.getLogger('company')
+recruitmentLogger = logging.getLogger('recruitment')
 
 @require_user_types(['C', 'CO'])
 @require_AJAX
 @login_required
 @require_POST
 def associate(request, **kwargs):
+	user_type = kwargs.get('user_type')
 	f = AssociationForm(request.POST, profile=kwargs.pop('profile'))
 	if f.is_valid():
 		try:
-			f.save()
+			assoc = f.save()
 			f.save_m2m()
+			# LOG
+			if user_type == 'C':
+				message = "[%s: %s] -> Sent Association Request -> [%s] - [A: %d]" % \
+						   (f.profile.profile.username, f.profile.code, assoc.company.name, assoc.pk)
+			else:
+				message = "[%s: %s] -> Sent Association Request -> [%s] - [A: %d]" % \
+						   (f.profile.profile.username, f.profile.name, assoc.college.code, assoc.pk)
+			recruitmentLogger.info(message)
+			# # #
 		except (ValidationError, IntegrityError) as error:
 			return JsonResponse(status=400, data={'error': error.__str__()})
-		return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['C'])})
+		return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[user_type])})
 	else:
 		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
@@ -68,6 +82,7 @@ def manage_session(request, sess_hashid, **kwargs):
 		'session': session,
 		'sess_hashid': sess_hashid,
 		'home_url': reverse(settings.HOME_URL['CO'] if user_type == 'CO' else settings.HOME_URL['C']),
+		'user': profile.profile
 	}
 	return render(request, 'recruitment/manage_session.html', context)
 
@@ -254,9 +269,10 @@ def create_session(request, **kwargs):
 			return JsonResponse(status=200, data={'html':html})
 		
 		else:
+			user_type = kwargs.get('user_type')
 			try:
 				association_id = settings.HASHID_ASSOCIATION.decode(request.POST.get('token'))[0]
-				association = Association.objects.get(pk=association_id)
+				association = Association.objects.prefetch_related('college', 'company').get(pk=association_id)
 			except:
 				return JsonResponse(status=400, data={'error': 'Invalid Request.'})
 			# validating whether the college/company is making request for its own association
@@ -283,6 +299,15 @@ def create_session(request, **kwargs):
 				session = PlacementSession.objects.create(association=association,application_deadline=data['application_deadline'],last_modified_by=type, selection_criteria=criterion)
 				association.approved = True
 				association.save()
+				# LOG
+				if user_type == 'C':
+					message = "[%s] -> Created Session (Accepted) -> [%s] - [A/S: %d/%d]" % \
+							   (association.college.code, association.company.name, association.pk, session.pk)
+				else:
+					message = "[%s: %s] -> Created Session (Accepted) -> [%s] - [A/S: %d/%d]" % \
+							   (association.company.profile.username, association.company.name, association.college.code, association.pk, session.pk)
+				recruitmentLogger.info(message)
+				# # #
 				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[type])})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
@@ -409,40 +434,101 @@ def mysessions(request):
 @require_user_types(['C', 'CO'])
 @login_required
 @require_http_methods(['GET','POST'])
-def dissociate(request, **kwargs):
+def decline(request, **kwargs):
+	user_type = kwargs.get('user_type')
 	if request.is_ajax():
-##		if request.user.type not in ['C', 'CO']:
-##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 		if request.method == 'GET':
 			try:
 				association_id = settings.HASHID_ASSOCIATION.decode(request.GET.get('ass'))[0]
-				association = Association.objects.get(pk=association_id)
+				association = Association.objects.prefetch_related('college', 'company').get(pk=association_id)
 			except:
 				return JsonResponse(status=400, data={'error': 'Unexpected error occurred. Please refresh the page and try again'})
-			f = DissociationForm(association=association)
-			html = render(request, 'recruitment/dissociate.html', {'dissociation_form': f}).content.decode('utf-8')
+			f = DeclineForm(association=association)
+			html = render(request, 'recruitment/decline.html', {'decline_form': f}).content.decode('utf-8')
 			return JsonResponse(status=200, data={'html':html})
 		
 		else:
 			POST = request.POST.copy()
 			try:
 				association_id = settings.HASHID_ASSOCIATION.decode(request.POST.get('token'))[0]
-				association = Association.objects.get(pk=association_id)
+				association = Association.objects.prefetch_related('college', 'company').get(pk=association_id)
 			except:
 				return JsonResponse(status=400, data={'error': 'Unexpected error occurred. Please refresh the page and try again'})
 			POST['college'] = association.college.pk
 			POST['company'] = association.company.pk
-			f = DissociationForm(POST, association=association)
+			f = DeclineForm(POST, association=association)
 			if f.is_valid():
 				f.save()
-				association.approved = False
-				association.save()
+				# LOG
+				if user_type == 'C':
+					message = "[%s: %s] -> Declined Request -> [%s] - [%d]" % \
+							   (association.college.profile.username, association.college.code, association.company.name, association.pk)
+				else:
+					message = "[%s: %s] -> Declined Request -> [%s] - [%d]" % \
+							   (association.company.profile.username, association.company.name, association.college.profile.username, association.pk)
+				recruitmentLogger.info(message)
+				# # #
 				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[request.user.type])})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 	
 	else:
 		return handle_user_type(request, redirect_request=True)
+
+@require_AJAX
+@require_user_types(['C','CO','F'])
+@login_required
+@require_GET
+def view_my_requests(request, profile, user_type):
+	queryset = []
+	if user_type == 'F':
+		profile = profile.college
+	if user_type == 'CO':
+		queryset = Association.objects.filter(company=profile, initiator=user_type).filter(~Q(approved=True))
+	else:
+		queryset = Association.objects.filter(college=profile, initiator='C').filter(~Q(approved=True))
+	my_requests = {'pending': [], 'declined': []}
+	for association in queryset:
+		if association.approved is None:
+			data = {}
+			data['who'] = association.company.name.title() if association.initiator=='C' else association.college.name.title()
+			data['hashid'] = settings.HASHID_ASSOCIATION.encode(association.pk)
+			data['salary'] = "%d LPA" % association.salary
+			data['type'] = "Internship" if association.type == 'I' else "Job"
+			data['photo'] = association.company.photo if association.initiator=='C' else association.college.photo
+			data['streams'] = ', '.join([s.name.title() for s in association.streams.all()])
+			data['created_on'] = association.created_on
+			my_requests['pending'].append(data)
+		else:
+			data = {}
+			data['who'] = association.company.name.title() if association.initiator=='C' else association.college.name.title()
+			data['hashid'] = settings.HASHID_ASSOCIATION.encode(association.pk)
+			data['salary'] = "%d LPA" % association.salary
+			data['type'] = "Internship" if association.type == 'I' else "Job"
+			data['photo'] = association.company.photo if association.initiator=='C' else association.college.photo
+			data['streams'] = ', '.join([s.name.title() for s in association.streams.all()])
+			data['created_on'] = association.created_on
+			data['decline_message'] = association.decline_message
+			my_requests['declined'].append(data)
+	html = render(request, 'recruitment/my_requests.html', {'requests': my_requests}).content.decode('utf-8')
+	return JsonResponse(status=200, data={'html': html})
+
+@require_AJAX
+@require_user_types(['C', 'CO'])
+@login_required
+@require_POST
+def delete_request(request, profile, user_type, request_hashid):
+	try:
+		association_id = settings.HASHID_ASSOCIATION.decode(request_hashid)[0]
+		association = profile.associations.get(pk=association_id)
+	except:
+		return JsonResponse(status=400, data={'error': 'No such association request of yours exist.'})
+	association.delete()
+	if user_type == 'C':
+		collegeLogger.info('[%s: %s] - Deleted Association Request - [A: %d]' % (profile.profile.username, profile.code, association_id))
+	else:
+		companyLogger.info('[%s: %s] - Deleted Association Request - [A: %d]' % (profile.profile.username, profile.name, association_id))
+	return JsonResponse(status=200, data={'message': 'Successfully Deleted!', 'callback': True})
 '''
 
 @require_user_types(['C', 'CO'])
@@ -476,6 +562,74 @@ def dissociate(request, profile, user_type, **kwargs):
 		html = render(request, 'recruitment/dissociate.html', {'dissociation_form': DissociationForm(association=association)}).content.decode('utf-8')
 		return JsonResponse(status=200, data={'html': html})
 '''
+# # # # # # #
+@require_user_types(['C','CO'])
+@login_required
+@require_GET
+def manage_dissociation(request, profile, user_type):
+	context = {'dissociations': [], 'create_dissociation_form': DissociationForm(profile=profile, user_type=user_type)}
+	context['profile'] = profile
+#	context['home_url'] = "%s://%s" % (('https' if settings.USE_HTTPS else 'http'), str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
+	context['home_url'] = reverse(settings.HOME_URL[user_type])
+	(context['requester'],context['other'])  = ('college','company') if user_type == 'C' else ('company','college') # (requester, blocked)
+	context['other_plural'] = 'colleges' if user_type == 'CO' else 'companies'
+	context['default_image'] = 'images/%s.png' % context['requester']
+	for dissociation in profile.dissociations.all():
+		data = {}
+		data['hashid'] = settings.HASHID_DISSOCIATION.encode(dissociation.pk)
+		if user_type == 'C':
+			data['photo'] = dissociation.company.photo
+			data['name'] = dissociation.company.name
+			data['reason'] = dissociation.reason
+			data['blocked_on'] = dissociation.created_on
+		else:
+			data['photo'] = dissociation.college.photo
+			data['name'] = dissociation.college.name
+			data['reason'] = dissociation.reason
+			data['blocked_on'] = dissociation.created_on
+		context['dissociations'].append(data)
+	return render(request, 'recruitment/manage_dissociation.html', context)
+
+@require_AJAX
+@require_user_types(['C', 'CO'])
+@login_required
+@require_POST
+def create_dissociation(request, profile, user_type):
+	f = DissociationForm(request.POST, profile=profile, user_type=user_type)
+	if f.is_valid():
+		dissociation = f.save()
+		f.delete_all_pending_associations()
+		# LOG
+		message = '[%s: %s] - Blocked - [%s: %s]'
+		if user_type == 'C':
+			collegeLogger.info(message % (profile.profile.username, profile.code, dissociation.company.profile.username, dissociation.company.name))
+		else:
+			companyLogger.info(message % (profile.profile.username, profile.name, dissociation.college.profile.username, dissociation.college.code))
+		# # #
+		return JsonResponse(status=200, data={'message': 'Successfully Blocked %s!' % (profile.__class__.__name__)})
+	return JsonResponse(status=400, data={'error': 'Error Occurred', 'errors': dict(f.errors.items())})
+
+@require_AJAX
+@require_user_types(['C', 'CO'])
+@login_required
+@require_POST
+def delete_dissociation(request, profile, user_type, dissociation_hashid):
+	try:
+		dissociation_id = settings.HASHID_DISSOCIATION.decode(dissociation_hashid)[0]
+		dissociation = profile.dissociations.prefetch_related('college', 'company').get(pk=dissociation_id)
+	except:
+		return JsonResponse(status=400, data={'error': 'You haven\'t blocked any such user.'})
+	dissociation.delete()
+	# LOG
+	message = '[%s: %s] - Unblocked - [%s: %s]'
+	if user_type == 'C':
+		collegeLogger.info(message % (profile.profile.username, profile.code, dissociation.company.profile.username, dissociation.company.name))
+	else:
+		companyLogger.info(message % (profile.profile.username, profile.name, dissociation.college.profile.username, dissociation.college.code))
+	# # #
+	return JsonResponse(status=200, data={'message': 'Successfully Deleted!', 'callback': True})
+
+# # # # # # #
 @require_user_types(['C', 'F', 'CO'])
 @login_required
 @require_GET
@@ -497,9 +651,9 @@ def view_association_requests(request, **kwargs):
 		for ass in associations:
 			session_url = request.build_absolute_uri(reverse('createsession'))
 			session_url = session_url + "?ass=" + settings.HASHID_ASSOCIATION.encode(ass.pk)
-			dissoci_url = request.build_absolute_uri(reverse('dissociate'))
-			dissoci_url = dissoci_url + "?ass=" + settings.HASHID_ASSOCIATION.encode(ass.pk)
-			urls = {'session_url': session_url, 'dissoci_url':dissoci_url}
+			decline_url = request.build_absolute_uri(reverse('decline'))
+			decline_url = decline_url + "?ass=" + settings.HASHID_ASSOCIATION.encode(ass.pk)
+			urls = {'session_url': session_url, 'decline_url':decline_url}
 			associations_list.append({'obj':ass, 'url':urls})
 		context['associations'] = associations_list
 		if user_type in ['C','F']:

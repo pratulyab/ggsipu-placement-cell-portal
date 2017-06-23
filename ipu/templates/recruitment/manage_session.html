@@ -2,15 +2,24 @@
 {% load staticfiles %}
 {% load material_form %}
 {% block title %}Manage Placement Session{% endblock %}
-{% block home_url1 %}{% url 'college_home' %}{% endblock %}
-{% block home_url2 %}{% url 'college_home' %}{% endblock %}
-{% block home_url3 %}{% url 'college_home' %}{% endblock %}
-{% block home_url4 %}{% url 'college_home' %}{% endblock %}
+{% block home_url1 %}{{ user.get_home_url }}{% endblock %}
+{% block home_url2 %}{{ user.get_home_url }}{% endblock %}
+{% block home_url3 %}{{ user.get_home_url }}{% endblock %}
+{% block home_url4 %}{{ user.get_home_url }}{% endblock %}
 {% block pagetitle %}Manage Placement Session{% endblock %}
 {% block menu_icon_dropdown %}
+	{% if user.type == 'C' %}
                 <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
                 <li class="divider"></li>
                 <li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+                <li class="divider"></li>
+                <li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Companies</a></li>
+	{% elif user.type == 'F' %}
+		<!-- Check perms and add -->
+	{% else %}
+                <li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Colleges</a></li>
+                <li class="divider"></li>
+	{% endif %}
 {% endblock %}
 {% block head %}
 	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
@@ -36,6 +45,9 @@
 						<span class="card-title activator grey-text text-darken-4">{{ association.company }}<i class="fa fa-ellipsis-v right"></i></span>
 						<p><a href="{{ association.company.get_absolute_url }}">Company Profile</a></p>
 					</div>
+					<div class="card-action">
+						<a href="{% url 'excel' sess_hashid %}" class="excel">Download Excel  <i class="fa fa-file-excel-o"></i></a>
+					</div>
 					<div class="card-reveal">
 						<span class="card-title grey-text text-darken-4">{{ association.company }}<i class="fa fa-times right"></i></span>
 						<p><b>Salary:</b> {{ association.salary }} Lakhs per annum</p>
@@ -48,6 +60,9 @@
 					<div class="card-content">
 						<span class="card-title activator grey-text text-darken-4">{{ association.college }}<i class="fa fa-ellipsis-v right"></i></span>
 						<p><a href="{{ association.college.get_absolute_url }}">College Profile</a></p>
+					</div>
+					<div class="card-action">
+						<a href="{% url 'excel' sess_hashid %}" class="excel">Download Excel  <i class="fa fa-file-excel-o"></i></a>
 					</div>
 					<div class="card-reveal">
 						<span class="card-title grey-text text-darken-4">{{ association.college }}<i class="fa fa-times right"></i></span>

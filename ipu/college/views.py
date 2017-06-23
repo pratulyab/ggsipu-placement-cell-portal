@@ -20,9 +20,11 @@ from notification.models import Notification
 from recruitment.models import PlacementSession
 from recruitment.forms import AssociationForm, SessionFilterForm
 
-import os
+import os, logging
 
 # Create your views here.
+
+accountLogger = logging.getLogger('account')
 
 @login_required
 @require_http_methods(['GET','POST'])
@@ -41,6 +43,7 @@ def college_signup_by_superuser(request):
 			college = pf.save(profile=user)
 			for stream in af.cleaned_data.get('streams', []):
 				college.streams.add(stream)
+			accountLogger.info('[%s] - College %s created by S.U. %s' % (college.code, college.user.username, request.user.username))
 			send_activation_email_task.delay(user.pk, get_current_site(request).domain)
 			return HttpResponse('Success! Visit admin page to make sure everything\'s been entered correctly.')
 	return render(request, 'college/signup_by_superuser.html', {'account_form': af, 'profile_form': pf})

@@ -2,12 +2,12 @@
 {% load material_form %}
 <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
 {% include 'material/includes/material_js.html' %}
-<form method='POST' action="{% url 'dissociate' %}" id="dissociate-form">
+<form method='POST' action="{% url 'decline' %}" id="dissociate-form">
 	{% csrf_token %}
-	{% form form=dissociation_form %}{% endform %}
+	{% form form=decline_form %}{% endform %}
 	<div class="row">
 		<div class="col s6 offset-s2">
-			<button class="btn btn-waves" type="submit">Dissociate</button>
+			<button class="btn btn-waves" type="submit">Decline</button>
 		</div>
 	</div>
 </form>

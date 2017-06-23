@@ -93,3 +93,13 @@ class UnsuccessfulSMS(models.Model):
 	created_on = models.DateTimeField(auto_now_add=True)
 	reattempt_on = models.DateTimeField(auto_now=True)
 	template_vars = models.CharField(max_length=256, blank=True, help_text="Comma Separated") # Comma separated string
+
+class SMSDeliveryReport(models.Model):
+	actor = models.ForeignKey(CustomUser, blank=True, null=True, on_delete=models.SET_NULL)
+	message = models.CharField(max_length=512)
+	recipients = models.TextField()
+	status = models.CharField(max_length=20) # Success / Failure
+	session_id = models.CharField(max_length=128)
+	status_desc = models.CharField(max_length=512, blank=True)
+	error_desc = models.CharField(max_length=512, blank=True)
+	created_on = models.DateTimeField(auto_now_add=True)

@@ -31,11 +31,11 @@ class Association(models.Model):
 	salary = models.DecimalField(_('Salary (Lakhs P.A.)'), max_digits=4, decimal_places=2, default=0, validators=[MinValueValidator(Decimal('0'))], 
 		help_text=_("Salary to be offered in LPA."),
 	)
-	desc = models.TextField(_('Placement details you\'d want to mention'),
-			blank=True
-	)
+	desc = models.TextField(_('Placement details you\'d want to mention'), blank=True)
 	initiator = models.CharField(_('Who initiated it'), max_length=2, choices=SOURCE, default=SOURCE[0][0])
 	approved = models.NullBooleanField(default=None)
+	created_on = models.DateTimeField(auto_now_add=True)
+	decline_message = models.CharField(max_length=1024, blank=True, help_text='Reason(s) for declining')
 
 	def __str__(self):
 		return self.company.name + " for placement in " + self.college.name
@@ -116,12 +116,9 @@ class Dissociation(models.Model):
 	''' Block '''
 	company = models.ForeignKey(Company, related_name="dissociations")
 	college = models.ForeignKey(College, related_name="dissociations")
-#	duration = models.DateField(null=True, blank=True,
-#		help_text = "Choose the date till when you want to block this user from contacting you. Leave it blank in order to decline just the current request."
-#	)
-	reason = models.CharField(_('Reason(s)'), blank=True, max_length=1024)
+	reason = models.CharField(_('Reasons'), blank=True, max_length=1024)
 	initiator = models.CharField(_('Who initiated it'), choices=SOURCE, max_length=2, default=SOURCE[0][0])
-	when = models.DateTimeField(auto_now_add=True)
+	created_on = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
 		""" Returns the name of initiator first, then the other """
@@ -131,7 +128,7 @@ class Dissociation(models.Model):
 			return self.company.__str__() + ", " + self.college.__str__()
 	
 	class Meta:
-		unique_together = ['company', 'college']
+		unique_together = ['company', 'college', 'initiator'] # Because both A and B can block each other
 
 @receiver(m2m_changed, sender=PlacementSession.students.through)
 def validating_students(sender, **kwargs):

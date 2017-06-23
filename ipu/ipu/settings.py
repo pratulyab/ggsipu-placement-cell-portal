@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 import hashids, socket
+from .logging import configure_logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,11 +36,6 @@ if socket.gethostname() == 'usict-tnp':
 	SESSION_COOKIE_SECURE = True
 	CSRF_COOKIE_SECURE = True
 	USE_HTTPS = True # Self defined boolean
-
-	# LOGGING CONFIGURATION
-	from .logging import configure_logging
-	LOGGING_CONFIG = None
-	configure_logging()
 	
 else:
 	DEBUG = True
@@ -48,7 +44,11 @@ else:
 	USE_HTTPS = False
 	EMAIL_HOST_USER = 'ggsipu'
 	EMAIL_HOST_PASSWORD = 'Whit3Label' # 100 emails / day
-	
+
+# LOGGING CONFIGURATION
+LOGGING_CONFIG = None
+configure_logging(debug=DEBUG)
+
 AUTH_USER_MODEL = 'account.CustomUser'
 
 # Application definition

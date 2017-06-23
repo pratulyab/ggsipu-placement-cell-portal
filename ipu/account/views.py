@@ -9,6 +9,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
 from django.utils.translation import ugettext_lazy as _
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
 from account.decorators import require_AJAX
 from account.forms import AccountForm, ForgotPasswordForm, LoginForm, SetPasswordForm, SignupForm, SocialProfileForm
@@ -25,10 +26,12 @@ from faculty.models import Faculty
 from recruitment.models import Association
 from student.forms import StudentCreationForm, StudentSignupForm, StudentLoginForm
 from student.models import Student
-import re
+import re, logging
 from college.views import get_college_public_profile
 from company.views import get_company_public_profile
 from student.views import get_student_public_profile
+
+accountLogger = logging.getLogger('account')
 
 # Create your views here
 @require_GET
@@ -174,6 +177,7 @@ def reset_password(request, user_hashid='', token=''):
 		if f.is_valid():
 			user.set_password(f.cleaned_data['password1'])
 			user.save()
+			accountLogger.info('Password has been reset for user %s' % user.username)
 #			return redirect('login')
 			return render(request, 'account/set_password.html', {'successful': True})
 	context = { 'validlink': True, 'password_reset_form': f, 'user_hashid': user_hashid, 'token': token}
@@ -194,6 +198,7 @@ def edit_account(request):
 					user = authenticate(username=f.cleaned_data.get('username'), password=f.cleaned_data.get('new_password2'))
 					if user:
 						auth_login(request, user)
+					accountLogger.info('Password changed for user %s' % user.username)
 				context = {}
 				context['edit_account_form'] = f
 				context['success_msg'] = "Your account has been updated successfully"
@@ -277,6 +282,16 @@ def home(request):
 def logout(request):
 	auth_logout(request)
 	return redirect('auth')
+
+@csrf_exempt
+@require_POST
+def sms_callback(request):
+	try:
+		accountLogger.info(request.POST)
+		import json
+		accountLogger.info(json.loads(request.body.decode('utf-8')))
+	except:
+		pass
 
 @login_required
 @require_GET

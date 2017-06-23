@@ -76,7 +76,7 @@ class Student(models.Model):
 		return self.get_full_name()
 	
 	def get_absolute_url(self):
-		return "/%s/" % self.profile.username
+		return "/user/%s/" % self.profile.username
 
 	def is_not_interested(self):
 		return not bool(sessions_applied_to.count() or dsessions_applied_to.count()) # Whether the student ever applied for an opportunity
