@@ -11,7 +11,7 @@ LOGGING = {
 			'format': '%(levelname)s %(message)s'
 		},
 		'standard': {
-			'format': '%(asctime)s - [%(module)s][%(name)s] - [%(levelname)s] - %(message)s'
+			'format': '%(asctime)s - [%(name)s.%(module)s] - [%(levelname)s] - %(message)s'
 		},
 	},
 	'filters': {
@@ -46,20 +46,20 @@ LOGGING = {
 			'propagate': True,
 		},
 		'django.request': {
-			'handlers': ['mail_admins', 'error_log'],
+			'handlers': ['mail_admins', 'error_log', 'console'],
 			'level': 'WARNING',
 			'propagate': False,
 		},
 	}
 }
 
-def add_apps_config():
-	apps = ['student', 'faculty', 'college', 'company', 'recruitment', 'notification']
+def add_apps_config(log_file_path):
+	apps = ['student', 'faculty', 'college', 'company', 'recruitment', 'notification', 'account', 'dummy']
 	for app in apps:
 		handler = {
 			'level': 'INFO',
 			'class': 'logging.handlers.RotatingFileHandler',
-			'filename': '/var/log/ipu/%s.log' % (app),
+			'filename': log_file_path % (app),
 			'maxBytes': 5 * 1024 * 1024, # 5 MB
 			'backupCount': 5,
 			'formatter': 'standard',
@@ -71,8 +71,20 @@ def add_apps_config():
 		}
 		LOGGING['handlers'][app] = handler
 		LOGGING['loggers'][app] = logger
+	
+	# Mofifying error.log file path
+	LOGGING['handlers']['error_log']['filename'] = log_file_path % ('error')
 
-def configure_logging():
+def configure_logging(debug=False):
+	BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+	log_file_path = ''
+	if not debug: # Prod
+		log_file_path = '/var/log/ipu/%s.log'
+	
+	else: # Dev
+		if not os.path.exists(os.path.join(BASE_DIR, '.log')):
+			os.mkdir(os.path.join(BASE_DIR, '.log'))
+		log_file_path = os.path.join(BASE_DIR, '.log', '%s.log')
+	add_apps_config(log_file_path)
 	logging.config.dictConfig(LOGGING)
 
-add_apps_config()

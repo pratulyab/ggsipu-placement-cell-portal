@@ -1,19 +1,24 @@
+from django.conf import settings
 from django.shortcuts import render ,  get_object_or_404
+from django.template.loader import render_to_string
 from django.http import HttpResponseForbidden , HttpResponse , JsonResponse , Http404
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from .forms import SelectStreamsForm , CreateNotificationForm , IssueForm , IssueReplyForm
+from django.template import Context, Template
 from django.core.exceptions import PermissionDenied
+from .forms import SelectStreamsForm , CreateNotificationForm , IssueForm , IssueReplyForm
+from .models import NotificationData , Notification , Issue , IssueReply
 from account.models import CustomUser
 from faculty.models import Faculty
 from student.models import Student
 from college.models import College , Stream
-from .models import NotificationData , Notification , Issue , IssueReply
 from django.core import serializers
 from recruitment.models import PlacementSession
 from django.contrib.auth.decorators import login_required
+from hashids import Hashids
+import requests
 import itertools
 import json
-from hashids import Hashids
+
 
 
 #from recruitment.forms import SessionInfoForm
@@ -137,6 +142,28 @@ def create_notification(request):
 	else:
 		raise PermissionDenied			
 
+@require_GET
+@login_required
+def truncated_notifications(request):
+	user = request.user
+	data_list = list()
+	notification_object_queryset = Notification.objects.filter(target = user).order_by('-creation_time')[:5]
+	for notification_object in notification_object_queryset:
+		data_dict = dict()
+		if notification_object.notification_data is not None:
+			data = notification_object.notification_data
+			message = data.subject
+		else:
+			message = notification_object.message
+		message = clean_string(message , 63)
+		data_dict['message'] = message
+		data_dict['sender'] = str(get_notification_actor_name(notification_object , compact = True))
+		date_template = Template('{{ date|date:"d M Y, D" }}')
+		date_context = Context({'date': notification_object.creation_time})
+		data_dict['date'] = date_template.render(date_context)
+		data_list.append(data_dict)
+	return JsonResponse(data_list , safe = False)
+
 
 @require_http_methods(['GET','POST'])
 @login_required
@@ -176,7 +203,8 @@ def notification_detail(request):
 		data = notification_object.notification_data
 		data_dict['subject'] = data.subject
 		data_dict['message'] = data.message
-		data_dict['date'] = notification_object.creation_time
+		date = render_to_string('notification/date_formatter.html' , {'date' : notification_object.creation_time})
+		data_dict['date'] = date
 	else:
 		raise Http404
 	return JsonResponse(data_dict , safe = False)
@@ -192,11 +220,22 @@ def submit_issue(request):
 			return HttpResponse(raw_html)
 		if request.method == 'POST':
 			form_object = IssueForm(request.POST , user = request.user.student , college = request.user.student.college)
-			if form_object.is_valid():
-				form_object.save()
-				return HttpResponse(status = 201)
+			recaptcha_response = request.POST.get('recaptcha_response' , None)
+			recaptcha_data = {
+				'secret' : settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+				'response' : recaptcha_response
+			}
+			recaptcha_verification_url = settings.GOOGLE_RECAPTCHA_VERIFICATION_URL
+			request = requests.post(recaptcha_verification_url , recaptcha_data)
+			status = request.json()
+			if status['success']:
+				if form_object.is_valid():
+					form_object.save()
+					return HttpResponse(status = 201)
+				else:
+					raise Http404
 			else:
-				raise Http404
+				return JsonResponse(status = 403 , data = {'errors' : 'Recaptcha authorization failed. Please try again.'} , safe = False)
 	else:
 		raise PermissionDenied
 
@@ -357,7 +396,7 @@ def display_solution(request):
 	else:
 		raise PermissionDenied
 
-#===============================View Methods=====================================#
+#===============================Utility Functions=====================================#
 
 def get_issue_name(issue_symbol):
 	if issue_symbol == 'V':
@@ -379,13 +418,25 @@ def field_length_test(field , length):
 		return False
 
 
-def get_notification_actor_name(notification_object):
-	if notification_object.actor.type == 'C':
-		actor_name = notification_object.actor.college.name
-	if notification_object.actor.type == 'F':
-		actor_name = notification_object.actor.faculty.college.name
-	if	notification_object.actor.type == 'CO':
-		actor_name = notification_object.actor.company
+def get_notification_actor_name(notification_object , compact = False):
+	if not compact:
+		if notification_object.actor.type == 'C':
+			actor_name = notification_object.actor.college.name
+		if notification_object.actor.type == 'F':
+			actor_name = notification_object.actor.faculty.college.name
+		if	notification_object.actor.type == 'CO':
+			actor_name = notification_object.actor.company
+	else:
+		if notification_object.actor.type == 'C':
+			actor_name = notification_object.actor.college.get_short_name()
+		if notification_object.actor.type == 'F':
+			actor_name = notification_object.actor.faculty.college.get_short_name()
+		if	notification_object.actor.type == 'CO':
+			actor_name = notification_object.actor.company
+			actor_name_template = Template('{{ actor_name|truncatechars:13 }}')
+			actor_name_context = Context({'actor_name': actor_name})
+			actor_name = actor_name_template.render(actor_name_context)
+			return actor_name
 	return actor_name
 
 
@@ -407,4 +458,12 @@ def notification_pk_decoder(identifier):
 	return notification_object		
 
 
+def clean_string(message , length = 20):
+	if len(message) > length:
+		message = message[:length]
+		message += "..."
+	else:
+		if len(message) < 1:
+			message = "No Details Available"
+	return message
 

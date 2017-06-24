@@ -7,7 +7,7 @@ from django.core import mail
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 
-from account.models import CustomUser, UnsuccessfulEmail, UnsuccessfulSMS
+from account.models import CustomUser, UnsuccessfulEmail, UnsuccessfulSMS, SMSDeliveryReport
 from account.tokens import account_activation_token_generator  # An instance of AccountActivationTokenGenerator
 
 from sms import send_sms
@@ -93,6 +93,13 @@ def send_forgot_password_email_task(user_pk, domain, unsuccessful_email_pk=None)
 		'days': settings.PASSWORD_RESET_TIMEOUT_DAYS,
 		'greeting': ''
 	}
+	if not settings.DEBUG and settings.ALLOWED_HOSTS: # Prod
+		# Just in case an unsuccessful email is executed with an obsolete host (domain)
+		for host in settings.ALLOWED_HOSTS:
+			if domain.startswith(host) or host.startswith(domain): # 'domain.com/ and domain.com'
+				break
+		domain = settings.ALLOWED_HOSTS[0]
+	
 	email_body_context.update({'greeting': how_to_greet(user)})
 	body = loader.render_to_string('account/forgot_password_email_body_text.html', email_body_context)
 	email_body_context.update({'greeting': how_to_greet(user, html=True)})
@@ -157,7 +164,7 @@ def send_mass_mail_task(subject, message, user_pks_list, unsuccessful_email_pk=N
 		connection.close()
 
 @task(name='send_mass_sms_task')
-def send_mass_sms_task(message, to_list, unsuccessful_sms_pk=None, sender='GGSIPU', template_name='basic', *VAR):
+def send_mass_sms_task(actor_pk, message, to_list, unsuccessful_sms_pk=None, sender='GGSIPU', template_name='basic', *VAR):
 	# To send custom message, pass template_name=''
 	# Send VAR args as string.
 # # # # #
@@ -180,6 +187,10 @@ def send_mass_sms_task(message, to_list, unsuccessful_sms_pk=None, sender='GGSIP
 						UnsuccessfulSMS.objects.create(message=message, phone_numbers=','.join(set(to_list)), template_name=template_name, sender=sender, template_vars=(','.join(VAR)))
 #			Continue with the loop
 		else:
+			try:
+				SMSDeliveryReport.objects.create(actor=CustomUser.objects.get(actor_pk), message=message, recipients=','.join(set(to_list)), status=report['Status'], session_id=report['Details'])
+			except:
+				pass
 			# It was a success. Atleast, the request was sent to the API. Not concerned with the Status of session_id.
 			# That is a concern of callback url.
 			if unsuccessful_sms_pk:

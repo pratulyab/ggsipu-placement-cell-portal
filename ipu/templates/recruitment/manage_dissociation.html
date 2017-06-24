@@ -1,0 +1,137 @@
+{% extends 'account/navbar_with_tabs.html' %}
+{% load staticfiles %}
+{% load material_form %}
+{% block title %}Manage Dissociations{% endblock %}
+{% block home_url1 %}{{ home_url }}{% endblock %}
+{% block home_url2 %}{{ home_url }}{% endblock %}
+{% block home_url3 %}{{ home_url }}{% endblock %}
+{% block home_url4 %}{{ home_url }}{% endblock %}
+{% block pagetitle %}Manage Dissociation{% endblock %}
+{% block menu_icon_dropdown %}
+{% if profile.profile.type == 'C' %}
+	<li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
+	<li class="divider"></li>
+	<li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+	<li class="divider"></li>
+	<li><a href="{% url 'manage_dissociation' %}" >Block/Unblock</a></li>
+{% else %}
+	<li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Colleges</a></li>
+	<li class="divider"></li>
+{% endif %}
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
+{% endblock %}
+
+{% block user_photo2 %}
+	{% if user.photo %}
+		<img src="{{ user.photo.url }}" class="circle" height="30" width="30" id="img-corner">
+	{% else %}
+		<img src="{% static default_image %}" class="circle" height="30" width="30" id="img-corner">
+	{% endif %}
+{% endblock %}
+
+{% block user_name_card_s %}
+	{{ user.get_short_name }}
+{% endblock %}
+
+{% block user_email_id_s %}
+	{{ user.profile.email }}
+{% endblock %}
+
+{% block user_photo_s %}
+	{% if user.photo %}
+		<img src="{{ user.photo.url }}" class="circle" height="90" width="90">
+	{% else %}
+		<img src="{% static default_image %}" class="circle" height="90" width="90">
+	{% endif %}
+{% endblock %}
+
+{% block user_photo %}
+	{% if user.photo %}
+		<img src="{{ user.photo.url }}" class="circle" height="64" width="64">
+	{% else %}
+		<img src="{% static default_image %}" class="circle" height="64" width="64">
+	{% endif %}
+{% endblock %}
+
+{% block user_name_card %}
+	{{ user.get_short_name }}
+{% endblock %}
+
+{% block user_email_id %}
+	{{ user.profile.email }}
+{% endblock %}
+
+{% block side_nav_links %}
+	<li><a class="waves-effect" href="#!"><i class="fa fa-home" aria-hidden="true"></i>
+            Home</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>
+          Create Dummy Company</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+          Edit Dummy Company</a></li>      
+    <li><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i> 
+          Create Dummy Session</a></li>
+    <li><a class="waves-effect" href="#!"><i class="fa fa-pencil" aria-hidden="true"></i>
+	Edit Criteria</a></li>     
+    <li><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
+            Dummy Sessions</a></li>
+         
+{% endblock %}
+
+{% block tabs %}
+	<li class="tab col s4"><a class="active" href="#view-dissociation-div">{{ other_plural|title }} Blocked</a></li>
+	<li class="tab col s4"><a href="#create-dissociation-div">Block {{ other_plural|title }}</a></li>
+{% endblock tabs %}
+
+{% block tabs_content %}
+<!--                                     -->
+<div id="view-dissociation-div" class="col s12 m10 offset-m1">
+	<ul class="collection">
+		{% csrf_token %}
+		{% for d in dissociations %}
+			<li class="collection-item avatar">
+				{% if d.photo %}
+					<img src="{{ d.photo.url }}" alt="Profile Picture" class="circle">
+				{% else %}
+					<img src="" alt="Profile Picture" class="circle" style="background-color:{% cycle '#02b3e4' '#1c262f'%}" />
+				{% endif %}
+				<span class="title">{{ d.name|title }}</span>
+				<p><b>Reason: </b>{% if d.reason %} {{ d.reason }} {% else %} No reasons {% endif %}</p>
+				<p><b>Blocked on: </b>{{ d.blocked_on }} ({{ d.blocked_on|timesince }} ago)</p>
+				<span class="secondary-content">
+{#<!--					<a href="{% url 'edit_faculty_perms' f.f_hashid %}" class="edit-faculty-perms"><i class="fa fa-pencil fa-2x"></i></a>-->#}
+					<a href="{% url 'delete_dissociation' d.hashid %}" data-position="bottom" data-delay="50" data-tooltip="Unblock" class="delete-dissociation"><i class="fa fa-minus-circle fa-2x"></i></a>
+				</span>
+			</li>
+		{% empty %}
+			<p class="flow-text teal-text text-lighten-1 center-align">You haven't blocked any {{ other_plural }} yet.</p>
+			<p class="flow-text teal-text text-lighten-1 center-align">To block one, move to "Block {{ other_plural|title }}" tab.</p>
+		{% endfor %}
+	</ul>
+</div>
+<!--                                     -->
+<div id="create-dissociation-div" class="col s12 m10 offset-m1">
+	<div class="col s12">
+		<h4 class="center" style="color: goldenrod;">Block {{ other_plural|title }}</h4>
+		<form action="{% url 'create_dissociation' %}" method='POST' class="col s12" id="create-dissociation-form">
+			{% csrf_token %}
+			{% form form=create_dissociation_form %}{% endform %}
+			<div class="row">
+				<button class="btn btn-waves-light col s8 offset-s2">Block <i class="fa fa-ban"></i></button>
+			</div>
+		</form>
+	</div>
+</div>
+<!--                                     -->
+{% endblock tabs_content %}
+{% block scripts %}
+	<script type="text/javascript" src="{% static 'recruitment/manage_dissociation.js' %}"></script>
+	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
+	<script>
+		$(document).ready(function() {
+			Dissociation.init();
+		});
+	</script>
+{% endblock %}

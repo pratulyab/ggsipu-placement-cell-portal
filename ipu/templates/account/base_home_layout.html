@@ -123,11 +123,11 @@
     
     <div id="noti-div">
       <div id="noti-heading">
-      <h3>From : Sender</h3>
-      <h4>Date</h4>
+      <h3>None</h3>
+      <h4>None</h4>
       </div>
       <div id="noti-content">
-      <h5>Message Message Message Message Message Message Message Message Mess </h5>
+      <h5>No Message</h5>
       </div>
     </div>
       
@@ -183,7 +183,7 @@
                   -->
                   <!--New notifications button-->
                   <li class="hide-on-med-and-down">
-                    <a href="#" data-activates="slide-out2" class="button-collapse2"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
+                    <a id="notification_button" href="{% url 'get_notifications' %}" data-activates="slide-out2" class="button-collapse2" url="{% url 'shortened_notifications' %}"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
                   </li>
 
                   <li class="hide-on-med-and-down">
@@ -230,6 +230,25 @@
 
 <!--sidebar ends-->
 
+<!-- Full Page preloader begins.  -->
+  <div id="page-preloader" class="preloader-wrapper big active" style="display : none; position: relative; z-index : 10000; left : 50%; top : 50%; color: red !important; ">
+      <div class="spinner-layer spinner-yellow-only">
+          <div class="circle-clipper left">
+              <div class="circle"></div>
+          </div>
+          <div class="gap-patch">
+              <div class="circle"></div>
+          </div>
+          <div class="circle-clipper right">
+              <div class="circle"></div>
+          </div>
+      </div>
+  </div>
+  <div id="preloader-shadow" style="display: none; position: absolute; 
+  background: #000; top: 0; left: 0;
+  opacity: 0.6; z-index: 9999;">   
+  </div>
+<!-- END Preloader  -->
 <!--notification-sidebar begins-->
 
  <ul id="slide-out" class="side-nav">
@@ -244,9 +263,6 @@
   </ul>
 
 <!--sidebar ends-->
-
-
-
 
         <main>
             <!--Tabs bar begins--> 
@@ -297,6 +313,7 @@
 			</div>
 		</div>
 	</main>
+
 
 
         <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>

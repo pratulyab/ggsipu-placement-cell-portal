@@ -2,6 +2,8 @@ var Notification = (function() {
 	'use strict'
     var sphr_create_notification = true;
 	var indices = [];
+    var preloader = document.getElementById('page-preloader');
+    var preloader_shadow = document.getElementById('preloader-shadow');
 	function handleMultipleJquery(){
 		$('a').unbind('click'); // to prevent multiple fires because of reloading of jquery in the rendered template.
 		document.getElementById('create-notifications').removeEventListener('click', generateNewForm);
@@ -23,7 +25,6 @@ var Notification = (function() {
 		});
 	}
 
-
     function generateNewForm(e) {
             e.preventDefault();
             $('#notify-students-div').html(" ");
@@ -39,6 +40,12 @@ var Notification = (function() {
     		url : url,
     		type : 'GET',
     		async : true,
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
+            },
     		success : function(data, status, xhr){
 				handleMultipleJquery();
            		$("#notify-students-div").html(data); 
@@ -72,6 +79,12 @@ var Notification = (function() {
                      'stream_list' : stream_list,
                      'indices' : indices,
              },
+             beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
+            },
             success : function(data , status , xhr){
 				handleMultipleJquery();
                 $('#notify-students-div').html(data);
@@ -133,6 +146,12 @@ var Notification = (function() {
                 'csrfmiddlewaretoken' : token , 
                 'stream_to_year' : stream_to_year,
                 'indices' : indices,
+            },
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
             },
             success : function(data , status , xhr){
                 $('#id_stream').on('change' , generateNewForm);
@@ -213,6 +232,12 @@ var Notification = (function() {
                         'sms_message' : sms_message.val(),
                         'if_email' : if_email,
                     },
+                    beforeSend: function() {
+                    showPreloader();
+                    },
+                    complete: function() {
+                        removePreloader();  
+                    },
                     success : function(data , status , xhr){
                         //handleMultipleJquery();
                         $('#your-notifications').trigger('click');
@@ -271,6 +296,12 @@ function removeError(field){
             url : url,
             type : 'GET',
             async : true,
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
+            },
             success : function(data, status, xhr){
                 populateDiv(data);
                 
@@ -280,6 +311,7 @@ function removeError(field){
     }
 
     function populateDiv(data) {
+        console.log(data);
         var raw_html = '';  
         var icon = '';
         if(data.length === 0){

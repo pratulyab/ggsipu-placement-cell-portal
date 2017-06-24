@@ -11,7 +11,9 @@ from recruitment.fields import ModelHashidChoiceField, ModelMultipleHashidChoice
 from recruitment.models import SelectionCriteria
 from student.models import Student
 from material import *
-import datetime, re
+import datetime, re, logging
+
+dummyLogger = logging.getLogger('dummy')
 
 class CreateDummyCompanyForm(forms.ModelForm):
 	def save(self, college=None, commit=True, *args, **kwargs):
@@ -204,14 +206,24 @@ class ManageDummySessionStudentsForm(forms.ModelForm):
 
 	def notify_disqualified_students(self, actor):
 		shortlisted_pks = [s['pk'] for s in self.cleaned_data['students'].values('pk')]
-		disqualified = self.students_queryset.exclude(pk__in=shortlisted_pks)
+#		disqualified = self.students_queryset.exclude(pk__in=shortlisted_pks) Somehow this doesn't work _._
+		original_students_pks = [s.pk for s in self.students_queryset]
+		disqualified_pks = set(original_students_pks).difference(set(shortlisted_pks))
+		disqualified = Student.objects.filter(pk__in=disqualified_pks)
 		self.disqualified = disqualified
+		student_disq_usernames = ','.join([s['profile__username'] for s in disqualified.values('profile__username')])
 		message = "Sorry, your involvement in the %s session by %s was till here only!\
 					\nThanks for showing your interest.\
 					\nBest of luck for your future." % ("job" if self.instance.type == 'J' else "internship", self.instance.dummy_company.name)
 		for student in disqualified:
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
 		# send mass email
+		# subject = '%s session with %s % ('Internship if self.instance.type == 'I' else 'Job', self.instance.company.name)'
+		#
+		# send_mass_mail_task.delay(subject, message, disqualified)
+		# LOG
+		dummyLogger.info('%s - Students disqualified %s - [DS: %d]' % (actor.username, student_disq_usernames, self.instance.pk))
+		# # #
 		
 	@staticmethod
 	def get_zipped_choices(queryset, hashid_name):
@@ -259,8 +271,13 @@ class EditDummySessionForm(forms.ModelForm):
 			message += "You have been placed at %s. " % (dsession.dummy_company.name.title())
 		else:
 			message += "You have grabbed the internship at %s. " % (dsession.dummy_company.name.title())
-		for student in dsession.students.all():
+		students = self.instance.students.all()
+		student_usernames = ','.join([s['profile__username'] for s in students.values('profile__username')])
+		for student in students:
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
+		# Log
+		dummyLogger.info('%s - Students selected %s - [DS: %d]' % (actor.username, student_usernames, self.instance.pk))
+		# # #
 	
 	class Meta:
 		model = DummySession

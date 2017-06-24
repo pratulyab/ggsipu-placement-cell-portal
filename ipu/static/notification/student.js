@@ -1,3 +1,11 @@
+// Help form recaptcha callback.
+var onloadCallbackHelpForm = function() {
+        grecaptcha.render('site-recaptcha-div', {
+        	'sitekey' : '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC',
+        });
+        removePreloader();
+      };
+
 var Notification = (function() {
 	'use strict'
 	function handleMultipleJquery(){
@@ -36,12 +44,17 @@ var Notification = (function() {
 		$.ajax({
     		url : url,
     		type : 'GET',
+    		beforeSend: function() {
+   				showPreloader();
+            },
+            complete: function() {
+            	$('select').material_select();
+            	// Recaptcha callback is removing the preloader.	
+            },
     		success : function(data, status, xhr){
-           		handleMultipleJquery();
            		$("#help-div").html(data);
            		$("#id_subject").attr('length' , '32');
-           		$('#submit_issue-form').on('submit' , submitIssueForm); 
-           			
+           		$('#submit_issue-form').on('submit' , submitIssueForm); 	
     		}
     	});
 		
@@ -56,6 +69,10 @@ var Notification = (function() {
 		var message = $('#id_message');
 		fieldEvaluator(subject , 32);
 		fieldEvaluator(message , 2044);
+		if(grecaptcha.getResponse().length === 0){
+			alert("Error in human verification. Please reload.");
+			return;
+		}
 		if((fieldEvaluator(subject , 32) &&
 		fieldEvaluator(message , 2044))){
 			$.ajax({
@@ -65,14 +82,20 @@ var Notification = (function() {
 						 'issue_type' : issue_type,
 						 'subject' : subject.val(),
 						 'message' : message.val(),
-
+						 'recaptcha_response' : grecaptcha.getResponse(),
 				},
+				beforeSend: function() {
+   					showPreloader();
+	            },
+	            complete: function() {
+	            	removePreloader();	
+	            },
 				success : function(data , status , xhr){
-					$('#view-issues').trigger('click');
-					alert("Successful! Please check again after sometime for the reply.");
+					document.getElementById('view-issues').click();
+					alert("Successful! A faculty will get back to you soon.");
 				},
 				error: function(error){
-					alert("Couldn't Submit! Please try again later.");
+					alert(data.errors)
 				},
 			});
 			 $("#submit_issue-form").unbind('submit');
@@ -113,6 +136,12 @@ function fieldEvaluator(input_field , max_length){
 		$.ajax({
 			url : url,
 			type : 'GET',
+			beforeSend: function() {
+   				showPreloader();
+            },
+            complete: function() {
+            	removePreloader();	
+            },
 			success : function(data , status , xhr){
 				populateIssueListDiv(data);
 
@@ -172,10 +201,15 @@ function fieldEvaluator(input_field , max_length){
 			data : {
 				'identifier' : identifier,
 			},
+			beforeSend: function() {
+   				showPreloader();
+            },
+            complete: function() {
+            	removePreloader();	
+            },
 			success : function(data , status , xhr){
-				handleMultipleJquery();
 				$('#view-issues-div').html(data);
-				$('#ok').on('click' , function(e){$('#your-notifications').trigger('click');});
+				document.getElementById('ok-view-solution').addEventListener('click' , function(e){document.getElementById('your-notifications').click();});
 			}
 		})
 	}
@@ -192,10 +226,14 @@ function fieldEvaluator(input_field , max_length){
         $.ajax({
             url : url,
             type : 'GET',
-            async : true,
+			beforeSend: function() {
+   				showPreloader();
+            },
+            complete: function() {
+            	removePreloader();	
+            },
             success : function(data, status, xhr){
-                populateNotificationDiv(data);
-                
+                populateNotificationDiv(data);    
             }
         });
         
@@ -245,10 +283,17 @@ function fieldEvaluator(input_field , max_length){
     		data : {
 				'identifier' : identifier,
 			},
+			beforeSend: function() {
+   				showPreloader();
+            },
+            complete: function() {
+            	removePreloader();	
+            },
 			success : function(data , status , xhr){
-				$('#notification-model-heading').html(data.subject);
-				$('#notification-model-text').html(data.message);		
-				document.getElementById('notification-detail-model-trigger').click();
+				$('#notification-modal-heading').html(data.subject);
+				$('#notification-modal-text').html(data.message);
+				$('#notification-modal-date').html(data.date);		
+				document.getElementById('notification-detail-modal-trigger').click();
 			}
     	});
     }
@@ -263,13 +308,11 @@ function fieldEvaluator(input_field , max_length){
 
 	return {
 		init: function() {
-			$('#notification').on('click' , viewNotifications);
-			$('#your-notifications').on('click' , viewNotifications);
+			document.getElementById('notification').addEventListener('click' , viewNotifications);
+			document.getElementById('your-notifications').addEventListener('click' , viewNotifications);
 			document.getElementById('help').addEventListener('click' , generateNewHelpForm)
 			document.getElementById('view-issues').addEventListener('click' , generateIssueList);
-
-
-		}
+		},
 	}
 
 })();

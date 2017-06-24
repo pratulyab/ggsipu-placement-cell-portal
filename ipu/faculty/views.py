@@ -25,6 +25,8 @@ from student.forms import QualificationForm
 import re
 
 # Create your views here.
+import logging
+collegeLogger = logging.getLogger('college')
 
 @login_required
 @require_POST
@@ -38,7 +40,7 @@ def faculty_signup(request):
 				faculty = f.save()
 				f.save_m2m()
 				Faculty.objects.create(profile=faculty, college=user.college)
-				#faculty = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
+				collegeLogger.info('[%s] - %s added faculty %s' % (user.college.code, user.username, faculty.username))
 				send_activation_email_task.delay(faculty.pk, get_current_site(request).domain)
 				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['C'])})
 			else:
@@ -154,11 +156,12 @@ def get_enrollment_number(request, profile, user_type):
 def delete_faculty(request, f_hashid, user_type, profile):
 	try:
 		faculty_pk = settings.HASHID_FACULTY.decode(f_hashid)[0]
-		faculty = profile.faculties.get(pk=faculty_pk)
+		faculty = profile.faculties.prefetch_related('profile').get(pk=faculty_pk)
 	except:
 		return JsonResponse(status=400, data={'error': 'Invalid request.'})
 	try:
 		faculty.profile.delete()
+		collegeLogger.info('[%s] - %s deleted faculty %s' % (profile.code, request.user.username, faculty.profile.username))
 	except:
 		return JsonResponse(status=400, data={'error': 'Sorry, couldn\'t complete the deletion request. Please try again after some time.'})
 	return JsonResponse(status=200, data={'success_msg': 'Deletion request successful'})
@@ -170,13 +173,15 @@ def delete_faculty(request, f_hashid, user_type, profile):
 def edit_perms(request, f_hashid, user_type, profile):
 	try:
 		faculty_pk = settings.HASHID_FACULTY.decode(f_hashid)[0]
-		faculty = profile.faculties.get(pk=faculty_pk)
+		faculty = profile.faculties.prefetch_related('profile').get(pk=faculty_pk)
 	except:
 		return JsonResponse(status=400, data={'error': 'Invalid request.'})
 	if request.method == 'POST':
 		f = EditGroupsForm(request.POST, instance=faculty.profile)
 		if f.is_valid():
 			f.save()
+			if f.changed_data:
+				collegeLogger.info('[%s] - %s changed perms of faculty %s to: %s' % (profile.code, request.user.username, faculty.profile.username, ','.join(f.changed_data)))
 			return JsonResponse(status=200, data={'success_msg': 'Permissions have been updated successfully.'})
 	else:
 		context = {'edit_faculty_perms_form': EditGroupsForm(instance=faculty.profile), 'f_hashid': f_hashid}

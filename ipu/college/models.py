@@ -68,7 +68,7 @@ class College(models.Model):
 		return output	
 
 	def get_absolute_url(self):
-		return "/%s/" % self.profile.username
+		return "/user/%s/" % self.profile.username
 
 @receiver(post_delete, sender=College)
 def delete_photo(sender, **kwargs):

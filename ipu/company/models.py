@@ -20,7 +20,7 @@ class Company(models.Model):
 		return self.name
 
 	def get_absolute_url(self):
-		return "/%s/" % self.profile.username
+		return "/user/%s/" % self.profile.username
 
 	class Meta:
 		verbose_name_plural = _("Companies")

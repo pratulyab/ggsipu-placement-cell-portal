@@ -167,6 +167,8 @@
 						<div class="col s12 m10 offset-m1 card-panel" id="delete-div">
 							<form class="row">
 								{% csrf_token %}
+								<label for="delete_reason">Reason(s)</label>
+								<input name="reason" id="delete_reason" placeholder="Reasons (if any)">
 								<button type="submit" class="btn btn-waves red" style="width: 100%" id="delete-btn">Delete Student Forever</button>
 							</form>
 							<div class="row center">
