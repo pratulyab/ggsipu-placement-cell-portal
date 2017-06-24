@@ -52,7 +52,6 @@ var Notification = (function() {
             	// Recaptcha callback is removing the preloader.	
             },
     		success : function(data, status, xhr){
-           		handleMultipleJquery();
            		$("#help-div").html(data);
            		$("#id_subject").attr('length' , '32');
            		$('#submit_issue-form').on('submit' , submitIssueForm); 	
@@ -72,6 +71,7 @@ var Notification = (function() {
 		fieldEvaluator(message , 2044);
 		if(grecaptcha.getResponse().length === 0){
 			alert("Error in human verification. Please reload.");
+			return;
 		}
 		if((fieldEvaluator(subject , 32) &&
 		fieldEvaluator(message , 2044))){
@@ -208,9 +208,8 @@ function fieldEvaluator(input_field , max_length){
             	removePreloader();	
             },
 			success : function(data , status , xhr){
-				handleMultipleJquery();
 				$('#view-issues-div').html(data);
-				$('#ok').on('click' , function(e){$('#your-notifications').trigger('click');});
+				document.getElementById('ok-view-solution').addEventListener('click' , function(e){document.getElementById('your-notifications').click();});
 			}
 		})
 	}
@@ -309,8 +308,8 @@ function fieldEvaluator(input_field , max_length){
 
 	return {
 		init: function() {
-			$('#notification').on('click' , viewNotifications);
-			$('#your-notifications').on('click' , viewNotifications);
+			document.getElementById('notification').addEventListener('click' , viewNotifications);
+			document.getElementById('your-notifications').addEventListener('click' , viewNotifications);
 			document.getElementById('help').addEventListener('click' , generateNewHelpForm)
 			document.getElementById('view-issues').addEventListener('click' , generateIssueList);
 		},

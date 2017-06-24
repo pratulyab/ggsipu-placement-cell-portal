@@ -123,11 +123,11 @@
     
     <div id="noti-div">
       <div id="noti-heading">
-      <h3>From : Sender</h3>
-      <h4>Date</h4>
+      <h3>None</h3>
+      <h4>None</h4>
       </div>
       <div id="noti-content">
-      <h5>Message Message Message Message Message Message Message Message Mess </h5>
+      <h5>No Message</h5>
       </div>
     </div>
       
@@ -183,7 +183,7 @@
                   -->
                   <!--New notifications button-->
                   <li class="hide-on-med-and-down">
-                    <a href="#" id="notification_button" data-activates="slide-out2" class="button-collapse2"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
+                    <a id="notification_button" href="{% url 'get_notifications' %}" data-activates="slide-out2" class="button-collapse2" url="{% url 'shortened_notifications' %}"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
                   </li>
 
                   <li class="hide-on-med-and-down">

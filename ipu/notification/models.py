@@ -45,7 +45,7 @@ class Issue(models.Model):
 	solver_username = models.CharField(_('Solver') , max_length = 32 , blank = True)
 
 	def __str__(self):
-		return ("By" + self.actor.profile.username)
+		return ("By " + self.actor.profile.username)
 
 
 class IssueReply(models.Model):
