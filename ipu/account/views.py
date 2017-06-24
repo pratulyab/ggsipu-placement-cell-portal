@@ -47,12 +47,6 @@ def team(request):
 	return render(request, 'account/team.html', {})
 
 @require_GET
-def stats(request):
-	if request.user.is_authenticated():
-		return handle_user_type(request, redirect_request=True)
-	return render(request, 'account/stats.html', {})
-
-@require_GET
 def intro(request):
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_request=True)
@@ -194,17 +188,23 @@ def edit_account(request):
 			f = AccountForm(request.POST, instance=request.user)
 			if f.is_valid():
 				f.save()
+				data = {}
 				if f.password_changed:
+					data['refresh'] = True
 					user = authenticate(username=f.cleaned_data.get('username'), password=f.cleaned_data.get('new_password2'))
 					if user:
 						auth_login(request, user)
 					accountLogger.info('Password changed for user %s' % user.username)
 				context = {}
 				context['edit_account_form'] = f
-				context['success_msg'] = "Your account has been updated successfully"
-				return JsonResponse(status=200, data={'render': render(request, 'account/edit_account.html', context).content.decode('utf-8')})
+#				context['success_msg'] = "Your account has been updated successfully"
+#				return JsonResponse(status=200, data={'render': render(request, 'account/edit_account.html', context).content.decode('utf-8')})
+				data['message'] = "Your account settings have been updated successfully."
+				from time import sleep
+				sleep(2)
+				return JsonResponse(status=200, data=data)
 			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 	else:
 		return handle_user_type(request, redirect_request=True)
 
@@ -263,12 +263,13 @@ def social_profile(request):
 				f = SocialProfileForm(request.POST)
 			if f.is_valid():
 				f.save(user=request.user)
-				context = {}
-				context['social_profile_form'] = f
-				context['success_msg'] = "Your profile has been successfully updated"
-				return JsonResponse(status=200, data={'render': render(request, 'account/social_profile.html', context).content.decode('utf-8')})
+#				context = {}
+#				context['social_profile_form'] = f
+#				context['success_msg'] = "Your social profile has been successfully updated"
+#				return JsonResponse(status=200, data={'render': render(request, 'account/social_profile.html', context).content.decode('utf-8')})
+				return JsonResponse(status=200, data={'message': 'Your social profile settings have been updated successfully.'})
 			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 	else:
 		return handle_user_type(request, redirect_request=True)
 

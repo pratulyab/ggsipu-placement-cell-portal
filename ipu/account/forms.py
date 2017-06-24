@@ -53,6 +53,8 @@ class SignupForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(SignupForm, self).__init__(*args, **kwargs)
 		self.fields['email'].required = True
+		self.fields['username'].widget.attrs['placeholder'] = 'Enter a username'
+		self.fields['email'].widget.attrs['placeholder'] = 'Enter email address'
 	
 	password1 = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder': _('Enter password')}))
 	password2 = forms.CharField(label=_('Re-enter Password'), widget=forms.PasswordInput(attrs={'placeholder': _('Confirm password')}))

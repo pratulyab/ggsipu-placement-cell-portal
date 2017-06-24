@@ -1,5 +1,6 @@
 var Settings = (function() {
 	"use strict";
+	var inProcess = false;
 
 	function handleMultipleJquery(){
 		$('a').unbind('click'); // to prevent multiple fires because of reloading of jquery in the rendered template.
@@ -53,39 +54,62 @@ var Settings = (function() {
 	}
 
 	function handleAJAX(form, form_id) {
+		// Swal Enabled
+		if (inProcess)
+			return;
 		clearErrors(form_id);
 		var url = $(form).attr('action');
 		var type = $(form).attr('method');
 		var form_data = new FormData(form[0]);
-		$(form).off('submit');
 		$.ajax({
 			url: url,
 			type: type,
 			data: form_data,
 			processData: false,
 			contentType: false,
+			beforeSend: function() {
+				inProcess = true;
+				$(form).find('button').addClass('disabled');
+				showPreloader();
+			},
+			complete: function() {
+				inProcess = false;
+				removePreloader();	
+				$(form).find('button').removeClass('disabled');
+			},
 			success: function(data, status, xhr){
-				handleMultipleJquery();
-				if (data['location']){
-					location.href = data['location'];
-					return;
-				}
-				var form_div = $(form).parent();
-				form_div.html(data['render']);
-				$(form_id).on('submit', submitForm);
+				if (data.refresh) {
+					swal({
+						title: 'Success',
+						text: data.message,
+						type: 'success',
+						allowEscapeKey: false,
+						}, function(e) {
+							window.location.href = '';
+						}
+					);
+				} else
+					swal("Success!", data.message, "success");
+
 			},
 			error: function(xhr, status, error){
-				var loc = xhr.responseJSON['location'];
-				if (loc){
-					location.href = loc;
-					return;
-				}
 				if (xhr.responseJSON['error']){
 					$(form).parent().prepend($('<small class="error">'+xhr.responseJSON['error']+'</small>'))
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
-				$(form_id).on('submit', submitForm);
+				if (xhr.responseJSON['refresh']) {
+					swal({
+						title: 'Error',
+						text: xhr.responseJSON['message'],
+						type: 'error',
+						allowOutsideClick: true,
+						}, function(e) {
+							window.location.href = '';
+						}
+					);
+				} else
+					swal("Error!", xhr.responseJSON['message'] , "error");
 			}
 		});
 	}

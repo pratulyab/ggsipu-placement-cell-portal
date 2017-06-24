@@ -1,0 +1,674 @@
+[
+{
+    "model": "stats.placement",
+    "pk": 1,
+    "fields": {
+        "record": 1,
+        "company": 20,
+        "type": "J",
+        "salary": "15.25",
+        "salary_comment": "",
+        "total_offers": 4
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 2,
+    "fields": {
+        "record": 1,
+        "company": 21,
+        "type": "J",
+        "salary": "15.10",
+        "salary_comment": "",
+        "total_offers": 0
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 3,
+    "fields": {
+        "record": 1,
+        "company": 16,
+        "type": "J",
+        "salary": "8.50",
+        "salary_comment": "",
+        "total_offers": 3
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 4,
+    "fields": {
+        "record": 1,
+        "company": 22,
+        "type": "J",
+        "salary": "0.00",
+        "salary_comment": "7-8 LPA",
+        "total_offers": 0
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 5,
+    "fields": {
+        "record": 1,
+        "company": 44,
+        "type": "J",
+        "salary": "6.70",
+        "salary_comment": "",
+        "total_offers": 3
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 6,
+    "fields": {
+        "record": 1,
+        "company": 23,
+        "type": "J",
+        "salary": "6.50",
+        "salary_comment": "",
+        "total_offers": 4
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 7,
+    "fields": {
+        "record": 1,
+        "company": 24,
+        "type": "J",
+        "salary": "6.47",
+        "salary_comment": "",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 8,
+    "fields": {
+        "record": 1,
+        "company": 25,
+        "type": "J",
+        "salary": "6.00",
+        "salary_comment": "",
+        "total_offers": 4
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 9,
+    "fields": {
+        "record": 1,
+        "company": 26,
+        "type": "J",
+        "salary": "6.00",
+        "salary_comment": "",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 10,
+    "fields": {
+        "record": 1,
+        "company": 27,
+        "type": "J",
+        "salary": "6.00",
+        "salary_comment": "",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 11,
+    "fields": {
+        "record": 1,
+        "company": 28,
+        "type": "J",
+        "salary": "0.00",
+        "salary_comment": "5+",
+        "total_offers": 4
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 12,
+    "fields": {
+        "record": 1,
+        "company": 29,
+        "type": "J",
+        "salary": "0.00",
+        "salary_comment": "3-5",
+        "total_offers": 5
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 13,
+    "fields": {
+        "record": 1,
+        "company": 30,
+        "type": "J",
+        "salary": "0.00",
+        "salary_comment": "3-5",
+        "total_offers": 2
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 14,
+    "fields": {
+        "record": 1,
+        "company": 10,
+        "type": "J",
+        "salary": "4.00",
+        "salary_comment": "",
+        "total_offers": 7
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 15,
+    "fields": {
+        "record": 1,
+        "company": 4,
+        "type": "J",
+        "salary": "4.00",
+        "salary_comment": "",
+        "total_offers": 2
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 16,
+    "fields": {
+        "record": 1,
+        "company": 31,
+        "type": "J",
+        "salary": "3.50",
+        "salary_comment": "",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 17,
+    "fields": {
+        "record": 1,
+        "company": 1,
+        "type": "J",
+        "salary": "3.25",
+        "salary_comment": "",
+        "total_offers": 127
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 18,
+    "fields": {
+        "record": 1,
+        "company": 8,
+        "type": "J",
+        "salary": "3.25",
+        "salary_comment": "",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 19,
+    "fields": {
+        "record": 1,
+        "company": 32,
+        "type": "J",
+        "salary": "3.07",
+        "salary_comment": "",
+        "total_offers": 12
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 20,
+    "fields": {
+        "record": 1,
+        "company": 33,
+        "type": "J",
+        "salary": "3.00",
+        "salary_comment": "",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 21,
+    "fields": {
+        "record": 1,
+        "company": 34,
+        "type": "J",
+        "salary": "3.00",
+        "salary_comment": "",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 22,
+    "fields": {
+        "record": 1,
+        "company": 35,
+        "type": "J",
+        "salary": "2.80",
+        "salary_comment": "",
+        "total_offers": 4
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 23,
+    "fields": {
+        "record": 1,
+        "company": 36,
+        "type": "J",
+        "salary": "0.00",
+        "salary_comment": "(For SSB)",
+        "total_offers": 18
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 24,
+    "fields": {
+        "record": 1,
+        "company": 9,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 7
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 25,
+    "fields": {
+        "record": 1,
+        "company": 37,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 2
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 26,
+    "fields": {
+        "record": 1,
+        "company": 38,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 27,
+    "fields": {
+        "record": 1,
+        "company": 39,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 3
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 28,
+    "fields": {
+        "record": 1,
+        "company": 40,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 29,
+    "fields": {
+        "record": 1,
+        "company": 41,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 3
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 30,
+    "fields": {
+        "record": 1,
+        "company": 42,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 3
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 31,
+    "fields": {
+        "record": 1,
+        "company": 43,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 32,
+    "fields": {
+        "record": 1,
+        "company": 25,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 5
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 33,
+    "fields": {
+        "record": 1,
+        "company": 29,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 2
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 34,
+    "fields": {
+        "record": 1,
+        "company": 10,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 4
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 35,
+    "fields": {
+        "record": 1,
+        "company": 31,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 2
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 36,
+    "fields": {
+        "record": 1,
+        "company": 1,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 2
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 37,
+    "fields": {
+        "record": 1,
+        "company": 8,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 38,
+    "fields": {
+        "record": 1,
+        "company": 35,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 4
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 39,
+    "fields": {
+        "record": 2,
+        "company": 1,
+        "type": "J",
+        "salary": "3.33",
+        "salary_comment": "",
+        "total_offers": 115
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 40,
+    "fields": {
+        "record": 2,
+        "company": 2,
+        "type": "J",
+        "salary": "3.50",
+        "salary_comment": "",
+        "total_offers": 54
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 41,
+    "fields": {
+        "record": 2,
+        "company": 3,
+        "type": "J",
+        "salary": "4.50",
+        "salary_comment": "",
+        "total_offers": 6
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 42,
+    "fields": {
+        "record": 2,
+        "company": 4,
+        "type": "J",
+        "salary": "5.50",
+        "salary_comment": "",
+        "total_offers": 5
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 43,
+    "fields": {
+        "record": 2,
+        "company": 5,
+        "type": "J",
+        "salary": "6.00",
+        "salary_comment": "",
+        "total_offers": 5
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 44,
+    "fields": {
+        "record": 2,
+        "company": 6,
+        "type": "J",
+        "salary": "3.30",
+        "salary_comment": "",
+        "total_offers": 4
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 45,
+    "fields": {
+        "record": 2,
+        "company": 7,
+        "type": "J",
+        "salary": "3.25",
+        "salary_comment": "",
+        "total_offers": 36
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 46,
+    "fields": {
+        "record": 2,
+        "company": 8,
+        "type": "J",
+        "salary": "3.50",
+        "salary_comment": "",
+        "total_offers": 4
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 47,
+    "fields": {
+        "record": 2,
+        "company": 9,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "Training",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 48,
+    "fields": {
+        "record": 2,
+        "company": 10,
+        "type": "J",
+        "salary": "4.00",
+        "salary_comment": "",
+        "total_offers": 8
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 49,
+    "fields": {
+        "record": 2,
+        "company": 11,
+        "type": "J",
+        "salary": "4.50",
+        "salary_comment": "",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 50,
+    "fields": {
+        "record": 2,
+        "company": 12,
+        "type": "J",
+        "salary": "3.75",
+        "salary_comment": "",
+        "total_offers": 0
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 51,
+    "fields": {
+        "record": 2,
+        "company": 14,
+        "type": "J",
+        "salary": "0.00",
+        "salary_comment": "5-7",
+        "total_offers": 6
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 52,
+    "fields": {
+        "record": 2,
+        "company": 15,
+        "type": "J",
+        "salary": "5.30",
+        "salary_comment": "",
+        "total_offers": 8
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 53,
+    "fields": {
+        "record": 2,
+        "company": 16,
+        "type": "I",
+        "salary": "0.00",
+        "salary_comment": "25,000 per month",
+        "total_offers": 1
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 54,
+    "fields": {
+        "record": 2,
+        "company": 16,
+        "type": "J",
+        "salary": "10.00",
+        "salary_comment": "",
+        "total_offers": 5
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 55,
+    "fields": {
+        "record": 2,
+        "company": 17,
+        "type": "J",
+        "salary": "3.20",
+        "salary_comment": "",
+        "total_offers": 0
+    }
+},
+{
+    "model": "stats.placement",
+    "pk": 56,
+    "fields": {
+        "record": 2,
+        "company": 19,
+        "type": "J",
+        "salary": "8.22",
+        "salary_comment": "",
+        "total_offers": 3
+    }
+}
+]

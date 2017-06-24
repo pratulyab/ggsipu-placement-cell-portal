@@ -1,0 +1,11 @@
+[
+{
+    "model": "stats.college",
+    "pk": 1,
+    "fields": {
+        "name": "University School of Information and Communication Technology",
+        "code": "164",
+        "alias": "USICT"
+    }
+}
+]

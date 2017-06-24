@@ -33,12 +33,12 @@
        </a>
        <a class="hide-on-large-only" href = "javascript:void(0)" onclick = "document.getElementById('student-sign-up').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-4x" id="cross"></i>
        </a>
-  <div class="row" id="student-signup-mainbox">
-			<div class="col s12 m8 l6" id="student-signup-box">
+  <div id="student-signup-mainbox">
+			<div class="col s12" id="student-signup-box">
 				<div class="card-panel">
-					<h4> Student Signup </h4>
+					<h4 class="center-align"> Student Signup </h4>
 					<div id="student-signup-div">
-						<form method="POST" action="{% url 'student_signup' %}" id="student-signup-form">
+						<form method="POST" action="{% url 'student_signup' %}" id="student-signup-form" class="col s12">
 							{% csrf_token %}
 							{% form form=student_signup_form %}
               {% part form.username prefix %}<i class="material-icons prefix">account_box</i>{% endpart %}
@@ -46,11 +46,9 @@
               {% part form.password1 prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
               {% part form.password2 prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
               {% endform %}
+			  			<br>
 							<div class="row">
-								<div class="col s12">
-									<br>
-									<button type="submit" id="student-signup-btn" class="btn waves-effect waves-light-right">Signup<i class="material-icons right">send</i></button>
-								</div>
+								<button type="submit" id="student-signup-btn" class="btn waves-effect waves-light col s8 offset-s2">Signup <i class="material-icons">send</i></button>
 							</div>
 							<br>
 						</form>
@@ -66,12 +64,12 @@
        </a>
       <a class="hide-on-large-only" href = "javascript:void(0)" onclick = "document.getElementById('recruiter-sign-up').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-4x" id="cross"></i>
        </a> 
-       <div class="row" id="recruiter-signup-mainbox">
-				<div class="col s12 m8 l6" id="recruiter-signup-box">
+       <div class="col" id="recruiter-signup-mainbox">
+				<div class="col s12" id="recruiter-signup-box">
 					<div class="card-panel">
-						<h4> Recruiter Signup </h4>
+						<h4 class="center-align"> Recruiter Signup </h4>
 						<div id="signup-div">
-							<form method="POST" action="{% url 'company_signup' %}" id="signup-form">
+							<form method="POST" action="{% url 'company_signup' %}" id="signup-form" class="col s12">
 								{% csrf_token %}
 								{% form form=signup_form %}
                 {% part form.username prefix %}<i class="material-icons prefix">account_box</i>{% endpart %}
@@ -79,11 +77,9 @@
                 {% part form.password1 prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
                 {% part form.password2 prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
                 {% endform %}
+			  			<br>
 								<div class="row">
-									<div class="col s12">
-										<br>
-										<button type="submit" id="signup-btn" class="btn waves-effect waves-light-right">Signup<i class="material-icons right">send</i></button>
-									</div>
+									<button type="submit" id="signup-btn" class="btn waves-effect waves-light col s8 offset-s2">Signup  <i class="material-icons">send</i></button>
 								</div>
 								<br>
 							</form>
@@ -96,7 +92,7 @@
 
 
    <img src="{% static 'account/images/ipu-logo.png' %}">
-   <h4 id="heading">LOGIN</h4>
+   <h4 id="heading">Login</h4>
 
       <div id="form-box">
            <div class="row">

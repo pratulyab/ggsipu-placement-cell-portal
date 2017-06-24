@@ -322,7 +322,6 @@ def delete_student(request, **kwargs):
 			return JsonResponse(status=400, data={'error': 'Student with this enrollment number does not exist'})
 		try:
 			user.delete()
-			print(request.POST)
 			# LOG
 			facultyLogger.info('[%s] - %s deleted %s - %s' % (faculty.college.code, faculty.profile.username, user.username, request.POST.get('reason', 'No reasons given')))
 			# # #
@@ -590,12 +589,13 @@ def tech_profile(request, **kwargs):
 			f = TechProfileForm(request.POST, student=student)
 		if f.is_valid():
 			f.save()
-			context = {}
-			context['tech_profile_form'] = f
-			context['success_msg'] = "Your profile has been updated successfully!"
-			return JsonResponse(status=200, data={ 'render': render(request, 'student/tech_profile.html', context).content.decode('utf-8') })
+#			context = {}
+#			context['tech_profile_form'] = f
+#			context['success_msg'] = "Your profile has been updated successfully!"
+#			return JsonResponse(status=200, data={ 'render': render(request, 'student/tech_profile.html', context).content.decode('utf-8') })
+			return JsonResponse(status=200, data={'message': 'Technical Profile settings have been updated.'})
 		else:
-			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+			return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 ##		else:
 ##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
@@ -618,11 +618,18 @@ def upload_file(request, **kwargs):
 			# Removing old files
 			delete_old_filefield(photo, student.photo)
 			delete_old_filefield(resume, student.resume)
-			context = {}
-			context['upload_file_form'] = FileUploadForm(instance=student)
-			context['success_msg'] = "Upload success!"
-			return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['S'])})
-		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+#			context = {}
+#			context['upload_file_form'] = FileUploadForm(instance=student)
+#			context['success_msg'] = "Upload success!"
+#			return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['S'])})
+			if f.changed_data:
+				message = 'Files have been uploaded successfully.'
+				refresh = True
+			else:
+				message = 'Nothing to upload.'
+				refresh = False
+			return JsonResponse(status=200, data={'message': message, 'refresh': refresh})
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 ##		else:
 ##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
