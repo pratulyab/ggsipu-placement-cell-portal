@@ -5,11 +5,70 @@
 {% block title %}Training And Placement Cell{% endblock %}
 
 {% block head %}
-	<link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
 	<link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
 {% endblock %}
 
 {% block header %}
+<style type="text/css">
+  nav
+{
+  height: 64px;
+    padding-top: 2px;
+    background-color: #1a237e !important;
+    padding-left: 5px;
+}
+#corner-button
+{
+    position: fixed;
+    line-height: 54px;
+    font-size: 15px;
+    padding: 1px;
+    padding-bottom: 5px;
+    top: 6px;
+    right: 2px;
+    width: 170px;
+    height: 54px;
+    z-index: 50285154165;
+}
+
+#logo
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+#inner-logo h4
+{
+  font-size:21px;
+  margin-bottom: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+#inner-logo h6
+{
+  
+  font-size: 14px;
+  margin-top: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+
+#brand-corner:hover
+{
+  cursor: pointer;
+}
+
+nav .brand-logo { 
+    font-family: "Times New Roman"; /* New */
+    text-transform: capitalize; /* New */
+  font-size: 1.6rem;
+}
+
+</style>
 <div class="navbar-fixed">
     <nav>
       <div class="nav-wrapper">
@@ -25,10 +84,10 @@
                     </div>
         </a>
         <ul class="left">
-          <li class="hide-on-med-and-down"><a style="line-height: 64px;height: 64px;" href="{% url 'landing' %}"><i class="fa fa-arrow-left fa-2x" aria-hidden="true"></i>
+          <li class="hide-on-med-and-down"><a style="line-height: 64px;height: 64px;" href="{% url 'landing' %}"><i class="material-icons">arrow_back</i>
             </a>
           </li>
-          <li class="hide-on-large-only"><a style="line-height: 64px;height: 64px;" href="{% url 'landing' %}"><i class="fa fa-arrow-left fa-4x" aria-hidden="true"></i>
+          <li class="hide-on-large-only"><a style="line-height: 64px;height: 64px;" href="{% url 'landing' %}"><i class="material-icons">arrow_back</i>
             </a>
           </li>
         </ul>

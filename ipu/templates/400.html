@@ -15,7 +15,7 @@
   }
   body{
 
-    background-color: #00bcd4;
+    background-color: rgba(51, 122, 183, 0.40);
     height: 90%;
 
   }
@@ -41,7 +41,7 @@
   #second-top-bar
   {
     width: 100%;
-    background-color: #E57373;
+    background-color: #1c262f;
     height: 15%;
     display: flex;
     align-items: center;
@@ -57,7 +57,7 @@
   #center-inner-box
   {
     width: 100%;
-    background-color: #26a69a;
+    background-color: #4db6ac;
     height: 75%;
     display: flex;
     flex-direction: column;
@@ -111,7 +111,7 @@
   }
 
   .button {
-    background-color: #1344a0; /* Green */
+    background-color: #3b87c8; /* Green */
     border: none;
     color: white;
     padding: 15px 32px;
@@ -137,7 +137,13 @@
   <div id="center-inner-box">
     <h2>400</h2>
     <p>Sorry, but it seems you sent a bad request.</p>
-    <a href="" class="button">HOMEPAGE</a>
+
+    {% if request.user.is_authenticated %}
+		<a href="{{ request.user.get_home_url }}" class="button">Homepage</a>
+		{% else %}
+		<a href="{% url ‘landing’ %}" class="button">Back to site</a>
+	{% endif %}
+
   </div>
 
 </div>
