@@ -38,16 +38,16 @@
     <body>
         <ul id="dropdown1" class="dropdown-content">
             <li id="corner_dropdown">
-                <a href="{% block home_url1 %}{% endblock %}#settings" data-links="settings" id="img-box">
+                <a href="{{ request.user.get_home_url }}#settings" data-links="settings" id="img-box">
                     <img src="{% block user_photo %}{% endblock %}" class="circle" height="90" width="90">
                     <span id="corner_name" class="black-text">{% block user_name_card %}{% endblock %}</span>
                     <span id="corner_email" class="grey-text lighten-1">{% block user_email_id %}{% endblock %}</span>
                 </a>
             </li>
             <li class="divider"></li>
-            <li><a href="{% block home_url2 %}{% endblock %}#settings" data-links="settings"><i class="fa fa-sliders"></i>Account settings</a></li>
+            <li><a href="{{ request.user.get_home_url }}#settings" data-links="settings"><i class="fa fa-sliders"></i>Account settings</a></li>
             <li class="divider"></li>
-            <li><a href="{% block home_url3 %}{% endblock %}#notifications" data-links="notifications"><i class="fa fa-bell"></i>Notifications</a></li>
+            <li><a href="{{ request.user.get_home_url }}#notifications" data-links="notifications"><i class="fa fa-bell"></i>Notifications</a></li>
             <li class="divider"></li>
             <li class="divider"></li>
             <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Sign out</a></li>
@@ -92,7 +92,7 @@
 					<a class="brand-logo center hide-on-med-and-down" style="color:lightcoral;font-weight:800;">{% block pagetitle %}{% endblock %}</a>
                     <ul class="right">
                     <li>
-                    <a href="{% block home_url4 %}{% endblock %}"><i class="fa fa-2x fa-home" aria-hidden="true"></i></a>
+                    <a href="{{ request.user.get_home_url }}"><i class="fa fa-2x fa-home" aria-hidden="true"></i></a>
 
                     </li>
                    	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>

@@ -31,7 +31,7 @@
     <nav>
 
       <div class="nav-wrapper hide-on-med-and-down">
-        <a class="brand-logo" id="brand-corner">
+        <a href="{% url 'landing' %}" class="brand-logo" id="brand-corner">
                     <div class="left" style="margin-left: 1.5%;">
                       <div id="logo">
                         <img src="{% static 'images/ipu-logo.png' %}" style="height: 55px">
@@ -51,7 +51,7 @@
       </div>
 
     <div class="nav-wrapper hide-on-large-only">
-      <a id="brand-corner">
+      <a href="{% url 'landing' %}" id="brand-corner">
                     <div style="margin-left: 1.5%;">
                       <div id="logo">
                         <img src="{% static 'images/ipu-logo.png' %}" style="height: 60px">

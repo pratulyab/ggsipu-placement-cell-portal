@@ -161,7 +161,7 @@
         <div class="navbar-fixed">
             <nav id="nav-bar">
                 <div class="nav-wrapper">
-                    <a class="brand-logo" id="brand-corner">
+                    <a href="{{ request.user.get_home_url }}" class="brand-logo" id="brand-corner">
                     <div class="left hide-on-med-and-down" style="margin-left: 1.5%;">
                       <div id="logo">
                         <img src="{% static 'images/ipu-logo.png' %}" style="height: 55px">
@@ -172,7 +172,7 @@
                       </div>
                     </div>
                     </a>
-                    <a id="center_logo" href="#!" class="brand-logo center hide-on-large-only">Training & Placement Cell</a>
+                    <a id="center_logo" href="{{ request.user.get_home_url }}" class="brand-logo center hide-on-large-only">Training & Placement Cell</a>
                     <h6 class="center hide-on-large-only" style="font-size: 10px;padding: 0px;margin: 1px;margin-top: 1px;position: absolute;top: 40px;left: 15%;width: 70%;right: 15%">Guru Gobind Singh Indraprastha University</h6>
                     <ul class="right">
                    	<li><a style="padding-right: 5px;" href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>

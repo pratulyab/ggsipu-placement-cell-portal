@@ -109,9 +109,9 @@
                 </a>
             </li>
             <li class="divider"></li>
-            <li><a href="{% block home_url2 %}{% endblock %}#settings" data-links="settings"><i class="fa fa-sliders"></i>Account settings</a></li>
+            <li><a href="{{ request.user.get_home_url }}#settings" data-links="settings"><i class="fa fa-sliders"></i>Account settings</a></li>
             <li class="divider"></li>
-            <li><a href="{% block home_url3 %}{% endblock %}#notifications" data-links="notifications"><i class="fa fa-bell"></i>Notifications</a></li>
+            <li><a href="{{ request.user.get_home_url }}#notifications" data-links="notifications"><i class="fa fa-bell"></i>Notifications</a></li>
             <li class="divider"></li>
             <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Sign out</a></li>
         </ul>
@@ -171,7 +171,7 @@
         <div class="navbar-fixed">
             <nav id="nav-bar">
                 <div class="nav-wrapper">
-                    <a class="brand-logo" id="brand-corner">
+                    <a href="{{ request.user.get_home_url }}" class="brand-logo" id="brand-corner">
                     <div class="left hide-on-med-and-down" style="margin-left: 1.5%;">
                       <div id="logo">
                         <img src="{% static 'images/ipu-logo.png' %}" style="height: 55px">
@@ -182,12 +182,12 @@
                       </div>
                     </div>
                     </a>
-                    <a id="center_logo" href="#!" class="brand-logo center hide-on-large-only">Training & Placement Cell</a>
+                    <a id="center_logo" href="{{ request.user.get_home_url }}" class="brand-logo center hide-on-large-only">Training & Placement Cell</a>
                     <h6 class="center hide-on-large-only" style="font-size: 10px;padding: 0px;margin: 1px;margin-top: 1px;position: absolute;top: 40px;left: 15%;width: 70%;right: 15%">Guru Gobind Singh Indraprastha University</h6>
 					<a class="brand-logo center hide-on-med-and-down" style="color:lightcoral;font-weight:800;">{% block pagetitle %}{% endblock %}</a>
                     <ul class="right">
                     <li class="hide-on-small-only">
-                    <a style="height: 64px;" href="{% block home_url4 %}{% endblock %}"><i class="fa fa-2x fa-home" aria-hidden="true"></i></a>
+                    <a style="height: 64px;" href="{{ request.user.get_home_url }}"><i class="fa fa-2x fa-home" aria-hidden="true"></i></a>
                     </li>
                    	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
                   	</li>

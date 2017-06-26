@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>400</title>
-  <link type="text/css" rel="stylesheet" href="../static/error.css" />
+	<title>400: Bad Request</title>
+  <link type="text/css" rel="stylesheet" href="{% static 'error.css' %}" />
 </head>
 
 
@@ -139,9 +139,9 @@
     <p>Sorry, but it seems you sent a bad request.</p>
 
     {% if request.user.is_authenticated %}
-		<a href="{{ request.user.get_home_url }}" class="button">Homepage</a>
+		<a href="{{ request.user.get_home_url }}" class="button">Go Home</a>
 		{% else %}
-		<a href="{% url ‘landing’ %}" class="button">Back to site</a>
+		<a href="{% url 'landing' %}" class="button">Back to site</a>
 	{% endif %}
 
   </div>
