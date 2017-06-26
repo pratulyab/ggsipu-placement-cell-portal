@@ -41,6 +41,12 @@ def landing(request):
 	return render(request, 'account/landing.html', {})
 
 @require_GET
+def procedure(request):
+	if request.user.is_authenticated():
+		return handle_user_type(request, redirect_request=True)
+	return render(request, 'account/procedure.html', {})	
+
+@require_GET
 def team(request):
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_request=True)

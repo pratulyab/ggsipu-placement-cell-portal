@@ -25,6 +25,7 @@ urlpatterns = [
 	url(r'^$', landing, name='landing'),
 	url(r'^auth/$', auth, name='auth'),
 	url(r'^team/$', team, name='team'),
+	url(r'^procedure/$', procedure, name='procedure'),
 	url(r'^stats/$', stats, name='stats'),
 	url(r'^intro/$', intro, name='intro'),
 	url(r'^login/$', login, name='login'),
