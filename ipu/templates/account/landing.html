@@ -7,6 +7,7 @@
 	<link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
 	<link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
 	<link type="text/css" rel="stylesheet" href="{% static 'account/css/landing.css' %}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
  
 
 	<!--SEO work meta tags-->
@@ -54,7 +55,7 @@
       <a id="brand-corner">
                     <div style="margin-left: 1.5%;">
                       <div id="logo">
-                        <img src="{% static 'images/ipu-logo.png' %}" style="height: 60px">
+                        <img src="{% static 'images/ipu-logo.png' %}" style="height: 45px">
                         <div id="inner-logo">
                         <h4>Training & Placement cell</h4>
                         <h6>Guru Gobind Singh Indraprastha University</h6> 
@@ -76,13 +77,14 @@
 {% endblock header %}
 
 {% block content %}                  
- <img id="icon-college" src="{% static 'account/images/ipu-logo.png' %}">
+ 
     
-   <div class="parallax-container">
+   <div class="parallax-container" id="first-parallax-container">
     <div class="parallax" id="img-first">
     	<div class="row container" id="first-bo">
-    	    
+    	    <img id="icon-college" src="{% static 'account/images/ipu-logo.png' %}">
       		<h3>Guru Gobind Singh Indraprastha University</h3>
+            <a id="corner-button" href="{% url 'auth' %}" class="waves-effect waves-light btn-large red text-flow">Login / Sign Up</a>
     	</div>
     </div>
   </div>
@@ -108,7 +110,6 @@
   </div>
   <div class="footer" id="third-section">
     <div class="row container" id="third-box">
-	  <h3><a href="{% url 'team' %}">Developed & Maintained by students' team at USICT</a></h3>
       <h3>© 2016 Guru Gobind Singh Indraprastha University. All rights reserved.</h3>
     </div>
   </div>
@@ -116,7 +117,7 @@
 
         
 
-	<a id="corner-button" href="{% url 'auth' %}" class="waves-effect waves-light btn-large red text-flow">Login / Sign Up</a>
+	
 {% endblock %}
 
 {% block scripts %}
