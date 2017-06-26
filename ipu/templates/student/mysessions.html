@@ -10,15 +10,15 @@
 			{% if not session.is_dummy and session.photo %}
 				<img src="{{ session.photo.url }}" alt="Recruiter" class="circle" />
 			{% endif %}
-			<span class="title">{{ session.company }} for {{ session.type|title }} </span>
+			<span class="title blue-text text-accent-2"><b>{{ session.company }}</b> for {{ session.type|title }} </span>
 			<p>
-				{{ session.salary }}
+				<b>Salary: </b>{{ session.salary }}
 				<br>
 				<p>
-					{{ session.streams }}
+					<b>Streams: </b>{{ session.streams }}
 				</p>
 				<br>
-					{{ session.students }} student{{ session.students|pluralize }} in the session
+					<b><span class="orange-text text-darken-2">{{ session.students }}</b> student{{ session.students|pluralize }} in the session
 			</p>
 		</li>
 	{% endfor %}

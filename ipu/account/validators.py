@@ -47,8 +47,8 @@ class CustomPasswordValidator(object):
 #			raise ValidationError(_('Password must be a combination of lower and upper characters. Eg. abC'))
 		if not re.match(r'(?=.*\d)', password):
 			raise ValidationError(_('Password must contain at least one digit (0-9).'))
-		if not re.match(r'(?=.*[@#$%.!])', password):
-			raise ValidationError(_('Password must contain at least one of the special characters @ # $ % . !'))
+		if not re.match(r'(?=.*[#!$%&()*+,-./:;<=>?@[\]^_`{|}~])', password):
+			raise ValidationError(_('Password must contain at least one special character.'))
 		if not re.match(r'.{8,}', password):
 			raise ValidationError(_('Password must be at least 8 characters long.'))
 

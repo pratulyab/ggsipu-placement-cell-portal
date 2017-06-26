@@ -1,16 +1,57 @@
 {% load staticfiles %}
+<style type="text/css">
+	.req-card-main
+	{
+		background-color: #7d97ad;
+		height: 300px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		border-style: solid;
+		border-color: #1c262f; 
+		padding: 10px;
+	}
+
+	.card-action a
+	{
+       margin: 10px;
+	}
+
+	#heading
+	{
+		color: #1c262f;
+		font-size: 25px;
+		font-weight: bold;
+	}
+
+	#content p
+	{
+		font-size: 16px;
+	}
+
+	#content #package
+	{
+		color: #fbc02d;
+	}
+	
+</style>
+
+
 <div class="container">
 	<div class="col s8 offset-s2 request-content">
 		{% for ass in associations %}
-			<div class="col s12 card-panel blue-grey darken-1" style="padding: 10px;text-align: center;">
-				<div class="card-content white-text">
-					<span class="card-title" style="color: coral;font-size: 20px;">Association Request</span>
+			<div class="col s12 card-panel req-card-main">
+				<div class="card-content white-text center" id="content">
+					<span class="card-title" id="heading">Association Request</span>
 					<p> {{ ass.obj }} </p>
-					<p> {{ ass.obj.salary }} </p>
+					<p id="package"> Programme: {{ ass.obj.programme }}</p>
+					<p id="package"> Streams: {{ ass.streams }}</p>
+					<p id="package"> Salary: {{ ass.obj.salary }} LPA (This can be changed later)</p>
 				</div>
-				<div class="card-action">
-					<a class="waves-effect waves-light btn" href=" {{ ass.url.session_url }} ">Accept</a>
-					<a class="waves-effect waves-light btn" href=" {{ ass.url.decline_url }} ">Decline</a>
+				<div class="card-action yellow-text">
+					<a class="waves-effect waves-light btn" href=" {% url 'createsession' %}?ass={{ ass.hashid }}">Accept</a>
+					<a class="waves-effect waves-light btn" href=" {% url 'decline' %}?ass={{ ass.hashid }}">Decline</a>
 				</div>
 			</div>
 			{% empty %}

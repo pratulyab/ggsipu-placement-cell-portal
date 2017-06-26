@@ -73,6 +73,12 @@ var Associate = (function() {
 			type: 'GET',
 			data: data,
 			contentType: false,
+			beforeSend: function() {
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();
+			},
 			success: function(data, status, xhr){
 				if (data['programmes']){
 					var $programme_select = $(form).find('#id_programme');
@@ -113,11 +119,21 @@ var Associate = (function() {
 			data: form_data,
 			processData: false,
 			contentType: false,
+			beforeSend: function() {
+				showPreloader();
+				$(form).find('button').addClass('disabled');
+			},
+			complete: function() {
+				removePreloader();
+				$(form).find('button').removeClass('disabled');
+			},
 			success: function(data, status, xhr){
+			/*
 				if (data['location']){
 					location.href = data['location'];
 					return;
 				}
+			*/
 				/*
 				handleMultipleJquery();
 				var form_div = $(form).parent();
@@ -138,17 +154,30 @@ var Associate = (function() {
 						handleAJAX(form, form_id, '/recruitment/get_with_streams/');
 					});
 					*/
+				if (data.refresh)
+					swal({
+						title: 'Success!',
+						text: data.message,
+						type: 'success',
+						allowEscapeKey: false,
+					}, function(){window.location.href=''});
+				else
+					swal('Success!', data.message, 'success');
 			},
 			error: function(xhr, status, error){
+				/*
 				var loc = xhr.responseJSON['location'];
 				if (loc){
 					location.href = loc;
 					return;
 				}
-				if (xhr.responseJSON['error']){
+				*/
+				if (xhr.responseJSON && xhr.responseJSON['error']){
 					$(form).parent().prepend($('<small class="center error">'+xhr.responseJSON['error']+'</small>'))
-					Materialize.toast(xhr.responseJSON['error'], 4000);
+//					Materialize.toast(xhr.responseJSON['error'], 4000);
 				}
+				var message = (xhr.responseJSON && (xhr.responseJSON['message'] || xhr.responseJSON['error'])) ? (xhr.responseJSON['message'] || xhr.responseJSON['error']) : (xhr.status >= 500 ? 'Sorry, an unexpected error occurred. Please try again after sometime.' : 'Please correct the errors.');
+				swal('Error!', message, 'error');
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
 //				$(form_id).on('submit', submitForm);

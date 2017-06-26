@@ -9,10 +9,10 @@
             <link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
             <link type="text/css" rel="stylesheet" href="{% static 'account/css/base_home_layout.css'%}"  media="screen,projection"/>
 			{% if request.user.is_authenticated %}
-				<meta name="robots" content="noindex," "nocache," "noimageindex," "noarchive," "nosnippet," "nofollow" />
+				<meta name="robots" content="noindex, nocache, noimageindex, noarchive, nosnippet, nofollow" />
 			{% else %}
 				<!-- SEO Tags Here -->
-				<meta name="robots" content="index," "noimageindex," "follow" />
+				<meta name="robots" content="index, noimageindex, follow" />
 			{% endif %}
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
             {% block head %}{% endblock %}
@@ -37,6 +37,64 @@
         text-align: center;
 
       }
+
+      #side-nav-head
+{
+  font-size: 32px;
+  font-weight: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #337ab7;
+}
+
+#noti-div
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  padding: 2px;
+}
+
+#noti-heading
+{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  width: 85%;
+
+
+}
+
+#noti-div h3, #noti-div h4, #noti-div h5
+{
+   font-size: 14px;
+}
+
+#noti-div h3
+{
+  font-weight: bold;
+}
+
+#noti-content
+{
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+#noti-button
+{
+  font-size: 20px;
+  font-weight: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #337ab7;
+
+}
 
 
     </style>
@@ -68,6 +126,35 @@
             <!--every li here represents a notifcations. header and body for notifications repectively-->    
     
         </ul>
+    
+        </ul>
+
+ <ul id="slide-out2" class="side-nav">
+    
+    <h3 id="side-nav-head">Notifications</h3>
+    <li><div class="divider"></div></li>
+    <li>
+    
+    <div id="noti-div">
+      <div id="noti-heading">
+      <h3>None</h3>
+      <h4>None</h4>
+      </div>
+      <div id="noti-content">
+      <h5>No Message</h5>
+      </div>
+    </div>
+      
+    </li>
+    <li><div class="divider"></div></li>
+    <li><div class="divider"></div></li>
+   
+
+    <li><a href="" id="noti-button">See older notifications</a></li>
+  
+</ul>
+
+
 <!--Search box-->
         <div id="light" class="white_content"> 
          <div id="box-search">
@@ -104,8 +191,14 @@
                     </li>
                    	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
                   	</li>
+                    <!--Older notification button
                   	<li class="hide-on-med-and-down">
                     	<a id = 'notification_button' class="dropdown-button tooltipped" data-constrainwidth="false" data-beloworigin="true" data-gutter="10" href="{% url 'get_notifications' %}" data-activates="dropdown3" data-position="left" data-delay="20" data-tooltip="Notifications"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
+                  </li>
+                  -->
+                  <!--New notifications button-->
+                  <li class="hide-on-med-and-down">
+                    <a id="notification_button" href="{% url 'get_notifications' %}" data-activates="slide-out2" class="button-collapse2" url="{% url 'shortened_notifications' %}"><i class="fa fa-bell fa-2x" style="font-size: 1.5em;"></i></a>
                   </li>
 
                   <li class="hide-on-med-and-down">
@@ -149,6 +242,40 @@
 
 <!--sidebar ends-->
 
+<!-- Full Page preloader begins.  -->
+  <div id="page-preloader" class="preloader-wrapper big active" style="display : none; position: relative; z-index : 10000; left : 50%; top : 50%; color: red !important; ">
+      <div class="spinner-layer spinner-yellow-only">
+          <div class="circle-clipper left">
+              <div class="circle"></div>
+          </div>
+          <div class="gap-patch">
+              <div class="circle"></div>
+          </div>
+          <div class="circle-clipper right">
+              <div class="circle"></div>
+          </div>
+      </div>
+  </div>
+  <div id="preloader-shadow" style="display: none; position: absolute; 
+  background: #000; top: 0; left: 0;
+  opacity: 0.6; z-index: 9999;">   
+  </div>
+<!-- END Preloader  -->
+<!--notification-sidebar begins-->
+
+ <ul id="slide-out" class="side-nav">
+ 	<li>
+		<div class="userView">
+			<div class="background">
+				<img src="{% static 'images/bgs2.jpg' %}" width="100%">
+			</div>
+		</div>
+	</li>
+	
+  </ul>
+
+<!--sidebar ends-->
+
         <main>
             <!--Tabs bar begins--> 
             <div id="tab-bar">
@@ -169,13 +296,42 @@
                 </div>
             </div>
 
-        </main>
+            {% block mobile_content %}
+            {% endblock %}
+
+<!-- Floating Button containg info and reload btns -->
+		<div id="fixed-action-button">
+			<div class="fixed-action-btn click-to-toggle">
+				<a style="background-color: lightcoral !important" class="btn-floating btn-large"><i class="fa fa-plus"></i> </a>
+				<ul>
+					<li>
+						<a class="reload-btn btn-floating waves-effect waves-light teal lighten-3" style="transform: scaleX(0.4) scaleY(0.4) translateY(40px); opacity: 0;"><i class="fa fa-refresh"></i></a>
+					</li>
+					<li>
+						<a class="info-btn btn-floating waves-effect waves-light blue lighten-1" style="transform: scaleX(0.4) scaleY(0.4) translateY(40px); opacity: 0;"><i class="fa fa-info"></i></a>
+					</li>
+				</ul>
+			</div>
+		</div>
+<!-- -->
+<!-- Info Modal Structure -->
+		<div id="info-modal" class="modal modal-fixed-footer">
+			<div class="modal-content">
+				<h4 class="heading">Information</h4>
+				<p>No information to display</p>
+			</div>
+			<div class="modal-footer">
+				<a href="#!" class="modal-action modal-close waves-effect waves-blue btn-flat">Close</a>
+			</div>
+		</div>
+    </main>
 
 
         <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
         {% include 'material/includes/material_js.html' %}
         {% block scripts %}{% endblock %}
         <script type="text/javascript" src="{% static 'notification/get_notification.js' %}"></script>
+		<script type="text/javascript" src="{% static 'common/utils.js' %}"></script>
         <script type="text/javascript">
       			$(document).ready(function(e) {
       	            $('#dropdown3').on('click', function(e){e.stopPropagation();});
@@ -185,7 +341,9 @@
             		$('.button-collapse').sideNav({
                   menuWidth: 240, 
                   closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+					draggable: true,
                     });
+				Utils.init({'fab': true});
       			});
 		
 		// Mapping dropdown links to tabs
@@ -199,6 +357,23 @@
       				return true;
       			el.on('click', function(e){e.preventDefault();target_el[0].click();});
       		});
+
+		// Info modal
+			$('#info-modal').modal({
+				dismissible: true, // Modal can be dismissed by clicking outside of the modal
+				opacity: .5, // Opacity of modal background
+				inDuration: 200, // Transition in duration
+				outDuration: 100, // Transition out duration
+				startingTop: '4%', // Starting top style attribute
+				endingTop: '10%', // Ending top style attribute
+			});
+
+       $('.button-collapse2').sideNav({
+      menuWidth: 300, // Default is 300
+      edge: 'right', // Choose the horizontal origin
+      closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+      draggable: true // Choose whether you can drag to open on touch screens
+    });
 
 
         </script>

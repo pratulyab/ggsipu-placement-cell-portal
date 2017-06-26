@@ -144,13 +144,16 @@
 <!--                                     -->
 {% endblock tabs_content %}
 {% block scripts %}
+	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
 	<script type="text/javascript" src="{% static 'faculty/manage.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Settings.init(['create-faculty-form']);
 			ManageFaculty.init();
+			Mobile.init();
 		});
 	</script>
 {% endblock %}

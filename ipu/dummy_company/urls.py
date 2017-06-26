@@ -14,6 +14,6 @@ urlpatterns = [
 	url(r'^manage_dsession/(?P<dsess_hashid>[a-zA-Z0-9]{9,})/$', manage_dummy_session, name='manage_dsession'),
 	url(r'^manage_dsession_students/(?P<dsess_hashid>[a-zA-Z0-9]{9,})/$', manage_dsession_students, name='manage_dsession_students'),
 	url(r'^edit_criteria/(?P<dsess_hashid>[a-zA-Z0-9]{9,})/$', edit_dcriteria, name='edit_dcriteria'),
-	url(r'^notify/(?P<sess_hashid>[a-zA-Z0-9]{9,})/$', notify_dsession, name='notify_dsession'),
+	url(r'^notify/(?P<dsess_hashid>[a-zA-Z0-9]{9,})/$', notify_dsession, name='notify_dsession'),
 	url(r'^filter_dsessions/$', filter_dsessions, name='filter_dsessions'),
 ]

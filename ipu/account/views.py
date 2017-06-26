@@ -200,8 +200,6 @@ def edit_account(request):
 #				context['success_msg'] = "Your account has been updated successfully"
 #				return JsonResponse(status=200, data={'render': render(request, 'account/edit_account.html', context).content.decode('utf-8')})
 				data['message'] = "Your account settings have been updated successfully."
-				from time import sleep
-				sleep(2)
 				return JsonResponse(status=200, data=data)
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})

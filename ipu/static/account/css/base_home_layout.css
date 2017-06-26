@@ -815,3 +815,7 @@ form h5 {
 	opacity: 1 !important;
 	display: inline !important;
 }
+
+.required > [type="checkbox"] + label:after {
+	content: '' !important;
+}

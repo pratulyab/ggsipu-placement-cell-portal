@@ -54,11 +54,13 @@ class DummySession(models.Model):
 			help_text=_('Setting it to true would mean that the students currently in the session are selected.'), 
 			default=False
 	)
+	created_on = models.DateTimeField(auto_now_add=True)
+	updated_on = models.DateTimeField(auto_now=True)
 
 	def __str__(self):
 		return self.dummy_company.__str__() + ' placement session in ' + self.dummy_company.college.__str__()
 
-
+'''
 @receiver(m2m_changed, sender=DummySession.streams.through)
 def verify_assoc_stream_uniqueness(sender, **kwargs):
 	dsession = kwargs.get('instance', None)
@@ -69,6 +71,7 @@ def verify_assoc_stream_uniqueness(sender, **kwargs):
 		for stream in streams:
 			if dsession_streams.filter(streams=stream):
 				raise IntegrityError(_('Association between (%s, %s) already exists for stream %s' % (dsession.dummy_company.college, dsession.dummy_company, stream,)))
+'''
 
 @receiver(m2m_changed, sender=DummySession.students.through)
 def validating_students(sender, **kwargs):

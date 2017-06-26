@@ -36,6 +36,13 @@ recruitmentLogger = logging.getLogger('recruitment')
 def associate(request, **kwargs):
 	user_type = kwargs.get('user_type')
 	f = AssociationForm(request.POST, profile=kwargs.pop('profile'))
+
+	# Suspicious Activity
+	if user_type == 'CO' and not f.can_make_requests():
+		recruitmentLogger.warning('Company %s [%d] has reached requests limit' % (f.profile, f.profile.pk))
+		return JsonResponse(status=400, data={'message': 'Sorry, you cannot send any more requests until any of your existing requests gets accepted.'})
+	# # #
+
 	if f.is_valid():
 		try:
 			assoc = f.save()
@@ -50,10 +57,13 @@ def associate(request, **kwargs):
 			recruitmentLogger.info(message)
 			# # #
 		except (ValidationError, IntegrityError) as error:
-			return JsonResponse(status=400, data={'error': error.__str__()})
-		return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[user_type])})
+			return JsonResponse(status=400, data={'error': error.__str__(), 'message': 'Please correct the errors as indicated in the form.'})
+		return JsonResponse(status=200, data={
+				'message': 'Request sent!\nIf you wish to delete the request for any reasons, go to "My Requests" tab and delete the request.',
+				'refresh': True
+				})
 	else:
-		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 
 @require_user_types(['C', 'F', 'CO'])
 @login_required
@@ -122,8 +132,8 @@ def edit_criteria(request, sess_hashid, **kwargs):
 		link = "%s://%s" % (('https' if settings.USE_HTTPS else 'http'), str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
 		f.notify_other_party(actor=actor.profile, target=target.profile, link=link)
 	######
-		return JsonResponse(status=200, data={'success': True, 'success_msg': 'Selection Criteria has been updated successfully'})
-	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		return JsonResponse(status=200, data={'message': 'Selection Criteria has been updated successfully'})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 
 @require_user_types(['C', 'F', 'CO'])
 @require_AJAX
@@ -162,15 +172,15 @@ def edit_session(request, sess_hashid, **kwargs):
 		link = "%s://%s" % (('https' if settings.USE_HTTPS else 'http'), str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
 		f.notify_other_party(actor=actor.profile, target=target.profile, link=link)
 	########
-		success_msg = 'Placement Session has been updated successfully.'
+		message = 'Placement Session has been updated successfully.'
 		if f.should_notify_students():
 			try:
 				f.notify_selected_students(actor=profile.profile)
 			except:
 				return JsonResponse(status=400, data={'error': 'Sorry, error occurred while notifying students.'})
-			success_msg += ' Students have been notified.'
-		return JsonResponse(status=200, data={'success': True, 'success_msg': success_msg})
-	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+			message += ' Students have been notified.'
+		return JsonResponse(status=200, data={'message': message})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 
 @require_user_types(['C', 'F', 'CO'])
 @require_AJAX
@@ -195,7 +205,6 @@ def manage_session_students(request, sess_hashid, **kwargs):
 			session = PlacementSession.objects.get(association__college=profile, pk=session_pk)
 	except:
 		return JsonResponse(status=400, data={'error': 'It\'s not your placement session to manage!'})
-#	request.POST.setlist('students', ['gG8p6jZR']
 	f = ManageSessionStudentsForm(request.POST, instance=session)
 	if f.is_valid():
 		session = f.save(commit=False)
@@ -203,8 +212,8 @@ def manage_session_students(request, sess_hashid, **kwargs):
 		session.save()
 		f.save_m2m()
 		f.notify_disqualified_students(actor=profile.profile)
-		return JsonResponse(status=200, data={'success': True, 'success_msg': "Students' list has been modified successfully"})
-	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		return JsonResponse(status=200, data={'refresh': True, 'message': "Students' list has been modified successfully"})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 
 @require_user_types(['CO'])
 @require_AJAX
@@ -218,7 +227,7 @@ def get_programmes(request, **kwargs):
 		college = settings.HASHID_COLLEGE.decode(college)[0]
 		college = College.objects.get(pk=college)
 	except:
-		return JsonResponse(status=400, data={'error': 'Invalid college chosen.'})
+		return JsonResponse(status=400, data={'error': 'Invalid college chosen.', 'message': 'Please choose a valid college'})
 	data = []
 	for p in college.get_programmes_queryset():
 		data.append({'html': p.name.title(), 'value': settings.HASHID_PROGRAMME.encode(p.pk)})
@@ -236,7 +245,7 @@ def get_streams(request, **kwargs):
 		programme = settings.HASHID_PROGRAMME.decode(programme)[0]
 		programme = Programme.objects.get(pk=programme)
 	except:
-		return JsonResponse(status=400, data={'error': 'Invalid programme chosen.'})
+		return JsonResponse(status=400, data={'error': 'Invalid programme chosen.', 'message': 'Please choose a valid programme.'})
 	streams = programme.streams.all()
 	data = []
 	for s in streams:
@@ -265,7 +274,12 @@ def create_session(request, **kwargs):
 			if association.initiator == type: # Validating that the requester is not the one accepting
 				return JsonResponse(status=400, data={'error': 'You cannot make this request.'})
 			f = CreateSessionCriteriaForm(association=association)
-			html = render(request, 'recruitment/create_session.html', {'session_creation_form': f}).content.decode('utf-8')
+			context = {'session_creation_form': f}
+			context['association'] = association
+			context['other_party'] = association.company.name if association.initiator == 'CO' else association.college.name
+			context['streams'] = ', '.join([s['name'] for s in association.streams.values('name')])
+			context['hashid'] = settings.HASHID_ASSOCIATION.encode(association.pk)
+			html = render(request, 'recruitment/create_session.html', context).content.decode('utf-8')
 			return JsonResponse(status=200, data={'html':html})
 		
 		else:
@@ -286,7 +300,7 @@ def create_session(request, **kwargs):
 				return JsonResponse(status=400, data={'error': 'You cannot make this request.'})
 			try:
 				association.session
-				return JsonResponse(status=400, data={'error': 'Session already exists'})
+				return JsonResponse(status=400, data={'error': 'Session already exists', 'refresh': True})
 			except PlacementSession.DoesNotExist:
 				pass
 			# Converting list to string. i.e. somewhat custom to_python
@@ -308,9 +322,11 @@ def create_session(request, **kwargs):
 							   (association.company.profile.username, association.company.name, association.college.code, association.pk, session.pk)
 				recruitmentLogger.info(message)
 				# # #
-				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[type])})
+				message = '%s session has been created successfully. To manage the session, move to "Sessions" tab.'\
+						  % (dict(Association.PLACEMENT_TYPE)[association.type])
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[type]), 'refresh': True, 'message': message})
 			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 	
 	else:
 		return handle_user_type(request, redirect_request=True)
@@ -370,7 +386,7 @@ def mysessions(request):
 				data['sessobj'] = s
 				data['sess_hashid'] = settings.HASHID_PLACEMENTSESSION.encode(s.pk)
 				data['salary'] = "%d LPA" % assoc.salary
-				data['college'] = assoc.company.name.title()
+				data['college'] = assoc.college.name.title()
 				data['type'] = "Internship" if assoc.type == 'I' else "Job"
 				data['photo'] = assoc.college.photo
 				data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
@@ -444,7 +460,12 @@ def decline(request, **kwargs):
 			except:
 				return JsonResponse(status=400, data={'error': 'Unexpected error occurred. Please refresh the page and try again'})
 			f = DeclineForm(association=association)
-			html = render(request, 'recruitment/decline.html', {'decline_form': f}).content.decode('utf-8')
+			context = {'decline_form': f}
+			context['association'] = association
+			context['other_party'] = association.company.name if association.initiator == 'CO' else association.college.name
+			context['streams'] = ', '.join([s['name'] for s in association.streams.values('name')])
+			context['hashid'] = settings.HASHID_ASSOCIATION.encode(association.pk)
+			html = render(request, 'recruitment/decline.html', context).content.decode('utf-8')
 			return JsonResponse(status=200, data={'html':html})
 		
 		else:
@@ -468,9 +489,10 @@ def decline(request, **kwargs):
 							   (association.company.profile.username, association.company.name, association.college.profile.username, association.pk)
 				recruitmentLogger.info(message)
 				# # #
-				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[request.user.type])})
+				message = 'You declined the request.\nIf you wish to stop receiving requests from this user, you can block them.\n Click info to know more.'
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[request.user.type]), 'refresh': True, 'message': message})
 			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 	
 	else:
 		return handle_user_type(request, redirect_request=True)
@@ -484,9 +506,9 @@ def view_my_requests(request, profile, user_type):
 	if user_type == 'F':
 		profile = profile.college
 	if user_type == 'CO':
-		queryset = Association.objects.filter(company=profile, initiator=user_type).filter(~Q(approved=True))
+		queryset = Association.objects.order_by('-updated_on').filter(company=profile, initiator=user_type).filter(~Q(approved=True))
 	else:
-		queryset = Association.objects.filter(college=profile, initiator='C').filter(~Q(approved=True))
+		queryset = Association.objects.order_by('-updated_on').filter(college=profile, initiator='C').filter(~Q(approved=True))
 	my_requests = {'pending': [], 'declined': []}
 	for association in queryset:
 		if association.approved is None:
@@ -649,12 +671,8 @@ def view_association_requests(request, **kwargs):
 		associations_list = []
 		context = {}
 		for ass in associations:
-			session_url = request.build_absolute_uri(reverse('createsession'))
-			session_url = session_url + "?ass=" + settings.HASHID_ASSOCIATION.encode(ass.pk)
-			decline_url = request.build_absolute_uri(reverse('decline'))
-			decline_url = decline_url + "?ass=" + settings.HASHID_ASSOCIATION.encode(ass.pk)
-			urls = {'session_url': session_url, 'decline_url':decline_url}
-			associations_list.append({'obj':ass, 'url':urls})
+			streams = ', '.join([s['name'] for s in ass.streams.values('name')])
+			associations_list.append({'obj':ass, 'hashid':settings.HASHID_ASSOCIATION.encode(ass.pk), 'streams': streams})
 		context['associations'] = associations_list
 		if user_type in ['C','F']:
 			html = render(request, 'college/association_requests.html', context).content.decode('utf-8')

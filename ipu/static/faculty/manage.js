@@ -16,13 +16,19 @@ var ManageFaculty = (function() {
 			closeOnConfirm: false,
 			showLoaderOnConfirm: true,
 			allowEscapeKey: false,
-			allowOutsideClick: true,
+			allowOutsideClick: false,
 			},
 			function(){
 				$.ajax({
 					url: url,
 					type: 'POST',
 					data: {'csrfmiddlewaretoken': $('#view-faculty-div').find('input[name = csrfmiddlewaretoken]').val()},
+//					beforeSend: function() {
+//						showPreloader();
+//					},
+//					complete: function() {
+//						removePreloader();
+//					},
 					success: function(data, status, xhr){
 						swal({
 							title: "Deleted!",
@@ -81,7 +87,6 @@ var ManageFaculty = (function() {
 			form_id = '#'+form.attr('id'),
 			url = form.attr('action'),
 			form_data = new FormData(form[0]);
-		inProcess['perms'] = true;
 		clearErrors(form_id);
 		$.ajax({
 			url: url,
@@ -89,12 +94,20 @@ var ManageFaculty = (function() {
 			data: form_data,
 			processData: false,
 			contentType: false,
-			success: function(data, status, xhr){
+			beforeSend: function() {
+				inProcess['perms'] = true;
+				form.find('button').addClass('disabled');
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();	
 				inProcess['perms'] = false;
+				form.find('button').removeClass('disabled');
+			},
+			success: function(data, status, xhr){
 				swal('Success', data['success_msg'], 'success');
 			},
 			error: function(xhr, status, error){
-				inProcess['perms'] = false;
 				if(xhr.status >= 400 && xhr.status < 500)
 					swal("Oops..", "An error occurred", "error");
 				else if(xhr.status >= 500)
@@ -122,6 +135,14 @@ var ManageFaculty = (function() {
 			url: url,
 			type: 'GET',
 			data: {},
+			beforeSend: function() {
+				form.find('button').addClass('disabled');
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();	
+				form.find('button').removeClass('disabled');
+			},
 			success: function(data, status, xhr){
 				var $render_div = $('#edit-faculty-perms-div');
 				$render_div.html($(data['html']));
