@@ -1,14 +1,17 @@
 {% extends 'account/nav-landing.html' %}
 {% load staticfiles %}
+{% load material_form %}
 
 {% block title %}Placement statistics – Guru Gobind Singh Indraprastha University | Placement stats IP university | Placement statistics Indraprastha University | Placement record IP univeristy | Placements at IP university | Placement record of IPU | Placement  percentage of IPU | Training and placement cell - Guru Gobind Singh Indraprastha University{% endblock %}
-
 
 {% block head %}
   <link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
   <link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
   <link type="text/css" rel="stylesheet" href="{% static 'account/css/stats.css' %}" />
-  <meta name="keywords" content="Placement statistics Guru Gobind Singh Indraprastha University, Placement stats IP university, Placement statistics Indraprastha University, Placement record IP univeristy, Placements at IP university, Placement record of IPU, Placement  percentage of IPU, Training and placement cell Guru Gobind Singh Indraprastha University"> 
+<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="keywords" content="Placement statistics Guru Gobind Singh Indraprastha University, Placement stats IP university, Placement statistics Indraprastha University, Placement record IP univeristy, Placements at IP university, Placement record of IPU, Placement  percentage of IPU, Training and placement cell Guru Gobind Singh Indraprastha University"> 
 
 <meta name="description" content="Placement statistics of Guru Gobind Singh Indraprastha University | Placement record at IPU | Placement statistics Indraprastha University | Placement record IP univeristy | Placements at IP university">
 
@@ -22,13 +25,25 @@
 <meta property="og:url" content= "https://placements.ggsipu.ac.in/stats/" />
 {% endblock %}
 
+
 {% block main %}
- <div id="heading">
-  <h4>Placement records</h4>
-  </div>
-  <p>*This data is strictly hypothetical for now.</p>
-  <div id="images">
-  	<img src="{% static 'images/Placements-Stats.png' %}">
-  	<img src="{% static 'images/Placement-Stats2.jpg' %}">
-  </div>
+<div class="row">
+	<div class="col s10 m8 offset-s1 offset-m2" id="stats-form-div">
+		<form method="GET" id="stats-form" action="{% url 'stats' %}">
+			<h4 class="teal-text flow-text center-align"><b>Placement Statistics</b></h4>
+			{% form form=stats_form %}
+			{% endform %}
+		</form>
+	</div>
+	<div class="col s12" id="stats-data" style="margin-top: 5%"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+	<script type="text/javascript" src="{% static 'stats/stats.js' %}"></script>
+	<script>
+		Stats.init();
+	</script>
+	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 {% endblock %}

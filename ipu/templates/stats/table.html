@@ -1,0 +1,25 @@
+<div class="row">
+	<div class="col s12 m6">
+		<table class="striped">
+				<thead>
+					<tr>
+					<th>S.No.</th>
+					{% for heading in headings %}
+						<th>{{ heading }}</th>
+					{% endfor %}
+					</tr>
+				</thead>
+
+				<tbody>
+				{% for entry in entries %}
+					<tr>
+					<td>{{ forloop.counter }}</td>
+					{% for data in entry %}
+						<td>{{ data }}</td>
+					{% endfor %}
+					</tr>
+				{% endfor %}
+				</tbody>
+		</table>
+	</div>
+</div>

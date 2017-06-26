@@ -38,7 +38,8 @@ main img
 #heading
 {
   color: white;
-  font-size: 22px;
+  font-size: 20px;
+  font-family: "Helvetica";
 }
 
 #form-box
@@ -172,20 +173,24 @@ main img
     }
 .white_content {
       display: none;
+      position: absolute;
+      top: 18%;
+      left: 12%;
+/*
       justify-content: center;
       align-items: center;
-      position: absolute;
       top: 5%;
       left: 5%;
       width: 90%;
       height: 90%;
       padding: 10px;
+      border-radius: 2%;
+	*/
       border: 1px solid white;
       background-color: white;
       z-index:1002;
       overflow: auto;
       color: black;
-      border-radius: 2%;
     }
 .white_content #cross
     {
@@ -209,8 +214,11 @@ main img
     }
 
 .required > label:after {
-	content: '* ' !important;
-	font-weight: bold !important;
+	content: ' (*)' !important;
+	color: #337ab7 !important;
+	top: 0px !important;
+	opacity: 1 !important;
+	display: inline !important;
 }
 
 .help-block {
@@ -263,7 +271,8 @@ main img
 #heading
 {
   color: white;
-  font-size: 30px;
+  font-size: 60px;
+  font-family: "Helvetica";
 }
 
 #form-box
@@ -466,20 +475,32 @@ main img
     }
 .white_content {
       display: none;
+      position: absolute;
+      top: 15%;
+      left: 0%;
+/*
       justify-content: center;
       align-items: center;
+<<<<<<< HEAD
       position: absolute;
       top: 4%;
       left: 5%;
       width: 90%;
       height: 92%;
       padding: 5px;
+=======
+      top: 18%;
+      left: 10%;
+      width: 80%;
+      height: 64%;
+      padding: 10px;
+      border-radius: 2%;
+*/
       border: 1px solid white;
       background-color: white;
       z-index:1002;
       overflow: auto;
       color: black;
-      border-radius: 2%;
     }
 .white_content #cross
     {
@@ -507,8 +528,11 @@ main img
     } 
 
 .required > label:after {
-	content: '* ' !important;
-	font-weight: bold !important;
+	content: ' (*)' !important;
+	color: #337ab7 !important;
+	top: 0px !important;
+	opacity: 1 !important;
+	display: inline !important;
 }
 
 .help-block {
@@ -579,6 +603,7 @@ main img
   font-size: 35px;
   position: relative;
   top: 0px;
+  font-family: "Helvetica";
 }
 
 #form-box
@@ -708,20 +733,24 @@ main img
     }
 .white_content {
       display: none;
+      position: absolute;
+      top: 13%;
+      left: 26%;
+	/*
       justify-content: center;
       align-items: center;
-      position: absolute;
       top: 5%;
       left: 20%;
       width: 60%;
       height: 90%;
       padding: 10px;
+      border-radius: 2%;
+	 */
       border: 1px solid white;
       background-color: white;
       z-index:1002;
       overflow: auto;
       color: black;
-      border-radius: 2%;
     }
 .white_content #cross
     {
@@ -739,8 +768,11 @@ main img
     }
 
 .required > label:after {
-	content: '* ' !important;
-	font-weight: bold !important;
+	content: ' (*)' !important;
+	color: #337ab7 !important;
+	top: 0px !important;
+	opacity: 1 !important;
+	display: inline !important;
 }
 
 .help-block {

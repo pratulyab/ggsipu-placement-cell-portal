@@ -27,7 +27,7 @@ class AssociationForm(forms.ModelForm):
 		self.profile = kwargs.pop('profile')
 		self.who = self.profile.__class__.__name__
 		super(AssociationForm, self).__init__(*args, **kwargs)
-		
+		self.fields['desc'].widget.attrs['placeholder'] = 'Description'
 		if self.who == 'College':
 			del self.fields['college']
 #			company_queryset = Company.objects.exclude(pk__in = [d.company.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
