@@ -7,13 +7,13 @@
 {% block head %}
 	<link type="text/css" rel="stylesheet" href="{% static 'account/auth.css' %}" />
 	<link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <!--	<link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" /> -->
 {% endblock %}
 
 {% block content %}
 
-<a id="back" href="/"><i class="fa fa-arrow-left fa-2x hide-on-small-only hide-on-med-only" aria-hidden="true"></i></a>
-<a id="back" href="/"><i class="fa fa-arrow-left fa-4x hide-on-large-only" aria-hidden="true"></i></a>
+<a id="back" href="/"><i class="material-icons">arrow_back</i></a>
 
 <div class="black_overlay" id="fade"></div>
 
@@ -31,7 +31,7 @@
 <div id="student-sign-up" class="white_content"> 
        <a class="hide-on-med-only hide-on-small-only" href = "javascript:void(0)" onclick = "document.getElementById('student-sign-up').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-2x" id="cross"></i>
        </a>
-       <a class="hide-on-large-only" href = "javascript:void(0)" onclick = "document.getElementById('student-sign-up').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-4x" id="cross"></i>
+       <a class="hide-on-large-only" href = "javascript:void(0)" onclick = "document.getElementById('student-sign-up').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-2x" id="cross"></i>
        </a>
   <div class="row" id="student-signup-mainbox">
 			<div class="col s12 m8 l6" id="student-signup-box">
@@ -64,7 +64,7 @@
     <div id="recruiter-sign-up" class="white_content"> 
        <a class="hide-on-small-only hide-on-med-only" href = "javascript:void(0)" onclick = "document.getElementById('recruiter-sign-up').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-2x" id="cross"></i>
        </a>
-      <a class="hide-on-large-only" href = "javascript:void(0)" onclick = "document.getElementById('recruiter-sign-up').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-4x" id="cross"></i>
+      <a class="hide-on-large-only" href = "javascript:void(0)" onclick = "document.getElementById('recruiter-sign-up').style.display='none';document.getElementById('fade').style.display='none'"><i class="fa fa-times fa-2x" id="cross"></i>
        </a> 
        <div class="row" id="recruiter-signup-mainbox">
 				<div class="col s12 m8 l6" id="recruiter-signup-box">
@@ -119,7 +119,7 @@
                                 {% part form.password prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
 
                                 {% endform %}
-                                 <div class="col s6">
+                                 <div class="col s8 offset-s2">
                                     <a href="{% url 'forgot_password' %}"> Forgot Password? </a>
                                   </div>
                                 <div class="row">
@@ -128,7 +128,6 @@
                                     <button type="submit" id="student-login-btn" class="btn waves-effect waves-light-right">Log In</button>
                                   </div>
                                 </div>
-                                <br>
                               </form>
                             </div>
                           </div>
@@ -146,7 +145,7 @@
                                 {% part form.username prefix %}<i class="material-icons prefix">account_box</i>{% endpart %}
                                 {% part form.password prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
                                 {% endform %}
-                                <div class="col s6">
+                                <div class="col s8 offset-s2">
                                     <a href="{% url 'forgot_password' %}"> Forgot Password? </a>
                                   </div>
                                 <div class="row">
@@ -155,7 +154,6 @@
                                     <button type="submit" id="login-btn" class="btn waves-effect waves-light-right">Log In</button>
                                   </div>
                                 </div>
-                                <br>
                               </form>
                             </div>
                           </div>
