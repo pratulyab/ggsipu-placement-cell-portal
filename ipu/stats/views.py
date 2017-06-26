@@ -13,7 +13,6 @@ from stats.models import College, Company, YearRecord, Placement
 def stats(request):
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_request=True)
-	print(request.GET)
 	if request.is_ajax():
 		if request.GET.get('years', '') == 'true':
 			try:
@@ -28,6 +27,9 @@ def stats(request):
 		elif request.GET.get('stats', '') == 'true':
 			college_pk = request.GET.get('college', None)
 			year = request.GET.get('year', None)
+			if not year or not college_pk:
+				message = 'Invalid ' + ('college chosen' if not college_pk else 'year chosen')
+				return JsonResponse(status=400, data={'errors': message})
 			# Table
 			headings = ['Company', 'Type', 'Total Offerings', 'Salary (LPA)']
 			college = College.objects.prefetch_related('records').get(pk=college_pk)

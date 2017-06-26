@@ -68,39 +68,45 @@ var Apply = (function() {
 	}
 	
 	function getOpportunities(e) {
-		clearTimeout(initialTimeout);
+//		clearTimeout(initialTimeout);
 		var div = $('#companies');
 		opporCounter++;
 		if (opporCounter >= 10){
 			location.href = '';
 			return;
 		}
-		swal({
-			title: "Retrieve the companies list?",
-			text: "",
-			type: "info",
-			showCancelButton: true,
-			allowEscapeKey: true,
-//			allowOutsideClick: true,
-			confirmButtonText: "Yes!",
-			cancelButtonText: "No, Thanks!",
-			closeOnConfirm: false,
-			showLoaderOnConfirm: true,
-			closeOnCancel: false
-			}, function(isConfirm){
-				if (isConfirm) {
+//		swal({
+//			title: "Retrieve the companies list?",
+//			text: "",
+//			type: "info",
+//			showCancelButton: true,
+//			allowEscapeKey: true,
+////			allowOutsideClick: true,
+//			confirmButtonText: "Yes!",
+//			cancelButtonText: "No, Thanks!",
+//			closeOnConfirm: false,
+//			showLoaderOnConfirm: true,
+//			closeOnCancel: false
+//			}, function(isConfirm){
+//				if (isConfirm) {
 					// Send AJAX request
 					$.ajax({
 						url: '/student/view_companies/',
 						type: 'GET',
 						data: {},
+						beforeSend: function() {
+							showPreloader();
+						},
+						complete: function() {
+							removePreloader();
+						},
 						success: function(data, status, xhr) {
 							var loc = data['location'];
 							if (loc){
 								location.href = loc;
 								return;
 							}
-							swal("Success", '', "success");
+//							swal("Success", '', "success");
 							var bar = data['barred'];
 							if (bar){
 								var h1 = $('<h1 class="center flow-text teal-text text-accent-4"/>')
@@ -142,23 +148,24 @@ var Apply = (function() {
 							div.append($('<p class="error">' + "Error occurred. Please try again later." + '</p>'))
 						}
 					}); // end of $.ajax
-				} // end of if isConfirm
-				else
-					swal("Alright!", "To retrieve/refresh the list any time, just click the 'Companies Visiting' tab.");
-			}
-		);
+//				} // end of if isConfirm
+//				else
+//					swal("Alright!", "To retrieve/refresh the list any time, just click the 'Companies Visiting' tab.");
+//			}
+//		);
 	}
 	
 	return {
 		init: function() {
 			$('#apply').on({
-				'click': getOpportunities,
-				'reload': function(){console.log('Add reload function')},
+//				'click': getOpportunities,
+				'reload': getOpportunities,
 			});
+			$('#apply').trigger('reload');
 			
-			initialTimeout = setTimeout( function(){
-				$('li#apply').click();
-			}, 2000);
+//			initialTimeout = setTimeout( function(){
+//				$('li#apply').click();
+//			}, 2000);
 		}
 	};
 })();

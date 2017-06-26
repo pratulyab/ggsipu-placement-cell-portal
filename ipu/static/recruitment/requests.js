@@ -55,36 +55,51 @@ var Request = (function() {
 		var url = $(form).attr('action');
 		var type = $(form).attr('method');
 		var form_data = new FormData(form[0]);
-		$(form_id).off('submit');
 		$.ajax({
 			url: url,
 			type: type,
 			data: form_data,
 			processData: false,
 			contentType: false,
+			beforeSend: function() {
+				$(form).find('button').addClass('disabled');
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();
+				$(form).find('button').removeClass('disabled');
+			},
 			success: function(data, status, xhr){
-				if (data['location']){
-					location.href = data['location'];
-					return;
+				if (data.refresh) {
+					swal({
+						title: 'Success!',
+						text: data.message,
+						type: 'success',
+						allowEscapeKey: false,
+						}, function() {	(window.location.href = data.location ? data.location : '');}
+					);
+				} else {
+					swal('Success!', data.message, 'success');
 				}
-//				handleMultipleJquery();
-				var form_div = $(form).parent();
-				form_div.html(data['render']);
-				$(form_id).on('submit', submitForm);
 			},
 			error: function(xhr, status, error){
-				var loc = xhr.responseJSON['location'];
-				if (loc){
-					location.href = loc;
-					return;
-				}
-				if (xhr.responseJSON['error']){
+				if (xhr.responseJSON && xhr.responseJSON['error']){
 					var div = $('<div class="non-field-errors"/>')
-					$(form_id).prepend(div.append("<small class='error'>"+xhr.responseJSON['error']+"</small?"));
+					$(form_id).prepend(div.append("<small class='error'>"+xhr.responseJSON['error']+"</small>"));
 				}
+				var message = (xhr.responseJSON && (xhr.responseJSON['message'] || xhr.responseJSON['error'])) ? (xhr.responseJSON['message'] || xhr.responseJSON['error']) : (xhr.status >= 500 ? 'Sorry, an unexpected error occurred. Please try again after sometime.' : 'Please correct the errors.');
+				if (xhr.responseJSON && xhr.responseJSON['refresh'])
+					swal({
+						title: 'Error',
+						text: message,
+						type: 'error',
+						allowEscapeKey: false,
+					}, function(){window.location.href = (xhr.responseJSON['location'] ? xhr.responseJSON['location'] : '')});
+				else
+					swal('Error!', message, 'error');
+				
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
-				$(form_id).on('submit', submitForm);
 			}
 		});
 	}
@@ -97,7 +112,7 @@ var Request = (function() {
 	function implementRequests(e) {
 		e.preventDefault();
 		var a = $(this);
-		var url = a.attr('href').trim().split('/').slice(3).join('/');
+		var url = a.attr('href').trim().split('/').slice(1,4).join('/');
 		var group = url.split('?');
 		var data = group[group.length-1].split('=')[1];
 		url = '/' + group[0];
@@ -105,10 +120,19 @@ var Request = (function() {
 			url: url,
 			type: 'GET',
 			data: {'ass': data},
+			beforeSend: function() {
+				a.addClass('disabled');
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();	
+				a.removeClass('disabled');
+			},
 			success: function(data, status, xhr){
 //				handleMultipleJquery();
 				var div = a.parents('.request-content');
 				div.html(data['html']);
+				div.find('.change-decision').on('click', implementRequests);
 				div.find('form').on('submit', submitForm);
 				div.find('select').each(function(i){
 					$(this).material_select();
@@ -121,6 +145,9 @@ var Request = (function() {
 						scrollInput: false
 					})
 				});
+				// To place label at its correct position
+				$('#id_application_deadline').trigger('focus');
+				$('.xdsoft_datetimepicker').css('display', 'none');
 			}
 		});
 	}
@@ -135,6 +162,12 @@ var Request = (function() {
 			data: {},
 			processData: true,
 			contentType: false,
+			beforeSend: function() {
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();	
+			},
 			success: function(data, status, xhr){
 				$content_div.html(data['html']);
 				$content_div.find('.card-action a').on('click', implementRequests);
@@ -160,7 +193,7 @@ var Request = (function() {
 			closeOnConfirm: false,
 			showLoaderOnConfirm: true,
 			allowEscapeKey: false,
-			allowOutsideClick: true,
+			allowOutsideClick: false,
 			},
 			function(){
 				$.ajax({

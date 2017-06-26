@@ -35,6 +35,7 @@ class Association(models.Model):
 	initiator = models.CharField(_('Who initiated it'), max_length=2, choices=SOURCE, default=SOURCE[0][0])
 	approved = models.NullBooleanField(default=None)
 	created_on = models.DateTimeField(auto_now_add=True)
+	updated_on = models.DateTimeField(auto_now=True)
 	decline_message = models.CharField(max_length=1024, blank=True, help_text='Reason(s) for declining')
 
 	def __str__(self):
@@ -83,7 +84,7 @@ class SelectionCriteria(models.Model):
 		if getattr(student, 'current_year') not in getattr(self, 'years'):
 			return False
 		for f in fields:
-			if getattr(self, f) and getattr(report_card, f) < int(getattr(self, f)):
+			if getattr(self, f) and getattr(report_card, f) and getattr(report_card, f) < int(getattr(self, f)):
 				return False
 		if not getattr(self, 'is_sub_back') and getattr(student, 'is_sub_back'):
 				return False
@@ -108,6 +109,8 @@ class PlacementSession(models.Model):
 	)
 	last_modified_by = models.CharField(max_length=2, choices=SOURCE, default=SOURCE[0][0])
 	selection_criteria = models.ForeignKey(SelectionCriteria, related_name="sessions")
+	created_on = models.DateTimeField(auto_now_add=True)
+	updated_on = models.DateTimeField(auto_now=True)
 
 	def __str__(self):
 		return self.association.company.__str__() + ' placement session in ' + self.association.college.__str__()
@@ -186,6 +189,38 @@ def request_accepted_notification(sender, **kwargs):
 		message = "%s accepted your association request for %s session.\n%s" % (company.name.title(), type, streams)
 	else:
 		message = "%s accepted your association request for %s session.\n%s" % (college.name.title(), type, streams)
+	Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
+
+@receiver(post_save, sender=Association)
+def declined_request_notification(sender, **kwargs):
+	association = kwargs.get('instance')
+	print('Created: ', kwargs.get('created'))
+	print(association.approved)
+	if not kwargs.get('created') and association.approved == False: # Declined a pre-created association
+		if association.initiator == 'C':
+			actor = association.company
+			target = association.college
+		else:
+			actor = association.college
+			target = association.company
+		type = dict(Association.PLACEMENT_TYPE)[association.type]
+		message = '%s declined your association request for %s session. \
+				  To view the declined request, move to "My Requests" tab and look under the "Declined Requests" heading.' % (actor.name.title(), type)
+		Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
+
+@receiver(post_save, sender=Association)
+def new_request_notification(sender, **kwargs):
+	if not kwargs.get('created'):
+		return
+	association = kwargs.get('instance')
+	if association.initiator == 'C':
+		actor = association.college
+		target = association.company
+	else:
+		actor = association.company
+		target = association.college
+	type = dict(Association.PLACEMENT_TYPE)[association.type]
+	message = '%s sent you an association request. To view the request, hop on to "Association Requests" tab.' % (actor.name.title())
 	Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
 	
 # # # # # # # #

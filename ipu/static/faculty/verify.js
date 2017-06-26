@@ -188,7 +188,7 @@ var VerifyStu = (function() {
 			closeOnConfirm: false,
 			showLoaderOnConfirm: true,
 			allowEscapeKey: false,
-			allowOutsideClick: true,
+			allowOutsideClick: false,
 			},
 			function(){
 				$.ajax({

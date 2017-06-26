@@ -2,10 +2,6 @@
 {% load staticfiles %}
 {% load material_form %}
 {% block title %}Manage Faculty{% endblock %}
-{% block home_url1 %}{% url 'college_home' %}{% endblock %}
-{% block home_url2 %}{% url 'college_home' %}{% endblock %}
-{% block home_url3 %}{% url 'college_home' %}{% endblock %}
-{% block home_url4 %}{% url 'college_home' %}{% endblock %}
 {% block pagetitle %}Manage Faculty{% endblock %}
 {% block menu_icon_dropdown %}
                 <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
@@ -144,13 +140,16 @@
 <!--                                     -->
 {% endblock tabs_content %}
 {% block scripts %}
+	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
 	<script type="text/javascript" src="{% static 'faculty/manage.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Settings.init(['create-faculty-form']);
 			ManageFaculty.init();
+			Mobile.init();
 		});
 	</script>
 {% endblock %}

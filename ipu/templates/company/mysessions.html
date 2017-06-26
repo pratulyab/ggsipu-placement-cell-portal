@@ -13,15 +13,15 @@
 			{% if session.photo %}
 				<img src="{{ session.photo.url }}" alt="College" class="circle" />
 			{% endif %}
-			<span class="title">{{ session.type|title }} at {{ session.college }}</span>
+			<span class="title blue-text text-accent-2"><b>{{ session.type|title }}</b> at {{ session.college }}</span>
 			<p>
-				{{ session.salary }}
+				<b>Salary: </b>{{ session.salary }}
 				<br>
 				<p>
-					{{ session.streams }}
+					<b>Streams: </b>{{ session.streams }}
 				</p>
 				<br>
-					{{ session.students }} student{{ session.students|pluralize }} in the session
+					<b><span class="orange-text text-darken-2">{{ session.students }}</span></b> student{{ session.students|pluralize }} in the session
 			</p>
 			<span class="secondary-content">
 				<a href="{% url 'manage_session' session.sess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>

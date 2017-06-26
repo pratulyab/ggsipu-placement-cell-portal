@@ -8,7 +8,7 @@
             <link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
             <link type="text/css" rel="stylesheet" href="{% static 'account/css/base_home_layout.css'%}"  media="screen,projection"/>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<meta name="robots" content="noindex," "nocache," "noimageindex," "noarchive," "nosnippet," "nofollow" />
+			<meta name="robots" content="noindex, nocache, noimageindex, noarchive, nosnippet, nofollow" />
             {% block head %}{% endblock %}
     </head>
 
@@ -161,7 +161,7 @@
         <div class="navbar-fixed">
             <nav id="nav-bar">
                 <div class="nav-wrapper">
-                    <a class="brand-logo" id="brand-corner">
+                    <a href="{{ request.user.get_home_url }}" class="brand-logo" id="brand-corner">
                     <div class="left hide-on-med-and-down" style="margin-left: 1.5%;">
                       <div id="logo">
                         <img src="{% static 'images/ipu-logo.png' %}" style="height: 55px">
@@ -172,7 +172,7 @@
                       </div>
                     </div>
                     </a>
-                    <a id="center_logo" href="#!" class="brand-logo center hide-on-large-only">Training & Placement Cell</a>
+                    <a id="center_logo" href="{{ request.user.get_home_url }}" class="brand-logo center hide-on-large-only">Training & Placement Cell</a>
                     <h6 class="center hide-on-large-only" style="font-size: 10px;padding: 0px;margin: 1px;margin-top: 1px;position: absolute;top: 40px;left: 15%;width: 70%;right: 15%">Guru Gobind Singh Indraprastha University</h6>
                     <ul class="right">
                    	<li><a style="padding-right: 5px;" href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
@@ -290,11 +290,11 @@
 
 <!-- Floating Button containg info and reload btns -->
 		<div id="fixed-action-button">
-			<div class="fixed-action-btn">
-				<a class="btn-floating btn-large red darken-1"><i class="fa fa-plus"></i> </a>
+			<div class="fixed-action-btn click-to-toggle">
+				<a style="background-color: lightcoral !important" class="btn-floating btn-large"><i class="fa fa-plus"></i> </a>
 				<ul>
 					<li>
-						<a class="reload-btn btn-floating waves-effect waves-light teal lighten-1" style="transform: scaleX(0.4) scaleY(0.4) translateY(40px); opacity: 0;"><i class="fa fa-refresh"></i></a>
+						<a class="reload-btn btn-floating waves-effect waves-light teal lighten-3" style="transform: scaleX(0.4) scaleY(0.4) translateY(40px); opacity: 0;"><i class="fa fa-refresh"></i></a>
 					</li>
 					<li>
 						<a class="info-btn btn-floating waves-effect waves-light blue lighten-1" style="transform: scaleX(0.4) scaleY(0.4) translateY(40px); opacity: 0;"><i class="fa fa-info"></i></a>
