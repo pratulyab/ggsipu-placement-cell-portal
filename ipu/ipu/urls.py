@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import url, include, static
 from django.contrib import admin
-from account.views import auth, landing, login, view_profile, logout, search, team, intro, sms_callback
+from account.views import auth, landing, login, view_profile, logout, search, team, intro, sms_callback, procedure
 from stats.views import stats
 
 urlpatterns = [

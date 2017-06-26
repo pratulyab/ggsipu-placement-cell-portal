@@ -4,80 +4,110 @@
 {% block title %}Meet the team – Training and placement cell – Guru Gobind Singh Indraprastha Univeristy | Meet the team of tnp portal at IP univerisity | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | IP  University web development team{% endblock %}
 
 {% block head %}
-  <link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
-  <link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
-  <link type="text/css" rel="stylesheet" href="{% static 'account/css/team.css' %}" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
+    <link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <!--SEO work meta tags-->
+    <!--SEO work meta tags-->
     <meta name="keywords" content="Meet the team Training and placement cell Guru Gobind Singh Indraprastha Univeristy, Meet the team of tnp portal at IP univerisity, Pratulya Bubna, Rajneesh Sharma, Shivam Sharma, IP  University web development team"> 
 
-	<meta name="description" content="Meet the team of training and placement portal at IP univerisity |  IP univeristy web development team | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | Tnp portal web development team IP univerisity | GGSIPU web development team">
+    <meta name="description" content="Meet the team of training and placement portal at IP univerisity |  IP univeristy web development team | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | Tnp portal web development team IP univerisity | GGSIPU web development team">
 
-	<meta name="twitter:title" content= "Meet the team – Training and placement cell – Guru Gobind Singh Indraprastha Univeristy | Meet the team of tnp portal at IP univerisity | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | IP  University web development team" />
+    <meta name="twitter:title" content= "Meet the team – Training and placement cell – Guru Gobind Singh Indraprastha Univeristy | Meet the team of tnp portal at IP univerisity | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | IP  University web development team" />
 
-	<meta name="twitter:description" content="Meet the team of training and placement portal at IP univerisity |  IP univeristy web development team | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | Tnp portal web development team IP univerisity | GGSIPU web development team" />
+    <meta name="twitter:description" content="Meet the team of training and placement portal at IP univerisity |  IP univeristy web development team | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | Tnp portal web development team IP univerisity | GGSIPU web development team" />
 
-	<meta property="og:title" content="Meet the team – Training and placement cell – Guru Gobind Singh Indraprastha Univeristy | Meet the team of tnp portal at IP univerisity | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | IP  University web development team" />
+    <meta property="og:title" content="Meet the team – Training and placement cell – Guru Gobind Singh Indraprastha Univeristy | Meet the team of tnp portal at IP univerisity | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | IP  University web development team" />
 
-	<meta property="og:description" content="Meet the team of training and placement portal at IP univerisity |  IP univeristy web development team | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | Tnp portal web development team IP univerisity | GGSIPU web development team" />
-	<meta property="og:url" content= "https://placements.ggsipu.ac.in/team/" />
-  <!--SEO work end-->
-
+    <meta property="og:description" content="Meet the team of training and placement portal at IP univerisity |  IP univeristy web development team | Pratulya Bubna | Rajneesh Sharma | Shivam Sharma | Tnp portal web development team IP univerisity | GGSIPU web development team" />
+    <meta property="og:url" content= "https://placements.ggsipu.ac.in/team/" />
+    <!--SEO work end-->
+	<style>.dev-icons{font-size: 18px !important;}</style>
 {% endblock %}
 
 {% block main %}
-  <div id="team" class="section scrollspy">
-        <div class="row">
-         <div class="col s12 m4 offset-m4 center-on-small-only">
-          <h2 class="header">Meet the Team</h2>
-          </div>
-        </div>  
 
+    <div class="container">
+    <!--  Outer row  -->
         <div class="row">
-          <div class="col s12 m2 offset-m2 center-on-small-only ">
-            <div class="image-container"> 
-              <img src="{% static 'account/images/team/bob.jpg' %}" class="circle responsive-img" height="160px" width="160px">
+            <div class="col s12 m12">
+                <!--  About the Team-->
+                <div id="team" class="section col s12 m9">
+                    <div class="row">
+                        <h2 class="header" style="color: #ee6e73; font-weight: 300;">Meet the Team</h2>
+                        <p class="caption flow-text" style="font-size: 1.25rem;font-weight: 300;margin-bottom: 30px">We are a team of students from University School of Information and Communication Technology (USICT).</p>
+                    </div>
+                <br>
+
+                    <div class="row section scrollspy" id="pratulya">
+                        <div class="col s4 m2 center-on-small-only">
+                            <div class="image-container">
+                                <img class="circle responsive-img" src="{% static 'account/images/team/bob.jpg' %}">
+                            </div>
+                        </div>
+                        <div class="col s7 offset-s1 m8 offset-m1">
+                            <h4 class="teal-text">Pratulya Bubna</h4>
+                            <p>Pratulya is currently in his final year of B.Tech. in Information Technology.
+								<i class="fa fa-github dev-icons"></i>
+								<i class="fa fa-facebook-square dev-icons"></i>
+								<i class="fa fa-linkedin-square dev-icons"></i>
+							</p>
+                        </div>
+                    </div>
+
+                    <div class="row section scrollspy" id="rajneesh">
+                        <div class="col s4 m2 center-on-small-only">
+                            <div class="image-container">
+                                <img class="circle responsive-img" src="{% static 'account/images/team/rajjo.jpg' %}">
+                            </div>
+                        </div>
+                        <div class="col s7 offset-s1 m8 offset-m1">
+                            <h4 class="teal-text">Rajneesh Sharma</h4>
+                            <p>Rajneesh is currently in his final year of B.Tech. in Information Technology.
+								<i class="fa fa-facebook-square dev-icons"></i>
+								<i class="fa fa-linkedin-square dev-icons"></i>
+								<i class="fa fa-google-plus-square dev-icons"></i>
+							</p>
+                        </div>
+                    </div>
+
+                    <div class="row section scrollspy" id="shivam">
+                        <div class="col s4 m2 center-on-small-only">
+                            <div class="image-container">
+                                <img class="circle responsive-img" src="{% static 'account/images/team/shivam.jpg' %}">
+                            </div>
+                        </div>
+                        <div class="col s7 offset-s1 m8 offset-m1">
+                            <h4 class="teal-text">Shivam Sharma</h4>
+                            <p>Shivam is currently in his final year of B.Tech. in Information Technology.
+								<i class="fa fa-facebook-square dev-icons"></i>
+								<i class="fa fa-linkedin-square dev-icons"></i>
+								<i class="fa fa-google-plus-square dev-icons"></i>
+							</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Table of Contents -->
+				<div class="col hide-on-small-only m2 offset-m1">
+					<div class="toc-wrapper">
+						<ul class="table-of-contents">
+							<li><a href="#pratulya">Pratulya Bubna</a></li>
+							<li><a href="#rajneesh">Rajneesh Sharma</a></li>
+							<li><a href="#shivam">Shivam Sharma</a></li>
+						</ul>
+					</div>
+				</div>
             </div>
-          </div>
-          <div class="col s12 m6">
-              <h4>Pratulya Bubna</h4>
-              <p>Alvin is an Information Systems and Human Computer Interaction Major. He worked as a Software Engineer at Fidelity Investments this past summer.</p>
-              <a><i class="fa fa-google-plus-square fa-2x gmail-icon" aria-hidden="true"></i></a>
-              <a><i class="fa fa-facebook-square fa-2x icons fb-icon" aria-hidden="true"></i></a>
-              <a><i class="fa fa-linkedin-square fa-2x icons linkedin-icon" aria-hidden="true"></i></a>
-          </div>
-          
-        </div>
+    </div>
 
-        <div class="row">
-          <div class="col s12 m2 offset-m2 center-on-small-only">
-            <div class="image-container">
-              <img src="{% static 'account/images/team/rajjo.jpg' %}" class="circle responsive-img" height="160px" width="160px">
-              </div>
-          </div>
-          <div class="col s12 m6">
-            <h4>Rajneesh Sharma</h4>
-            <p>Alan is an Information Systems major with a minor in computer science. He worked at as a Front End Developer at Shift Collaborative this past summer.</p>
-              <a><i class="fa fa-google-plus-square fa-2x gmail-icon" aria-hidden="true"></i></a>
-              <a><i class="fa fa-facebook-square fa-2x icons fb-icon" aria-hidden="true"></i></a>
-              <a><i class="fa fa-linkedin-square fa-2x icons linkedin-icon" aria-hidden="true"></i></a>
-          </div>
-        </div>
+{% endblock %}
 
-        <div class="row">
-          <div class="col s12 m2 offset-m2 center-on-small-only">
-            <div class="image-container">
-            <img src="{% static 'account/images/team/shivam.jpg' %}" class="circle responsive-img" height="160px" width="160px">
-              </div>
-          </div>
-          <div class="col s12 m6">
-            <h4>Shivam Sharma</h4>
-            <p>Alex is an Information Systems major with a minor in Human Computer Interaction. He worked as a software developer for Intuit this past summer.</p>
-              <a><i class="fa fa-google-plus-square fa-2x gmail-icon" aria-hidden="true"></i></a>
-              <a><i class="fa fa-facebook-square fa-2x icons fb-icon" aria-hidden="true"></i></a>
-              <a><i class="fa fa-linkedin-square fa-2x icons linkedin-icon" aria-hidden="true"></i></a>
-          </div>
-        </div>
-   </div>   
+{% block scripts %}
+<script>
+    $(document).ready(function(){
+		var top = $('.header').offset().top;
+        $('.toc-wrapper').pushpin({top: top, offset: top});
+		$('.scrollspy').scrollSpy();
+    });
+</script>
 {% endblock %}

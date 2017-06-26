@@ -84,7 +84,7 @@ class SelectionCriteria(models.Model):
 		if getattr(student, 'current_year') not in getattr(self, 'years'):
 			return False
 		for f in fields:
-			if getattr(self, f) and getattr(report_card, f) < int(getattr(self, f)):
+			if getattr(self, f) and getattr(report_card, f) and getattr(report_card, f) < int(getattr(self, f)):
 				return False
 		if not getattr(self, 'is_sub_back') and getattr(student, 'is_sub_back'):
 				return False
