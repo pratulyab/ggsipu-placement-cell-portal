@@ -20,13 +20,13 @@
 
 <div id="corner-buttons" class="hide-on-small-only">
 
-      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('student-sign-up').style.display='flex';document.getElementById('fade').style.display='flex'">sign up as student</a>
-      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('recruiter-sign-up').style.display='flex';document.getElementById('fade').style.display='flex'">sign up as recruiter</a>
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('student-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('student-signup-recaptcha-div', {'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC'});">sign up as student</a>
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('recruiter-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('recruiter-signup-recaptcha-div', {'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC'});">sign up as recruiter</a>
 </div>
 
 <div id="corner-buttons-small" class="hide-on-large-only hide-on-med-only">
-      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('student-sign-up').style.display='flex';document.getElementById('fade').style.display='flex'">sign up as student</a>
-      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('recruiter-sign-up').style.display='flex';document.getElementById('fade').style.display='flex'">sign up as recruiter</a>
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('student-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('student-signup-recaptcha-div', {'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC'});">sign up as student</a>
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('recruiter-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('recruiter-signup-recaptcha-div', {'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC'});">sign up as recruiter</a>
 </div>
 
 <div id="student-sign-up" class="white_content"> 
@@ -48,6 +48,8 @@
               {% part form.password2 prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
               {% endform %}
 			  			<br>
+              <div id="student-signup-recaptcha-div"></div>
+              <br>
 							<div class="row">
 								<button type="submit" id="student-signup-btn" class="btn waves-effect waves-light col s8 offset-s2">Signup <i class="material-icons">send</i></button>
 							</div>
@@ -79,6 +81,8 @@
                 {% part form.password2 prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
                 {% endform %}
 			  			<br>
+              <div id="recruiter-signup-recaptcha-div"></div>
+              <br>
 								<div class="row">
 									<button type="submit" id="signup-btn" class="btn waves-effect waves-light col s8 offset-s2">Signup  <i class="material-icons">send</i></button>
 								</div>
@@ -175,6 +179,7 @@
 {% block scripts %}
 	<script type="text/javascript" src="{% static 'account/auth.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
+   <script src="https://www.google.com/recaptcha/api.js?" async defer></script>
 	<script>
 		$(document).ready(function() {
 			Auth.init();
