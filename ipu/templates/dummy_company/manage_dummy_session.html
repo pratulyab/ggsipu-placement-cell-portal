@@ -2,10 +2,6 @@
 {% load staticfiles %}
 {% load material_form %}
 {% block title %}Manage Dummy Session{% endblock %}
-{% block home_url1 %}{{ home_url }}{% endblock %}
-{% block home_url2 %}{{ home_url }}{% endblock %}
-{% block home_url3 %}{{ home_url }}{% endblock %}
-{% block home_url4 %}{{ home_url }}{% endblock %}
 {% block pagetitle %}Manage Dummy Session{% endblock %}
 {% block menu_icon_dropdown %}
                 <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
@@ -76,7 +72,7 @@
 		<div class="col s12">
 			<div class="card deep-purple lighten-5">
 				<div class="card-content deep-purple-text">
-					<span class="card-title"><b>Enrolments</b></span>
+					<span class="card-title"><b>Enrollments</b></span>
 					{% with dsession.students.count as count %}
 						<p><b>{{ count }}</b> student{{ count | pluralize }} {{count|pluralize:"is,are"}} currently enrolled.</p>
 					{% endwith %}

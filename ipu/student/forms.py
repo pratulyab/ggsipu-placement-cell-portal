@@ -51,6 +51,8 @@ class StudentSignupForm(forms.ModelForm):
 		super(StudentSignupForm, self).__init__(*args, **kwargs)
 		self.fields['email'].required = True
 		self.fields['username'].widget.attrs['maxlength'] = 11
+		self.fields['username'].widget.attrs['placeholder'] = 'Enter your 11 digit enrollment number'
+		self.fields['email'].widget.attrs['placeholder'] = 'Enter email address'
 		self.fields['username'].validators = [validators.RegexValidator(r'^\d{11}$')]
 	
 	password1 = forms.CharField(label=_('Password'), widget=forms.PasswordInput(attrs={'placeholder': _('Enter password')}))
@@ -110,7 +112,7 @@ class StudentSignupForm(forms.ModelForm):
 		fields = ['username', 'email']
 		labels = {'username': _('Enrollment Number')}
 		help_texts = {
-			'username': _('Enter your 11 digit enrollment number.'),
+			'username': _('Include the zeroes at the beginning of your enrollment number, if any.'),
 			'email': _('You\'ll need to verify this email address. Make sure you have access to it.'),
 		}
 

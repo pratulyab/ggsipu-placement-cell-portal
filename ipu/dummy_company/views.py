@@ -66,7 +66,7 @@ def create_dummy_company(request, **kwargs):
 		requester = get_type_created(request.user)
 		user_type = requester.pop('user_type')
 		if not requester:
-			return JsonResponse(status=403, data={'location': reverse(settings.PROFILE_CREATION_URL[user_type])})
+			return JsonResponse(status=403, data={'location': reverse(settings.PROFILE_CREATION_URL[user_type]), 'refresh': True})
 		f = CreateDummyCompanyForm(request.POST)
 		if f.is_valid():
 			college = requester['profile']
@@ -77,10 +77,10 @@ def create_dummy_company(request, **kwargs):
 			except ValidationError as error:
 				return JsonResponse(status=400, data={'error': error.__str__()})
 			# LOG
-			dummyLogger('[%s] - [%s : %s] - Created Dummy Company [%s]' % (college.code, user_type, request.user.username, dcompany.name))
+			dummyLogger.info('[%s] - [%s : %s] - Created Dummy Company [%s]' % (college.code, user_type, request.user.username, dcompany.name))
 			# # #
-			return JsonResponse(data = {'success': True, 'location': '/'})
-		return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+			return JsonResponse(data = {'refresh': True, 'location': '', 'message': 'Dummy Company %s has been created successfully' % (dcompany.name)})
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 	else:
 		raise PermissionDenied
 
@@ -99,7 +99,7 @@ def get_edit_dcompany_form(request, **kwargs):
 			return JsonResponse(status=400, data={'error': 'Invalid Request.'})
 		f = EditDummyCompanyForm(instance=dcompany, prefix='dc')
 		context = {'edit_dcompany_form': f, 'dsess': dc_hashid}
-		return JsonResponse(data={'success': True, 'html': render(request, 'dummy_company/edit_dcompany.html', context).content.decode('utf-8')})
+		return JsonResponse(data={'message': 'Success! Proceed to edit.', 'html': render(request, 'dummy_company/edit_dcompany.html', context).content.decode('utf-8')})
 	else:
 		raise PermissionDenied
 
@@ -122,12 +122,13 @@ def edit_dummy_company(request, dummy_hashid, **kwargs):
 		if f.is_valid():
 			dcompany = f.save()
 			# LOG
-			dummyLogger('[%s] - [%s : %s] - Edited Dummy Company [%s]' % (college.code, user_type, request.user.username, dcompany.name))
+			dummyLogger.info('[%s] - [%s : %s] - Edited Dummy Company [%s]' % (college.code, user_type, request.user.username, dcompany.name))
 			# # #
 			context = {'edit_dcompany_form': EditDummyCompanyForm(instance=dcompany), 'dsess': dummy_hashid, 'success_msg': 'Dummy Company\'s details have been updated.'}
-			return JsonResponse(data={'success': True, 'html': render(request, 'dummy_company/edit_dcompany.html', context).content.decode('utf-8')})
+#			return JsonResponse(data={'success': True, 'html': render(request, 'dummy_company/edit_dcompany.html', context).content.decode('utf-8')})
+			return JsonResponse(status=200, data={'message': 'Dummy Company %s has been edited successfully' % (dcompany.name)})
 		else:
-			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+			return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 	else:
 		raise PermissionDenied
 
@@ -187,9 +188,9 @@ def create_dummy_session(request, **kwargs):
 			except IntegrityError as error:
 				return JsonResponse(status=400, data={'error': error.__str__()})
 			# LOG
-			dummyLogger('[%s] - [%s : %s] - Created Dummy Session [%d]' % (college.code, user_type, request.user.username, dsession.pk))
+			dummyLogger.info('[%s] - [%s : %s] - Created Dummy Session [%d]' % (college.code, user_type, request.user.username, dsession.pk))
 			# # #
-			return JsonResponse(data={'success': True, 'location': '/'})
+			return JsonResponse(data={'refresh': True, 'location': '', 'message': 'Dummy Session has been created successfully. To manage this session, go to "Dummy Sessions" tab.'})
 		f = dict(f.errors.items())
 		if f:
 			g.is_valid()
@@ -198,7 +199,7 @@ def create_dummy_session(request, **kwargs):
 		print(g)
 		for key, value in g.items():
 			f[key] = value
-		return JsonResponse(status=400, data={'errors': f})
+		return JsonResponse(status=400, data={'errors': f, 'message': 'Please correct the errors as indicated in the form.'})
 	else:
 		raise PermissionDenied
 
@@ -310,8 +311,8 @@ def manage_dsession_students(request, dsess_hashid, user_type, profile, **kwargs
 	if f.is_valid():
 		f.save()
 		f.notify_disqualified_students(actor=profile.profile)
-		return JsonResponse(status=200, data={'success_msg': "List has been modified successfully"})
-	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		return JsonResponse(status=200, data={'refresh': True, 'message': "List has been modified successfully"})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 	
 @require_user_types(['C', 'F'])
 @require_AJAX
@@ -339,8 +340,8 @@ def edit_dcriteria(request, dsess_hashid, user_type, profile, **kwargs):
 		dummyLogger.info('[%s] - [%s : %s] - Edited Criteria for [%d] - [%s]' % \
 				(profile.code, user_type, request.user.username, dsession.pk, ','.join(f.changed_data)))
 		# # #
-		return JsonResponse(status=200, data={'success_msg': "Selection Criteria has been updated successfully"})
-	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		return JsonResponse(status=200, data={'message': "Selection Criteria has been updated successfully"})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 
 @require_user_types(['C', 'F'])
 @require_AJAX
@@ -360,18 +361,18 @@ def edit_dummy_session(request, dsess_hashid, user_type, profile, **kwargs):
 	f = EditDummySessionForm(request.POST, instance=dsession)
 	if f.is_valid():
 		f.save()
-		success_msg = 'Session Details have been updated successfully.'
+		message = 'Session Details have been updated successfully.'
 		if f.should_notify_students():
 			try:
 				f.notify_selected_students(actor=profile.profile)
 			except:
 				return JsonResponse(status=400, data={'error': 'Sorry, error occurred while notifying students'})
-			success_msg += ' Students have been notified.'
+			message += ' Students have been notified.'
 		# LOG
 		dummyLogger.info('[%s] - [%s : %s] - Edited Session for [%d] - [%s]' % (profile.code, user_type, request.user.username, dsession.pk, ','.join(f.changed_data)))
 		# # #
-		return JsonResponse(data={'success': True, 'success_msg': success_msg})
-	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+		return JsonResponse(data={'success': True, 'message': message})
+	return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 
 @require_user_types(['C', 'F'])
 @require_AJAX

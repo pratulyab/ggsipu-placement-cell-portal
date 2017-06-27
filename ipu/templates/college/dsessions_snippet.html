@@ -2,15 +2,15 @@
 	<ul class="collection">
 		{% for dsession in dsessions %}
 			<li class="collection-item avatar" data-sess="{{ dsession.dsess_hashid }}">
-				<span class="title">{{ dsession.dcompany }} for {{ dsession.type|title }} </span>
+				<span class="title blue-text text-accent-2"><b>{{ dsession.dcompany }}</b> for {{ dsession.type }}</span>
 				<p>
-					{{ dsession.salary }}
+					<b>Salary: </b>{{ dsession.salary }}
 					<br>
 					<p>
-						{{ dsession.streams }}
+						<b>Streams: </b>{{ dsession.streams }}
 					</p>
 					<br>
-						{{ dsession.students }} student{{ dsession.students|pluralize }} in the session
+						<b><span class="orange-text text-darken-2">{{ dsession.students }}</span></b> student{{ dsession.students|pluralize }} in the session
 				</p>
 				<span class="secondary-content">
 					<a href="{% url 'manage_dsession' dsession.dsess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>

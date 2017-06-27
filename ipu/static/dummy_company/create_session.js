@@ -106,6 +106,12 @@ var DSession = (function() {
 				data: form_data,
 				processData: false,
 				contentType: false,
+				beforeSend: function() {
+					showPreloader();
+				},
+				complete: function() {
+					removePreloader();
+				},
 				success: function(data, status, xhr){
 					swal({
 							title: "Message has been sent successfully!",
@@ -142,6 +148,12 @@ var DSession = (function() {
 			url: '/dcompany/mydsessions/',
 			type: 'GET',
 			data: {},
+			beforeSend: function() {
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();
+			},
 			success: function(data, status, xhr){
 				var loc = data['location'];
 				if (loc){
@@ -170,6 +182,12 @@ var DSession = (function() {
 			type: 'GET',
 			data: {'programme': programme_value},
 			contentData: false,
+			beforeSend: function() {
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();
+			},
 			success: function(data, status, xhr){
 				if (data['location']){
 					location.href = data['location'];
@@ -181,7 +199,6 @@ var DSession = (function() {
 				var $years_select = $(form).find('#id_years');
 				addOptionsToSelectField(streams, $stream_select);
 				addOptionsToSelectField(years, $years_select);
-//				$(form_id).on('submit', submitForm);
 				return;
 			},
 			error: function(xhr, status, error){
@@ -195,7 +212,6 @@ var DSession = (function() {
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
-//				$(form_id).on('submit', submitForm);
 			}
 		});
 	}
@@ -208,26 +224,48 @@ var DSession = (function() {
 			type: 'GET',
 			data: {'dcompany_hashid': value},
 			contentType: false,
+			beforeSend: function() {
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();
+			},
 			success: function(data, status, xhr){
-				if (data['location']){
-					location.href = data['location'];
-					return;
-				}
+				if (data.refresh) {
+					swal({
+						title: 'Success',
+						text: data.message,
+						type: 'success',
+						allowEscapeKey: false,
+						}, function(e) {
+							window.location.href = data.location ? data.location : '';
+						}
+					);
+				} else
+					swal("Success!", data.message, "success");
 				$('#edit-forms-div').append($(data['html']));
 				$('#edit-dummy-company-form').on('submit', submitForm);
 			},
 			error: function(xhr, status, error){
-				var loc = xhr.responseJSON['location'];
-				if (loc){
-					location.href = loc;
-					return;
-				}
-				if (xhr.responseJSON['error']){
-					$(form).prepend($('<small class="error">'+xhr.responseJSON['error']+'</small>'))
+				if (xhr.responseJSON && xhr.responseJSON['error']){
+					$(form).parent().prepend($('<small class="error">'+xhr.responseJSON['error']+'</small>'))
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
-//				$(form_id).on('submit', submitForm);
+				var message = (xhr.responseJSON && (xhr.responseJSON['message'] || xhr.responseJSON['error'])) ? (xhr.responseJSON['message'] || xhr.responseJSON['error']) : (xhr.status >= 500 ? 'Sorry, an unexpected error occurred. Please try again after sometime.' : 'Please correct the errors.');
+				if (xhr.responseJSON && xhr.responseJSON['refresh']) {
+					swal({
+						title: 'Error',
+						text: message,
+						type: 'error',
+						allowEscapeKey: false,
+						allowOutsideClick: false,
+						}, function(e) {
+							window.location.href = xhr.responseJSON['location'] ? xhr.responseJSON['location'] : '';
+						}
+					);
+				} else
+					swal("Error!", message , "error");
 			}
 		});
 	}
@@ -244,31 +282,53 @@ var DSession = (function() {
 			data: form_data,
 			processData: false,
 			contentType: false,
+			beforeSend: function() {
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();
+			},
 			success: function(data, status, xhr){
-				if (data['location']){
-					location.href = data['location'];
-					return;
-				}
 				if (data.render){
 					var form_div = $(form).parent();
 					form_div.html(data['render']);
 					$(form_id).on('submit', submitForm);
 				}
-				Materialize.toast('Changes have been saved!', 3000)
-//				handleMultipleJquery();
+//				Materialize.toast('Changes have been saved!', 3000)
+				if (data.refresh) {
+					swal({
+						title: 'Success',
+						text: data.message,
+						type: 'success',
+						allowEscapeKey: false,
+						}, function(e) {
+							window.location.href = data.location ? data.location : '';
+						}
+					);
+				} else
+					swal("Success!", data.message, "success");
 			},
 			error: function(xhr, status, error){
-				var loc = xhr.responseJSON['location'];
-				if (loc){
-					location.href = loc;
-					return;
-				}
-				if (xhr.responseJSON['error']){
-					$(form).prepend($('<small class="error">'+xhr.responseJSON['error']+'</small>'))
+				if (xhr.responseJSON && xhr.responseJSON['error']){
+					$(form).parent().prepend($('<small class="error red-text">'+xhr.responseJSON['error']+'</small>'))
 				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id);
-//				$(form_id).on('submit', submitForm);
+				var message = (xhr.responseJSON && (xhr.responseJSON['message'] || xhr.responseJSON['error'])) ? (xhr.responseJSON['message'] || xhr.responseJSON['error']) : (xhr.status >= 500 ? 'Sorry, an unexpected error occurred. Please try again after sometime.' : 'Please correct the errors.');
+				if (xhr.responseJSON && xhr.responseJSON['refresh']) {
+					swal({
+						title: 'Error',
+						text: message,
+						type: 'error',
+						allowEscapeKey: false,
+						allowOutsideClick: false,
+						}, function(e) {
+							window.location.href = xhr.responseJSON['location'] ? xhr.responseJSON['location'] : '';
+						}
+					);
+				} else {
+					swal("Error!", message , "error");
+				}
 			}
 		});
 	}

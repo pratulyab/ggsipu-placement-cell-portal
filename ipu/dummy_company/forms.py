@@ -171,8 +171,6 @@ class CreateSelectionCriteriaForm(forms.ModelForm):
 	def clean_years(self):
 #		comma_separated_years = ','.join(self.cleaned_data['years'])    Performed in the views before creating form obj
 		comma_separated_years = self.cleaned_data['years'].split('\'')[1:-1][0]
-		if comma_separated_years == '':
-			return ''
 		if not re.match(r'^([1-6](,[1-6])*)?$', comma_separated_years):
 			raise forms.ValidationError(_('Invalid years provided.'))
 #		To validate against the maximum year of the programme

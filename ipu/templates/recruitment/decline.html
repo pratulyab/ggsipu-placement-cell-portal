@@ -1,13 +1,20 @@
 {% load staticfiles %}
 {% load material_form %}
-<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
-{% include 'material/includes/material_js.html' %}
-<form method='POST' action="{% url 'decline' %}" id="dissociate-form">
-	{% csrf_token %}
-	{% form form=decline_form %}{% endform %}
-	<div class="row">
-		<div class="col s6 offset-s2">
-			<button class="btn btn-waves" type="submit">Decline</button>
-		</div>
+<div class="col s12 accept-req-card" style="border: 1px solid #1c262f">
+	<h5 style="color: lightcoral" class="center-align">Disconnecting with {{ other_party }}</h5>
+	<div class="col s12 right-align">
+		<a href="{% url 'createsession' %}?ass={{ hashid }}" style="color: seagreen" class="btn-flat change-decision">change decision</a>
 	</div>
-</form>
+	<ul class="right-align col s12 blue-text text-accent-1">
+		<li><b>Programme:</b> {{ association.programme }}</li>
+		<li><b>Streams:</b> {{ streams }}</li>
+		<li><b>Salary:</b> {{ association.salary }} LPA (Changeable)</li>
+	</ul>
+	<form method='POST' action="{% url 'decline' %}" id="decline-form">
+		{% csrf_token %}
+		{% form form=decline_form %}{% endform %}
+		<div class="row">
+				<button class="btn btn-waves col s10 offset-s1 m8 offset-m2" type="submit">Decline Request</button>
+		</div>
+	</form>
+</div>

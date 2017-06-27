@@ -74,6 +74,14 @@ var VerifyStu = (function() {
 			data: form_data, 
 			processData: false,
 			contentType: false,
+			beforeSend: function() {
+				form.find('button').addClass('disabled');
+				showPreloader();
+			},
+			complete: function() {
+				form.find('button').removeClass('disabled');
+				removePreloader();	
+			},
 			success: function(data, status, xhr){
 				handleMultipleJquery();
 				data = data.split('<<<>>>');
@@ -180,7 +188,7 @@ var VerifyStu = (function() {
 			closeOnConfirm: false,
 			showLoaderOnConfirm: true,
 			allowEscapeKey: false,
-			allowOutsideClick: true,
+			allowOutsideClick: false,
 			},
 			function(){
 				$.ajax({

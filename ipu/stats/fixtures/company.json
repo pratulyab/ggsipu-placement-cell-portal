@@ -1,0 +1,380 @@
+[
+{
+    "model": "stats.company",
+    "pk": 1,
+    "fields": {
+        "name": "Tata Consultancy Services",
+        "alias": "TCS",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 2,
+    "fields": {
+        "name": "Aricent",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 3,
+    "fields": {
+        "name": "Reval",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 4,
+    "fields": {
+        "name": "Vinsol",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 5,
+    "fields": {
+        "name": "Opera Solutions",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 6,
+    "fields": {
+        "name": "Yamaha Motors",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 7,
+    "fields": {
+        "name": "Wipro",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 8,
+    "fields": {
+        "name": "AVL",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 9,
+    "fields": {
+        "name": "CMC",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 10,
+    "fields": {
+        "name": "Nagarro",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 11,
+    "fields": {
+        "name": "ISS RETAIL",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 12,
+    "fields": {
+        "name": "EXL",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 14,
+    "fields": {
+        "name": "Octro",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 15,
+    "fields": {
+        "name": "Compro (Talent Grid)",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 16,
+    "fields": {
+        "name": "Adobe",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 17,
+    "fields": {
+        "name": "Oxford University",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 19,
+    "fields": {
+        "name": "Samsung",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 20,
+    "fields": {
+        "name": "Snapdeal",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 21,
+    "fields": {
+        "name": "Flipkart",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 22,
+    "fields": {
+        "name": "Hike",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 23,
+    "fields": {
+        "name": "M/S Azcom Infosolution",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 24,
+    "fields": {
+        "name": "Practo",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 25,
+    "fields": {
+        "name": "Indus Valley Partners (India)",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 26,
+    "fields": {
+        "name": "Zillious",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 27,
+    "fields": {
+        "name": "Interaa",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 28,
+    "fields": {
+        "name": "Paytm",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 29,
+    "fields": {
+        "name": "Times Internet",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 30,
+    "fields": {
+        "name": "ESSE XLG",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 31,
+    "fields": {
+        "name": "Intelligrape",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 32,
+    "fields": {
+        "name": "Tech Mahindra",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 33,
+    "fields": {
+        "name": "Polestar",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 34,
+    "fields": {
+        "name": "Eninov",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 35,
+    "fields": {
+        "name": "M/S Aon Hewwit",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 36,
+    "fields": {
+        "name": "Indian Army",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 37,
+    "fields": {
+        "name": "Innokreat",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 38,
+    "fields": {
+        "name": "ItemVan Technologies Pvt. Ltd.",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 39,
+    "fields": {
+        "name": "National Informatics Centre",
+        "alias": "NIC",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 40,
+    "fields": {
+        "name": "Nepzy",
+        "alias": "",
+        "website": "https://www.nepzy.com"
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 41,
+    "fields": {
+        "name": "Safenet",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 42,
+    "fields": {
+        "name": "Tech Vision",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 43,
+    "fields": {
+        "name": "Wasplabs Pvt. Ltd.",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 44,
+    "fields": {
+        "name": "Capital IQ",
+        "alias": "",
+        "website": ""
+    }
+}
+]

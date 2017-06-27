@@ -109,12 +109,75 @@ var Auth = (function() {
 		handleAJAX($(this), '#student-signup-form', 'ss-', studentSignup);
 	}
 
+	function enforcePasswordConstraints(e) {
+		var $input = $(this),
+			$icon = $input.prev(),
+			password = $input.val(),
+			title = 'Weak Password',
+			error = '',
+			texts = [];
+		if (! /(?=.*[a-zA-Z]+)/.test(password)) {
+			texts.push('Password must contain at least one alphabet.');
+			error = 'Password is entirely numeric.'
+		}
+		if(! /(?=.*\d)/.test(password)) {
+			texts.push('Password must contain at least one digit.');
+			error = 'Include digit(s) in the password.'
+		}
+		if (! /(?=.*[#!$%&()*+,-./:;<=>?@[\]^_`{|}~])/.test(password)) {
+			texts.push('Password must contain at least one special character.');
+			error = 'Include special character(s).'
+		}
+		if (! /.{8,}/.test(password)) {
+			texts.push('Password must be at least 8 characters long.');
+			error = 'Password is too short.'
+		}
+		if (! error) {
+			// No constraint violations
+			$icon.removeClass('red-text').addClass('green-text');
+			$icon.html('done');
+		} else {
+			$icon.removeClass('green-text').addClass('red-text');
+			$icon.html('report_problem');
+			swal({
+				title: title,
+				text: texts.join('\n'),
+				type: 'warning',
+				allowOutsideClick: true,
+				confirmButtonText: 'Ok, let me correct it.'
+			});
+			swal.showInputError(error);
+		}
+	}
+
+	function matchPasswords(e) {
+		var $input = $(this),
+			$icon = $input.prev();
+		if ($input.val() != $input.parents('div.row').prev().find('input').val()) {
+			swal({
+				title: 'Uh Oh!',
+				text: 'Passwords don\'t match. Please re-enter the password.',
+				type: 'warning',
+				allowOutsideClick: true,
+				confirmButtonText: 'OK, let me correct it.'
+			});
+			$icon.removeClass('green-text').addClass('red-text');
+			$icon.html('report_problem');
+			swal.showInputError("Passwords don't match!");
+		} else {
+			$icon.removeClass('red-text').addClass('green-text');
+			$icon.html('done');
+		}
+	}
+
 	return {
 		init: function() {
 			$('#login-form').on('submit', login);
 			$('#signup-form').on('submit', signup);
 			$('#student-login-form').on('submit', studentLogin);
 			$('#student-signup-form').on('submit', studentSignup);
+			$('input[id$=password1]').on('change', enforcePasswordConstraints);
+			$('input[id$=password2]').on('change', matchPasswords);
 		}
 	};
 })();

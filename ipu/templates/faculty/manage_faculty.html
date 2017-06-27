@@ -2,10 +2,6 @@
 {% load staticfiles %}
 {% load material_form %}
 {% block title %}Manage Faculty{% endblock %}
-{% block home_url1 %}{% url 'college_home' %}{% endblock %}
-{% block home_url2 %}{% url 'college_home' %}{% endblock %}
-{% block home_url3 %}{% url 'college_home' %}{% endblock %}
-{% block home_url4 %}{% url 'college_home' %}{% endblock %}
 {% block pagetitle %}Manage Faculty{% endblock %}
 {% block menu_icon_dropdown %}
                 <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
@@ -94,7 +90,11 @@
 					<img src="" alt="Profile Picture" class="circle" style="background-color:{% cycle '#02b3e4' '#1c262f'%}" />
 				{% endif %}
 				<p>
-					<b>Name: </b>{% if f.faculty.firstname %} <span class="title">{{ f.faculty.get_full_name }}</span>{% else %}<small>User has not created his/her profile yet.</small>{% endif %}<br>
+					{% if f.faculty.firstname %}
+					<b>Name: </b> <span class="title">{{ f.faculty.get_full_name }}</span><br>
+					{% else %}
+						<small>User has not created his/her profile yet.</small><br>
+					{% endif %}
 					<b>Username: </b><span class="title">&lt;{{ f.faculty.profile.username }}&gt;</span><br>
 					<b>Email: </b>{{ f.faculty.profile.email }}<br>
 					<b>Permissions: </b>{% for group in f.faculty.profile.groups.all %}{{ group }}, {% endfor %}
@@ -140,13 +140,16 @@
 <!--                                     -->
 {% endblock tabs_content %}
 {% block scripts %}
+	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
 	<script type="text/javascript" src="{% static 'faculty/manage.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Settings.init(['create-faculty-form']);
 			ManageFaculty.init();
+			Mobile.init();
 		});
 	</script>
 {% endblock %}

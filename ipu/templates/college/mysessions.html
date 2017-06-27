@@ -16,7 +16,7 @@
 		var parsedPushpin = $.parseHTML(pushpin);
 		var div = $('#sessions_div');
 		div.append(parsedPushpin);
-		var top = div.offset().top;
+		var top = div.offset().top + 40;
 		$('.toc-wrapper').pushpin({top: top, offset:top});
 		$('.scrollspy').scrollSpy();
 		$(".session-filter-forms-sideNav").sideNav();

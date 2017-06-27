@@ -807,3 +807,15 @@ form h5 {
   display: none;
 }
 }
+
+.required > label:after {
+	content: ' (*)' !important;
+	color: #337ab7 !important;
+	top: 0px !important;
+	opacity: 1 !important;
+	display: inline !important;
+}
+
+.required > [type="checkbox"] + label:after {
+	content: '' !important;
+}

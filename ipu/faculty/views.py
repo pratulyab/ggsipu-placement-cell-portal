@@ -42,11 +42,12 @@ def faculty_signup(request):
 				Faculty.objects.create(profile=faculty, college=user.college)
 				collegeLogger.info('[%s] - %s added faculty %s' % (user.college.code, user.username, faculty.username))
 				send_activation_email_task.delay(faculty.pk, get_current_site(request).domain)
-				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['C'])})
+				message = 'Faculty %s has been added.' % (faculty.username)
+				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL['C']), 'refresh': True, message: message})
 			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 		else:
-			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
+			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request), 'refresh': True})
 	else:
 		return handle_user_type(request, redirect_request=True)
 

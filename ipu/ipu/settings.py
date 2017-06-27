@@ -67,6 +67,7 @@ INSTALLED_APPS = [
 	'faculty',
 	'notification',
 	'recruitment',
+	'stats',
 	'student',
 	'material',
 ]
@@ -237,5 +238,5 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 1 * (60 * 60 * 24)
 
 # # # 
-DISALLOWED_USERNAMES = ['account', 'notification', 'student', 'faculty', 'company', 'college', 'dcompany', 'recruitment']
+DISALLOWED_USERNAMES = ['account', 'notification', 'student', 'faculty', 'company', 'college', 'dcompany', 'recruitment', 'stats']
 DISALLOWED_EMAIL_DOMAINS = ['mailinator', 'discard.email', 'thraml', 'mintemail', 'mailcatch']

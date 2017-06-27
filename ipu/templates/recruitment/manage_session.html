@@ -2,10 +2,6 @@
 {% load staticfiles %}
 {% load material_form %}
 {% block title %}Manage Placement Session{% endblock %}
-{% block home_url1 %}{{ user.get_home_url }}{% endblock %}
-{% block home_url2 %}{{ user.get_home_url }}{% endblock %}
-{% block home_url3 %}{{ user.get_home_url }}{% endblock %}
-{% block home_url4 %}{{ user.get_home_url }}{% endblock %}
 {% block pagetitle %}Manage Placement Session{% endblock %}
 {% block menu_icon_dropdown %}
 	{% if user.type == 'C' %}
@@ -87,7 +83,7 @@
 		<div class="col s12">
 			<div class="card deep-purple lighten-5">
 				<div class="card-content deep-purple-text">
-					<span class="card-title"><b>Enrolments</b></span>
+					<span class="card-title"><b>Enrollments</b></span>
 					{% with session.students.count as count %}
 						<p><b>{{ count }}</b> student{{ count | pluralize }} {{count|pluralize:"is,are"}} currently enrolled.</p>
 					{% endwith %}

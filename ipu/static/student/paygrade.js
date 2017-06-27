@@ -46,7 +46,7 @@ var Paygrade = (function() {
 			closeOnConfirm: false,
 			showLoaderOnConfirm: true,
 			allowEscapeKey: false,
-			allowOutsideClick: true,
+			allowOutsideClick: false,
 			},
 			function(){
 				clearErrors('#paygrade-form-div');

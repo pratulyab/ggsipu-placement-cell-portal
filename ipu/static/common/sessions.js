@@ -64,6 +64,14 @@ var Session = (function() {
 				data: form_data,
 				processData: false,
 				contentType: false,
+				beforeSend: function() {
+					showPreloader();
+					form.find('button').addClass('disabled');
+				},
+				complete: function() {
+					removePreloader();
+					form.find('button').removeClass('disabled');
+				},
 				success: function(data, status, xhr){
 					swal({
 							title: "Message has been sent successfully!",
@@ -103,6 +111,12 @@ var Session = (function() {
 			url: '/recruitment/mysessions/',
 			type: 'GET',
 			data: {},
+			beforeSend: function() {
+				showPreloader();
+			},
+			complete: function() {
+				removePreloader();
+			},
 			success: function(data, status, xhr){
 //				handleMultipleJquery();
 				var loc = data['location'];
@@ -146,6 +160,14 @@ var Session = (function() {
 			data: form_data,
 			processData: false,
 			contentType: false,
+			beforeSend: function() {
+				showPreloader();
+				form.find('button').addClass('disabled');
+			},
+			complete: function() {
+				removePreloader();
+				form.find('button').removeClass('disabled');
+			},
 			success: function(data, status, xhr){
 				$('#filter-preloader').empty();
 				if (!$div.length)

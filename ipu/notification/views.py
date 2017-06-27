@@ -467,8 +467,13 @@ def notification_pk_decoder(identifier):
 
 
 def clean_string(message , length = 20):
+	
 	if len(message) > length:
-		message = message[:length]
+		anchor_index = message.find('<a')
+		if anchor_index != -1:
+			message = message[:anchor_index]
+		else:
+			message = message[:length]
 		message += "..."
 	else:
 		if len(message) < 1:

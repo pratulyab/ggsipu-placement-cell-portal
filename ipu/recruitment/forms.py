@@ -27,11 +27,12 @@ class AssociationForm(forms.ModelForm):
 		self.profile = kwargs.pop('profile')
 		self.who = self.profile.__class__.__name__
 		super(AssociationForm, self).__init__(*args, **kwargs)
-		
+		self.fields['desc'].widget.attrs['placeholder'] = 'Description'
+		self.fields['salary'].help_text = 'Zero is a valid number. Salary can be changed later.'
 		if self.who == 'College':
 			del self.fields['college']
 #			company_queryset = Company.objects.exclude(pk__in = [d.company.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
-			company_queryset = Company.objects.exclude(pk__in = [d['pk'] for d in self.profile.dissociations.values('pk')])
+			company_queryset = Company.objects.exclude(pk__in = [d['company__pk'] for d in self.profile.dissociations.filter(initiator='CO').values('company__pk')])
 			programmes_queryset = self.profile.get_programmes_queryset()
 			self.fields['company'] = ModelHashidChoiceField(company_queryset, 'HASHID_COMPANY')
 			self.fields['company'].widget.choices = self.get_zipped_choices(company_queryset, 'HASHID_COMPANY')
@@ -68,7 +69,7 @@ class AssociationForm(forms.ModelForm):
 		elif self.who == 'Company':
 			del self.fields['company']
 #			college_queryset = College.objects.exclude(pk__in = [d.college.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
-			college_queryset = College.objects.exclude(pk__in = [d['pk'] for d in self.profile.dissociations.values('pk')])
+			college_queryset = College.objects.exclude(pk__in = [d['college__pk'] for d in self.profile.dissociations.filter(initiator='C').values('college__pk')])
 			self.fields['college'] = ModelHashidChoiceField(college_queryset, 'HASHID_COLLEGE')
 			self.fields['college'].widget.choices = self.get_zipped_choices(college_queryset, 'HASHID_COLLEGE')
 			self.fields['programme'].choices= ()
@@ -108,6 +109,18 @@ class AssociationForm(forms.ModelForm):
 		if programme and college and not college.get_programmes_queryset().filter(pk=programme.pk):
 			raise forms.ValidationError(_('The selected programme is not offered by the college.'))
 		return self.cleaned_data['programme']
+
+	def can_make_requests(self):
+		''' A check to ensure that an unwarranted company doesn't create more than 5 pending requests.
+			Given that it has no record of sessions.
+			Therefore, a potential troublemaker.
+			No need to limit the college's requests, because colleges will always be warranted.
+		'''
+		if self.who == 'Company':
+			associations = self.profile.associations
+			if associations.count() >= 5 and not associations.filter(approved=True).exists():
+				return False
+		return True
 	
 	def clean(self):
 		super(AssociationForm, self).clean()
@@ -176,7 +189,7 @@ class CreateSessionCriteriaForm(forms.ModelForm):
 		)
 	
 	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
-	application_deadline = forms.DateField(label=_('Application Deadline'), help_text=_("Choose last date for students to apply. If no event is scheduled for now, choose an arbitrary future date."),input_formats=['%d %B, %Y','%d %B %Y','%d %b %Y','%d %b, %Y'])
+	application_deadline = forms.DateField(label=_('Application Deadline'), help_text=_("This can be changed later. If no event is scheduled for now, choose an arbitrary future date."),input_formats=['%d %B, %Y','%d %B %Y','%d %b %Y','%d %b, %Y'])
 	years = forms.CharField(label=_('Which year students may apply'), max_length=30) # Max length is 30 because "['1', '2', '3', '4', '5', '6']" is passed
 	
 	def __init__(self, *args, **kwargs):
@@ -185,6 +198,7 @@ class CreateSessionCriteriaForm(forms.ModelForm):
 		super(CreateSessionCriteriaForm, self).__init__(*args, **kwargs)
 		self.initial['token'] = settings.HASHID_ASSOCIATION.encode(self.association.pk)
 		self.fields['years'].widget = forms.SelectMultiple(choices=(tuple(("%s"%i,"%s"%i) for i in range(1,self.max_year+1))))
+		self.fields['application_deadline'].widget.attrs['placeholder'] = 'Choose last date for students to apply'
 
 	def clean_application_deadline(self):
 		date = self.cleaned_data['application_deadline']
@@ -488,7 +502,10 @@ class DeclineForm(forms.ModelForm):
 	class Meta:
 		model = Association
 		fields = ['company', 'college', 'decline_message']
-
+		help_texts = {
+			'college': 'Readonly. Cannot be edited',
+			'company': 'Readonly. Cannot be edited',
+		}
 
 class DissociationForm(forms.ModelForm):
 

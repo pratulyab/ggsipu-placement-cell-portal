@@ -16,8 +16,9 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls import url, include, static
 from django.contrib import admin
-from account.views import auth, landing, login, view_profile, logout, search, team, stats, intro, sms_callback
 from notification.views import report
+from account.views import auth, landing, login, view_profile, logout, search, team, intro, sms_callback, procedure
+from stats.views import stats
 
 urlpatterns = [
 #    url(r'^LrY4pRNMnQXvOK3vWeODJaP15jbKkV$' if not settings.DEBUG else r'admin$', admin.site.urls),
@@ -25,6 +26,7 @@ urlpatterns = [
 	url(r'^$', landing, name='landing'),
 	url(r'^auth/$', auth, name='auth'),
 	url(r'^team/$', team, name='team'),
+	url(r'^procedure/$', procedure, name='procedure'),
 	url(r'^stats/$', stats, name='stats'),
 	url(r'^intro/$', intro, name='intro'),
 	url(r'^login/$', login, name='login'),

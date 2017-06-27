@@ -57,6 +57,8 @@ var Utils = (function() {
 		if (!is_mobile_view)
 			$active = $active.parent(); // because events are set on li
 		$active.trigger('reload'); //account for reload event
+		var $span = $('<span class="green-text text-lighten-1" />').html("Tab Reloaded!").css('fontWeight', 'bold');
+		Materialize.toast($span, 2000);
 	}
 
 	function displayInfoModal() {
@@ -101,11 +103,12 @@ var Utils = (function() {
 				var $reload_btn = $('.reload-btn'),
 					$info_btn = $('.info-btn');
 				// Tooltips + Click Event
-				$reload_btn.tooltip({'delay': 50, 'tooltip': 'Reload', 'position': 'left'});
+				$reload_btn.tooltip({'delay': 50, 'tooltip': 'Reload Tab', 'position': 'left'});
 				$reload_btn.on('click', reloadContent);
-				$info_btn.tooltip({'delay': 50, 'tooltip': 'Information', 'position': 'left'});
+				$info_btn.tooltip({'delay': 50, 'tooltip': 'Tab Information', 'position': 'left'});
 				$info_btn.on('click', displayInfoModal);
 				document.getElementById('report-form-anchor').addEventListener('click' , initializeReportBugModal);
+				$('#fixed-action-button').find('a')[0].click();
 			}
 		}
 	}

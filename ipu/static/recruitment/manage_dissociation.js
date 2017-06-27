@@ -17,7 +17,7 @@ var Dissociation = (function() {
 			closeOnConfirm: false,
 			showLoaderOnConfirm: true,
 			allowEscapeKey: false,
-			allowOutsideClick: true,
+			allowOutsideClick: false,
 			},
 			function(){
 				$.ajax({
@@ -85,14 +85,15 @@ var Dissociation = (function() {
 		clearErrors(form_id);
 		swal({
 			title: "Block?",
-			text: "Blocking the user would prevent him from sending you association requests.\nThis action will result in deletion of all your pending and declined association requests with this user.\n Note that your current sessions with this user, if any, will still remain.",
+			text: "Blocking the user would prevent them from sending you association requests.\nThis action will result in deletion of all your pending and declined association requests with this user.\n Note that your current sessions with this user, if any, will still remain.",
 			type: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#DD6B55",
 			confirmButtonText: "Yes, delete it!",
 			closeOnConfirm: false,
 			showLoaderOnConfirm: true,
-			allowOutsideClick: true,
+			allowEscapeKey: false,
+			allowOutsideClick: false,
 			},
 			function(){
 				$.ajax({
