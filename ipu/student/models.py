@@ -83,8 +83,10 @@ class Student(models.Model):
 
 class Qualification(models.Model):
 	student = models.OneToOneField(Student, related_name="qualifications")
-	tenth = models.DecimalField(_('Xth Percentage'), max_digits=4, decimal_places=2, validators=[validators.MinValueValidator(Decimal('33'))])
-	twelfth = models.DecimalField(_('XIIth Percentage'), max_digits=4, decimal_places=2, validators=[validators.MinValueValidator(Decimal('33'))])
+	tenth_cgpa = models.DecimalField(_('Xth CGPA'), max_digits=3, decimal_places=1,\
+			validators=[validators.MinValueValidator(Decimal(0)), validators.MaxValueValidator(Decimal(10))], default=Decimal(0))
+	tenth = models.DecimalField(_('Xth Percentage'), max_digits=4, decimal_places=2, validators=[validators.MinValueValidator(Decimal('33'))], default=Decimal(33))
+	twelfth = models.DecimalField(_('XIIth Percentage'), max_digits=4, decimal_places=2, validators=[validators.MinValueValidator(Decimal('33'))], default=Decimal(33))
 	graduation = models.DecimalField(_('Graduation Percentage'), max_digits=4, decimal_places=2, blank=True, null=True, validators=[validators.MinValueValidator(Decimal('33'))])
 	post_graduation = models.DecimalField(_('Post Graduation Percentage'), max_digits=4, decimal_places=2, blank=True, null=True, validators=[validators.MinValueValidator(Decimal('33'))])
 	doctorate = models.DecimalField(_('Doctorate Percentage'), max_digits=4, decimal_places=2, blank=True, null=True, validators=[validators.MinValueValidator(Decimal('33'))])
