@@ -44,8 +44,8 @@ var Stats = (function() {
 				year_field.prop('disabled', true);
 				year_field.material_select();
 				*/
-//				swal('Error', xhr.responseJSON['errors'], 'error');
-			   Materialize.toast($('<span class="flow-text red-text" />').html(xhr.responseJSON['errors']).css('fontWeight', 'bold'), 2000);
+				swal('Error', xhr.responseJSON['errors'], 'error');
+//			  	Materialize.toast($('<span class="flow-text red-text" />').html(xhr.responseJSON['errors']).css('fontWeight', 'bold'), 2000);
 			}
 		});
 	}
@@ -79,9 +79,9 @@ var Stats = (function() {
 				year_field.children().slice(1).remove();
 				year_field.prop('disabled', true);
 				year_field.material_select();
-				swal('Error', xhr.responseJSON['errors'], 'error');
 				*/
-			   	Materialize.toast($('<span class="flow-text red-text" />').html(xhr.responseJSON['errors']).css('fontWeight', 'bold'), 5000);
+				swal('Error', xhr.responseJSON['errors'], 'error');
+//			   	Materialize.toast($('<span class="flow-text red-text" />').html(xhr.responseJSON['errors']).css('fontWeight', 'bold'), 5000);
 			}
 
 		});
@@ -157,7 +157,12 @@ var Stats = (function() {
 					callbacks: {
 						title: function(tooltipitem, chart) {
 							return chart.datasets[tooltipitem[0].datasetIndex].data[tooltipitem[0].index].label;
-						}
+						},
+						label: function(tooltipitem, chart) {
+							var salary = tooltipitem.xLabel + " LPA",
+								offers = tooltipitem.yLabel ? tooltipitem.yLabel + " offers" : "Result Awaited";
+							return salary + ", " + offers;
+						},
 					}
 				}
 			}
