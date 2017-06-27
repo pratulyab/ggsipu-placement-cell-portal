@@ -250,6 +250,30 @@
   opacity: 0.6; z-index: 9999;">   
   </div>
 <!-- END Preloader  -->
+
+<!--Report a Bug Modal Begins-->
+  <div id="report-form-modal" class="modal modal-fixed-footer">
+    <div class="modal-content">
+      <h3 class="center-align" style="color : #337ab7;">Report a Problem</h3>
+      <p id="report-form-content">Looking at this? Perhaps an error in connection.</p>
+      <small style="color: coral;"><b>Note :</b> Use this form to contact with Website Maintenance Team only. To contact with college, please goto Contact College form.</small>
+    </div>
+    
+    <div class="modal-footer">
+      <div class="row" style="margin-bottom: 0;">
+            <div class="col s6 l3">
+              <button id="close-report-form" class="btn waves-effect waves-light">Cancel<i class="material-icons right">close</i></button>
+            </div><div class="col s0 l6"></div>
+            <div class="col s6 l3">
+              <button id="submit-report-form" url="{% url 'submit_report' %}" class="btn waves-effect waves-light">Submit<i class="material-icons right">send</i></button>
+            </div>
+      </div>
+    </div>
+  </div>
+  <button id="report-form-modal-trigger" data-target="report-form-modal" style="display: none;"></button>
+   
+<!--Report a Bug Modal Ends-->
+
 <!--notification-sidebar begins-->
 
  <ul id="slide-out" class="side-nav">
@@ -322,6 +346,7 @@
         {% block scripts %}{% endblock %}
         <script type="text/javascript" src="{% static 'notification/get_notification.js' %}"></script>
 		<script type="text/javascript" src="{% static 'common/utils.js' %}"></script>
+    <script src="https://www.google.com/recaptcha/api.js?" async defer></script>
         <script type="text/javascript">
       		$(document).ready(function(e) {
 				$('#dropdown3').on('click', function(e){e.stopPropagation();});
@@ -348,6 +373,15 @@
       			el.on('click', function(e){e.preventDefault();target_el[0].click();});
       		});
 
+    //Report Form Modal
+      $('#report-form-modal').modal({
+        inDuration: 20,
+        ready: function() { 
+          // Callback for Modal open. Modal and trigger parameters available.
+          getReportForm();
+        },
+      });
+
 		// Info modal
 			$('#info-modal').modal({
 				dismissible: true, // Modal can be dismissed by clicking outside of the modal
@@ -368,6 +402,7 @@
     
         </script>
         
+
        {% block lightbox_data %}
        {% endblock %}
        {% block lightbox_data2 %}

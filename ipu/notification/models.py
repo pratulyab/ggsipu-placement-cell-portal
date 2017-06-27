@@ -65,7 +65,7 @@ class Report(models.Model):
 			('REBG' , _('Report Bug')),
 			('CTAM' , _('Contact Admin')),
 		)
-	type = models.CharField(_('Report Type') , max_length = 4 , choices = REPORT_TYPE , default = None)
+	type = models.CharField(_('Report Type') , max_length = 4 , choices = REPORT_TYPE , default = REPORT_TYPE[2][0])
 	message = models.CharField(_('Message') , max_length = 4096 , blank = False)
 	creation_time = models.DateTimeField(auto_now=False, auto_now_add=True, null = False)
 

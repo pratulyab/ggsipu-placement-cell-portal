@@ -69,7 +69,7 @@
     <li><a href = "javascript:void(0)" onclick = "document.getElementById('light4').style.display='flex';document.getElementById('fade4').style.display='flex'">Uploaded resume</a></li>
     {% endif %}
     <li class="divider"></li>
-	<li><a href="">Report</a></li>
+	<li><a id="report-form-anchor" href="{% url 'report' %}">Contact Admin</a></li>
 {% endblock %}
 
 
@@ -149,6 +149,7 @@
 					<div id="your-notifications-div" class="col s12">
 					<p class="info" style="display: none;">Information sent to you by college is displayed here. Interact with college officials.</p>
 							<ul id = "your-notifications-div-ul" class="collection">
+								<li class="collection-item avatar"><i class="material-icons circle">report_problem</i><span class="title">None</span><p>Please check your Internet Connection. We'll get back to you soon.</p></li>
 							</ul>
 					</div>
 

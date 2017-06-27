@@ -9,7 +9,7 @@
 
 nav{
     
-    height: 150px;
+    height: 85px;
     padding-top: 10px;
     background-color: #1a237e !important;
 
@@ -30,10 +30,18 @@ nav .brand-logo {
   align-items: center;
 }
 
+.parallax {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1; 
+}
 
 #inner-logo h4
 {
-  font-size:30px;
+  font-size: 16px;
   margin-bottom: 1px;
   font-family: "Times New Roman";
   text-transform: capitalize;
@@ -42,7 +50,7 @@ nav .brand-logo {
 #inner-logo h6
 {
   
-  font-size: 16px;
+  font-size: 12px;
   margin-top: 1px;
   font-family: "Times New Roman";
   text-transform: capitalize;
@@ -57,18 +65,35 @@ nav .brand-logo {
 
 #corner-button
 {
-    position: absolute; 
-    line-height: 75px;
-    font-size: 20px;
+    line-height: 40px;
+    font-size: 9px;
     padding: 1px;
-    padding-bottom: 5px;
-    top: 40%;
-    left: 38%;
-    width: 24%;
-    height: 75px;
+    width: 33%;
+    height: 40px;
     background-color: #1a237e !important;
-    margin-top: 25px;
+    margin-top: 15px;
+    z-index: 4654665 !important;
 }
+
+#top-section
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#icon-college
+{
+    height: 55px;
+    width: 62px;
+    display: flex;
+    position: initial;
+    transform: translateX(0%);
+    z-index: 1651651651645;
+    min-width: 1%;
+    min-height: 1%;
+}
+
 
 #mobile-links
 {
@@ -80,7 +105,10 @@ nav .brand-logo {
 
 #mobile-links li a
 {
-    font-size: 23px;
+    font-size: 9.5px;
+    line-height: 12px;
+    height: 12px;
+    padding: 5px;
 }
 
 #img-mid
@@ -99,17 +127,17 @@ nav .brand-logo {
 }
 
 .parallax-container {
-      height: 510px;
+      height: 250px;
     }
 #second-parallax-container
 {
-   height: 500px;
+   height: 78px;
 
 }
 
 #last-parallax-container
 {
-   height: 750px;
+   height: 300px;
 
 }
 .section
@@ -118,27 +146,31 @@ nav .brand-logo {
     height: 300px;
 }     
 
+
 #first-bo
 {
-    position: absolute;
-    top: 82%;
-    left: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120%;
+    flex-direction: column;
+    z-index: 1 !important;
 }
 
-#icon-college
+#first-bo h3
 {
-    height: 125px;
-    width: 140px;
-    position: absolute;
-    top: 25%;
-    left: 42.5%;
+    font-size: 14px;
+    margin: 2px;
+    margin-top: 15px;
 }
 
 
 #second-section
 {
     background-color: rgba(0, 0, 0, 0.8);
-    height: 325px;
+    height: 150px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 
@@ -154,8 +186,9 @@ nav .brand-logo {
 #second-box>h3
 {
     color: white;
-    font-size: 45px;
-    margin-bottom: 50px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 
 #second-box-images
@@ -164,20 +197,25 @@ nav .brand-logo {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
     width: 90%;
 }
 
 #second-box-images>img
 {
-    margin: 10px;
-    height: 110px;
-    width: 120px;
+    margin: 5px;
+    height: 42px;
+    width: 46px;
 }
 
 #third-section
 {
-    height: 150px;
+    height: 45px;
     background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 15px;
 }
 
 #third-box
@@ -191,9 +229,10 @@ nav .brand-logo {
 #third-box>h3
 {
     color: white;
-    font-size: 25px;
-    margin-bottom: 20px;
-    margin-top: 15px;
+    font-size: 12px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    text-align: center;
 }
 
 #icons
@@ -220,7 +259,7 @@ nav .brand-logo {
 
 nav{
     
-    height: 120px;
+    height: 80px;
     background-color: #1a237e !important;
     padding-top: 2px;
 
@@ -233,8 +272,6 @@ nav .brand-logo {
   font-size: 1.6rem;
 }
 
-
-
 #logo
 {
   display: flex;
@@ -245,7 +282,7 @@ nav .brand-logo {
 
 #inner-logo h4
 {
-  font-size:21px;
+  font-size: 15px;
   margin-bottom: 1px;
   font-family: "Times New Roman";
   text-transform: capitalize;
@@ -254,7 +291,7 @@ nav .brand-logo {
 #inner-logo h6
 {
   
-  font-size: 14px;
+  font-size: 12px;
   margin-top: 1px;
   font-family: "Times New Roman";
   text-transform: capitalize;
@@ -266,20 +303,36 @@ nav .brand-logo {
   cursor: pointer;
 }
 
+#top-section
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#icon-college
+{
+    height: 60px;
+    width: 70px;
+    display: flex;
+    position: initial;
+    transform: translateX(0%);
+    z-index: 1651651651645;
+    min-width: 1%;
+    min-height: 1%;
+}
 
 #corner-button
 {
-    position: absolute;
-    line-height: 58px;
-    font-size: 15px;
+    line-height: 42px;
+    font-size: 11px;
     padding: 1px;
     padding-bottom: 5px;
-    top: 72%;
-    left: 42%;
-    width: 180px;
-    height: 58px;
+    width: 130px;
+    height: 42px;
     background-color: #1a237e !important;
     margin-top: 10px;
+    z-index: 467885498 !important;
 }
 
 #mobile-links
@@ -292,7 +345,10 @@ nav .brand-logo {
 
 #mobile-links li a
 {
-    font-size: 15px;
+    font-size: 11px;
+    line-height: 12px;
+    height: 12px;
+    padding: 5px;
 }
 
 #img-mid
@@ -319,35 +375,38 @@ nav .brand-logo {
     height: 300px;
 }     
 
+.parallax {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+
 #first-bo
 {
-    position: absolute;
-    top: 55%;
-    left: 19%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120%;
+    flex-direction: column;
+    z-index: 1;
 }
 
 #first-bo h3
 { 
-    font-size: 2.52rem;
+    font-size: 1.5rem;
 
 }
 
 #second-section
 {
     background-color: rgba(0, 0, 0, 0.8);
-    height: 250px;
+    height: 150px;
 }
 
-
-#icon-college
-{
-    height: 110px;
-    width: 120px;
-    position: absolute;
-    top: 35%;
-    left: 45%;
-    margin-bottom: 5px;
-}
 
 #second-box
 {
@@ -361,7 +420,7 @@ nav .brand-logo {
 #second-box>h3
 {
     color: white;
-    font-size: 30px;
+    font-size: 20px;
 }
 
 #second-box-images
@@ -373,17 +432,20 @@ nav .brand-logo {
     width: 90%;
 }
 
-#second-box-images>img
+#second-box-images img
 {
-    margin: 10px;
-    height: 110px;
-    width: 120px;
+    margin: 5px;
+    height: 45px;
+    width: 50px;
 }
 
 #third-section
 {
-    height: 100px;
+    height: 60px;
     background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #third-box
@@ -397,7 +459,7 @@ nav .brand-logo {
 #third-box>h3
 {
     color: white;
-    font-size: 20px;
+    font-size: 13.5px;
     margin-bottom: 9px;
     margin-top: 25px;
 }
@@ -405,15 +467,22 @@ nav .brand-logo {
 
 #last-parallax-container
 {
-   height: 550px;
+   height: 250px;
 
 }
 
 #second-parallax-container
 {
-   height: 500px;
+   height: 220px;
 
 }
+
+#first-parallax-container
+{
+   height: 220px;
+
+}
+
 } 
 
 
@@ -477,19 +546,46 @@ nav .brand-logo {
   cursor: pointer;
 }
 
+.parallax {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+
 
 #corner-button
 {
-    position: absolute;
     line-height: 58px;
     font-size: 16px;
     padding: 1px;
     padding-bottom: 5px;
-    top: 60%;
-    left: 43.5%;
     width: 180px;
     height: 58px;
     background-color: #1a237e !important;
+    z-index: -1 !important;
+}
+
+#top-section
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#icon-college
+{
+    height: 125px;
+    width: 140px;
+    display: flex;
+    position: initial;
+    transform: translateX(0%);
+    z-index: 1651651651645;
+    min-width: 1%;
+    min-height: 1%;
 }
 
 
@@ -501,6 +597,9 @@ nav .brand-logo {
 #img-first
 {
     background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #img-bottom
@@ -520,9 +619,13 @@ nav .brand-logo {
 
 #first-bo
 {
-    position: absolute;
-    top: 65%;
-    left: 19%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 1 !important;
+    
 }
 
 #first-bo h3
@@ -538,15 +641,6 @@ nav .brand-logo {
     height: 250px;
 }
 
-
-#icon-college
-{
-    height: 125px;
-    width: 140px;
-    position: absolute;
-    top: 33%;
-    left: 45%;
-}
 
 #second-box
 {
@@ -609,8 +703,13 @@ nav .brand-logo {
 
 #second-parallax-container
 {
-   height: 500px;
+   height: 200px;
 
+}
+
+#first-parallax-container
+{
+    height: 600px;
 }
 
 }

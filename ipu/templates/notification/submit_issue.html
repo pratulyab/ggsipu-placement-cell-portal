@@ -5,10 +5,8 @@
         {% csrf_token %}
         {% form form=issue_form %}
         {% endform %}     
-    	<div id="site-recaptcha-div" style="margin-bottom: 3%; margin-top: 2%"></div> 
+
+            <div id="submit-issue-recaptcha-div" style="margin-bottom: 3%; margin-top: 1%"></div>
+        
         <button type="submit" id="submitissue" class="btn waves-effect waves-light-right">Submit</button>
     </form>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallbackHelpForm&render=explicit"
-        async defer>
-    </script>
-

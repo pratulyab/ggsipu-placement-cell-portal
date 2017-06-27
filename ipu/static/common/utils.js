@@ -22,8 +22,31 @@
 		preloader_shadow.style.display = 'none';
 	}
 	
+	function getReportForm(){
+		var url = $('#report-form-anchor').attr('href');
+		$.ajax({
+			url : url,
+			type : 'GET',
+			beforeSend: function() {
+   				showPreloader();
+            },
+            complete: function() {
+            	$('select').material_select(); 
+            	grecaptcha.render('report-form-recaptcha-div', {'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC'});	
+            	var delayRemover = 2000; 
+				setTimeout(function() {
+					removePreloader();
+				}, delayRemover);
+            },
+            success : function(data , status , xhr){
+				document.getElementById('report-form-content').innerHTML = data;
+				document.getElementById('close-report-form').addEventListener('click' , function(e) {e.preventDefault(); $('#report-form-modal').modal('close');});
+				//document.getElementById('submit-report-form').addEventListener('click' , submitReportForm);
+				
+			}	
+		})
+	}
 //=============================Preloader Function Ends===================//
-
 
 var Utils = (function() {
 	$info_modal = $('#info-modal');
@@ -61,6 +84,18 @@ var Utils = (function() {
 		$info_modal.modal('open');
 	}
 	
+	function initializeReportBugModal(e){
+		e.preventDefault();
+		document.getElementById('report-form-modal-trigger').click();
+		showPreloader();
+	}
+
+	function submitReportForm(e){
+		e.preventDefault();
+		var url = $('#submit-report-form').attr('href');
+		console.log(url);
+	}
+
 	return {
 		init: function(params){
 			// Fixed Action Button
@@ -72,6 +107,7 @@ var Utils = (function() {
 				$reload_btn.on('click', reloadContent);
 				$info_btn.tooltip({'delay': 50, 'tooltip': 'Tab Information', 'position': 'left'});
 				$info_btn.on('click', displayInfoModal);
+				document.getElementById('report-form-anchor').addEventListener('click' , initializeReportBugModal);
 				$('#fixed-action-button').find('a')[0].click();
 			}
 		}

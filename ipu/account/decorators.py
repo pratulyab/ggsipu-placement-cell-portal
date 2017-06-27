@@ -5,6 +5,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.core.urlresolvers import reverse
 from account.utils import get_relevant_reversed_url, get_type_created, render_profile_creation
+import requests
 
 def require_user_types(user_types_list):
 	"""
@@ -68,3 +69,29 @@ def require_AJAX_redirect(redirect_appropriately=True):
 
 require_AJAX = require_AJAX_redirect(False)
 require_AJAX.__doc__ = 'Decorator to allow only asynchronous request and raise Permission Denied (403) error otherwise.'
+
+
+
+#Recaptcha Verificaion for forms. Defined only for POST requests.
+def check_recaptcha(view_func):
+	@wraps(view_func)
+	def _wrapped_view(request, *args, **kwargs):
+		request.recaptcha_is_valid = None
+		if request.method == 'POST':
+			recaptcha_response = request.POST.get('recaptcha_response' , None)
+			data = {
+				'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+				'response': recaptcha_response
+			}
+			recaptcha_verification_url = settings.GOOGLE_RECAPTCHA_VERIFICATION_URL
+			r = requests.post(recaptcha_verification_url, data=data)
+			result = r.json()
+			if result['success']:
+				request.recaptcha_is_valid = True
+			else:
+				request.recaptcha_is_valid = False
+		return view_func(request, *args, **kwargs)
+	return _wrapped_view
+
+
+

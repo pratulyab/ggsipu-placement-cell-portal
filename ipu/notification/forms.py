@@ -1,5 +1,5 @@
 from django import forms
-from notification.models import Issue , IssueReply
+from notification.models import Issue , IssueReply , Report
 from django.utils.translation import ugettext_lazy as _
 
 from material import *
@@ -126,8 +126,11 @@ class IssueForm(forms.ModelForm):
 		self.college = kwargs.pop('college' , None)
 		super(IssueForm, self).__init__(*args, **kwargs)
 
-	def clean(self):
-		super(IssueForm , self).clean()
+	def clean_subject(self):
+		subject = self.cleaned_data['subject']
+		if subject and '\n' in subject:
+			raise forms.ValidationError(_('New line is not allowed in subject field.'))
+		return subject
 		
 
 	def save(self):
@@ -217,3 +220,21 @@ class NotifySessionStudentsForm(forms.Form):
 			pass
 
 #choice = forms.ModelChoiceField(queryset=MyChoices.Objects.all())
+
+class ReportBugForm(forms.ModelForm):
+	def __init__(self , *args , **kwargs):
+		self.user = kwargs.pop('user' , None)
+		super(ReportBugForm , self).__init__(*args , **kwargs)
+		
+	def save(self):
+		form_instance = super(ReportBugForm , self).save(commit = False)
+		form_instance.reported_by = self.user
+		form_instance.save()
+
+	class Meta:
+		model = Report
+		fields = ('type' , 'message' , )
+		widgets = {
+				'message' : forms.Textarea,
+			}
+
