@@ -1,11 +1,4 @@
 // Help form recaptcha callback.
-var onloadCallbackHelpForm = function() {
-        grecaptcha.render('site-recaptcha-div', {
-        	'sitekey' : '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC',
-        });
-        removePreloader();
-      };
-
 var Notification = (function() {
 	'use strict'
 	function handleMultipleJquery(){
@@ -49,7 +42,14 @@ var Notification = (function() {
             },
             complete: function() {
             	$('select').material_select();
-            	// Recaptcha callback is removing the preloader.	
+            	// Recaptcha callback is removing the preloader.
+            	grecaptcha.render('submit-issue-recaptcha-div', {
+            			'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC',
+            	});
+            	var delayRemover = 2000; 
+				setTimeout(function() {
+					removePreloader();
+				}, delayRemover);
             },
     		success : function(data, status, xhr){
            		$("#help-div").html(data);

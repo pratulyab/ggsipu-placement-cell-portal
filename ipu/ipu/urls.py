@@ -17,6 +17,7 @@ from django.conf import settings
 from django.conf.urls import url, include, static
 from django.contrib import admin
 from account.views import auth, landing, login, view_profile, logout, search, team, stats, intro, sms_callback
+from notification.views import report
 
 urlpatterns = [
 #    url(r'^LrY4pRNMnQXvOK3vWeODJaP15jbKkV$' if not settings.DEBUG else r'admin$', admin.site.urls),
@@ -39,5 +40,7 @@ urlpatterns = [
 	url(r'^search/$', search, name='search'),
 	url(r'^twofactor/cb2e22ea-80a6-45e8-ab27-6d101350a73d/$', sms_callback),
 	url(r'^user/(?P<username>[\w.+=]+)/$', view_profile, name='view_profile'),
-    
+    url(r'^report/$', report, name='report'),
+    url(r'^submitreport/$', report, name='submit_report'),
+
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static.static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

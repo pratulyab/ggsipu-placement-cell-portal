@@ -5,9 +5,10 @@ from django.http import HttpResponseForbidden , HttpResponse , JsonResponse , Ht
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from django.template import Context, Template
 from django.core.exceptions import PermissionDenied
-from .forms import SelectStreamsForm , CreateNotificationForm , IssueForm , IssueReplyForm
+from .forms import SelectStreamsForm , CreateNotificationForm , IssueForm , IssueReplyForm , ReportBugForm
 from .models import NotificationData , Notification , Issue , IssueReply
 from account.models import CustomUser
+from account.decorators import check_recaptcha
 from faculty.models import Faculty
 from student.models import Student
 from college.models import College , Stream
@@ -18,8 +19,11 @@ from hashids import Hashids
 import requests
 import itertools
 import json
+import logging
 
+notificationLogger = logging.getLogger('notification')
 
+#notificationLogger.info('%s sent sms to %s' % (faculty.username, ','.join(student_username))
 
 #from recruitment.forms import SessionInfoForm
 
@@ -209,9 +213,9 @@ def notification_detail(request):
 		raise Http404
 	return JsonResponse(data_dict , safe = False)
 
-
-@require_http_methods(['GET','POST'])
+@check_recaptcha
 @login_required
+@require_http_methods(['GET','POST'])
 def submit_issue(request):
 	if request.user.type == 'S':
 		if request.method == 'GET':
@@ -220,15 +224,7 @@ def submit_issue(request):
 			return HttpResponse(raw_html)
 		if request.method == 'POST':
 			form_object = IssueForm(request.POST , user = request.user.student , college = request.user.student.college)
-			recaptcha_response = request.POST.get('recaptcha_response' , None)
-			recaptcha_data = {
-				'secret' : settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-				'response' : recaptcha_response
-			}
-			recaptcha_verification_url = settings.GOOGLE_RECAPTCHA_VERIFICATION_URL
-			request = requests.post(recaptcha_verification_url , recaptcha_data)
-			status = request.json()
-			if status['success']:
+			if request.recaptcha_is_valid:
 				if form_object.is_valid():
 					form_object.save()
 					return HttpResponse(status = 201)
@@ -395,6 +391,18 @@ def display_solution(request):
 		return HttpResponse(raw_html)
 	else:
 		raise PermissionDenied
+
+
+@login_required
+@require_http_methods(['GET','POST'])
+def report(request):
+	if request.method == 'GET':
+		form_object = ReportBugForm()
+		raw_html = render(request , 'notification/report_bug.html' , {'report_form' : form_object})
+		return HttpResponse(raw_html)
+	if request.method == 'POST':
+		form_object = ReportBugForm(request.POST , user = request.user)
+
 
 #===============================Utility Functions=====================================#
 
