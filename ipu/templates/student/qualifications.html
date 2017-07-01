@@ -1,0 +1,109 @@
+{% extends 'account/base.html' %}
+{% load staticfiles %}
+{% load material_form %}
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
+<style>
+	.required > label:after {
+		content: ' (*)' !important;
+		color: #337ab7 !important;
+		top: 0px !important;
+		opacity: 1 !important;
+		display: inline !important;
+	}
+
+	.required > [type="checkbox"] + label:after {
+		content: '' !important;
+	}
+	.navbar-fixed {
+		background-color: #1c262f;
+	}
+</style>
+
+{% endblock %}
+{% block header %}
+	<a href="{% url 'logout' %}" class="waves-effect waves-light btn right" id="logout-button"> Logout </a>
+{% endblock %}
+{% block title %} Qualifications {% endblock %}
+{% block content %}
+	<div class="row">
+		<!-- Tabs -->
+		<div class="col s12">
+			<ul class="tabs" id="qualifications-tabs">
+				<li class="tab col s3"><a class="active" href="#tenth">Tenth</a></li>
+				<li class="tab col s3"><a href="#twelfth">Twelfth</a></li>
+				<li class="tab col s3"><a href="#graduation">Graduation</a></li>
+				<li class="tab col s3"><a href="#submit">Submit</a></li>
+			</ul>
+		</div>
+		<!-- End Tabs -->
+		<!-- Tab Content -->
+		<!-- Tenth -->
+		<div style="margin-top: 3%" id="tenth" class="col s12 m8 offset-m2">
+			<a class="right btn-floating btn-large waves-effect waves-light blue continue-btn" href="#" onclick="$('#qualifications-tabs').tabs('select_tab', 'twelfth');" data-tooltip="Twelfth" data-delay="50ms" data-position="top"><i class="material-icons">keyboard_arrow_right</i></a>
+			<h4 class="center-align" style="color: lightcoral; margin-top: 40px">10th Qualifications</h4>
+			<div class="col s10 offset-s1 m8 offset-m2" id="tenth-toggle-form-div">
+				<h6 class="col s10 offset-s1 m9 offset-m1"> What format did you receive your result in?</h6>
+				<form action="#" id="tenth-toggle-form" class="col s10 offset-s1 m9 offset-m1">
+					<p>
+						<input class="with-gap" name="group1" type="radio" id="choose-cgpa-form"  />
+						<label for="choose-cgpa-form">CGPA</label>
+					</p>
+					<p>
+						<input class="with-gap" name="group1" type="radio" id="choose-scores-marksheet-form"  />
+						<label for="choose-scores-marksheet-form">Percentage</label>
+					</p>
+				</form>
+			</div>
+			<div id="tenth-scores-marksheet-form-div" style="margin-top: 3%">
+				{% include 'student/scores_marksheet.html' with sf1=score_form_10_1 sf2=score_form_10_2 sf3=score_form_10_3 sf4=score_form_10_4 sf5=score_form_10_5 sf6=score_form_10_6 form_id="tenth-scores-marksheet-form" smf=score_marksheet_form_10 %}
+			</div>
+			<div id="tenth-cgpa-marksheet-form-div" class="col s12 m8 offset-m2" style="margin-top: 3%">
+				<h5 class="flow-text">CGPA Form</h5>
+				<form id="tenth-cgpa-marksheet-form">{% form form=cgpa_marksheet_form %}{% endform %}</form>
+				<h6 class="orange-text"><b>Note: </b>You are solely responsible for providing the correct conversion factor. If you aren't sure, please check on the respective examination board's website.</h6>
+			</div>
+		</div>
+		<!-- End Tenth -->
+		<!-- Twelfth -->
+		<div style="margin-top: 3%" id="twelfth" class="col s12 m8 offset-m2">
+			<a class="right btn-floating btn-large waves-effect waves-light blue continue-btn" href="#" onclick="$('#qualifications-tabs').tabs('select_tab', 'graduation');" data-tooltip="Graduation" data-delay="50ms" data-position="top"><i class="material-icons">keyboard_arrow_right</i></a>
+			<a class="left btn-floating btn-large waves-effect waves-light blue continue-btn" href="#" onclick="$('#qualifications-tabs').tabs('select_tab', 'tenth');" data-tooltip="Tenth" data-delay="50ms" data-position="top"><i class="material-icons">keyboard_arrow_left</i></a>
+			<h4 class="center-align" style="color: lightcoral; margin-top: 40px">12th Qualifications</h4>
+			<div id="twelfth-scores-marksheet-form-div">
+				{% include 'student/scores_marksheet.html' with sf1=score_form_12_1 sf2=score_form_12_2 sf3=score_form_12_3 sf4=score_form_12_4 sf5=score_form_12_5 sf6=score_form_12_6 form_id="twelfth-scores-marksheet-form" smf=score_marksheet_form_12 %}
+			</div>
+		</div>
+		<!-- End Twelfth -->
+		<!-- Grad -->
+		<div style="margin-top: 3%" id="graduation" class="col s12 m8 offset-m2">
+			<a class="right btn-floating btn-large waves-effect waves-light blue continue-btn" href="#" onclick="$('#qualifications-tabs').tabs('select_tab', 'submit');" data-tooltip="Submit" data-delay="50ms" data-position="top"><i class="material-icons">keyboard_arrow_right</i></a>
+			<a class="left btn-floating btn-large waves-effect waves-light blue continue-btn" href="#" onclick="$('#qualifications-tabs').tabs('select_tab', 'twelfth');" data-tooltip="Twelfth" data-delay="50ms" data-position="top"><i class="material-icons">keyboard_arrow_left</i></a>
+			<h4 class="center-align" style="color: lightcoral; margin-top: 40px">Other Qualifications</h4>
+			<form>{% form form=qual_form %}{% endform %}</form>
+		</div>
+		<!-- End Grad -->
+		<!-- Submit -->
+		<div style="margin-top: 3%" id="submit" class="col s12 m8 offset-m2">
+			<a class="left btn-floating btn-large waves-effect waves-light blue continue-btn" href="#" onclick="$('#qualifications-tabs').tabs('select_tab', 'graduation');" data-tooltip="Graduation" data-delay="50ms" data-position="top"><i class="material-icons">keyboard_arrow_left</i></a>
+			<h4 class="center-align" style="color: lightcoral; margin-top: 40px">Submit</h4>
+			<div class="row">
+				{% csrf_token %}
+				<button class="col s10 offset-s1 m8 offset-m2 btn btn-waves" type="submit" method="POST" action="{% url 'qual' %}" id="submit-forms-btn">Submit</button>
+			</div>
+			<div id="error-box" class="col s12 m10 offset-m1 red lighten-5"><ul style="overflow-y: scroll;" class="errors"><h4 class="flow-text center-align red-text text-darken-3">Error Box</h4></ul></div>
+		</div>
+		<!-- End Submit -->
+		<!-- End Tab Content -->
+	</div>
+	</div>
+{% endblock %}
+{% block scripts %}
+	<script type="text/javascript" src="{% static 'student/qualifications.js' %}"></script>
+	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
+	<script>
+		$(document).ready(function(){
+			Qual.init();
+		});
+	</script>
+{% endblock %}

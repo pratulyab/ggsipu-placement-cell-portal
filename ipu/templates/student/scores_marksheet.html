@@ -1,0 +1,61 @@
+{% load staticfiles %}
+{% load material_form %}
+<form method="POST" id={{ form_id }}>
+	<div class="col s12 m8 offset-m2">
+		<h5 class="flow-text"> Choose Examination Board </h5>
+		{% form form=smf %}{% endform %}
+	</div>
+	<div class="col s12 m8 offset-m2 ">
+		<h5 class="flow-text center-align blue-text text-darken-3">You are required to fill the subjects in the same order as in your marksheet.</h5>
+		<ul class="collapsible popout" data-collapsible="accordion">
+			<li>
+				<div class="collapsible-header center-align flow-text teal-text">Subject 1</div>
+				<div class="collapsible-body" style="overflow-y: scroll">
+					<div class="col s12">
+						{% form form=sf1 %}{% endform %}
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="collapsible-header center-align flow-text teal-text">Subject 2</div>
+				<div class="collapsible-body" style="overflow-y: scroll">
+					<div class="col s10 offset-s1">
+						{% form form=sf2 %}{% endform %}
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="collapsible-header center-align flow-text teal-text">Subject 3</div>
+				<div class="collapsible-body" style="overflow-y: scroll">
+					<div class="col s10 offset-s1">
+						{% form form=sf3 %}{% endform %}
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="collapsible-header center-align flow-text teal-text">Subject 4</div>
+				<div class="collapsible-body" style="overflow-y: scroll">
+					<div class="col s10 offset-s1">
+						{% form form=sf4 %}{% endform %}
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="collapsible-header center-align flow-text teal-text">Subject 5</div>
+				<div class="collapsible-body" style="overflow-y: scroll">
+					<div class="col s10 offset-s1">
+						{% form form=sf5 %}{% endform %}
+					</div>
+				</div>
+			</li>
+			<li>
+				<div class="collapsible-header center-align flow-text teal-text">Subject 6 (Optional)</div>
+				<div class="collapsible-body" style="overflow-y: scroll">
+					<div class="col s10 offset-s1">
+						{% form form=sf6 %}{% endform %}
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+</form>

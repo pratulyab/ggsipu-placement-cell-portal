@@ -1,5 +1,5 @@
 var VerifyStu = (function() {
-	var tabs;
+	var tabs, $scoreModal;
 	'use strict';
 
 	function handleMultipleJquery(){
@@ -24,9 +24,10 @@ var VerifyStu = (function() {
 		$(el + ' .errors').remove();
 		$(el + ' .input-field').removeClass('has-error');
 		$(el + ' .input-field input').removeClass('invalid');
+		$(el).find('.has-error').removeClass('has-error');
 	}
 
-	function addErrors(form_errors, el){
+	function addErrors(form_errors, el, prefix=''){
 		var form = $(el);
 		if(!form || !form_errors)
 			return;
@@ -41,24 +42,197 @@ var VerifyStu = (function() {
 			delete form_errors['__all__'];
 		}
 		for(var field_name in form_errors){
-			$(el + ' #id_'+field_name+'_container').addClass('has-error');
-			$(el + ' #id_'+field_name).addClass('invalid');
+			$(el + ' #id_'+prefix+field_name+'_container').addClass('has-error');
+			$(el + ' #id_'+prefix+field_name).addClass('invalid');
 			var div = $('<div class="errors"/>');
 			for(var i=0; i<form_errors[field_name].length; i++){
 				div.append($('<small class="error">' + form_errors[field_name][i] + '</small>'));
 			}
-			$(el + ' #id_'+field_name+'_container').append(div);
+			$(el + ' #id_'+prefix+field_name+'_container').append(div);
 		}
 	}
 
 	function reset_verification_forms(){
-		console.log('reset');
-		$('#profile-div').html('<h4 class="center-align" style="color: goldenrod">Student Profile</h4>');
-		$('#qual-div').html('<h4 class="center-align" style="color: goldenrod">Student Qualifications</h4>');
+		$('#profile-div').html('<h4 class="center-align" style="color: lightcoral">Student Profile</h4>');
+		$('#tenth-div').html('<h4 class="center-align" style="color: lightcoral">10th Qualifications</h4>');
+		$('#twelfth-div').html('<h4 class="center-align" style="color: lightcoral">12th Qualifications</h4>');
+		$('#grad-div').html('<h4 class="center-align" style="color: lightcoral">Graduation Qualifications</h4>');
 		$('#id_enroll').off('input');
 //					$('#delete-btn').off('click');
 		$('#delete-div form').off('submit');
 		tabs[0].click();
+	}
+
+	function updateScore(e) {
+		var url = $(this).data('url'); // this == modal button
+		var $form = $scoreModal.find('form');
+		var form_data = new FormData($form[0]);
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: form_data,
+			processData: false,
+			contentType: false,
+			beforeSend: function(){
+				showPreloader();
+			},
+			complete: function(){
+				removePreloader();
+			},
+			success: function(data, status, xhr){
+				swal('Success', data.message, 'success');
+
+				var $content = $(data.form);
+				var content_div = $('#'+$content.attr('id'));
+				content_div.replaceWith($content);
+				$content.find('select').material_select();
+				$content.find('i.edit-icon').tooltip({tooltip: 'Edit', delay: '25ms', position: 'right'})
+				$content.find('i.edit-icon').on('click', getScore);
+				$('[id$="-board-form"]').on('submit', submitForm);
+				$scoreModal.modal({
+					ready: function(modal,trigger){
+						modal.find('.score-submit-button').on('click', updateScore);
+					},
+					complete: function() { $scoreModal.find('.score-submit-button').off('click', updateScore); }
+				});
+			},
+			error: function(xhr, status, error){
+				if (xhr.status<500){
+					var message = xhr.responseJSON ? xhr.responseJSON['error'] : 'Error occurred';
+					swal('Error!', message, 'error');
+				} else {
+					swal('Error!', 'Sorry, an unexpected error occurred. Please try again after sometime.', 'error');
+				}
+			}
+		});
+
+	}
+
+	function getScore(e) {
+		e.preventDefault();
+		var url = $(this).data('url');
+		$.ajax({
+			url: url,
+			type: 'GET',
+			data: {},
+			processData: false,
+			contentType: false,
+			beforeSend: function(){
+				showPreloader();
+			},
+			complete: function(){
+				removePreloader();
+			},
+			success: function(data, status, xhr){
+				$scoreModal.find('.modal-content').html(data.form);
+				$scoreModal.find('select').material_select();
+
+				var toggle_subject_fillers = $scoreModal.find('[id$="toggle_subject_filler"]');
+				toggle_subject_fillers.on('change', function(){
+					var $input = $(this);
+					if ($input[0].checked)
+						$input.parents('div.section').next().show();
+					else
+						$input.parents('div.section').next().hide();
+				});
+				toggle_subject_fillers.trigger('change');
+				$scoreModal.modal('open');
+				$scoreModal.find('.score-submit-button').data('url', url);
+			},
+			error: function(xhr, status, error){
+				if (xhr.status<500){
+					var message = xhr.responseJSON ? xhr.responseJSON['error'] : 'Error occurred';
+					swal('Error!', message, 'error');
+				} else {
+					swal('Error!', 'Sorry, an unexpected error occurred. Please try again after sometime.', 'error');
+				}
+			}
+		});
+	}
+
+	function verify(e){ /* Same as submitForm but with swal warning */
+		e.preventDefault();
+		var form = $(this);
+		clearErrors('#'+form.attr('id'));
+		var form_data = new FormData(form[0]);
+
+		swal({
+			title: "Are you sure?",
+			text: "You are about to verify student. This will allow the student to access the portal. Your activity will be logged for reference purposes.",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Yes, verify!",
+			cancelButtonText: "No",
+			closeOnConfirm: false,
+			closeOnCancel: false
+			}, function(){
+					$.ajax({
+						url: form.attr('action'),
+						type: form.attr('method'),
+						data: form_data,
+						processData: false,
+						contentType: false,
+						beforeSend: function(){
+							showPreloader();
+						},
+						complete: function(){
+							removePreloader();
+						},
+						success: function(data, status, xhr) {
+							swal('Success', data.message ? data.message : "Changes have been saved", 'success');
+						},
+						error: function(xhr, status, error) {
+							console.log(xhr.responseJSON);
+							if (xhr.responseJSON && xhr.responseJSON['errors']){
+								addErrors(xhr.responseJSON['errors'], '#'+form.attr('id'), xhr.responseJSON['prefix']);
+							}
+							if (xhr.status<500){
+								var message = xhr.responseJSON ? xhr.responseJSON['error'] : 'Error occurred';
+								swal('Error!', message, 'error');
+							} else {
+								swal('Error!', 'Sorry, an unexpected error occurred. Please try again after sometime.', 'error');
+							}
+						}
+					});
+				}
+			);
+	}
+
+	function submitForm(e){
+		e.preventDefault();
+		var form = $(this);
+		clearErrors('#'+form.attr('id'));
+		var form_data = new FormData(form[0]);
+
+		$.ajax({
+			url: form.attr('action'),
+			type: form.attr('method'),
+			data: form_data,
+			processData: false,
+			contentType: false,
+			beforeSend: function(){
+				showPreloader();
+			},
+			complete: function(){
+				removePreloader();
+			},
+			success: function(data, status, xhr) {
+				swal('Success', data.message ? data.message : "Changes have been saved", 'success');
+			},
+			error: function(xhr, status, error) {
+				console.log(xhr.responseJSON);
+				if (xhr.responseJSON && xhr.responseJSON['errors']){
+					addErrors(xhr.responseJSON['errors'], '#'+form.attr('id'), xhr.responseJSON['prefix']);
+				}
+				if (xhr.status<500){
+					var message = xhr.responseJSON ? xhr.responseJSON['error'] : 'Error occurred';
+					swal('Error!', message, 'error');
+				} else {
+					swal('Error!', 'Sorry, an unexpected error occurred. Please try again after sometime.', 'error');
+				}
+			}
+		});
 	}
 
 	function getEnrollment(e) {
@@ -83,15 +257,35 @@ var VerifyStu = (function() {
 				removePreloader();	
 			},
 			success: function(data, status, xhr){
-				handleMultipleJquery();
-				data = data.split('<<<>>>');
-				$('#profile-div').append(data[0]);
-				$('#qual-div').append(data[1]);
+				handleMultipleJquery(); // required
+				$('#profile-div').append(data.profile)
+				$('#tenth-div').append(data.tenth);
+				$('#twelfth-div').append(data.twelfth);
+				$('#grad-div').append(data.grad);
+
+				$('#cgpa-form').on('submit', submitForm);
+				$('[id$="-board-form"]').on('submit', submitForm);
+				$('#grad-form').on('submit', verify);
+				$('#profile-form').on('submit', submitForm);
+
+				$('#tab-content').find('select').material_select();
+				$('i.edit-icon').tooltip({tooltip: 'Edit', delay: '25ms', position: 'right'})
+				$('i.edit-icon').on('click', getScore);
 				$('#id_enroll').on('input', reset_verification_forms);
-				$('#profile-form').on('submit', updateProfile);
-				$('#qual-form').on('submit', updateQual);
-//				$('#delete-btn').on('click', delete_button);
 				$('#delete-div form').on('submit', delete_button);
+				$scoreModal = $('#score-modal');
+				$scoreModal.modal({
+					ready: function(modal,trigger){
+						modal.find('.score-submit-button').on('click', updateScore);
+					},
+					complete: function() { $scoreModal.find('.score-submit-button').off('click', updateScore); }
+				});
+				$('#id_is_barred').on('change', function(){
+					var title = $(this)[0].checked ? "Bar?" : "Unbar?";
+					var message = "Changing student's barred status is a highly sensitive decision. Your activity will be logged for reference purposes."
+					swal(title, message, 'warning');
+				});
+				$('i.left-right').tooltip();
 //				console.log($('body').find('ul'));
 
 				// Trigerring next tab
@@ -108,7 +302,7 @@ var VerifyStu = (function() {
 			}
 		});
 	}
-
+/*
 	function updateProfile(e) {
 		e.preventDefault();
 		clearErrors('#profile-div');
@@ -173,7 +367,7 @@ var VerifyStu = (function() {
 			}
 		});
 	}
-
+*/
 	function delete_button(e) {
 		e.preventDefault();
 		var form = $(this);

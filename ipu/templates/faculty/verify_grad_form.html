@@ -1,0 +1,11 @@
+{% load staticfiles %}
+{% load material_form %}
+
+<form action="{% url 'student_qual' %}" method='POST' id="grad-form">
+	{% csrf_token %}
+	{% form form=grad_form %}{% endform %}
+	<div class="row">
+		<a href="#" onclick="$('.vertical-tabs').find('ul.tabs').tabs('select_tab','twelfth-div');" class="btn-floating large left"><i data-tooltip="Previous" data-delay="25ms" data-position="bottom" class="left-right material-icons">keyboard_arrow_left</i></a>
+		<button class="btn btn-waves col s9 offset-s2" id="verify-button" type="submit">Verify</button>
+	</div>
+</form>

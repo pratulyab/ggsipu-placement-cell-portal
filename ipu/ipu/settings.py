@@ -205,8 +205,10 @@ HASHID_CUSTOM_USER = hashids.Hashids(salt="ThinkRandomly", min_length=13)
 HASHID_DUMMY_COMPANY = hashids.Hashids(salt="NakliComp", min_length=7)
 HASHID_DUMMY_SESSION = hashids.Hashids(salt="NakliNakli", min_length=9)
 HASHID_FACULTY = hashids.Hashids(salt="Workforce", min_length=8)
+HASHID_KLASS = hashids.Hashids(salt="Pathshala", min_length=10)
 HASHID_PLACEMENTSESSION = hashids.Hashids(salt="Naukari", min_length=12)
 HASHID_PROGRAMME = hashids.Hashids(salt="Something", min_length=3)
+HASHID_SCORE = hashids.Hashids(salt="Marksheet", min_length=11) # is used to encode scores like 101 or 123; i.e. 10 klass, subject 1 or 12 klass, subject 3
 HASHID_STREAM = hashids.Hashids(salt="Dhaara", min_length=4)
 HASHID_STUDENT = hashids.Hashids(salt="Vidyarthi", min_length=8)
 

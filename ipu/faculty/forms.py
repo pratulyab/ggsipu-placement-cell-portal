@@ -90,11 +90,13 @@ class EnrollmentForm(forms.Form):
 			except CustomUser.DoesNotExist:
 				raise forms.ValidationError(_('Student does not exist'))
 			if not user.is_active:
-				raise forms.ValidationError(_('Student hasn\'t verified his email address. Ask him to do so.'))
+				raise forms.ValidationError(_('Student hasn\'t verified their email address. Ask them to do so.'))
 			try:
 				student = user.student
 			except Student.DoesNotExist:
-				raise forms.ValidationError(_('Student hasn\'t created his profile. Ask him to create one by logging in from his account.'))
+				raise forms.ValidationError(_('Student hasn\'t created their profile. Ask them to create one by logging in from his account.'))
+			if not student.marksheet:
+				raise forms.ValidationError(_('Student hasn\'t entered their qualifications. Ask them to do so.'))
 		return self.cleaned_data
 
 class EditGroupsForm(forms.ModelForm):
@@ -127,10 +129,11 @@ class VerifyStudentProfileForm(forms.ModelForm):
 			Row(Span6('firstname'), Span6('lastname')),
 			Row(Span3('gender'), Span4('dob'), Span5('phone_number')),
 		),
-		Fieldset('Educational Details', 
+		Fieldset('Education Details', 
 			Row('college'),
 			Row(Span6('programme'), Span6('stream')),
 			Row(Span6('current_year'), Span6('is_sub_back')),
+			Row('is_barred'),
 		),
 	)
 	def __init__(self, *args, **kwargs):
@@ -162,8 +165,8 @@ class VerifyStudentProfileForm(forms.ModelForm):
 	
 	def save(self, commit=True, *args, **kwargs):
 		student = super(VerifyStudentProfileForm, self).save(commit=False)
-		student.is_verified = kwargs.pop('verified', False)
-		student.verified_by = kwargs.pop('verifier', None)
+#		student.is_verified = kwargs.pop('verified', False)
+#		student.verified_by = kwargs.pop('verifier', None)
 		if commit:
 			try:
 				student.save()
@@ -176,4 +179,4 @@ class VerifyStudentProfileForm(forms.ModelForm):
 
 	class Meta:
 		model = Student
-		fields = ['firstname', 'lastname', 'gender', 'dob', 'phone_number', 'college', 'programme', 'stream', 'is_sub_back', 'current_year']
+		fields = ['firstname', 'lastname', 'gender', 'dob', 'phone_number', 'college', 'programme', 'stream', 'is_sub_back', 'current_year', 'is_barred']

@@ -138,15 +138,17 @@
 						<ul class="tabs">
 							<li class="tab col s12"><a href="#enrollment-div">Get Student</a></li>
 							<li class="tab col s12"><a href="#profile-div">Student Profile</a></li>
-							<li class="tab col s12"><a href="#qual-div">Student Qualifications</a></li>
+							<li class="tab col s12"><a href="#tenth-div">Tenth Qualifications</a></li>
+							<li class="tab col s12"><a href="#twelfth-div">Twelfth Qualifications</a></li>
+							<li class="tab col s12"><a href="#grad-div">Graduation Qualifications</a></li>
 						{% if perms.student.delete_student %}
 							<li class="tab col s12"><a href="#delete-div">Delete Student</a></li>
 						{% endif %}
 						</ul>
 					</div>
-					<div class=" col s8 offset-s1">
+					<div class="col s8 offset-s1" id="tab-content">
 						<div class="col s12 m10 offset-m1 card-panel" id="enrollment-div">
-							<h4 class="row center" style="color: goldenrod">Verify Student</h4>
+							<h4 class="row center teal-text">Verify Students</h4>
 								<form action="{% url 'verify' %}" id="enroll-form">
 									{% csrf_token %}
 									{% form form=enrollment_form %}{% endform %}
@@ -158,10 +160,16 @@
 								</form>
 						</div>
 						<div class="col s12 m10 offset-m1 card-panel" id="profile-div">
-							<h4 class="center-align" style="color: goldenrod">Student Profile</h4>
+							<h4 class="center-align" style="color: lightcoral">Student Profile</h4>
 						</div>
-						<div class="col s12 m10 offset-m1 card-panel" id="qual-div">
-							<h4 class="center-align" style="color: goldenrod">Student Qualifications</h4>
+						<div class="col s12 m10 offset-m1 card-panel" id="tenth-div">
+							<h4 class="center-align" style="color: lightcoral">10th Qualifications</h4>
+						</div>
+						<div class="col s12 m10 offset-m1 card-panel" id="twelfth-div">
+							<h4 class="center-align" style="color: lightcoral">12th Qualifications</h4>
+						</div>
+						<div class="col s12 m10 offset-m1 card-panel" id="grad-div">
+							<h4 class="center-align" style="color: lightcoral">Graduation Qualifications</h4>
 						</div>			
 					{% if perms.student.delete_student %}
 						<div class="col s12 m10 offset-m1 card-panel" id="delete-div">
@@ -287,6 +295,21 @@
   </ul>
   <!-- -->
 {% endif %}
+
+{% if perms.student.verify_student %}
+<!-- Score Modal -->
+	<div id="score-modal" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4>Modal Header</h4>
+			<p>A bunch of text</p>
+		</div>
+		<div class="modal-footer">
+			<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+			<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat score-submit-button">Save Changes</a>
+		</div>
+	</div>
+{% endif %}
+
 {% endblock %}
 
 {% block scripts %}

@@ -19,9 +19,9 @@ from college.models import College, Stream
 from dummy_company.models import DummyCompany, DummySession
 from faculty.forms import VerifyStudentProfileForm
 from notification.models import Notification
-from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm, FileUploadForm, PaygradeForm
+from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm, FileUploadForm, PaygradeForm, ScoreForm, ScoreMarksheetForm, CGPAMarksheetForm, QualForm
 from recruitment.models import Association, PlacementSession
-from student.models import Student, TechProfile, Qualification
+from student.models import Student, TechProfile, Qualification, SchoolMarksheet, Score
 from . import scrape
 
 import os, re, datetime, logging
@@ -112,25 +112,38 @@ def student_home(request, **kwargs):
 	except Student.DoesNotExist:
 		return redirect(settings.PROFILE_CREATION_URL['S'])
 	context['student'] = student
-	
-	if not student.is_verified and student.verified_by is None:
-		# Can't permit to home page, because authenticity of student can't be identified
-		try:
-			student.qualifications
-		except Qualification.DoesNotExist:
-			context['qual_form'] = QualificationForm()
-		return render(request, 'student/unverified.html', context)
+	try:
+		if student.marksheet or student.qualification:	
+			if not student.is_verified and student.verified_by is None:
+				# Can't permit to home page, because authenticity of student can't be identified
+				if request.is_ajax():
+					return JsonResponse(status=403, data={'message': 'Get your profile verified by college', 'refresh': True})
+				else:
+					marksheet = student.marksheet
+					context['tenth'] = marksheet.cgpa_marksheet.calculate_percentage() if marksheet.cgpa_marksheet else marksheet.marksheet_10.calculate_percentage()
+					context['twelfth'] = marksheet.marksheet_12.calculate_percentage()
+					return render(request, 'student/unverified.html', context)
+	except:
+		# fill qualifications
+		context['qual_form'] = QualForm()
+		for klass in ['10','12']:
+			for number in range(1,7): # 6 subjects
+				context['score_form_%s_%d' % (klass,number)] = ScoreForm(number=number, prefix="%s_%d" % (klass, number))
+		context['score_marksheet_form_10'] = ScoreMarksheetForm(klass='10', prefix='score_10')
+		context['score_marksheet_form_12'] = ScoreMarksheetForm(klass='12', prefix='score_12')
+		context['cgpa_marksheet_form'] = CGPAMarksheetForm(prefix='cgpa')
+		return render(request, 'student/qualifications.html', context)
 	
 	context['edit_account_form'] = AccountForm(instance=user)
 	context['upload_file_form'] = FileUploadForm(instance=student)
-	if student.is_verified is None:
-		context['edit_profile_form'] = StudentEditForm(instance=student)
-	try:
-		qual = student.qualifications
-		if qual.is_verified is None or (qual.is_verified == False and qual.verified_by is None):
-			context['edit_qual_form'] = QualificationForm(instance=qual)
-	except Qualification.DoesNotExist:
-		context['edit_qual_form'] = QualificationForm()
+#	if student.is_verified is None:
+#		context['edit_profile_form'] = StudentEditForm(instance=student)
+#	try:
+#		qual = student.qualifications
+#		if qual.is_verified is None or (qual.is_verified == False and qual.verified_by is None):
+#			context['edit_qual_form'] = QualificationForm(instance=qual)
+#	except Qualification.DoesNotExist:
+#		context['edit_qual_form'] = QualificationForm()
 	try:
 		context['social_profile_form'] = SocialProfileForm(instance=user.social)
 	except SocialProfile.DoesNotExist:
@@ -199,6 +212,7 @@ def edit_student(request, **kwargs):
 			POST['programme'] = student.programme.pk
 			POST['stream'] = student.stream.pk
 			f = VerifyStudentProfileForm(POST, request.FILES, instance=student)
+			'''
 			verdict = False
 			if 'continue' == request.POST.get('true', ''):
 				verdict = True
@@ -207,20 +221,26 @@ def edit_student(request, **kwargs):
 			else:
 				# Button names/values changed
 				return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
+			'''
 			if f.is_valid():
-				student = f.save(verifier=request.user, verified=verdict)
+#				student = f.save(verifier=request.user, verified=verdict)
+				student = f.save()
 				# LOG
-				if student.is_verified:
-					message = "[%s] - %s verified %s profile - Changed fields [%s]"
-				else:
-					message = "[%s] - %s skipped %s profile - Changed fields [%s]"
+#				if student.is_verified:
+				message = "[%s] - %s updated %s profile - Changed fields [%s]"
+#				else:
+#					message = "[%s] - %s skipped %s profile - Changed fields [%s]"
+				if 'is_barred' in f.changed_data:
+					verdict = "BARRED" if student.is_barred else "UNBARRED"
+					facultyLogger.warning("%s[%d] %s %s[%d]" % (request.user.username, request.user.pk, verdict,student.profile.username, student.profile.pk))
 				facultyLogger.info(message % (kwargs.get('profile').college.code, request.user.username, student.profile.username, ','.join(f.changed_data)))
 				# # #
-				context = {'profile_form': VerifyStudentProfileForm(instance=student), 'success_msg': 'Student profile has been updated successfully!'}
-				return HttpResponse(render(request, 'faculty/verify_profile_form.html', context).content) # for RequestContext() to set csrf value in form
+#				context = {'profile_form': VerifyStudentProfileForm(instance=student), 'success_msg': 'Student profile has been updated successfully!'}
+#				return HttpResponse(render(request, 'faculty/verify_profile_form.html', context).content) # for RequestContext() to set csrf value in form
 #			return HttpResponse(render_to_string('faculty/verify_profile_form.html', context))
+				return JsonResponse(status=200, data={'message': 'Student profile has been saved.\nProceed to "Tenth Qualifications".'})
 			else:
-				return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+				return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'error': 'Please correct the errors as indicated in the form.'})
 ##		else:
 ##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
@@ -256,13 +276,13 @@ def edit_qualifications(request, **kwargs):
 				return JsonResponse(status=403, data={'error': 'Permission Denied. You cannot verify students'})
 			enroll = request.session.get('enrollmentno', None)
 			if not enroll:
-#				Http404(_('Cookie has been deleted'))
 				return JsonResponse(status=400, data={'error': 'Unexpected changes have been made. Refresh page and continue.'})
 			try:
 				student = CustomUser.objects.get(username=enroll)
 				student = student.student
 			except Student.DoesNotExist:
 				return JsonResponse(status=400, data={'error': 'Student with this enrollment number does not exist'})
+			'''
 			verdict = False
 			if 'continue' == request.POST.get('true', ''):
 				verdict = True
@@ -277,24 +297,36 @@ def edit_qualifications(request, **kwargs):
 			except Qualification.DoesNotExist:
 				qual = None
 				f = QualificationForm(request.POST)
+			'''
+			qual = student.qualifications
+			f = QualForm(request.POST, instance=qual)
 			if f.is_valid():
-				verifier = request.user
-				verified = verdict
+#				verifier = request.user
+#				verified = verdict
+				'''
 				if qual:
 					qualifications = f.save(verifier=verifier, verified=verified)
 				else:
 					qualifications = f.save(student=student, verifier=verifier, verified=verified)
+				'''
+				marksheet_10 = student.marksheet.cgpa_marksheet if student.marksheet.cgpa_marksheet else student.marksheet.marksheet_10
+				marksheet_12 = student.marksheet.marksheet_12
+				qualifications = f.save(student=student, tenth=marksheet_10.calculate_percentage(), twelfth=marksheet_12.calculate_percentage())
 				# LOG
-				if qualifications.is_verified:
-					message = "[%s] - %s verified %s qualifications - Changed fields [%s]"
-				else:
-					message = "[%s] - %s skipped %s qualifications - Changed fields [%s]"
+#				if qualifications.is_verified:
+				student.is_verified = True
+				student.verified_by = request.user
+				student.save()
+				message = "[%s] - %s VERIFIED %s  - Changed fields [%s]"
+#				else:
+#					message = "[%s] - %s skipped %s qualifications - Changed fields [%s]"
 				facultyLogger.info(message % (kwargs.get('profile').college.code, request.user.username, student.profile.username, ','.join(f.changed_data)))
 				# # #
-				context = {'qual_form': f, 'success_msg': 'Student profile has been updated successfully!'}
-				form_html = render(request, 'faculty/verify_qual_form.html', context).content.decode('utf-8')
-				return HttpResponse(form_html)
-			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
+#				context = {'qual_form': f, 'success_msg': 'Student profile has been updated successfully!'}
+#				form_html = render(request, 'faculty/verify_qual_form.html', context).content.decode('utf-8')
+#				return HttpResponse(form_html)
+				return JsonResponse(status=200, data={'message': 'Student has been verified.\nTo verify another student, go to "Get Student".'})
+			return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'error': 'Please correct the errors as indicated in the form.'})
 ##		else:
 ##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})
 	else:
@@ -643,3 +675,143 @@ def delete_old_filefield(old, new):
 			os.remove(os.path.join(settings.BASE_DIR, old.url[1:])) #[1:] to avoid //
 		except:
 			pass
+
+
+
+
+
+
+################################
+@require_user_types(['S'])
+@login_required
+@require_http_methods(['GET','POST'])
+def qualifications(request, profile, user_type,  **kwargs):
+	if not request.is_ajax():
+		return render(request, '405.html', {})
+	student = profile
+	try:
+		if student.marksheet or student.qualification:
+			if request.is_ajax():
+				return JsonResponse(status=400, data={'message':'Your qualifications have already been created. For any discrepancies, contact your college', 'refresh':True})
+			else:
+				return redirect(settings.HOME_URL['S'])
+	except:
+		pass
+	is_cgpa = bool(request.POST.get('is_cgpa'))
+	tenth_scores = []
+	twelfth_scores = []
+# Tenth
+	form10 = None
+	if is_cgpa:
+		form10 = CGPAMarksheetForm(request.POST, prefix='cgpa')
+		if not form10.is_valid():
+			return JsonResponse(status=400, data={'errors': form10.get_humanized_errors(), 'type': 'cgpa', 'prefix': form10.prefix})
+	else:
+		form10 = ScoreMarksheetForm(request.POST, klass='10', prefix='score_10') # Form is used for only examinationboard input
+		if not form10.is_valid():
+			return JsonResponse(status=400, data={'errors': form10.get_humanized_errors(), 'type': 'board', 'prefix': form10.prefix})
+		for i in range(1,7):
+			tenth_scores.append(ScoreForm(request.POST, number=i, prefix=('10_%d' % (i))))
+# # #
+# Twelfth
+	form12 = ScoreMarksheetForm(request.POST, klass='12', prefix='score_12')
+	if not form12.is_valid():
+		return JsonResponse(status=400, data={'errors': form12.get_humanized_errors(), 'type': 'board', 'prefix': form12.prefix})
+	for i in range(1,7):
+		twelfth_scores.append(ScoreForm(request.POST, number=i, prefix=('12_%d' % (i))))
+# # #
+	errors = {'twelfth': [], 'tenth': []}
+	for score_form in tenth_scores:
+		if not score_form.is_valid():
+			errors['tenth'].append(score_form.get_humanized_errors())
+
+	for score_form in twelfth_scores:
+		if not score_form.is_valid():
+			errors['twelfth'].append(score_form.get_humanized_errors())
+
+	if errors['tenth'] or errors['twelfth']:
+		return JsonResponse(status=400, data={'errors': errors, 'type': 'score'})
+
+# Graduation
+	qual_form = QualForm(request.POST)
+	if not qual_form.is_valid():
+		return JsonResponse(status=400, data={'errors': qual_form.get_humanized_errors(), 'type': 'qual'})
+# # #
+
+# No errors; Start saving
+# Save scores
+	for i,score_form in enumerate(tenth_scores):
+		tenth_scores[i] = score_form.save()
+	for i,score_form in enumerate(twelfth_scores):
+		twelfth_scores[i] = score_form.save()
+# Save marksheets
+	marksheet_10 = None
+	marksheet_12 = None
+	if is_cgpa:
+		marksheet_10 = form10.save()
+	else:
+		marksheet_10 = form10.save(tenth_scores)
+	marksheet_12 = form12.save(twelfth_scores)
+	school_marksheet = SchoolMarksheet.objects.create(marksheet_12=marksheet_12, cgpa_marksheet=marksheet_10) if is_cgpa else SchoolMarksheet.objects.create(marksheet_12=marksheet_12, marksheet_10=marksheet_10)
+	student.marksheet = school_marksheet
+	student.save()
+	qual = qual_form.save(student=student, tenth=marksheet_10.calculate_percentage(), twelfth=marksheet_12.calculate_percentage())
+	studentLogger.info("%s[%d] created qualifications [SM: %d] [Q: %d]" % (student.profile.username, student.profile.pk, school_marksheet.pk, qual.pk))
+	return JsonResponse(status=200, data={'message': 'Qualifications have been saved.', 'refresh': True})
+
+@require_user_types(['F'])
+@login_required
+@require_http_methods(['GET','POST'])
+def update_score(request, score_hashid, profile, **kwargs):
+	try:
+		score = str(settings.HASHID_SCORE.decode(score_hashid)[0])
+		klass = score[:2]
+		number = int(score[2])
+		if klass not in ['10','12'] or number not in range(1,7):
+			return JsonResponse(status=400, data={'error': 'Invalid score'})
+	except:
+		return JsonResponse(status=400, data={'error': 'Invalid score'})
+	try:
+		student = Student.objects.get(profile__username = request.session['enrollmentno'])
+		if student.college != profile.college:
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You can verify students of your college only.'})
+	except KeyError:
+		return JsonResponse(status=400, data={'error': 'Your session has expired. Please refresh the page and continue.'})
+	except:
+		return JsonResponse(status=400, data={'error': 'Sorry, error occurred while retrieving student. Try again later.'})
+	if not student.marksheet:
+		return JsonResponse(status=400, data={'error': 'Student hasn\'t added their qualifications.'})
+	if request.method == 'GET':
+		marksheet = getattr(student.marksheet, 'marksheet_%s'%(klass))
+		score = getattr(marksheet, 'score%d'%(number))
+		score_form = ScoreForm(number=number, instance=score)
+		html = render(request, 'student/score_form.html', {'score_form': score_form}).content.decode('utf-8')
+		return JsonResponse(status=200, data={'form':html})
+	else:
+		marksheet = getattr(student.marksheet, 'marksheet_%s'%(klass))
+		board_form = ScoreMarksheetForm(klass=klass, instance=marksheet, prefix=klass)
+		score = getattr(marksheet, 'score%d'%(number))
+		score_form = ScoreForm(request.POST, number=number, instance=score)
+		if score_form.is_valid():
+			score_form.save()
+			scores = []
+			for i in range(1,7):
+				score = getattr(marksheet, 'score%d'%(i))
+				subject = score.subject.__str__() if score.subject else "%s" % (score.subject_name or '-')
+				marks = score.marks
+				key = int("%s%d" % (klass,i)) # 126 => 12klass, score6
+				hashid = settings.HASHID_SCORE.encode(key)
+				scores.append({'subject': subject, 'marks': marks, 'hashid': hashid})
+			klass_hashid = settings.HASHID_KLASS.encode(int(klass))
+			html = render(request, 'faculty/verify_scores.html',{'board_form': board_form, 'scores': scores, 'hashid': klass_hashid}).content.decode('utf-8')
+			facultyLogger.info("SCORE: %s[%d] updated %s of %s[%d]: %s class,sub %d"\
+					% (profile.profile.username, profile.profile.pk, ','.join(score_form.changed_data),\
+						student.profile.username, student.profile.pk, klass, number))
+			return JsonResponse(status=200, data={'message':'Subject %d has been updated.'%number, 'form':html})
+		else:
+			message = score_form.get_humanized_errors()
+			message = '. '.join(message['Subject %d: '%(number)])
+			return JsonResponse(status=400, data={'error': message})
+#			return JsonResponse(status=400, data={'errors': dict(score_form.errors.items())})
+#	q = QualificationForm(request.POST)
+#	return JsonResponse(status=200, data={})
