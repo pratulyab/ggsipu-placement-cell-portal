@@ -128,19 +128,19 @@ var Settings = (function() {
 			error = '',
 			texts = [];
 		if (! /(?=.*[a-zA-Z]+)/.test(password)) {
-			texts.push('Password must contain at least one alphabet.');
+			texts.push('- Password must contain at least one alphabet.');
 			error = 'Password is entirely numeric.'
 		}
 		if(! /(?=.*\d)/.test(password)) {
-			texts.push('Password must contain at least one digit.');
+			texts.push('- Password must contain at least one digit.');
 			error = 'Include digit(s) in the password.'
 		}
 		if (! /(?=.*[#!$%&()*+,-./:;<=>?@[\]^_`{|}~])/.test(password)) {
-			texts.push('Password must contain at least one special character.');
+			texts.push('- Password must contain at least one special character.');
 			error = 'Include special character(s).'
 		}
 		if (! /.{8,}/.test(password)) {
-			texts.push('Password must be at least 8 characters long.');
+			texts.push('- Password must be at least 8 characters long.');
 			error = 'Password is too short.'
 		}
 		if (! error) {

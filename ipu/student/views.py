@@ -50,7 +50,7 @@ def student_login(request):
 @require_POST
 def student_signup(request):
 	if not request.recaptcha_is_valid:
-		return JsonResponse(status = 400 , data={'errors' : 'reCAPTCHA authorization failed. Please try again.'})
+		return JsonResponse(status = 400 , data={'error' : 'reCAPTCHA authorization failed. Please try again.'})
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_request=True)
 	f = StudentSignupForm(request.POST)
