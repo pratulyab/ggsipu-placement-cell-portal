@@ -43,6 +43,5 @@ urlpatterns = [
 	url(r'^twofactor/cb2e22ea-80a6-45e8-ab27-6d101350a73d/$', sms_callback),
 	url(r'^user/(?P<username>[\w.+=]+)/$', view_profile, name='view_profile'),
     url(r'^report/$', report, name='report'),
-    url(r'^submitreport/$', report, name='submit_report'),
 
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static.static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

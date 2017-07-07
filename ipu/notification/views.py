@@ -229,7 +229,7 @@ def submit_issue(request):
 					form_object.save()
 					return HttpResponse(status = 201)
 				else:
-					raise Http404
+					return JsonResponse(status = 400 , data = {'erros' : 'There is an error in your form. Please fill it again.'})
 			else:
 				return JsonResponse(status = 403 , data = {'errors' : 'reCAPTCHA authorization failed. Please try again.'} , safe = False)
 	else:
@@ -392,7 +392,7 @@ def display_solution(request):
 	else:
 		raise PermissionDenied
 
-
+@check_recaptcha
 @login_required
 @require_http_methods(['GET','POST'])
 def report(request):
@@ -401,7 +401,14 @@ def report(request):
 		raw_html = render(request , 'notification/report_bug.html' , {'report_form' : form_object})
 		return HttpResponse(raw_html)
 	if request.method == 'POST':
+		if not request.recaptcha_is_valid:
+			return JsonResponse(status = 400 , data={'errors' : 'reCAPTCHA authorization failed. Please try again.'})
 		form_object = ReportBugForm(request.POST , user = request.user)
+		if form_object.is_valid():
+			form_object.save()
+			return JsonResponse(status = 201 , data = {'success' : 'Thanks for your feedback.'})
+		else:
+			return JsonResponse(status = 400 , data = {'errors' : 'Seems to be a problem with your form. Please fill it again.'})
 
 
 #===============================Utility Functions=====================================#

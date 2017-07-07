@@ -32,7 +32,8 @@
             },
             complete: function() {
             	$('select').material_select(); 
-            	grecaptcha.render('report-form-recaptcha-div', {'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC'});	
+            	var site_key = document.getElementById('report-form-recaptcha-div').getAttribute('site-key');
+            	grecaptcha.render('report-form-recaptcha-div', {'sitekey': site_key,});	
             	var delayRemover = 2000; 
 				setTimeout(function() {
 					removePreloader();
@@ -41,9 +42,46 @@
             success : function(data , status , xhr){
 				document.getElementById('report-form-content').innerHTML = data;
 				document.getElementById('close-report-form').addEventListener('click' , function(e) {e.preventDefault(); $('#report-form-modal').modal('close');});
-				//document.getElementById('submit-report-form').addEventListener('click' , submitReportForm);
+				document.getElementById('submit-report-form').addEventListener('click' , submitReportForm);
 				
 			}	
+		})
+	}
+
+	function submitReportForm(e){
+		e.preventDefault();
+		var url = $('#submit-report-form').attr('url');
+		$.ajax({
+			url : url,
+			type : 'POST',
+			data : $('form#report-form').serialize(),
+			beforeSend: function(){
+				showPreloader();
+			},
+			complete: function(){
+				removePreloader();
+			},
+			success: function(data , status , xhr){
+				document.getElementById('close-report-form').click();
+				swal({
+					title: "Success!",
+					text: data.success,
+					type: "success",
+					confirmButtonColor: "green",
+					confirmButtonText: "Okay",
+					closeOnConfirm: true,
+				});
+			},
+			error: function(data , status, xhr){
+				swal({
+					title: "Error!",
+					text: data.responseJSON.errors,
+					type: "warning",
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "Okay",
+					closeOnConfirm: true,
+				});
+			}
 		})
 	}
 //=============================Preloader Function Ends===================//
@@ -88,12 +126,6 @@ var Utils = (function() {
 		e.preventDefault();
 		document.getElementById('report-form-modal-trigger').click();
 		showPreloader();
-	}
-
-	function submitReportForm(e){
-		e.preventDefault();
-		var url = $('#submit-report-form').attr('href');
-		console.log(url);
 	}
 
 	return {

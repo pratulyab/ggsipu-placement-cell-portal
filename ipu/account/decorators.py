@@ -79,6 +79,9 @@ def check_recaptcha(view_func):
 		request.recaptcha_is_valid = None
 		if request.method == 'POST':
 			recaptcha_response = request.POST.get('recaptcha_response' , None)
+			if recaptcha_response is None:
+				recaptcha_response = request.POST.get('g-recaptcha-response' , None)
+			#Silly thing done. Ignore.
 			data = {
 				'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
 				'response': recaptcha_response

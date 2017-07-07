@@ -31,7 +31,8 @@ if socket.gethostname() == 'usict-tnp':
 	db_password = 'P30R1024$1089'
 	EMAIL_HOST_USER = 'placements.ggsipu'
 	EMAIL_HOST_PASSWORD = ''
-	
+	GOOGLE_RECAPTCHA_SECRET_KEY = '6LdZOSgUAAAAAFHQTlrB78BkzCJmmItf33kgT46s'
+	GOOGLE_RECAPTCHA_SITE_KEY = '6LdZOSgUAAAAAAI4LnXicSdeb5Q4yndIxOkTGq11'
 	# SSL
 	SESSION_COOKIE_SECURE = True
 	CSRF_COOKIE_SECURE = True
