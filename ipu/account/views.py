@@ -11,7 +11,7 @@ from django.template import loader
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods, require_GET, require_POST
-from account.decorators import require_AJAX
+from account.decorators import require_AJAX , check_recaptcha
 from account.forms import AccountForm, ForgotPasswordForm, LoginForm, SetPasswordForm, SignupForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_forgot_password_email_task
@@ -137,6 +137,7 @@ def set_usable_password_activation(request, user_hashid, token):
 			return render(request, 'account/set_usable_password_activation.html', {'successful': True})
 	return render(request, 'account/set_usable_password_activation.html', {'set_password_form': f, 'user_hashid': user_hashid, 'token': token})
 
+@check_recaptcha
 @require_http_methods(['GET', 'POST'])
 def forgot_password(request):
 	if request.user.is_authenticated():
@@ -144,6 +145,8 @@ def forgot_password(request):
 	if request.method == 'GET':
 		f = ForgotPasswordForm()
 	if request.method == 'POST':
+		if not request.recaptcha_is_valid:
+			return JsonResponse(status = 400 , data={'errors' : 'reCAPTCHA authorization failed. Please try again.'})
 		f = ForgotPasswordForm(request.POST)
 		if f.is_valid():
 			email = f.cleaned_data['email']

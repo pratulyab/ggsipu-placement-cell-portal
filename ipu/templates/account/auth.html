@@ -1,6 +1,7 @@
 {% extends 'account/base.html' %}
 {% load staticfiles %}
 {% load material_form %}
+{% load recaptcha %}
 
 {% block title %}Training And Placement Cell{% endblock %}
 
@@ -20,13 +21,13 @@
 
 <div id="corner-buttons" class="hide-on-small-only">
 
-      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('student-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('student-signup-recaptcha-div', {'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC'});">sign up as student</a>
-      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('recruiter-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('recruiter-signup-recaptcha-div', {'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC'});">sign up as recruiter</a>
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('student-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('student-signup-recaptcha-div', {'sitekey': '{% recaptcha_site_key %}'});">sign up as student</a>
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('recruiter-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('recruiter-signup-recaptcha-div', {'sitekey': '{% recaptcha_site_key %}'});">sign up as recruiter</a>
 </div>
 
 <div id="corner-buttons-small" class="hide-on-large-only hide-on-med-only">
-      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('student-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('student-signup-recaptcha-div', {'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC'});">sign up as student</a>
-      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('recruiter-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('recruiter-signup-recaptcha-div', {'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC'});">sign up as recruiter</a>
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('student-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('student-signup-recaptcha-div', {'sitekey': '{% recaptcha_site_key %}'});">sign up as student</a>
+      <a href = "javascript:void(0)" class="waves-effect waves-light btn sb" onclick = "document.getElementById('recruiter-sign-up').style.display='flex';document.getElementById('fade').style.display='flex';grecaptcha.render('recruiter-signup-recaptcha-div', {'sitekey': '{% recaptcha_site_key %}'});">sign up as recruiter</a>
 </div>
 
 <div id="student-sign-up" class="white_content"> 

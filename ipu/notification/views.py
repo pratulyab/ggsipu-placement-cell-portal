@@ -231,7 +231,7 @@ def submit_issue(request):
 				else:
 					raise Http404
 			else:
-				return JsonResponse(status = 403 , data = {'errors' : 'Recaptcha authorization failed. Please try again.'} , safe = False)
+				return JsonResponse(status = 403 , data = {'errors' : 'reCAPTCHA authorization failed. Please try again.'} , safe = False)
 	else:
 		raise PermissionDenied
 

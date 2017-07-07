@@ -42,9 +42,9 @@ var Notification = (function() {
             },
             complete: function() {
             	$('select').material_select();
-            	// Recaptcha callback is removing the preloader.
+            	var site_key = document.getElementById('submit-issue-recaptcha-div').getAttribute('site-key');
             	grecaptcha.render('submit-issue-recaptcha-div', {
-            			'sitekey': '6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC',
+            			'sitekey': site_key,
             	});
             	var delayRemover = 2000; 
 				setTimeout(function() {
