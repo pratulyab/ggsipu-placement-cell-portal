@@ -9,7 +9,7 @@
 
 nav{
     
-    height: 85px;
+    height: 92px;
     padding-top: 10px;
     background-color: #1a237e !important;
 
@@ -18,11 +18,29 @@ nav{
 nav .brand-logo { 
     font-family: "Times New Roman"; /* New */
     text-transform: capitalize; /* New */
+
     font-size: 1.6rem;
 }
 
+footer.page-footer {
+    background-color: #1a237e;
+}
 
+footer.page-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+}
 
+#footer-last
+{
+    font-size: 9px;
+    line-height: 10px;
+}
+
+#footer-links
+{
+    font-size: 10px;
+}
 #logo
 {
   display: flex;
@@ -80,6 +98,11 @@ nav .brand-logo {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#dropdown3 li
+{
+    display: flex;justify-content: center;align-items: center;
 }
 
 #icon-college
@@ -247,7 +270,7 @@ nav .brand-logo {
  
 }
 
-@media (min-width:300px) and (orientation: landscape) { 
+@media (min-width:300px) and (max-width:992px) and (orientation: landscape) { 
 
    html {
     height: 100%;
@@ -270,6 +293,25 @@ nav .brand-logo {
     font-family: "Times New Roman"; /* New */
     text-transform: capitalize; /* New */
   font-size: 1.6rem;
+}
+
+footer.page-footer {
+    background-color: #1a237e !important;
+}
+
+footer.page-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+#footer-last
+{
+    font-size: 12px;
+}
+
+#footer-links
+{
+    font-size: 10px;
 }
 
 #logo
@@ -483,6 +525,17 @@ nav .brand-logo {
 
 }
 
+footer.page-footer {
+    background-color: #1a237e;
+}
+
+footer.page-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+
+
 } 
 
 
@@ -513,6 +566,15 @@ nav .brand-logo {
   font-size: 1.6rem;
 }
 
+
+footer.page-footer {
+    background-color: #1a237e;
+}
+
+footer.page-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+}
 
 
 #logo

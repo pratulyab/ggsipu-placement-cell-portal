@@ -28,6 +28,31 @@
 {% endblock %}
 
 {% block header %}
+
+<ul id="dropdown1" class="dropdown-content">
+    <li><a href="{% url 'procedure' %}">For Students</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">For Recruiters</a></li>
+</ul>
+
+<ul id="dropdown2" class="dropdown-content">
+    <li><a href="#!">For Students</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">For Recruiters</a></li> 
+</ul>
+
+<ul id="dropdown3" class="dropdown-content">
+    <li><a href="{% url 'procedure' %}">For Students</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">For Recruiters</a></li> 
+</ul>        
+
+<ul id="dropdown4" class="dropdown-content">
+    <li><a href="#!">For Students</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">For Recruiters</a></li> 
+</ul>
+
 <div class="navbar-fixed">
     <nav>
 
@@ -45,9 +70,12 @@
         </a>
       <ul id="nav-mobile" class="right">
         <li><a href="{% url 'intro' %}">Why GGSIPU</a></li>
-        <li><a href="{% url 'procedure' %}">Procedure</a></li>
+        <li><a class='dropdown-button' href='#' data-gutter="0" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown1'>Procedure</a></li>
+        <!-- <li><a href="{% url 'procedure' %}">Procedure</a></li> -->
+        <li><a href="">Recruiters</a></li>
+        <li><a class='dropdown-button' href='#' data-gutter="20" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown2'>Rules & Regulations</a></li>
         <li><a href="{% url 'stats' %}">Placement Stats</a></li>
-        <li><a href="{% url 'team' %}">Meet The Team</a></li>
+       <!-- <li><a href="{% url 'team' %}">Meet The Team</a></li> -->
       </ul>
       </div>
 
@@ -65,9 +93,10 @@
       </a>
       <ul id="mobile-links">
         <li><a href="{% url 'intro' %}">Why GGSIPU</a></li>
-        <li><a href="{% url 'procedure' %}">Procedure</a></li>
+        <li><a a class='dropdown-button' href='#' data-gutter="0" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown3'>Procedure</a></li>
         <li><a href="{% url 'stats' %}">Placement Stats</a></li>
-        <li><a href="{% url 'team' %}">Meet The Team</a></li>
+        <li><a class='dropdown-button' href='#' data-gutter="20" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown4'>Rules & Regulations</a></li>
+        <li><a href="{% url 'stats' %}">Placement Stats</a></li>
       </ul>
     </div>
   </nav>
@@ -108,12 +137,33 @@
   <div class="parallax-container" id="last-parallax-container">
     <div class="parallax" id="img-bottom"></div>
   </div>
-  <div class="footer" id="third-section">
-    <div class="row container" id="third-box">
-      <h3>© 2016 Guru Gobind Singh Indraprastha University. All rights reserved.</h3>
-    </div>
-  </div>
+ 
 
+
+<footer class="page-footer" style="margin-top: 0px;">
+          <div class="container">
+            <div class="row" style="margin-bottom: 0px;">
+              <div class="col l10 offset-l1 s12">
+                <ul style="display: flex;width: 90%;justify-content: space-between;" id="footer-links">
+                  <li><a class="grey-text text-lighten-3" href="#!">Contact Us</a></li>
+                  <li> | </li>
+                  <li><a class="grey-text text-lighten-3" href="#!">Feedback</a></li>
+                  <li> | </li>
+                  <li><a href="http://www.ipu.ac.in/rti.php" class="grey-text text-lighten-3" target="_blank" href="#!">RTI</a></li>
+                  <li> | </li>
+                  <li><a href="{% url 'team' %}" class="grey-text text-lighten-3" href="#!">Meet the team</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="footer-copyright">
+            <div class="container">
+	            <div id="footer-last" style="width: 100%;display: flex;justify-content: center;align-items: center;"> 
+	            © 2016 GURU GOBIND SINGH INDRAPRASTHA UNIVERSITY. All rights reserved.
+	            </div>	
+            </div>
+          </div>
+</footer>
 
         
 
@@ -141,6 +191,18 @@
     $(document).ready(function(){
       $('.parallax').parallax();
     });
+
+     $('.dropdown-button').dropdown({
+      inDuration: 300,
+      outDuration: 225,
+      constrainWidth: false, // Does not change width of dropdown to that of the activator
+      hover: true, // Activate on hover
+      gutter: 0, // Spacing from edge
+      belowOrigin: false, // Displays dropdown below the button
+      alignment: 'right', // Displays dropdown with edge aligned to the left of button
+      stopPropagation: false // Stops event propagation
+    }
+  );
 
       
 	</script>

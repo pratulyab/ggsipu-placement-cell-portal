@@ -1,36 +1,263 @@
 {% extends 'account/base.html' %}
 {% load staticfiles %}
-{% load material_form %}
 
 {% block title %}Training And Placement Cell{% endblock %}
 
 {% block head %}
-	<link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
+  <link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
+  <link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+ 
 {% endblock %}
 
 {% block header %}
+
 <style type="text/css">
-  nav
+  @media (min-width:300px) and (orientation: portrait){ 
+
+
+nav{
+    
+    height: 92px;
+    padding-top: 10px;
+    background-color: #1a237e !important;
+
+}
+
+nav .brand-logo { 
+    font-family: "Times New Roman"; /* New */
+    text-transform: capitalize; /* New */
+
+    font-size: 1.6rem;
+}
+
+footer.page-footer {
+    background-color: #1a237e;
+}
+
+footer.page-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+#footer-last
 {
+    font-size: 9px;
+    line-height: 10px;
+}
+
+#footer-links
+{
+    font-size: 10px;
+}
+#logo
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+#inner-logo h4
+{
+  font-size: 16px;
+  margin-bottom: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+#inner-logo h6
+{
+  
+  font-size: 12px;
+  margin-top: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+
+#brand-corner:hover
+{
+  cursor: pointer;
+}
+
+
+#dropdown3 li
+{
+    display: flex;justify-content: center;align-items: center;
+}
+
+#icon-college
+{
+    height: 55px;
+    width: 62px;
+    display: flex;
+    position: initial;
+    transform: translateX(0%);
+    z-index: 1651651651645;
+    min-width: 1%;
+    min-height: 1%;
+}
+
+
+#mobile-links
+{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+#mobile-links li a
+{
+    font-size: 9.5px;
+    line-height: 12px;
+    height: 12px;
+    padding: 5px;
+}
+
+ 
+}
+
+@media (min-width:300px) and (max-width:992px) and (orientation: landscape) { 
+
+  nav{
+    
+    height: 80px;
+    background-color: #1a237e !important;
+    padding-top: 2px;
+
+
+}
+
+nav .brand-logo { 
+    font-family: "Times New Roman"; /* New */
+    text-transform: capitalize; /* New */
+  font-size: 1.6rem;
+}
+
+footer.page-footer {
+    background-color: #1a237e !important;
+}
+
+footer.page-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+#footer-last
+{
+    font-size: 12px;
+}
+
+#footer-links
+{
+    font-size: 10px;
+}
+
+#logo
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+#inner-logo h4
+{
+  font-size: 15px;
+  margin-bottom: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+#inner-logo h6
+{
+  
+  font-size: 12px;
+  margin-top: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+
+#brand-corner:hover
+{
+  cursor: pointer;
+}
+
+#icon-college
+{
+    height: 60px;
+    width: 70px;
+    display: flex;
+    position: initial;
+    transform: translateX(0%);
+    z-index: 1651651651645;
+    min-width: 1%;
+    min-height: 1%;
+}
+
+#mobile-links
+{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+#mobile-links li a
+{
+    font-size: 11px;
+    line-height: 12px;
+    height: 12px;
+    padding: 5px;
+}
+
+footer.page-footer {
+    background-color: #1a237e;
+}
+
+footer.page-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+
+
+} 
+
+
+
+
+@media (min-width:992px) {
+
+
+nav{
+    
     height: 64px;
     padding-top: 2px;
     background-color: #1a237e !important;
-    padding-left: 5px;
+    padding-left: 20px;
+
 }
-#corner-button
-{
-    position: fixed;
-    line-height: 54px;
-    font-size: 15px;
-    padding: 1px;
-    padding-bottom: 5px;
-    top: 6px;
-    right: 2px;
-    width: 170px;
-    height: 54px;
-    z-index: 50285154165;
+
+nav .brand-logo { 
+    font-family: "Times New Roman"; /* New */
+    text-transform: capitalize; /* New */
+  font-size: 1.6rem;
 }
+
+
+footer.page-footer {
+    background-color: #1a237e;
+}
+
+footer.page-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
 
 #logo
 {
@@ -48,12 +275,6 @@
   text-transform: capitalize;
 }
 
-#logo img
-{
-  height: 55px;
-  width: auto;
-}
-
 #inner-logo h6
 {
   
@@ -69,116 +290,56 @@
   cursor: pointer;
 }
 
-#left-i
+
+#icon-college
 {
-  margin-left: 1.5%;
+    height: 125px;
+    width: 140px;
+    display: flex;
+    position: initial;
+    transform: translateX(0%);
+    z-index: 1651651651645;
+    min-width: 1%;
+    min-height: 1%;
 }
 
 
-nav .brand-logo { 
-    font-family: "Times New Roman"; /* New */
-    text-transform: capitalize; /* New */
-  font-size: 1.6rem;
 }
-
-@media (min-width:300px) and (orientation: portrait){
-
-nav
-{
-    height: 60px;
-    padding-top: 2px;
-    background-color: #1a237e !important;
-    padding-left: 1px;
-}
-#corner-button
-{
-    position: fixed;
-    line-height: 25px;
-    font-size: 10px;
-    padding: 2px;
-    top: 5px;
-    right: 2px;
-    width: 100px;
-    height: 25px;
-    z-index: 50285154165;
-}
-
-nav i.material-icons {
-    display: block;
-    font-size: 20px;
-    height: 45px;
-    line-height: 45px;
-}
-
-.material-icons {
-    font-family: 'Material Icons';
-    font-weight: normal;
-    font-style: normal;
-    font-size: 20px;
-    display: inline-block;
-    width: .8em;
-}
-#logo
-{
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
-
-#logo img
-{
-  height: 30px;
-  width: 38px;
-}
-
-
-#inner-logo h4
-{
-  font-size: 12px;
-  margin-bottom: 1px;
-  font-family: "Times New Roman";
-  text-transform: capitalize;
-}
-
-#left-i
-{
-  margin-left: 2px;
-}
-
-#inner-logo h6
-{
-  
-  font-size: 10px;
-  margin-top: 1px;
-  font-family: "Times New Roman";
-  text-transform: capitalize;
-}
-
-
-#brand-corner:hover
-{
-  cursor: pointer;
-}
-
-nav .brand-logo { 
-    font-family: "Times New Roman"; /* New */
-    text-transform: capitalize; /* New */
-  font-size: 1rem;
-  left: 45%;
-}
-
-  }
-
- 
 
 </style>
+
+<ul id="dropdown1" class="dropdown-content">
+    <li><a href="{% url 'procedure' %}">For Students</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">For Recruiters</a></li>
+</ul>
+
+<ul id="dropdown2" class="dropdown-content">
+    <li><a href="#!">For Students</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">For Recruiters</a></li> 
+</ul>
+
+<ul id="dropdown3" class="dropdown-content">
+    <li><a href="{% url 'procedure' %}">For Students</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">For Recruiters</a></li> 
+</ul>        
+
+<ul id="dropdown4" class="dropdown-content">
+    <li><a href="#!">For Students</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">For Recruiters</a></li> 
+</ul>
+
 <div class="navbar-fixed">
     <nav>
-      <div class="nav-wrapper">
+
+      <div class="nav-wrapper hide-on-med-and-down">
         <a href="{% url 'landing' %}" class="brand-logo" id="brand-corner">
-                    <div class="left" id="left-i">
+                    <div class="left" style="margin-left: 1.5%;">
                       <div id="logo">
-                        <img src="{% static 'images/ipu-logo.png' %}">
+                        <img src="{% static 'images/ipu-logo.png' %}" style="height: 55px">
                         <div id="inner-logo">
                         <h4>Training & Placement cell</h4>
                         <h6>Guru Gobind Singh Indraprastha University</h6> 
@@ -186,18 +347,39 @@ nav .brand-logo {
                       </div>
                     </div>
         </a>
-        <ul class="left">
-          <li class="hide-on-med-and-down"><a href="{% url 'landing' %}"><i class="material-icons">arrow_back</i>
-            </a>
-          </li>
-          <li class="hide-on-large-only"><a href="{% url 'landing' %}"><i class="material-icons">arrow_back</i>
-            </a>
-          </li>
-        </ul>
+      <ul id="nav-mobile" class="right">
+        <li><a href="{% url 'intro' %}">Why GGSIPU</a></li>
+        <li><a class='dropdown-button' href='#' data-gutter="0" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown1'>Procedure</a></li>
+        <!-- <li><a href="{% url 'procedure' %}">Procedure</a></li> -->
+        <li><a href="">Recruiters</a></li>
+        <li><a class='dropdown-button' href='#' data-gutter="20" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown2'>Rules & Regulations</a></li>
+        <li><a href="{% url 'stats' %}">Placement Stats</a></li>
+       <!-- <li><a href="{% url 'team' %}">Meet The Team</a></li> -->
+      </ul>
       </div>
-    </nav>
-</div>
 
+    <div class="nav-wrapper hide-on-large-only">
+      <a href="{% url 'landing' %}" id="brand-corner">
+                    <div style="margin-left: 1.5%;">
+                      <div id="logo">
+                        <img src="{% static 'images/ipu-logo.png' %}" style="height: 45px">
+                        <div id="inner-logo">
+                        <h4>Training & Placement cell</h4>
+                        <h6>Guru Gobind Singh Indraprastha University</h6> 
+                        </div>
+                      </div>
+                    </div>
+      </a>
+      <ul id="mobile-links">
+        <li><a href="{% url 'intro' %}">Why GGSIPU</a></li>
+        <li><a a class='dropdown-button' href='#' data-gutter="0" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown3'>Procedure</a></li>
+        <li><a href="{% url 'stats' %}">Placement Stats</a></li>
+        <li><a class='dropdown-button' href='#' data-gutter="20" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown4'>Rules & Regulations</a></li>
+        <li><a href="{% url 'stats' %}">Placement Stats</a></li>
+      </ul>
+    </div>
+  </nav>
+  </div>
   
 {% endblock header %}
 
@@ -206,11 +388,50 @@ nav .brand-logo {
   {% block main %}
 
   {% endblock %}  
-  
-  <a id="corner-button" href="{% url 'auth' %}" class="waves-effect waves-light btn-large red text-flow">Login / Sign Up</a>
+  {% endblock %}
+ <!-- <a id="corner-button" href="{% url 'auth' %}" class="waves-effect waves-light btn-large red text-flow">Login / Sign Up</a> -->
+
+{% block footer %}
+<footer class="page-footer" style="margin-top: 0px;">
+          <div class="container">
+            <div class="row" style="margin-bottom: 0px;">
+              <div class="col l10 offset-l1 s12">
+                <ul style="display: flex;width: 90%;justify-content: space-between;" id="footer-links">
+                  <li><a class="grey-text text-lighten-3" href="#!">Contact Us</a></li>
+                  <li> | </li>
+                  <li><a class="grey-text text-lighten-3" href="#!">Feedback</a></li>
+                  <li> | </li>
+                  <li><a href="http://www.ipu.ac.in/rti.php" class="grey-text text-lighten-3" target="_blank" href="#!">RTI</a></li>
+                  <li> | </li>
+                  <li><a href="{% url 'team' %}" class="grey-text text-lighten-3" href="#!">Meet the team</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="footer-copyright">
+            <div class="container">
+              <div id="footer-last" style="width: 100%;display: flex;justify-content: center;align-items: center;"> 
+              © 2016 GURU GOBIND SINGH INDRAPRASTHA UNIVERSITY. All rights reserved.
+              </div>  
+            </div>
+          </div>
+</footer>
+
 {% endblock %}
 
 {% block scripts %}
-  
+<script type="text/javascript">
+ $('.dropdown-button').dropdown({
+      inDuration: 300,
+      outDuration: 225,
+      constrainWidth: false, // Does not change width of dropdown to that of the activator
+      hover: true, // Activate on hover
+      gutter: 0, // Spacing from edge
+      belowOrigin: false, // Displays dropdown below the button
+      alignment: 'right', // Displays dropdown with edge aligned to the left of button
+      stopPropagation: false // Stops event propagation
+    }
+  );
+ </script> 
   
 {% endblock %}
