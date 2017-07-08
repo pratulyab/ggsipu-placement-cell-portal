@@ -1,0 +1,10 @@
+{% load material_form %}
+<div class="row">
+	<div class="col s12">
+		<h4 class="flow-text">Subject {{score_form.number}}</h4>
+		<form id="score-form">
+			{% csrf_token %}
+			{% form form=score_form %}{% endform %}
+		</form>
+	</div>
+</div>

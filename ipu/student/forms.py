@@ -8,7 +8,7 @@ from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
 from account.models import CustomUser
 from college.models import College, Stream
-from student.models import Student, Qualification, TechProfile
+from student.models import Student, Qualification, TechProfile, ScoreMarksheet, CGPAMarksheet, Score
 from urllib.parse import urlparse
 import re
 from material import *
@@ -317,7 +317,7 @@ class QualificationForm(forms.ModelForm):
 
 	class Meta:
 		model = Qualification
-		fields = ['tenth', 'twelfth', 'graduation', 'post_graduation', 'doctorate']
+		fields = ['graduation', 'post_graduation', 'doctorate']
 		help_texts = {field: 'in percentage (%), upto 2 places of decimal' for field in fields}
 """
 class QualificationEditForm(forms.ModelForm):
@@ -425,3 +425,168 @@ class PaygradeForm(forms.ModelForm):
 	class Meta:
 		model = Student
 		fields = ['salary_expected']
+
+class ScoreForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		self.number = kwargs.pop('number')
+		super(ScoreForm, self).__init__(*args, **kwargs)
+		if self.instance and self.instance.pk is not None:
+			if not self.instance.subject and self.instance.subject_name:
+				self.fields['toggle_subject_filler'].initial = True
+		
+		self.layout = Layout(
+						Fieldset('Choose Subject', Row(Span8('subject'), Span4('toggle_subject_filler'))),
+						Fieldset('Fill Subject', Row(Span6('subject_name'), Span6('subject_code'))),
+						Fieldset('Marks Obtained', Row(Span6('marks')))
+					)
+		if self.number == 6: #Optional subject
+			for field in self.fields:
+				self.fields[field].required = False
+		
+	toggle_subject_filler = forms.BooleanField(label="My subject is not listed", required=False)
+
+	def get_humanized_errors(self):
+		header = 'Subject %d: ' % self.number
+		errors = {}
+		messages = []
+		for field,error in dict(self.errors.items()).items():
+			error = error[0]
+			if field == '__all__':
+				messages.append(error)
+			elif 'field is required' in error:
+				messages.append('%s field is required. Please fill it.' % (field.title()))
+			else:
+				messages.append("%s - %s" % (field.title(), error))
+		errors[header] = messages
+#		errors = errors + self.non_field_errors  # Not required because __all__ is present in self.errors.items()
+		return errors
+
+	def clean(self, *args, **kwargs):
+		subject_obj = self.cleaned_data['subject']
+		if not subject_obj and not self.cleaned_data['subject_name'] and self.number!=6: # Barring optional subject
+			raise forms.ValidationError('You must choose the subject from list or specify the subject\'s name')
+		return self.cleaned_data
+
+	def clean_marks(self):
+		if not self.cleaned_data['marks'] and self.number != 6:
+			raise forms.ValidationError('Marks field cannot be left blank')
+		return self.cleaned_data['marks']
+	
+	class Meta:
+		model = Score
+		fields = ['subject', 'subject_name', 'subject_code', 'marks']
+		help_texts = {
+			'subject': 'If you don\'t find the subject in this list, then select the checkbox.'
+		}
+
+class ScoreMarksheetForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		self.klass = kwargs.pop('klass')
+		super(ScoreMarksheetForm, self).__init__(*args, **kwargs)
+
+	def get_humanized_errors(self):
+		header = '%sth Qualifications: ' % self.klass
+		errors = {}
+		messages = []
+		for field,error in dict(self.errors.items()).items():
+			error = error[0]
+			if field == '__all__':
+				messages.append(error)
+			elif 'field is required' in error:
+				messages.append('%s field is required. Please fill it.' % (field.title()))
+			else:
+				messages.append("%s - %s" % (field.title(), error))
+		errors[header] = messages
+#		errors = errors + self.non_field_errors  # Not required because __all__ is present in self.errors.items()
+		return errors
+
+	def save(self, scores_list=[], commit=True, *args, **kwargs):
+		marksheet = super(ScoreMarksheetForm, self).save(commit=False, *args, **kwargs)
+		marksheet.klass = self.klass
+		if self.instance.pk is None:
+			if not scores_list:
+				raise ValueError('scores_list is required')
+			for i in range(1,7):
+				try:
+					setattr(marksheet, 'score%d'%i, scores_list[i-1])
+				except IndexError:
+					pass
+		if commit:
+			marksheet.save()
+		return marksheet
+
+	class Meta:
+		model = ScoreMarksheet
+		fields = ['board']
+		labels = {
+			'board': 'Examination Board'
+		}
+
+class CGPAMarksheetForm(forms.ModelForm):
+	layout = Layout(
+		Fieldset('Choose Examination Board', Row('board')),
+		Row(Span6('cgpa'), Span6('conversion_factor'))
+	)
+	def __init__(self, *args, **kwargs):
+		super(CGPAMarksheetForm, self).__init__(*args, **kwargs)
+		if self.instance.pk is None:
+			self.fields['cgpa'].initial = ''
+			self.initial['conversion_factor'] = ''
+
+	def get_humanized_errors(self):
+		header = 'CGPA Form: '
+		errors = {}
+		messages = []
+		for field,error in dict(self.errors.items()).items():
+			error = error[0]
+			if field == '__all__':
+				messages.append(error)
+			elif 'field is required' in error:
+				messages.append('%s field is required. Please fill it.' % (field.title()))
+			else:
+				messages.append("%s - %s" % (field.title(), error))
+		errors[header] = messages
+		return errors
+
+	class Meta:
+		model = CGPAMarksheet
+		fields = ['board', 'cgpa', 'conversion_factor']
+		labels = {
+			'board': 'Examination Board'
+		}
+
+class QualForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(QualForm, self).__init__(*args, **kwargs)
+		if self.instance.pk is None:
+			self.fields['graduation'].initial = ''
+
+	def get_humanized_errors(self):
+		header = 'Graduation Form: '
+		errors = {}
+		messages = []
+		for field,error in dict(self.errors.items()).items():
+			error = error[0]
+			if field == '__all__':
+				messages.append(error)
+			elif 'field is required' in error:
+				messages.append('%s field is required. Please fill it.' % (field.title()))
+			else:
+				messages.append("%s - %s" % (field.title(), error))
+		errors[header] = messages
+		return errors
+
+	def save(self, commit=True, *args, **kwargs):
+		student = kwargs.pop('student')
+		tenth = kwargs.pop('tenth')
+		twelfth = kwargs.pop('twelfth')
+		qual = super(QualForm, self).save(commit=False, *args, **kwargs)
+		qual.student = student
+		qual.tenth = tenth
+		qual.twelfth = twelfth
+		qual.save()
+		return qual
+	
+	class Meta:
+		model = Qualification
+		fields = ['graduation', 'post_graduation', 'doctorate']

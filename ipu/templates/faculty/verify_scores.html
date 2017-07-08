@@ -1,0 +1,33 @@
+{% load material_form %}
+<div id="{{board_form.klass}}-qual-div">
+	<form action="{% url 'verify_board' klass_hashid=hashid %}" method='POST' id="{{board_form.klass}}-board-form">
+		{% csrf_token %}
+		{% form form=board_form %}{% endform %}
+		<div class="row">
+		<a href="#" onclick="$('.vertical-tabs').find('ul.tabs').tabs('select_tab','tenth-div');" class="btn-floating large left"><i data-tooltip="Previous" data-delay="25ms" data-position="bottom" class="left-right material-icons">keyboard_arrow_left</i></a>
+		<button class="btn btn-waves col s7 offset-s2" type="submit">Save Changes</button>
+		<a href="#" onclick="$('.vertical-tabs').find('ul.tabs').tabs('select_tab','grad-div');" class="btn-floating large right"><i data-tooltip="Continue" data-delay="25ms" data-position="bottom" class="left-right material-icons">keyboard_arrow_right</i></a>
+		</div>
+	</form>
+	<table class="highlight" style="margin-top:50px">
+		<thead>
+			<tr>
+				<th>S.No.</th>
+				<th>Subject</th>
+				<th>Marks</th>
+				<th>Edit</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for score in scores %}
+			<tr>
+				<td>{{forloop.counter}} {% if forloop.counter == 6 %}(Optional){% endif %}</td>
+				<td>{{score.subject}}</td>
+				<td>{{score.marks}}</td>
+				<td><i data-url="{% url 'update_score' score_hashid=score.hashid %}" class="material-icons edit-icon">mode_edit</i></td>
+			</tr>
+		{% endfor %}
+		<style>i.edit-icon:hover{cursor: pointer;}</style>
+		</tbody>
+	</table>
+</div>

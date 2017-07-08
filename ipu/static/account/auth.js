@@ -12,6 +12,7 @@ var Auth = (function() {
 		$(el + ' .errors').remove();
 		$(el + ' .input-field').removeClass('has-error');
 		$(el + ' .input-field input').removeClass('invalid');
+		$(el).parent().find('.error').remove();
 	}
 
 	function addErrorsToForm(form_errors, el, prefix){
@@ -67,6 +68,9 @@ var Auth = (function() {
 			error: function(xhr, status, error){
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id, prefix);
+				if (xhr.responseJSON && xhr.responseJSON['error']){
+					$(form).parent().prepend($('<small class="red-text error">'+xhr.responseJSON['error']+'</small>'))
+				}
 				inProcess[prefix.slice(0,2)] = false;
 //				$(form_id).on('submit', submit_event_function);
 			}
@@ -117,19 +121,19 @@ var Auth = (function() {
 			error = '',
 			texts = [];
 		if (! /(?=.*[a-zA-Z]+)/.test(password)) {
-			texts.push('Password must contain at least one alphabet.');
+			texts.push('- Password must contain at least one alphabet.');
 			error = 'Password is entirely numeric.'
 		}
 		if(! /(?=.*\d)/.test(password)) {
-			texts.push('Password must contain at least one digit.');
+			texts.push('- Password must contain at least one digit.');
 			error = 'Include digit(s) in the password.'
 		}
 		if (! /(?=.*[#!$%&()*+,-./:;<=>?@[\]^_`{|}~])/.test(password)) {
-			texts.push('Password must contain at least one special character.');
+			texts.push('- Password must contain at least one special character.');
 			error = 'Include special character(s).'
 		}
 		if (! /.{8,}/.test(password)) {
-			texts.push('Password must be at least 8 characters long.');
+			texts.push('- Password must be at least 8 characters long.');
 			error = 'Password is too short.'
 		}
 		if (! error) {

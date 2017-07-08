@@ -1,9 +1,9 @@
 {% load staticfiles %}
 {% load material_form %}
-<form method = 'POST' id = "report-form" action="{% url 'submit_report' %}">
+{% load recaptcha %}
+<form method = 'POST' id="report-form" action="{% url 'report' %}">
 		{% csrf_token %}
 		{% form form=report_form %}
 		{% endform %}     
-		<div id="report-form-recaptcha-div" style=" margin-top: 2%"></div>
-</script>
+		<div id="report-form-recaptcha-div" style=" margin-top: 2%" site-key="{% recaptcha_site_key %}"></div>
 </form>

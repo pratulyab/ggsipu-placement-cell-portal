@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -20,13 +21,14 @@ from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm,
 from faculty.models import Faculty
 from notification.models import Notification
 from recruitment.forms import SessionFilterForm
-from student.models import Qualification
-from student.forms import QualificationForm
+from student.models import Qualification, Student
+from student.forms import QualificationForm, ScoreMarksheetForm, CGPAMarksheetForm, ScoreForm, QualForm
 import re
 
 # Create your views here.
 import logging
 collegeLogger = logging.getLogger('college')
+facultyLogger = logging.getLogger('faculty')
 
 @login_required
 @require_POST
@@ -125,7 +127,8 @@ def faculty_home(request, **kwargs):
 @require_http_methods(['GET','POST'])
 def get_enrollment_number(request, profile, user_type):
 	if not request.is_ajax():
-		return handle_user_type(request)
+#		return handle_user_type(request)
+		raise PermissionDenied('')
 	if not request.user.groups.filter(name='Verifier'):
 		return JsonResponse(status=403, data={'error': 'Permission Denied. You cannot verify students'})
 	if request.method == 'GET':
@@ -140,13 +143,51 @@ def get_enrollment_number(request, profile, user_type):
 		if f.is_valid():
 			request.session['enrollmentno'] = f.cleaned_data['enroll']
 			student = CustomUser.objects.get(username=request.session['enrollmentno']).student
-			profile_form = render(request, 'faculty/verify_profile_form.html', {'profile_form': VerifyStudentProfileForm(instance=student)}).content.decode('utf-8')
+#			profile_form = render(request, 'faculty/verify_profile_form.html', {'profile_form': VerifyStudentProfileForm(instance=student)}).content.decode('utf-8')
+			profile_form = render(request, 'faculty/verify_profile.html', {'profile_form':VerifyStudentProfileForm(instance=student)}).content.decode('utf-8')
+			'''
 			try:
 				q = QualificationForm(instance=student.qualifications)
 			except Qualification.DoesNotExist:
 				q = QualificationForm()
-			qual_form = render(request, 'faculty/verify_qual_form.html', {'qual_form': q}).content.decode('utf-8')
-			return HttpResponse(profile_form+"<<<>>>"+qual_form)
+			grad_form = render(request, 'faculty/verify_qual_form.html', {'qual_form': q}).content.decode('utf-8')
+			'''
+			q = QualForm(instance=student.qualifications)
+			grad_form = render(request, 'faculty/verify_grad_form.html', {'grad_form': q}).content.decode('utf-8')
+# # # Tenth # # # 
+			tenth_form = None
+			if student.marksheet.marksheet_10:
+				marksheet_10 = student.marksheet.marksheet_10
+				tenth_form = ScoreMarksheetForm(klass='10', instance=marksheet_10, prefix='10') # Board
+				scores = []
+				for i in range(1,7):
+					score = getattr(marksheet_10, 'score%d'%(i))
+					subject = score.subject.__str__() if score.subject else "%s" % (score.subject_name or '-')
+					marks = score.marks
+					key = int("%s%d" % ('10',i)) # 103 => 10klass, score3
+					hashid = settings.HASHID_SCORE.encode(key)
+					scores.append({'subject': subject, 'marks': marks, 'hashid': hashid})
+				klass_hashid = settings.HASHID_KLASS.encode(10)
+				tenth_form = render(request, 'faculty/verify_scores.html',{'board_form': tenth_form, 'scores': scores, 'hashid':klass_hashid}).content.decode('utf-8')
+			else:
+				tenth_form = CGPAMarksheetForm(instance=student.marksheet.cgpa_marksheet, prefix="cgpa")
+				hashid = settings.HASHID_KLASS.encode(10)
+				tenth_form = render(request, 'faculty/verify_cgpa_form.html', {'cgpa_form': tenth_form, 'hashid': hashid}).content.decode('utf-8')
+# # # Twelfth # # # 
+			twelfth_form = ScoreMarksheetForm(klass='12', instance=student.marksheet.marksheet_12, prefix='12')
+			scores = []
+			for i in range(1,7):
+				score = getattr(student.marksheet.marksheet_12, 'score%d'%(i))
+				subject = score.subject.__str__() if score.subject else "%s" % (score.subject_name or '-')
+				marks = score.marks
+				key = int("%s%d" % ('12',i)) # 126 => 12klass, score6
+				hashid = settings.HASHID_SCORE.encode(key)
+				scores.append({'subject': subject, 'marks': marks, 'hashid': hashid})
+			klass_hashid = settings.HASHID_KLASS.encode(12)
+			twelfth_form = render(request, 'faculty/verify_scores.html',{'board_form': twelfth_form, 'scores': scores, 'hashid':klass_hashid}).content.decode('utf-8')
+# # # # # # # # # #
+			return JsonResponse(status=200, data={'tenth': tenth_form, 'twelfth': twelfth_form, 'profile': profile_form, 'grad': grad_form})
+#			return HttpResponse(profile_form+"<<<>>>"+qual_form)
 		else:
 			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 
@@ -202,3 +243,72 @@ def manage(request, user_type, profile):
 		'faculties': faculties
 	}
 	return render(request, 'faculty/manage_faculty.html', context)
+
+@require_user_types(['F'])
+@login_required
+@require_POST
+def verify_cgpa(request, klass_hashid, user_type, profile, **kwargs):
+	if not request.is_ajax():
+		raise PermissionDenied('')
+	if not request.user.groups.filter(name='Verifier'):
+		return JsonResponse(status=403, data={'error': 'Permission Denied. You cannot verify students'})
+	try:
+		klass = str(settings.HASHID_KLASS.decode(klass_hashid)[0])
+		if klass not in ['10','12']:
+			raise TypeError
+	except:
+		return JsonResponse(status=400, data={'error': 'Invalid request'})
+	try:
+		student = Student.objects.get(profile__username=request.session['enrollmentno'])
+		marksheet = student.marksheet
+		cgpa_marksheet = marksheet.cgpa_marksheet
+		if not cgpa_marksheet:
+			return JsonResponse(status=400, data={'error': 'Student hasn\'t added CGPA qualifications'})
+	except:
+		return JsonResponse(status=400, data={'error': 'Your session has expired. Please refresh and continue'})
+	if student.college != profile.college:
+		return JsonResponse(status=403, data={'error': 'Permission Denied. You can verify students of your college only'})
+	f = CGPAMarksheetForm(request.POST, instance=cgpa_marksheet, prefix='cgpa')
+	if f.is_valid():
+		f.save()
+		if f.changed_data:
+			facultyLogger.info("CGPA: %s[%d] updated %s for %s[%d]" % (profile.profile.username, profile.profile.pk, ','.join(f.changed_data),\
+						student.profile.username, student.profile.pk))
+		return JsonResponse(status=200, data={'message': 'CGPA changes have been updated.\nProceed to "Twelfth Qualifications".'})
+	else:
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'error': 'Please correct the errors as indicated in the form', 'prefix':f.prefix+'-'})
+
+@require_user_types(['F'])
+@login_required
+@require_POST
+def verify_board(request, klass_hashid, user_type, profile, **kwargs):
+	if not request.is_ajax():
+		raise PermissionDenied('')
+	if not request.user.groups.filter(name='Verifier'):
+		return JsonResponse(status=403, data={'error': 'Permission Denied. You cannot verify students'})
+	try:
+		klass = str(settings.HASHID_KLASS.decode(klass_hashid)[0])
+		if klass not in ['10','12']:
+			raise TypeError
+	except:
+		return JsonResponse(status=400, data={'error': 'Invalid request'})
+	try:
+		student = Student.objects.get(profile__username=request.session['enrollmentno'])
+		marksheet = getattr(student.marksheet, 'marksheet_%s'%klass)
+		if not marksheet:
+			return JsonResponse(status=400, data={'error': 'Student hasn\'t added %sth marksheet' % klass})
+	except:
+		return JsonResponse(status=400, data={'error': 'Your session has expired. Please refresh and continue'})
+	if student.college != profile.college:
+		return JsonResponse(status=403, data={'error': 'Permission Denied. You can verify students of your college only'})
+	f = ScoreMarksheetForm(request.POST, klass=klass, instance=marksheet, prefix=klass)
+	if f.is_valid():
+		f.save()
+		if f.changed_data:
+			facultyLogger.info("Board: %s[%d] updated %s for %s[%d]" % (profile.profile.username, profile.profile.pk, ','.join(f.changed_data),\
+						student.profile.username, student.profile.pk))
+		return JsonResponse(status=200, data={'message': 'Examination Board changes have been updated.'})
+	else:
+		return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'error': 'Please correct the errors as indicated in the form', 'prefix':f.prefix+'-'})
+
+

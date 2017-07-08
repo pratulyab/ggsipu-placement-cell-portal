@@ -1,36 +1,18 @@
 {% extends 'account/base.html' %}
 {% load staticfiles %}
-{% load material_form %}
+{% block header %}
+	<a href="{% url 'logout' %}" class="waves-effect waves-light btn right" id="logout-button"> Logout </a>
+{% endblock %}
 {% block title %} Unverified Student {% endblock %}
-{% block head %} <link type="text/css" rel="stylesheet" href="{% static 'student/unverified.css'%}"  media="screen,projection"/> {% endblock %}
 {% block content %}
-		<div style="margin-top: -50px;" class="row blue-text">
-			<h4 class="col s6 offset-s3">You're Almost There, {{ student.firstname | title }}!</h4>
-			<br>
-			<h6 class="col s6 offset-s3">Now all you have to do is contact your college's Training &amp; Placement Cell for profile verification.</h6>
-			<br><br>
-		</div>
-		{% if qual_form %}
-			<div class="row">
-				<div class="col s6 offset-s3">
-					<p>Meanwhile, you can fill your qualifications truely to speed up your verification process.</p>
-				</div>
-				<div style="margin-top: 70px;" class="col s8 offset-s2" id="qual-form-div">
-					<form method="POST" action="{% url 'student_qual' %}" id="qual-form">
-						{% csrf_token %}
-						{% form form=qual_form %}{% endform %}
-						<div class="row">
-							<div style="margin-top: 50px;" class="col s6 offset-s3">
-								<button type="submit" class="btn btn-waves" style="width: 100%">Add Qualifications</button>
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>
-		{% endif %}
-		<br><br>
-		<div class="row">
-			<a href="{% url 'logout' %}" class="waves-effect waves-light btn" id="logout-button"> Logout </a>
+	<div class="row">
+		<div class="col s12 m10 offset-m1">
+			<p class="teal-text flow-text">You're almost there!</p>
+			<p class="teal-text flow-text">All you need to do is get your profile and qualifications verified by your college's faculty.</p>
+			<p class="red-text text-lighten-3 flow-text"><b>Tenth: </b>{{ tenth }}%</p>
+			<p class="red-text text-lighten-3 flow-text"><b>Twelfth: </b>{{ twelfth }}%</p>
+			<h6 class="flow-text">Note: Only the main 5 subjects are considered while calculating percentages.</h6>
+			<p class="blue-text flow-text">Incase of any discrepancies regarding your account or details you've entered, ask your faculty to take necessary actions.</p>
 		</div>
 	</div>
 {% endblock %}

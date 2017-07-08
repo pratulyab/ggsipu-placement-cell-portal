@@ -7,7 +7,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from account.decorators import require_user_types
+from account.decorators import require_user_types , check_recaptcha
 from account.forms import SignupForm, AccountForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
 from account.tasks import send_activation_email_task
@@ -20,8 +20,11 @@ from recruitment.forms import AssociationForm, SessionFilterForm
 
 # Create your views here.
 
+@check_recaptcha
 @require_POST
 def company_signup(request):
+	if not request.recaptcha_is_valid:
+		return JsonResponse(status = 400 , data={'error' : 'reCAPTCHA authorization failed. Please try again.'})
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_request=True)
 	f = SignupForm(request.POST)

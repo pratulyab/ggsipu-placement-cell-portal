@@ -1,12 +1,13 @@
 {% load staticfiles %}
 {% load material_form %}
+{% load recaptcha %}
 
     <form method = 'POST' id = "submit_issue-form" action="{% url 'submit_issue' %}">
         {% csrf_token %}
         {% form form=issue_form %}
         {% endform %}     
 
-            <div id="submit-issue-recaptcha-div" style="margin-bottom: 3%; margin-top: 1%"></div>
+            <div id="submit-issue-recaptcha-div" style="margin-bottom: 3%; margin-top: 1%" site-key="{% recaptcha_site_key %}"></div>
         
         <button type="submit" id="submitissue" class="btn waves-effect waves-light-right">Submit</button>
     </form>
