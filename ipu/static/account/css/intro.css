@@ -153,6 +153,16 @@ nav .brand-logo {
       width: 60px;
     }
 
+    .inner-nav
+    {
+      height: 54px !important;
+    } 
+
+    #first-nav
+    {
+      margin-top: 35px;
+    }
+
     nav .brand-logo {
     position: absolute;
     color: #fff;
@@ -249,6 +259,16 @@ nav .brand-logo {
     -webkit-transform: translateX(-50%);
     transform: translateX(-50%);
 }
+
+.inner-nav
+    {
+      height: 54px !important;
+    } 
+
+    #first-nav
+    {
+      margin-top: 24px;
+    }
 
 
 

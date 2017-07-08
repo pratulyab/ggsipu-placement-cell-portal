@@ -1,15 +1,17 @@
-<!DOCTYPE html>
+{% extends 'account/nav-landing.html' %}
 {% load staticfiles %}
-  <head>
-    
+  
+  {% block head %}  
     <title>Why GGSIPU</title>
     <link href="{% static 'css/materialize/css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
     <link href="{% static 'account/css/intro.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
     <link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  </head>
-  <body>
+  {% endblock %}
+
+  {% block main %}
   
+  <!--
 <div id="corner-button">
     <ul class="left">
         <li class="hide-on-med-and-down"><a href="{% url 'landing' %}"><i style="color: white;" class="fa fa-arrow-left fa-2x" aria-hidden="true"></i></a></li>
@@ -18,9 +20,9 @@
 </div>
 
 <a id="corner-button2" href="{% url 'auth' %}" class="waves-effect waves-light btn-large text-flow">Login / Sign Up</a>
-
+-->
 <div id="teal" class="block indigo lighten-5">
-  <nav class="pushpin-demo-nav" data-target="teal">
+  <nav id="first-nav" class="pushpin-demo-nav inner-nav" data-target="teal" style="padding-left: 0px;padding-top: 0px;">
     <div class="nav-wrapper indigo darken-4">
       <div class="container">
         <a href="#" class="brand-logo">About University</a>
@@ -28,8 +30,8 @@
     </div>
   </nav>
   <div id="data">
-  <img id="icon-college" src="{% static 'images/ipu-logo.png' %}">
-  <p style="">
+  <img id="icon-college" src="{% static 'images/ipu-logo.png' %}" style="z-index: 205;">
+  <p>
 
 <b>Guru Gobind Singh Indraprastha University (GGSIPU)</b> is first University established in 1998 by Govt. of NCT of Delhi under the provisions of Guru Gobind Singh Indraprastha University Act, 1998 read with its Amendment in 1999 The University is recognized by University Grants Commission (UGC), India under section 12B of UGC Act.
 
@@ -48,7 +50,7 @@ In order to serve the broad purposes for which the University was established, i
 </div>
 
 <div id="red" class="block blue lighten-4">
-  <nav class="pushpin-demo-nav" data-target="red">
+  <nav class="pushpin-demo-nav inner-nav" data-target="red" style="padding-left: 0px;padding-top: 0px;">
     <div class="nav-wrapper blue darken-4">
       <div class="container">
         <a href="#" class="brand-logo">Acadamics</a>
@@ -68,7 +70,7 @@ GGSIPU was established as an affiliating and teaching university to promote stud
 </div>
 
 <div id="green" class="block green lighten-4">
-  <nav class="pushpin-demo-nav" data-target="green">
+  <nav class="pushpin-demo-nav inner-nav" data-target="green" style="padding-left: 0px;padding-top: 0px;">
     <div class="nav-wrapper green darken-2">
       <div class="container">
         <a href="#" class="brand-logo">Beyond Acadamics</a>
@@ -95,7 +97,9 @@ The campus has all the facilities to play various sports like cricket, football,
 </div>
 </div>
 
+{% endblock %}
 
+{% block scripts %}
 
     <!--  Scripts-->
     <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
@@ -119,6 +123,4 @@ The campus has all the facilities to play various sports like cricket, football,
   });
     </script>
    
-
-  </body>
-</html>
+   {% endblock %}
