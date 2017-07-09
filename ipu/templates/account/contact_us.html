@@ -1,0 +1,113 @@
+{% extends 'account/nav-landing.html' %}
+{% load staticfiles %}
+
+
+{% block head %}
+<style type="text/css">
+@media (min-width:300px) and (orientation: portrait){
+	#main-box
+	{
+		padding-top: 30px;
+	}
+}
+@media (min-width:300px) and (orientation: landscape){
+	#main-box
+	{
+		padding-top: 30px;
+	}
+}
+</style>
+  <link type="text/css" rel="stylesheet" href="{% static 'common/css/font-awesome/css/font-awesome.min.css' %}" />
+  <link type="text/css" rel="stylesheet" href="{% static 'materialize-blue.css' %}" />
+  <link type="text/css" rel="stylesheet" href="{% static 'account/css/contact_us.css' %}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+{% endblock %}
+
+{% block main %}
+ <div class="container" id="main-box" style="margin-top: 1px;">
+     <div class="row">
+	      <div class="col s10 offset-s1 center-align"><h5 style="color: #F08080;">Placement Cell Officials</h5></div>
+	      <div class="col s10 offset-s1">
+	      	 <ul class="collapsible" data-collapsible="accordion">
+			    <li>
+			      <div class="collapsible-header" style="width: 100%;">
+			      <span><b>Dr. Manoj Satyarthi</b></span>
+			      <div class="right hide-on-small-only">Training & Placement Officer</div>
+			      </div>
+			      <div class="collapsible-body" style="padding:10px;">
+			       <div class="row" style="margin-bottom: 2px;">
+			       		<div class="col s2 offset-s1">
+                                <img class="circle responsive-img" src="{% static 'images/default.png' %}" height="100px" width="100px">
+			       		</div>
+			       		<div class="col s9">
+			       			<div class="row">
+						        <div class="col s8 offset-s1"><i class="material-icons">phone</i></div>
+						        <div class="col s8 offset-s1"><i class="material-icons">settings_cell</i></div>
+						        <div class="col s8 offset-s1"><i class="material-icons">email</i></div>
+					        </div>
+			       		</div>
+			       </div>
+					   
+			       </div>
+			    </li>
+			    <li>
+			      <div class="collapsible-header" style="width: 100%;">
+			      <span><b>Sh. Shiv Ram Meena</b></span>
+			      <div class="right hide-on-small-only">Additional Training & Placement Officer</div>
+			      </div>
+			      <div class="collapsible-body" style="padding:10px;">
+			      <div class="row" style="margin-bottom: 2px;">
+			       		<div class="col s2 offset-s1">
+                                <img class="circle responsive-img" src="{% static 'images/default.png' %}" height="100px" width="100px">
+			       		</div>
+			       		<div class="col s9">
+			       			<div class="row">
+						        <div class="col s8 offset-s1"><i class="material-icons">phone</i></div>
+						        <div class="col s8 offset-s1"><i class="material-icons">settings_cell</i></div>
+						        <div class="col s8 offset-s1"><i class="material-icons">email</i></div>
+					        </div>
+			       		</div>
+			       </div>
+			      </div>
+			    </li>
+			    <li>
+			      <div class="collapsible-header" style="width: 100%;">
+			      <span><b>Sh. Rajeev Kumar Singh</b></span>
+			      <div class="right hide-on-small-only">Technical Assistant, Training & Placement Cell </div>
+			      </div>
+			      <div class="collapsible-body" style="padding:10px;">
+			     <div class="row" style="margin-bottom: 2px;">
+			       		<div class="col s2 offset-s1">
+                                <img class="circle responsive-img" src="{% static 'images/default.png' %}" height="100px" width="100px">
+			       		</div>
+			       		<div class="col s9">
+			       			<div class="row">
+						        <div class="col s8 offset-s1"><i class="material-icons">phone</i></div>
+						        <div class="col s8 offset-s1"><i class="material-icons">settings_cell</i></div>
+						        <div class="col s8 offset-s1"><i class="material-icons">email</i></div>
+					        </div>
+			       		</div>
+			       </div>
+			      </div>
+			    </li>
+			    
+			  </ul>
+	      </div> 
+	      <div class="col s12 center-align"><h5 style="color: #F08080;">Contact details</h5></div>
+	      <div class="col s12 center-align"><h6>Guru Gobind Singh Indraprastha University</h6></div>
+	      <div class="col s12 center-align"><h6>Sector-16C Dwarka, Delhi-110078, India</h6></div>
+	      <div class="col s12 center-align"><h6>Tel: +91-11-25302170</h6></div>
+	      <div class="col s12 center-align"><h6>Fax: +91-11- 25302111</h6></div>
+	       
+    </div>
+ </div>
+{% endblock %}
+
+{% block scripts %}
+ <script type="text/javascript">
+	$(document).ready(function(){
+    $('.collapsible').collapsible();
+  });
+     
+ </script>    
+{% endblock %}

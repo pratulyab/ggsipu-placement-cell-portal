@@ -13,7 +13,28 @@
 {% block header %}
 
 <style type="text/css">
-  @media (min-width:300px) and (orientation: portrait){ 
+  @media (min-width:300px) and (orientation: portrait){
+
+     html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding-bottom: 6rem;
+  min-height: 100%;
+}
+
+footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  text-align: center;
+}
 
 
 nav{
@@ -30,6 +51,14 @@ nav .brand-logo {
 
     font-size: 1.6rem;
 }
+
+footer
+{
+  bottom: 0px;
+  position: absolute;
+  width: 100%;
+}
+
 
 footer.page-footer {
     background-color: #123482;
@@ -119,8 +148,28 @@ footer.page-footer {
  
 }
 
-@media (min-width:300px) and (max-width:992px) and (orientation: landscape) { 
+@media (min-width:300px) and (max-width:992px) and (orientation: landscape) {
 
+   html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding-bottom: 6rem;
+  min-height: 100%;
+}
+
+footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  text-align: center;
+}
   nav{
     
     height: 80px;
@@ -135,6 +184,7 @@ nav .brand-logo {
     text-transform: capitalize; /* New */
   font-size: 1.6rem;
 }
+
 
 footer.page-footer {
     background-color: #123482 !important;
@@ -232,6 +282,27 @@ footer.page-footer {
 
 @media (min-width:992px) {
 
+  html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding-bottom: 6rem;
+  min-height: 100%;
+}
+
+footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  text-align: center;
+}
+
 
 nav{
     
@@ -248,6 +319,12 @@ nav .brand-logo {
   font-size: 1.6rem;
 }
 
+footer
+{
+  bottom: 0px;
+  position: absolute;
+  width: 100%;
+}
 
 footer.page-footer {
     background-color: #123482;
@@ -397,7 +474,7 @@ footer.page-footer {
             <div class="row" style="margin-bottom: 0px;">
               <div class="col l10 offset-l1 s12">
                 <ul style="display: flex;width: 90%;justify-content: space-between;" id="footer-links">
-                  <li><a class="grey-text text-lighten-3" href="#!">Contact Us</a></li>
+                  <li><a class="grey-text text-lighten-3" href="{% url 'contact_us' %}">Contact Us</a></li>
                   <li style="color: #6ACEEB"> | </li>
                   <li><a class="grey-text text-lighten-3" href="#!">Feedback</a></li>
                   <li style="color: #6ACEEB"> | </li>

@@ -10,6 +10,17 @@
   {% endblock %}
 
   {% block main %}
+
+  <style type="text/css">
+    footer {
+  position: relative;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 1rem;
+  text-align: center;
+ }
+  </style>
   
   <!--
 <div id="corner-button">
@@ -37,14 +48,23 @@
 
  It is a teaching and affiliating University with the explicit objective of facilitating and promoting studies, research and extension work in emerging areas of higher education with focus on professional education, for example engineering, technology, management studies, medicine, pharmacy, nursing, education, law, etc. and also to achieve excellence in these and connected fields and other matters connected therewith or incidental thereto.
 
-In order to serve the broad purposes for which the University was established, it set out its statements of Vision, Mission and Quality Policy which read as thus : 
+<b>Various Schools in the university are as follows :</b>
 </p>
 <ul style="display: flex;width: 80%;flex-direction: column;justify-content: flex-start;">
-      <li>Vision</li>
-      <li>Mission</li>
-      <li>Quality Policy</li>
-      <li>Campuses</li>
-      <li>Rules & Regulations</li>
+      <li><a href="http://www.ipu.ac.in/usict/" target="_blank">University 
+      School of Information &amp; Communication Technology</a></li>
+      <li><a href="http://www.ipu.ac.in/usct/" target="_blank">University 
+      School of Chemical Technology</a></li>
+      <li><a href="http://www.ipu.ac.in/usbt/" target="_blank">University 
+      School of Biotechnology</a></li>
+      <li><a href="http://www.ipu.ac.in/uslls/" target="_blank">University 
+      School of Law and Legal Studies</a></li>
+      <li><a href="http://www.ipu.ac.in/usms/" target="_blank">University 
+      School of Management Studies</a></li>
+      <li><a href="www.ipu.ac.in/usap/" target="_blank">University 
+      School of Architecture and Planning</a></li>
+      <li><a href="http://www.ipu.ac.in/schools.php" target="_blank">And many more..</a></li>
+
 </ul>
 </div>
 </div>
@@ -101,10 +121,22 @@ The campus has all the facilities to play various sports like cricket, football,
 
 {% block scripts %}
 
-    <!--  Scripts-->
-    <script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
-    <script src="{% static 'css/materialize/js/materialize.js' %}"></script>
-    <script type="text/javascript">
+    
+    
+  <script type="text/javascript">
+
+      $('.dropdown-button').dropdown({
+      inDuration: 300,
+      outDuration: 225,
+      constrainWidth: false, // Does not change width of dropdown to that of the activator
+      hover: true, // Activate on hover
+      gutter: 0, // Spacing from edge
+      belowOrigin: false, // Displays dropdown below the button
+      alignment: 'right', // Displays dropdown with edge aligned to the left of button
+      stopPropagation: false // Stops event propagation
+    }
+  );
+     
       $(document).ready(function(){
         $('.modal').modal();
     $('.target').pushpin({
@@ -112,6 +144,8 @@ The campus has all the facilities to play various sports like cricket, football,
       bottom: 1000,
       offset: 0
     });
+
+
   });
       $('.pushpin-demo-nav').each(function() {
     var $this = $(this);
@@ -121,6 +155,8 @@ The campus has all the facilities to play various sports like cricket, football,
       bottom: $target.offset().top + $target.outerHeight() - $this.height()
     });
   });
-    </script>
+ 
+ </script> 
+
    
    {% endblock %}

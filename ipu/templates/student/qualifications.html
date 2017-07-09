@@ -18,14 +18,110 @@
 	.navbar-fixed {
 		background-color: #1c262f;
 	}
+
+	nav .brand-logo { 
+	font-family: "Times New Roman"; /* New */
+	text-transform: capitalize; /* New */
+  font-size: 1.6rem;
+  margin-left: 20px;
+}
+
+#logo
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav .button-collapse {
+    margin: 0 10px;
+    margin-left: 5px;
+}
+
+#inner-logo
+{
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+
+#inner-logo h4
+{
+  font-size:21px;
+  margin-bottom: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+#inner-logo h6
+{
+  
+  font-size: 14px;
+  margin-top: 1px;
+  font-family: "Times New Roman";
+  text-transform: capitalize;
+}
+
+#img-corner
+{
+    height: 30px;
+    width: 30px;
+    margin-bottom: -9px;
+    
+}
+@media screen and (min-width: 992px){
+#corner-button
+	{
+		position: fixed;
+		top: 14px;
+		right: 10px;
+		z-index: 4159465419454;
+	}
+}
+	 @media screen and (min-width: 300px) and (max-width: 992px){
+	 	
+	 	#corner-button
+	{
+		position: fixed;
+		bottom: 10px;
+		right: 10px;
+		z-index: 4159465419454;
+	}
+	 }
 </style>
 
 {% endblock %}
 {% block header %}
-	<a href="{% url 'logout' %}" class="waves-effect waves-light btn right" id="logout-button"> Logout </a>
+	<!--materialize fixed main navbar-->
+        <div class="navbar-fixed">
+            <nav id="nav-bar">
+                <div class="nav-wrapper">
+                    <a href="{{ request.user.get_home_url }}" class="brand-logo" id="brand-corner">
+                    <div class="left hide-on-med-and-down" style="margin-left: 1.5%;">
+                      <div id="logo">
+                        <img src="{% static 'images/ipu-logo.png' %}" style="height: 55px">
+                        <div id="inner-logo">
+                        <h4>Training & Placement cell</h4>
+                        <h6>Guru Gobind Singh Indraprastha University</h6> 
+                        </div>
+                      </div>
+                    </div>
+                    </a>
+                    <a id="center_logo" href="{{ request.user.get_home_url }}" class="brand-logo center hide-on-large-only">Training & Placement Cell</a>
+                    <h6 class="center hide-on-large-only" style="font-size: 10px;padding: 0px;margin: 1px;margin-top: 1px;position: absolute;top: 40px;left: 15%;width: 70%;right: 15%">Guru Gobind Singh Indraprastha University</h6>
+            
+            </div>
+        </nav>
+      </div> 
+
+<!--navbar ends-->
 {% endblock %}
 {% block title %} Qualifications {% endblock %}
 {% block content %}
+
+<a id="corner-button" href="{% url 'logout' %}" class="waves-effect waves-light btn right" id="logout-button"> Logout </a>
 	<div class="row">
 		<!-- Tabs -->
 		<div class="col s12">
