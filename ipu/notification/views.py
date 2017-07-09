@@ -393,7 +393,6 @@ def display_solution(request):
 		raise PermissionDenied
 
 @check_recaptcha
-@login_required
 @require_http_methods(['GET','POST'])
 def report(request):
 	if request.method == 'GET':
