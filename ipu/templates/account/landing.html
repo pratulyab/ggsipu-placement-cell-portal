@@ -72,7 +72,7 @@
         <li><a href="{% url 'intro' %}">Why GGSIPU</a></li>
         <li><a class='dropdown-button' href='#' data-gutter="0" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown1'>Procedure</a></li>
         <!-- <li><a href="{% url 'procedure' %}">Procedure</a></li> -->
-        <li><a href="">Recruiters</a></li>
+        <li><a href="{% url 'past_recruiters' %}">Recruiters</a></li>
         <li><a class='dropdown-button' href='#' data-gutter="20" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown2'>Rules & Regulations</a></li>
         <li><a href="{% url 'stats' %}">Placement Stats</a></li>
        <!-- <li><a href="{% url 'team' %}">Meet The Team</a></li> -->
@@ -123,7 +123,7 @@
   </div>
   <div class="section" id="second-section">
     <div class="row container" id="second-box">
-      <h3>Recruiters Associated With Us</h3>
+      <h3><a href="{% url 'past_recruiters' %}">Recruiters Associated With Us</a></h3>
       <div id="second-box-images">
          <img class="responsive-img" src="{% static 'images/AmazonLogo.jpg' %}">
          <img class="responsive-img" src="{% static 'images/flipkartlogo.png' %}">

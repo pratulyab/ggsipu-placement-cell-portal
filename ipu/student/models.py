@@ -117,8 +117,11 @@ class Student(models.Model):
 	dob = models.DateField(_('Date Of Birth'), null=True, blank=False)
 	photo = models.ImageField(_('Photo'),upload_to=get_hashed_filename, blank=True)
 	phone_number = models.CharField(_('Mobile Number'), max_length=10, help_text='Enter 10 Digit IN Mobile Number', 
-			validators=[validators.RegexValidator(r'^[7-9]\d{9}$')], 
-			error_messages={'invalid_number': _('Invalid IN Phone Number. Don\'t Prefix The Number With +91 or 0.')},
+			validators=[validators.RegexValidator(
+				regex = r'^[7-9]\d{9}$',
+				code = 'invalid_number',
+			)], 
+			error_messages={'invalid_number': _('Invalid IN Phone Number. Make sure you haven\'t prefixed the number with +91 or 0.')},
 			unique=True,
 			blank=False
 		)

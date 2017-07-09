@@ -17,8 +17,9 @@ from django.conf import settings
 from django.conf.urls import url, include, static
 from django.contrib import admin
 from notification.views import report
-from account.views import auth, landing, login, view_profile, logout, search, team, intro, sms_callback, procedure, contact_us
-from stats.views import stats
+from account.views import auth, landing, login, view_profile, logout, search, team, intro, sms_callback, procedure
+from stats.views import stats, past_recruiters
+from account.views import contact_us
 
 urlpatterns = [
 #    url(r'^LrY4pRNMnQXvOK3vWeODJaP15jbKkV$' if not settings.DEBUG else r'admin$', admin.site.urls),
@@ -29,6 +30,7 @@ urlpatterns = [
 	url(r'^procedure/$', procedure, name='procedure'),
 	url(r'^contact_us/$', contact_us, name='contact_us'),
 	url(r'^stats/$', stats, name='stats'),
+	url(r'^past_recruiters/$', past_recruiters, name='past_recruiters'),
 	url(r'^intro/$', intro, name='intro'),
 	url(r'^login/$', login, name='login'),
 	url(r'^account/', include('account.urls')),

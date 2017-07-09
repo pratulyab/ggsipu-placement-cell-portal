@@ -63,7 +63,7 @@ def team(request):
 def intro(request):
 	if request.user.is_authenticated():
 		return handle_user_type(request, redirect_request=True)
-	return render(request, 'account/intro.html', {})			
+	return render(request, 'account/intro.html', {})
 
 @require_GET
 def auth(request):

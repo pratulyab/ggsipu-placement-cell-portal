@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render
-#from django.template import loader
+from django.template.loader import get_template
 from django.views.decorators.http import require_GET, require_http_methods
 
 from account.utils import handle_user_type
@@ -62,3 +62,42 @@ def stats(request):
 	else:
 		context = {'stats_form': StatsForm()}
 	return render(request, 'stats/stats.html', context)
+
+@require_GET
+def past_recruiters(request):
+	if request.user.is_authenticated():
+		return handle_user_type(request, redirect_request=True)
+	try:
+		get_template('stats/past_recruiters_compiled.html')
+		return render(request, 'stats/past_recruiters_compiled.html', {}) # optimization
+	except:
+		pass
+	queryset = Company.objects.all().order_by('name')
+	half = queryset.count()/2
+	i,j = 0,0
+	ones = queryset[:half]
+	twos = queryset[half:]
+	companies = []
+	while i < len(ones) or j < len(twos):
+		data = {}
+		try:
+			data['one'] = ones[i]
+		except IndexError:
+			pass
+		try:
+			data['two'] = twos[j]
+		except IndexError:
+			pass
+		i = i+1
+		j = j+1
+		companies.append(data)
+	r = render(request, 'stats/past_recruiters.html', {'companies': companies})
+# compiling the data to a template because the data to be displayed is constant for long time
+# so why hit the db
+	content = r.content.decode('utf-8')
+	f = open('templates/stats/past_recruiters_compiled.html', 'w')
+	try:
+		f.write(content)
+	finally:
+		f.close()
+	return r
