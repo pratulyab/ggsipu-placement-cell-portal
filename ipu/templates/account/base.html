@@ -29,6 +29,25 @@
 		<header class="navbar-fixed">
 			{% block header %}{% endblock header %}
 		</header>
+		<!-- Full Page preloader begins.  -->
+		  <div id="page-preloader" class="preloader-wrapper big active" style="display : none; position: relative; z-index : 10000; left : 50%; top : 50%; color: red !important; ">
+		      <div class="spinner-layer spinner-yellow-only">
+		          <div class="circle-clipper left">
+		              <div class="circle"></div>
+		          </div>
+		          <div class="gap-patch">
+		              <div class="circle"></div>
+		          </div>
+		          <div class="circle-clipper right">
+		              <div class="circle"></div>
+		          </div>
+		      </div>
+		  </div>
+		  <div id="preloader-shadow" style="display: none; position: absolute; 
+		  background: #000; top: 0; left: 0;
+		  opacity: 0.6; z-index: 9999;">   
+		  </div>
+		<!-- END Preloader  -->
 		<main>
 			{% block content %}{% endblock content %}
 		</main>

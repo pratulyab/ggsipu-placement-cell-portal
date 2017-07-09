@@ -1,3 +1,26 @@
+var preloader = document.getElementById('page-preloader');
+	var preloader_shadow = document.getElementById('preloader-shadow');
+
+	function showPreloader(){
+		var h = window.innerHeight;
+ 		var w = window.innerWidth;
+ 		addPreloaderShadow(h , w);
+ 		preloader.style.top = h/3 + 'px';
+ 		preloader.style.left = w/2.4 + 'px';
+ 		preloader.style.display = 'block';
+	}
+
+	function addPreloaderShadow(h , w){
+		preloader_shadow.style.height = h + 'px';
+  		preloader_shadow.style.width = w + 'px';
+  		preloader_shadow.style.display = 'block';
+	}
+
+	function removePreloader(){
+		preloader.style.display = 'none';
+		preloader_shadow.style.display = 'none';
+	}
+
 var Auth = (function() {
 	'use strict';
 	var inProcess = {
@@ -56,6 +79,12 @@ var Auth = (function() {
 			data: form_data,
 			processData: false,
 			contentType: false,
+			beforeSend: function() {
+   				showPreloader();
+            },
+            complete: function() {
+            	removePreloader();
+            },	
 			success: function(data, status, xhr){
 				if(data['render']){
 					$('html').html(data['render']);
