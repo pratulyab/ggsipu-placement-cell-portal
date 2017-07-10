@@ -95,13 +95,13 @@ var Auth = (function() {
 				location.href = loc;
 			},
 			error: function(xhr, status, error){
+				if (prefix == 's-' || prefix == 'ss-'){
+					grecaptcha.reset();
+				}
 				var form_errors = xhr.responseJSON['errors'];
 				addErrorsToForm(form_errors, form_id, prefix);
 				if (xhr.responseJSON && xhr.responseJSON['error']){
 					$(form).parent().prepend($('<small class="red-text error">'+xhr.responseJSON['error']+'</small>'))
-					if(prefix == 's-' || prefix == 'ss-'){
-						grecaptcha.reset();
-					}
 				}
 				inProcess[prefix.slice(0,2)] = false;
 //				$(form_id).on('submit', submit_event_function);
