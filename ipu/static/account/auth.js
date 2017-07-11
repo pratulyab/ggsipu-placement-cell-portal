@@ -87,7 +87,8 @@ var Auth = (function() {
             },	
 			success: function(data, status, xhr){
 				if(data['render']){
-					$('html').html(data['render']);
+//					$('html').html(data['render']); Removes <head> and doesn't add new <head>
+					document.write(data['render']);
 					return;
 				}
 				var loc = data['location'] ? data['location'] : '';

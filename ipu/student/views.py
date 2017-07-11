@@ -40,7 +40,11 @@ def student_login(request):
 	if f.is_valid():
 		user = f.get_user()
 		if not user.is_active:
-			return JsonResponse(data={'success': True, 'render': render_to_string('account/inactive.html', {'user': user})})
+			from datetime import datetime
+			user_hashid = ''
+			if ((datetime.utcnow() - user.last_login.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
+				user_hashid = settings.HASHID_CUSTOM_USER.encode(user.pk)
+			return JsonResponse(data={'success': True, 'render': render_to_string('account/inactive.html', {'user': user, 'user_hashid': user_hashid})})
 		auth_login(request, user)
 		return JsonResponse(data = {'success': True, 'location': get_relevant_reversed_url(request)})
 	else:
