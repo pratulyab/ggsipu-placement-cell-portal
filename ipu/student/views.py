@@ -122,10 +122,13 @@ def student_home(request, **kwargs):
 				if request.is_ajax():
 					return JsonResponse(status=403, data={'message': 'Get your profile verified by college', 'refresh': True})
 				else:
-					marksheet = student.marksheet
-					context['tenth'] = marksheet.cgpa_marksheet.calculate_percentage() if marksheet.cgpa_marksheet else marksheet.marksheet_10.calculate_percentage()
-					context['twelfth'] = marksheet.marksheet_12.calculate_percentage()
-					return render(request, 'student/unverified.html', context)
+					try:
+						marksheet = student.marksheet
+						context['tenth'] = marksheet.cgpa_marksheet.calculate_percentage() if marksheet.cgpa_marksheet else marksheet.marksheet_10.calculate_percentage()
+						context['twelfth'] = marksheet.marksheet_12.calculate_percentage()
+						context['graduation'] = student.qualifications.graduation
+					finally:
+						return render(request, 'student/unverified.html', context)
 	except:
 		# fill qualifications
 		context['qual_form'] = QualForm()

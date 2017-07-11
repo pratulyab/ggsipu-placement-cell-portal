@@ -25,6 +25,7 @@ var Qual = (function() {
 					processData: false,
 					contentType: false,
 					success: function(data, status, xhr){
+						$('#error-box').hide();
 						if (data.refresh){	
 							swal({
 								title: "Success!",
@@ -41,6 +42,7 @@ var Qual = (function() {
 						}
 					},
 					error: function(xhr, status, error){
+						$('#error-box').show();
 						if(xhr.status >= 400 && xhr.status < 500)
 							swal('Error', "Please correct the errors as indicated in the error box.", 'error');
 						else if(xhr.status >= 500)
@@ -135,6 +137,7 @@ var Qual = (function() {
 				'score_form': '#tenth-scores-marksheet-form',
 				'cgpa_form': '#tenth-cgpa-marksheet-form'
 			};
+			$('#error-box').hide();
 			twelfth = $('#twelfth');
 			grad = $('#graduation');
 			$(tenth.tenth).find('div[id*="marksheet-form-div"]').hide();

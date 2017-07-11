@@ -14,7 +14,7 @@ from django.views.decorators.http import require_http_methods, require_GET, requ
 from account.decorators import require_AJAX , check_recaptcha
 from account.forms import AccountForm, ForgotPasswordForm, LoginForm, SetPasswordForm, SignupForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
-from account.tasks import send_forgot_password_email_task
+from account.tasks import send_forgot_password_email_task, send_activation_email_task
 from account.tokens import account_activation_token_generator, time_unbounded_activation_token_generator
 from account.utils import *
 from college.forms import CollegeCreationForm
@@ -80,7 +80,8 @@ def login(request):
 	if f.is_valid():
 		user = f.get_user()
 		if not user.is_active:
-			return JsonResponse(data={'success': True, 'render': loader.render_to_string('account/inactive.html', {'user': user})})
+			user_hashid = settings.HASHID_CUSTOM_USER.encode(user.pk)
+			return JsonResponse(data={'success': True, 'render': loader.render_to_string('account/inactive.html', {'user': user,'user_hashid': user_hashid})})
 		auth_login(request, user)
 		return JsonResponse(data = {'success': True, 'location': get_relevant_reversed_url(request)})
 	else:
@@ -120,6 +121,17 @@ def activate(request, user_hashid='', token=''):
 	except:
 		return render(request, 'account/500.html')
 	return render(request, 'account/activation_success.html')
+
+@require_GET
+def resend_activation_email(request, user_hashid):
+	try:
+		user = get_object_or_404(CustomUser, pk=settings.HASHID_CUSTOM_USER.decode(user_hashid)[0])
+		from datetime import datetime
+		if not user.is_active and not user.is_disabled and ((datetime.utcnow() - user.last_login.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
+			send_activation_email_task.delay(user.pk, get_current_site(request).domain)
+			return render(request, 'account/post_signup.html', {'user': user})
+	finally:
+		raise Http404('Page Not Found')
 
 @require_http_methods(['GET','POST'])
 def set_usable_password_activation(request, user_hashid, token):

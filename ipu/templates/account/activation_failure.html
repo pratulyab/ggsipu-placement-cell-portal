@@ -2,9 +2,13 @@
 {% block title %} Acitvation Failed {% endblock %}
 {% block content %}
 	<div class="row">
-		<h4 class="center flow-text red-text">Invalid Activation Link</h4>
-		<p class="col s12 flow-text blue-text"> If you are viewing this page after clicking the activation link sent to your registered email address, then chances are that the activation link has expired. </p>
-		<p class="col s12"><a class="btn btn-waves-light center" href="{% url 'auth' %}"> Resend Activation Link </a></p>
-		<p class="left flow-text blue-text"> Go to <a href={% url 'landing' %}>Home Page</a> </p>
+		<div class="col s12 m10 offset-m1">
+			<h4 class="center red-text text-darken-3">Invalid Activation Link</h4>
+			<p class="center flow-text blue lighten-5 blue-text text-darken-3">If you are viewing this page after clicking the activation link sent to your registered email address, then chances are that the activation link has <b>expired.</b></p>
+			<div class="center-align flow-text teal lighten-5">
+				<p><a href="{% url 'auth' %}">Login</a> to resend activation link.</p>
+				<p><a href={% url 'landing' %}>Go back to site</a> </p>
+			</div>
+		</div>
 	</div>
 {% endblock %}

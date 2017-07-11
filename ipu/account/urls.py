@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from .views import home, logout, edit_account, activate, reset_password, forgot_password, social_profile, set_usable_password_activation
+from .views import home, logout, edit_account, activate, reset_password, forgot_password, social_profile, set_usable_password_activation, resend_activation_email
 
 urlpatterns = [
 		url(r'^home/$', home, name='home'),
@@ -10,4 +10,5 @@ urlpatterns = [
 		url(r'^forgot_password/$', forgot_password, name='forgot_password'),
 		url(r'^social_profile/$', social_profile, name='social_profile'),
 		url(r'pwd_activate/(?P<user_hashid>[a-zA-Z0-9]{13,})/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', set_usable_password_activation, name='usable_pwd_activation'),
+		url(r'^resend_activation_email/(?P<user_hashid>[a-zA-Z0-9]{13,})/$', resend_activation_email, name='resend_activation_email'),
 ]
