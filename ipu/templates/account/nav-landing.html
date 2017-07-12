@@ -13,6 +13,13 @@
 {% block header %}
 
 <style type="text/css">
+
+#brand-corner:hover
+{
+  cursor: pointer;
+  color: coral !important;
+}
+
   @media (min-width:300px) and (orientation: portrait){
 
      html {
@@ -104,11 +111,6 @@ footer.page-footer {
   text-transform: capitalize;
 }
 
-
-#brand-corner:hover
-{
-  cursor: pointer;
-}
 
 
 #dropdown3 li
@@ -476,7 +478,7 @@ footer.page-footer {
                 <ul style="display: flex;width: 90%;justify-content: space-between;" id="footer-links">
                   <li><a class="grey-text text-lighten-3" href="{% url 'contact_us' %}">Contact Us</a></li>
                   <li style="color: #6ACEEB"> | </li>
-                  <li><a class="grey-text text-lighten-3" href="#!">Feedback</a></li>
+                  <li><a class="grey-text text-lighten-3" href="{% url 'feedback' %}">Feedback</a></li>
                   <li style="color: #6ACEEB"> | </li>
                   <li><a target="_blank" href="http://www.ipu.ac.in/rti.php" class="grey-text text-lighten-3" target="_blank" href="#!">RTI</a></li>
                   <li style="color: #6ACEEB"> | </li>

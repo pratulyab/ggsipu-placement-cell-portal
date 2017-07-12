@@ -25,6 +25,10 @@ nav .brand-logo {
     padding: 0;
     white-space: nowrap;
 }
+
+#brand-corner:hover {
+	color: coral !important;
+}
       #corner-button2
     {
     position: fixed;
