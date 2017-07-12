@@ -164,20 +164,26 @@ def set_usable_password_activation(request, user_hashid, token):
 def forgot_password(request):
 	if request.user.is_authenticated():
 		return redirect(settings.HOME_URL[request.user.type])
+	context = dict()
 	if request.method == 'GET':
+		context['error'] = False
 		f = ForgotPasswordForm()
 	if request.method == 'POST':
 		if not request.recaptcha_is_valid:
-			return JsonResponse(status = 400 , data={'errors' : 'reCAPTCHA authorization failed. Please try again.'})
+			f = ForgotPasswordForm()
+			context['error'] = True
+			context['message'] = 'reCAPTCHA authorization failed. Please try again.'
+			context['forgot_password_form'] = f
+			return render(request, 'account/forgot_password.html', context)
 		f = ForgotPasswordForm(request.POST)
 		if f.is_valid():
 			email = f.cleaned_data['email']
 			user = CustomUser.objects.filter(email=email).values('pk')
 			if user.exists():
 				send_forgot_password_email_task.delay(user[0]['pk'], get_current_site(request).domain)
-			context = { 'email' : email }
+			context['email'] = email 
 			return render(request, 'account/forgot_password_email_sent.html',context)
-	context = {'forgot_password_form' : f}
+	context['forgot_password_form'] = f
 	return render(request, 'account/forgot_password.html', context)
 
 @require_http_methods(['GET', 'POST'])
