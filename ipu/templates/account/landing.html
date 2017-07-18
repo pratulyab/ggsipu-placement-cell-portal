@@ -32,7 +32,7 @@
 <ul id="dropdown1" class="dropdown-content">
     <li><a href="{% url 'procedure' %}">For Students</a></li>
     <li class="divider"></li>
-    <li><a href="#!">For Recruiters</a></li>
+    <li><a href="{% url 'procedure_recruiter' %}">For Recruiters</a></li>
 </ul>
 
 <ul id="dropdown2" class="dropdown-content">
@@ -44,13 +44,25 @@
 <ul id="dropdown3" class="dropdown-content">
     <li><a href="{% url 'procedure' %}">For Students</a></li>
     <li class="divider"></li>
-    <li><a href="#!">For Recruiters</a></li> 
+    <li><a href="{% url 'procedure_recruiter' %}">For Recruiters</a></li> 
 </ul>        
 
 <ul id="dropdown4" class="dropdown-content">
     <li><a href="#!">For Students</a></li>
     <li class="divider"></li>
     <li><a href="#!">For Recruiters</a></li> 
+</ul>
+
+<ul id="dropdown5" class="dropdown-content">
+    <li><a href="{% url 'auth' %}#student-login-tab">Students</a></li>
+    <li class="divider"></li>
+    <li><a href="{% url 'auth' %}#other-login-tab">Recruiters / Faculty</a></li>
+</ul>
+
+<ul id="dropdown6" class="dropdown-content">
+    <li><a href="{% url 'auth' %}#student-login-tab">Students</a></li>
+    <li class="divider"></li>
+    <li><a href="{% url 'auth' %}#other-login-tab">Recruiters / Faculty</a></li>
 </ul>
 
 <div class="navbar-fixed">
@@ -75,6 +87,7 @@
         <li><a href="{% url 'past_recruiters' %}">Recruiters</a></li>
         <li><a class='dropdown-button' href='#' data-gutter="20" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown2'>Rules & Regulations</a></li>
         <li><a href="{% url 'stats' %}">Placement Stats</a></li>
+        <li><a class='dropdown-button' href='#' data-gutter="10" data-constrainwidth="false" data-beloworigin="true"  data-activates='dropdown5'>LOGIN/SIGNUP</a></li>
        <!-- <li><a href="{% url 'team' %}">Meet The Team</a></li> -->
       </ul>
       </div>
@@ -128,7 +141,7 @@
          <img class="responsive-img" src="{% static 'images/AmazonLogo.jpg' %}">
          <img class="responsive-img" src="{% static 'images/flipkartlogo.png' %}">
          <img class="responsive-img" src="{% static 'images/snapdeal-new-logo.png' %}">
-         <img class="responsive-img" src="{% static 'images/Microsoft-logo.png' %}">
+         <img class="responsive-img" src="{% static 'images/ibm_logo.jpg' %}">
          <img class="responsive-img" src="{% static 'images/Adobe_logo.jpg' %}">
          <img class="responsive-img" src="{% static 'images/TCS-Logo.jpg' %}">
       </div>

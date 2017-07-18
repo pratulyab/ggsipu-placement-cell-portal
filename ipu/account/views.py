@@ -46,6 +46,12 @@ def procedure(request):
 		return handle_user_type(request, redirect_request=True)
 	return render(request, 'account/procedure.html', {})
 
+@require_GET
+def procedure_recruiter(request):
+	if request.user.is_authenticated():
+		return handle_user_type(request, redirect_request=True)
+	return render(request, 'account/procedure_recruiter.html', {})	
+
 
 @require_GET
 def contact_us(request):
