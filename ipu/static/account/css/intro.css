@@ -25,10 +25,6 @@ nav .brand-logo {
     padding: 0;
     white-space: nowrap;
 }
-
-#brand-corner:hover {
-	color: coral !important;
-}
       #corner-button2
     {
     position: fixed;
@@ -53,7 +49,6 @@ nav .brand-logo {
       #data
       {
         display: flex;
-        display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:-webkit-flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
@@ -96,6 +91,14 @@ nav .brand-logo {
         margin-bottom: 20px;
       }
 
+      #img-line img
+   {
+      width: 95%;
+      display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:-webkit-flex;
+      height: 100%;
+
+   }  
+
       #boxes
       {
         width: 100%;
@@ -109,7 +112,6 @@ nav .brand-logo {
         width: 20%;
         min-height: 50px;
         display: flex;
-        display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:-webkit-flex;
         justify-content: space-around;
         align-items: center;
         padding: 5px;
@@ -143,6 +145,7 @@ nav .brand-logo {
    #img-line img
    {
       width: 95%;
+      display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:-webkit-flex;
       height: 100%;
 
    }   
@@ -243,6 +246,7 @@ nav .brand-logo {
    {
       width: 95%;
       height: 90%;
+      display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:-webkit-flex;
       margin-left: 2.5%;
    }   
 
@@ -250,9 +254,9 @@ nav .brand-logo {
       {
         display: flex;
         height: 100px;
+        display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:-webkit-flex;
         width: 100%;
         margin-bottom: 10px;
-        display:-webkit-box;display:-moz-box;display:-ms-flexbox;display:-webkit-flex;
       }
 
     nav .brand-logo {
@@ -363,4 +367,6 @@ nav .brand-logo {
     }
 
 
-}  
+}      
+
+

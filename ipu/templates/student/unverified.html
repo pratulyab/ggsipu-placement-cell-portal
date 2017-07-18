@@ -72,17 +72,25 @@
     @media screen and (min-width: 300px) and (max-width: 992px){
 		 	
 	#corner-button
-		{
-			position: fixed;
-			bottom: 10px;
-			right: 10px;
-			z-index: 4159465419454;
+	{
+		position: fixed;
+		top: 16px;
+		left: 10px;
+		z-index: 4159465419454;
+		-webkit-transform: rotate(180deg);
+	    -moz-transform: rotate(180deg);
+	    -o-transform: rotate(180deg);
+	    -ms-transform: rotate(180deg);
+	    transform: rotate(180deg);
 		}
+	 }
 	}
 </style>
 
 {% endblock %}
 {% block header %}
+<a href="{% url 'logout' %}" class="waves-effect waves-light btn hide-on-med-and-down" id="corner-button"> Logout </a>
+<a class="hide-on-large-only" id="corner-button" href="{% url 'logout' %}" class="waves-effect waves-light btn right" id="logout-button"><i class="material-icons">input</i></a>
 	<div class="navbar-fixed">
             <nav id="nav-bar">
                 <div class="nav-wrapper">

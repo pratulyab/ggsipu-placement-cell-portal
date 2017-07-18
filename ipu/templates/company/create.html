@@ -1,5 +1,6 @@
 {% extends 'account/base.html' %}
 {% load material_form %}
+{% load staticfiles %}
 {% block head %}
 	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
 <style>
@@ -126,7 +127,6 @@ nav .button-collapse {
 {% endblock %}
 {% block title %} Company | Sign Up {% endblock title %}
 {% block content %}
-	<a class="btn waves-effect waves-light blue" href="{% url 'logout' %}" style="position: fixed;top: 10px;right: 10px;z-index: 516516514;">Logout</a>
     <form enctype="multipart/form-data" action="{% url 'create_company' %}" method='POST' id='company-creation-form' >
         {% csrf_token %}
 		<div class="row">
@@ -142,5 +142,4 @@ nav .button-collapse {
 		</div>
     </form>
 	<br />
-	<a href="{% url 'logout' %}">Logout</a>
 {% endblock content %}
