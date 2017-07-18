@@ -10,7 +10,7 @@ class Company(models.Model):
 	website = models.URLField(blank=True)
 
 	def __str__(self):
-		return self.name.title()
+		return self.name
 
 	class Meta:
 		verbose_name_plural = "Companies"

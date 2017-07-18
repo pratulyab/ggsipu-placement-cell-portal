@@ -1,0 +1,73 @@
+{% extends 'account/nav-landing.html' %}
+{% load staticfiles %}
+{% load material_form %}
+{% load recaptcha %}
+{% block title %}
+	Feedback
+{% endblock %}
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
+{% endblock %}
+{% block main %}
+	<div class="row">
+		<div class="col s12 m6 offset-m3">
+			<h4 class="center teal-text" style="margin-bottom: 5%;">Feedback</h4>
+			<div class="card medium">
+	            <div class="card-content">
+		            <p>
+						<form method = 'POST' id="report-form" action="{% url 'feedback' %}">
+								{% csrf_token %}
+								{% form form=report_form %}
+								{% endform %}     
+								<div id="report-form-recaptcha-div" style=" margin-top: 2%" site-key="{% recaptcha_site_key %}"></div>
+								<button id="report-form-submit-button" type="submit" name="report_bug" style="display: none;">Submit</button>
+						</form>
+		            </p>
+	            </div>
+	            <div class="card-action">
+	            	<button id="submit-form-trigger" class="btn btn-waves-light col s8 offset-s2">Submit</button>
+	            </div>
+	        </div>
+	    </div>
+    </div>
+    <div id='bogus-message-div' message="{{ message }}" style="display: none;"></div>
+    <script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
+	<script>
+		var onloadCallback = function() {
+			var site_key = document.getElementById('report-form-recaptcha-div').getAttribute('site-key');
+	        grecaptcha.render('report-form-recaptcha-div', {
+	          'sitekey' : site_key,
+	        });
+	    };
+	    document.getElementById('submit-form-trigger').addEventListener('click' , function(e){
+	    	e.preventDefault();
+	    	document.getElementById('report-form-submit-button').click();
+	    });
+	    
+	    {% if redirect %}
+		    {% if error %}
+		    message = document.getElementById('bogus-message-div').getAttribute('message');
+	    		swal({
+					title: "Error!",
+					text: message,
+					type: "error",
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "Okay",
+					closeOnConfirm: true,
+				});
+		    {% else %}
+		    	swal({
+					title: "Success!",
+					text: message,
+					type: "success",
+					confirmButtonText: "Okay",
+					closeOnConfirm: true,
+				});
+		    {% endif %}
+		{% endif %}
+	</script>
+	<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+        async defer>
+    </script>
+
+{% endblock %}

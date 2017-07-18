@@ -312,6 +312,7 @@ function fieldEvaluator(input_field , max_length){
 			document.getElementById('your-notifications').addEventListener('click' , viewNotifications);
 			document.getElementById('help').addEventListener('click' , generateNewHelpForm)
 			document.getElementById('view-issues').addEventListener('click' , generateIssueList);
+			document.getElementById('report-form-anchor').addEventListener('click' , initializeReportBugModal);
 		},
 	}
 

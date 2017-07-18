@@ -13,6 +13,13 @@
 {% block header %}
 
 <style type="text/css">
+
+#brand-corner:hover
+{
+  cursor: pointer;
+  color: coral !important;
+}
+
   @media (min-width:300px) and (orientation: portrait){
 
      html {
@@ -104,11 +111,6 @@ footer.page-footer {
   text-transform: capitalize;
 }
 
-
-#brand-corner:hover
-{
-  cursor: pointer;
-}
 
 
 #dropdown3 li
@@ -489,7 +491,7 @@ footer.page-footer {
                 <ul style="display: flex;width: 90%;justify-content: space-between;" id="footer-links">
                   <li><a class="grey-text text-lighten-3" href="{% url 'contact_us' %}">Contact Us</a></li>
                   <li style="color: #6ACEEB"> | </li>
-                  <li><a class="grey-text text-lighten-3" href="#!">Feedback</a></li>
+                  <li><a class="grey-text text-lighten-3" href="{% url 'feedback' %}">Feedback</a></li>
                   <li style="color: #6ACEEB"> | </li>
                   <li><a target="_blank" href="http://www.ipu.ac.in/rti.php" class="grey-text text-lighten-3" target="_blank" href="#!">RTI</a></li>
                   <li style="color: #6ACEEB"> | </li>
@@ -501,7 +503,7 @@ footer.page-footer {
           <div class="footer-copyright">
             <div class="container">
               <div id="footer-last" style="width: 100%;display: flex;justify-content: center;align-items: center;"> 
-              © 2016 Guru Gobind Singh Indraprastha Univeristy. All rights reserved.
+              © 2017 Guru Gobind Singh Indraprastha Univeristy. All rights reserved.
               </div>  
             </div>
           </div>

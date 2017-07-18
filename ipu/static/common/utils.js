@@ -22,6 +22,12 @@
 		preloader_shadow.style.display = 'none';
 	}
 	
+	function initializeReportBugModal(e){
+		e.preventDefault();
+		document.getElementById('report-form-modal-trigger').click();
+		showPreloader();
+	}
+
 	function getReportForm(){
 		var url = $('#report-form-anchor').attr('href');
 		$.ajax({
@@ -121,12 +127,6 @@ var Utils = (function() {
 		$info_modal.find('.modal-content > p').text(info);
 		$info_modal.modal('open');
 	}
-	
-	function initializeReportBugModal(e){
-		e.preventDefault();
-		document.getElementById('report-form-modal-trigger').click();
-		showPreloader();
-	}
 
 	return {
 		init: function(params){
@@ -139,7 +139,6 @@ var Utils = (function() {
 				$reload_btn.on('click', reloadContent);
 				$info_btn.tooltip({'delay': 50, 'tooltip': 'Tab Information', 'position': 'left'});
 				$info_btn.on('click', displayInfoModal);
-				document.getElementById('report-form-anchor').addEventListener('click' , initializeReportBugModal);
 				$('#fixed-action-button').find('a')[0].click();
 			}
 		}

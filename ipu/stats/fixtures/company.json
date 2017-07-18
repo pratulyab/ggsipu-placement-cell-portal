@@ -201,7 +201,7 @@
     "model": "stats.company",
     "pk": 25,
     "fields": {
-        "name": "Indus Valley Partners (India)",
+        "name": "Indus Valley Partners (India) Ltd.",
         "alias": "",
         "website": ""
     }
@@ -237,7 +237,7 @@
     "model": "stats.company",
     "pk": 29,
     "fields": {
-        "name": "Times Internet",
+        "name": "Times Internet Ltd.",
         "alias": "",
         "website": ""
     }
@@ -345,7 +345,7 @@
     "model": "stats.company",
     "pk": 41,
     "fields": {
-        "name": "Safenet",
+        "name": "SafeNet",
         "alias": "",
         "website": ""
     }
@@ -373,6 +373,510 @@
     "pk": 44,
     "fields": {
         "name": "Capital IQ",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 45,
+    "fields": {
+        "name": "Jellyfish Technologies",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 46,
+    "fields": {
+        "name": "Quovantis Technolgies",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 47,
+    "fields": {
+        "name": "Optimus",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 48,
+    "fields": {
+        "name": "Finoit",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 51,
+    "fields": {
+        "name": "Binary Technosys",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 52,
+    "fields": {
+        "name": "PerkinElmer",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 53,
+    "fields": {
+        "name": "Wtvision",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 54,
+    "fields": {
+        "name": "Thorogood",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 55,
+    "fields": {
+        "name": "Hippo Innovations",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 56,
+    "fields": {
+        "name": "Grape City",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 57,
+    "fields": {
+        "name": "Newgen",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 58,
+    "fields": {
+        "name": "Cvent India Pvt.Ltd",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 59,
+    "fields": {
+        "name": "CSC",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 60,
+    "fields": {
+        "name": "INFOGAIN",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 61,
+    "fields": {
+        "name": "Impetus",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 62,
+    "fields": {
+        "name": "Media Agility",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 63,
+    "fields": {
+        "name": "BlackRock",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 64,
+    "fields": {
+        "name": "Texas",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 66,
+    "fields": {
+        "name": "Simply Learnt",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 67,
+    "fields": {
+        "name": "DRDO",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 68,
+    "fields": {
+        "name": "Xperia",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 69,
+    "fields": {
+        "name": "NISCAIR",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 70,
+    "fields": {
+        "name": "High Technology Pvt. Ltd",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 71,
+    "fields": {
+        "name": "NIIT Limited",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 72,
+    "fields": {
+        "name": "Netcracker Technology Corp.",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 73,
+    "fields": {
+        "name": "Inox Apps.",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 74,
+    "fields": {
+        "name": "Samsung India Electronics",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 75,
+    "fields": {
+        "name": "IBM",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 76,
+    "fields": {
+        "name": "Motherson Sumi Infotech & Design Ltd.",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 77,
+    "fields": {
+        "name": "M/s Nucleus Software",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 78,
+    "fields": {
+        "name": "M/s Infopro Word Wide",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 80,
+    "fields": {
+        "name": "Hitachi",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 81,
+    "fields": {
+        "name": "Axtria",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 82,
+    "fields": {
+        "name": "Smartprix Web Pvt. Ltd.",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 83,
+    "fields": {
+        "name": "E & Y India",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 84,
+    "fields": {
+        "name": "NEC",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 85,
+    "fields": {
+        "name": "Click Labs",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 86,
+    "fields": {
+        "name": "EMICON",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 87,
+    "fields": {
+        "name": "BrisTL.com",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 89,
+    "fields": {
+        "name": "INDIAMART",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 90,
+    "fields": {
+        "name": "Sunworks Consultant Pvt. Ltd.",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 91,
+    "fields": {
+        "name": "QA\u00a0Infotech",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 92,
+    "fields": {
+        "name": "VEDA IIT(SoCtronics)",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 93,
+    "fields": {
+        "name": "Cadence",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 94,
+    "fields": {
+        "name": "MediaTek",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 95,
+    "fields": {
+        "name": "Elucidata",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 97,
+    "fields": {
+        "name": "gbox",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 98,
+    "fields": {
+        "name": "HSBC",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 99,
+    "fields": {
+        "name": "HFFC",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 100,
+    "fields": {
+        "name": "ThoughtWorks Technologies(India) Pvt. Ltd.",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 101,
+    "fields": {
+        "name": "M/s Cognizant Technology  Solutions",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 102,
+    "fields": {
+        "name": "M/s Endeavor Careers Pvt. Ltd.",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 103,
+    "fields": {
+        "name": "EXL Services",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 104,
+    "fields": {
+        "name": "Xerox",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 105,
+    "fields": {
+        "name": "WNS Global Services",
+        "alias": "",
+        "website": ""
+    }
+},
+{
+    "model": "stats.company",
+    "pk": 106,
+    "fields": {
+        "name": "Protal Tech India",
         "alias": "",
         "website": ""
     }

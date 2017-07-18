@@ -29,8 +29,8 @@
 
 
 {% block main %}
-<div class="row" style="min-height: 477px;margin-top: 5%">
-	<div class="col s10 m8 offset-s1 offset-m2">
+<div class="row" style="min-height: 477px; margin-top: 5%">
+	<div class="col s12 m10 offset-m1 l8 offset-l2">
 		<h1 class="blue-text flow-text text-darken-2 center-align"><b>Recruiters Associated With Us</b></h1>
 		<table class="striped centered">
 			<thead>
@@ -50,6 +50,6 @@
 		</table>
 	</div>
 	<div class="col s10 offset-s1 divider" style="margin-top: 3%"></div>
-	<div class="col s8 offset-s2 flow-text teal lighten-5 teal-text text-darken-3 center" style="margin-top: 3%">Want to associate with us? <a href="{% url 'auth' %}#other-login-tab">Signup Here</a></div>
+	<div class="col s12 m10 offset-m1 l8 offset-l2 flow-text teal lighten-5 teal-text text-darken-3 center" style="margin-top: 3%; margin-bottom: 5%;">Are you a recruiter?&nbsp;&nbsp;<a href="{% url 'auth' %}#other-login-tab">Signup Here</a></div>
 </div>
 {% endblock %}

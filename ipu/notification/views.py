@@ -409,6 +409,39 @@ def report(request):
 		else:
 			return JsonResponse(status = 400 , data = {'errors' : 'Seems to be a problem with your form. Please fill it again.'})
 
+@check_recaptcha
+@require_http_methods(['GET' , 'POST'])
+def anonymous_report(request):
+	if request.method == 'GET':
+		form_object = ReportBugForm()
+		raw_html = render(request , 'account/report_bug.html' , {'report_form' : form_object})
+		return HttpResponse(raw_html)
+	if request.method == 'POST':
+		context = dict()
+		context['redirect'] = True
+		if not request.recaptcha_is_valid:
+			context['error'] = True
+			context['message'] = 'reCAPTCHA authorization failed. Please try again.'
+			form_object = ReportBugForm()
+			context['report_form'] = form_object
+			raw_html = render(request , 'account/report_bug.html' , context)
+			return HttpResponse(raw_html)
+		form_object = ReportBugForm(request.POST , user = request.user)
+		if form_object.is_valid():
+			form_object.save()
+			context['error'] = False
+			context['message'] = 'Thanks for your feedback.'
+			form_object = ReportBugForm()
+			context['report_form'] = form_object
+			raw_html = render(request , 'account/report_bug.html' , context)
+			return HttpResponse(raw_html)
+		else:
+			context['error'] = True
+			context['message'] = 'Seems to be a problem with your form. Please fill it again..'
+			form_object = ReportBugForm()
+			context['report_form'] = form_object
+			raw_html = render(request , 'account/report_bug.html' , context)
+			return HttpResponse(raw_html)
 
 #===============================Utility Functions=====================================#
 

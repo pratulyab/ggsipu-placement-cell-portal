@@ -228,7 +228,8 @@ class ReportBugForm(forms.ModelForm):
 		
 	def save(self):
 		form_instance = super(ReportBugForm , self).save(commit = False)
-		form_instance.reported_by = self.user
+		if self.user.is_authenticated():
+			form_instance.reported_by = self.user
 		form_instance.save()
 
 	class Meta:

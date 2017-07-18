@@ -58,7 +58,7 @@ class IssueReply(models.Model):
 		return (self.root_issue.actor.username + "Solved by" + self.actor.firstname)
 
 class Report(models.Model):
-	reported_by = models.ForeignKey(CustomUser , related_name = "bug")
+	reported_by = models.ForeignKey(CustomUser , related_name = "bug" , null = True)
 	REPORT_TYPE = (
 			('FDBK' , _('Feedback')),
 			('RQFR' , _('Request Feature')),

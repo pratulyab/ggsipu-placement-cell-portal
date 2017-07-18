@@ -14,7 +14,7 @@ from django.views.decorators.http import require_http_methods, require_GET, requ
 from account.decorators import require_AJAX , check_recaptcha
 from account.forms import AccountForm, ForgotPasswordForm, LoginForm, SetPasswordForm, SignupForm, SocialProfileForm
 from account.models import CustomUser, SocialProfile
-from account.tasks import send_forgot_password_email_task
+from account.tasks import send_forgot_password_email_task, send_activation_email_task
 from account.tokens import account_activation_token_generator, time_unbounded_activation_token_generator
 from account.utils import *
 from college.forms import CollegeCreationForm
@@ -86,7 +86,11 @@ def login(request):
 	if f.is_valid():
 		user = f.get_user()
 		if not user.is_active:
-			return JsonResponse(data={'success': True, 'render': loader.render_to_string('account/inactive.html', {'user': user})})
+			from datetime import datetime
+			user_hashid = ''
+			if ((datetime.utcnow() - user.last_login.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
+				user_hashid = settings.HASHID_CUSTOM_USER.encode(user.pk)
+			return JsonResponse(data={'success': True, 'render': loader.render_to_string('account/inactive.html', {'user': user,'user_hashid': user_hashid})})
 		auth_login(request, user)
 		return JsonResponse(data = {'success': True, 'location': get_relevant_reversed_url(request)})
 	else:
@@ -127,6 +131,17 @@ def activate(request, user_hashid='', token=''):
 		return render(request, 'account/500.html')
 	return render(request, 'account/activation_success.html')
 
+@require_GET
+def resend_activation_email(request, user_hashid):
+	try:
+		user = get_object_or_404(CustomUser, pk=settings.HASHID_CUSTOM_USER.decode(user_hashid)[0])
+		from datetime import datetime
+		if not user.is_active and not user.is_disabled and ((datetime.utcnow() - user.last_login.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
+			send_activation_email_task.delay(user.pk, get_current_site(request).domain)
+			return render(request, 'account/post_signup.html', {'user': user})
+	finally:
+		raise Http404('Page Not Found')
+
 @require_http_methods(['GET','POST'])
 def set_usable_password_activation(request, user_hashid, token):
 	''' Activates college or faculty by allowing to set a usable password '''
@@ -155,20 +170,26 @@ def set_usable_password_activation(request, user_hashid, token):
 def forgot_password(request):
 	if request.user.is_authenticated():
 		return redirect(settings.HOME_URL[request.user.type])
+	context = dict()
 	if request.method == 'GET':
+		context['error'] = False
 		f = ForgotPasswordForm()
 	if request.method == 'POST':
 		if not request.recaptcha_is_valid:
-			return JsonResponse(status = 400 , data={'errors' : 'reCAPTCHA authorization failed. Please try again.'})
+			f = ForgotPasswordForm()
+			context['error'] = True
+			context['message'] = 'reCAPTCHA authorization failed. Please try again.'
+			context['forgot_password_form'] = f
+			return render(request, 'account/forgot_password.html', context)
 		f = ForgotPasswordForm(request.POST)
 		if f.is_valid():
 			email = f.cleaned_data['email']
 			user = CustomUser.objects.filter(email=email).values('pk')
 			if user.exists():
 				send_forgot_password_email_task.delay(user[0]['pk'], get_current_site(request).domain)
-			context = { 'email' : email }
+			context['email'] = email 
 			return render(request, 'account/forgot_password_email_sent.html',context)
-	context = {'forgot_password_form' : f}
+	context['forgot_password_form'] = f
 	return render(request, 'account/forgot_password.html', context)
 
 @require_http_methods(['GET', 'POST'])

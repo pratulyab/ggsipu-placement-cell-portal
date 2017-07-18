@@ -109,12 +109,19 @@
 <a href="{% url 'logout' %}" class="waves-effect waves-light btn right" id="logout-button"> Logout </a>
 	<div class="row">
 		<div class="col s12 m10 offset-m1">
-			<p class="teal-text flow-text">You're almost there!</p>
-			<p class="teal-text flow-text">All you need to do is get your profile and qualifications verified by your college's faculty.</p>
-			<p class="red-text text-lighten-3 flow-text"><b>Tenth: </b>{{ tenth }}%</p>
-			<p class="red-text text-lighten-3 flow-text"><b>Twelfth: </b>{{ twelfth }}%</p>
-			<h6 class="flow-text">Note: Only the main 5 subjects are considered while calculating percentages.</h6>
-			<p class="blue-text flow-text">Incase of any discrepancies regarding your account or details you've entered, ask your faculty to take necessary actions.</p>
+			<h3 class="teal lighten-5 teal-text text-darken-3 center">You're almost there!</h3>
+			<p class="teal-text flow-text center">Now, all you need to do is get your profile and qualifications verified by your college's faculty.</p>
+			<div class="divider row"></div>
+			<div id="qualifications-text" class="center-align">
+				<p class="red-text text-lighten-3 flow-text"><b>Tenth: </b>{{ tenth }}%</p>
+				<p class="red-text text-lighten-3 flow-text"><b>Twelfth: </b>{{ twelfth }}%</p>
+				<p class="red-text text-lighten-3 flow-text"><b>Graduation: </b>{{ graduation }}%</p>
+			</div>
+			<div class="divider row"></div>
+			<div class="grey lighten-5 blue-text text-darken-3">
+				<p class="flow-text"><b>Note:</b> Only the first 5 subjects are considered while calculating percentages.<br>(Optional subject is not considered)</p>
+				<p class="flow-text">Incase of any discrepancies regarding your account or details you've entered, ask your faculty to take necessary actions.</p>
+			</div>
 		</div>
 	</div>
 {% endblock %}
