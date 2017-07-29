@@ -34,7 +34,7 @@ def company_signup(request):
 		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 #		auth_login(request, user)
 		send_activation_email_task.delay(user.pk, get_current_site(request).domain)
-		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse(settings.PROFILE_CREATION_URL['CO']))}
+		context = {'user': user, 'email': user.email, 'profile_creation': request.build_absolute_uri(reverse(settings.PROFILE_CREATION_URL['CO']))}
 		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')
 		return JsonResponse(data = {'success': True, 'render': html})
 	else:

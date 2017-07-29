@@ -170,7 +170,7 @@ class StudentCreationForm(forms.ModelForm):
 			try:
 				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
 					if photo._size > settings.IMAGE_MAX_SIZE:
-						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
+						raise forms.ValidationError(_('Image file too large (>%sKB)' % (settings.IMAGE_MAX_SIZE/(1024))))
 				else:
 					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
 			except AttributeError:
@@ -183,7 +183,7 @@ class StudentCreationForm(forms.ModelForm):
 			try:
 				if cv.content_type in settings.FILE_CONTENT_TYPE:
 					if cv._size > settings.FILE_MAX_SIZE:
-						raise forms.ValidationError(_('Resume too large (>%sMB)' % (settings.FILE_MAX_SIZE/(1024*1024))))
+						raise forms.ValidationError(_('Resume too large (>%sKB)' % (settings.FILE_MAX_SIZE/(1024))))
 				else:
 					raise forms.ValidationError(_('Please upload resume in .pdf, .doc or .docx format'))
 			except AttributeError:
@@ -207,8 +207,8 @@ class StudentCreationForm(forms.ModelForm):
 		model = Student
 		fields = ['firstname', 'lastname', 'gender', 'dob', 'photo', 'phone_number', 'college', 'programme', 'stream', 'is_sub_back', 'current_year', 'resume']
 		help_texts = {
-			'resume': _('Please upload resume in either pdf, doc or docx format, < %sMB' % str(settings.FILE_MAX_SIZE/(1024*1024))),
-			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
+			'resume': _('Please upload resume in either pdf, doc or docx format, < %sKB' % str(settings.FILE_MAX_SIZE/(1024))),
+			'photo': _('Please upload image in either jpeg or png format, < %sKB' % str(settings.IMAGE_MAX_SIZE/(1024))),
 		}
 
 class StudentEditForm(forms.ModelForm):
@@ -258,7 +258,7 @@ class StudentEditForm(forms.ModelForm):
 			try:
 				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
 					if photo._size > settings.IMAGE_MAX_SIZE:
-						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
+						raise forms.ValidationError(_('Image file too large (>%sKB)' % (settings.IMAGE_MAX_SIZE/(1024))))
 				else:
 					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
 			except AttributeError:
@@ -271,7 +271,7 @@ class StudentEditForm(forms.ModelForm):
 			try:
 				if cv.content_type in settings.FILE_CONTENT_TYPE:
 					if cv._size > settings.FILE_MAX_SIZE:
-						raise forms.ValidationError(_('Resume too large (>%sMB)' % (settings.FILE_MAX_SIZE/(1024*1024))))
+						raise forms.ValidationError(_('Resume too large (>%sKB)' % (settings.FILE_MAX_SIZE/(1024))))
 				else:
 					raise forms.ValidationError(_('Please upload resume in .pdf, .doc or .docx format'))
 			except AttributeError:
@@ -296,8 +296,8 @@ class StudentEditForm(forms.ModelForm):
 		model = Student
 		fields = ['firstname', 'lastname', 'gender', 'dob', 'photo', 'phone_number', 'college', 'programme', 'stream', 'is_sub_back', 'current_year', 'resume']
 		help_texts = {
-			'resume': _('Please upload resume in either pdf, doc or docx format, < %sMB' % str(settings.FILE_MAX_SIZE/(1024*1024))),
-			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
+			'resume': _('Please upload resume in either pdf, doc or docx format, < %sKB' % str(settings.FILE_MAX_SIZE/(1024))),
+			'photo': _('Please upload image in either jpeg or png format, < %sKB' % str(settings.IMAGE_MAX_SIZE/(1024))),
 		}
 
 class QualificationForm(forms.ModelForm):
@@ -384,7 +384,7 @@ class FileUploadForm(forms.ModelForm):
 			try:
 				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
 					if photo._size > settings.IMAGE_MAX_SIZE:
-						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
+						raise forms.ValidationError(_('Image file too large (>%sKB)' % (settings.IMAGE_MAX_SIZE/(1024))))
 				else:
 					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
 			except AttributeError:
@@ -399,7 +399,7 @@ class FileUploadForm(forms.ModelForm):
 				if cv.content_type in settings.FILE_CONTENT_TYPE:
 					print(settings.FILE_CONTENT_TYPE)
 					if cv._size > settings.FILE_MAX_SIZE:
-						raise forms.ValidationError(_('Resume too large (>%sMB)' % (settings.FILE_MAX_SIZE/(1024*1024))))
+						raise forms.ValidationError(_('Resume too large (>%sKB)' % (settings.FILE_MAX_SIZE/(1024))))
 				else:
 					raise forms.ValidationError(_('Please upload resume in .pdf, .doc or .docx format'))
 			except AttributeError:
@@ -410,8 +410,8 @@ class FileUploadForm(forms.ModelForm):
 		model = Student
 		fields = ['photo', 'resume']
 		help_texts = {
-			'resume': _('Please upload resume in either pdf, doc or docx format, < %sMB' % str(settings.FILE_MAX_SIZE/(1024*1024))),
-			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
+			'resume': _('Please upload resume in either pdf, doc or docx format, < %sKB' % str(settings.FILE_MAX_SIZE/(1024))),
+			'photo': _('Please upload image in either jpeg or png format, < %sKB' % str(settings.IMAGE_MAX_SIZE/(1024))),
 		}
 
 class PaygradeForm(forms.ModelForm):

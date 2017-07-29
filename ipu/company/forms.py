@@ -15,7 +15,7 @@ class CompanyCreationForm(forms.ModelForm):
 			try:
 				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
 					if photo._size > settings.IMAGE_MAX_SIZE:
-						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
+						raise forms.ValidationError(_('Image file too large (>%sKB)' % (settings.IMAGE_MAX_SIZE/(1024))))
 				else:
 					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
 			except AttributeError:
@@ -33,6 +33,12 @@ class CompanyCreationForm(forms.ModelForm):
 			except ValidationError as error:
 				raise forms.ValidationError(error)
 		return company
+
+	def clean_corporate_code(self, *args, **kwargs):
+		ccode = self.cleaned_data.get('corporate_code')
+		if ccode and len(ccode) < 5:
+			raise forms.ValidationError('Invalid code')
+		return ccode
 	
 	class Meta:
 		model = Company
@@ -40,7 +46,7 @@ class CompanyCreationForm(forms.ModelForm):
 		help_texts = {
 			'name': _('Please fill in company name as authorized by the Ministry of Corporate Affairs (MCA).'),
 			'corporate_code': _('This is required only once during registration process.'),
-			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
+			'photo': _('Please upload image in either jpeg or png format, < %sKB' % str(settings.IMAGE_MAX_SIZE/(1024))),
 		}
 
 class CompanyEditForm(forms.ModelForm):
@@ -50,7 +56,7 @@ class CompanyEditForm(forms.ModelForm):
 			try:
 				if photo.content_type in settings.IMAGE_CONTENT_TYPE:
 					if photo._size > settings.IMAGE_MAX_SIZE:
-						raise forms.ValidationError(_('Image file too large (>%sMB)' % (settings.IMAGE_MAX_SIZE/(1024*1024))))
+						raise forms.ValidationError(_('Image file too large (>%sKB)' % (settings.IMAGE_MAX_SIZE/(1024))))
 				else:
 					raise forms.ValidationError(_('Please upload photo in .jpeg or .png format'))
 			except AttributeError:
@@ -61,5 +67,5 @@ class CompanyEditForm(forms.ModelForm):
 		model = Company
 		fields = ['name', 'details', 'website', 'photo']
 		help_texts = {
-			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
+			'photo': _('Please upload image in either jpeg or png format, < %sKB' % str(settings.IMAGE_MAX_SIZE/(1024))),
 		}

@@ -253,12 +253,14 @@ def get_streams(request, **kwargs):
 		data.append({'html': s.name.title(), 'value': settings.HASHID_STREAM.encode(s.pk)})
 	return JsonResponse(status=200, data={'streams': data})
 
-@require_user_types(['C', 'CO'])
+@require_user_types(['C', 'CO', 'F'])
 @login_required
 @require_http_methods(['GET','POST'])
 def create_session(request, **kwargs):
 	if request.is_ajax():
 		type = kwargs.pop('user_type')
+		if type == 'F' and not request.user.groups.filter(name='Placement Handler'):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		if request.method == 'GET':
 			try:
 				association_id = settings.HASHID_ASSOCIATION.decode(request.GET.get('ass'))[0]
@@ -448,12 +450,14 @@ def mysessions(request):
 	else:
 		return handle_user_type(request)
 
-@require_user_types(['C', 'CO'])
+@require_user_types(['C', 'CO', 'F'])
 @login_required
 @require_http_methods(['GET','POST'])
 def decline(request, **kwargs):
 	user_type = kwargs.get('user_type')
 	if request.is_ajax():
+		if user_type == 'F' and not request.user.groups.filter(name='Placement Handler'):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		if request.method == 'GET':
 			try:
 				association_id = settings.HASHID_ASSOCIATION.decode(request.GET.get('ass'))[0]

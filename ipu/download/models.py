@@ -76,7 +76,7 @@ def validate_requester(sender, **kwargs):
 		raise IntegrityError('This user type is not allowed to create download requestes')
 	batch = requester.requested.batch
 	if user.type == 'CO':
-		if not user.associations.filter(college=batch.college, approved=True).exists():
+		if not user.company.associations.filter(college=batch.college, approved=True).exists():
 			raise IntegrityError('The company requesting doesn\'t have any session with requested college')
 
 @receiver(post_delete, sender=ZippedFile)

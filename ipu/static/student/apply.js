@@ -134,6 +134,12 @@ var Apply = (function() {
 				$('.toc-wrapper').pushpin({offset:top});
 				$('.scrollspy').scrollSpy();
 				$('.nested-scrollspy').scrollSpy();
+				if (data['jobs_empty']) {
+					$('#jobs').append($('<b><h1 class="center flow-text teal-text text-accent-4">No job opportunities at the moment.</h1></b>'));
+				}
+				if (data['internships_empty']) {
+					$('#internships').append($('<b><h1 class="center flow-text teal-text text-accent-4">No internship opportunities at the moment.</h1></b>'))
+				}
 			},
 			error: function(xhr, status, error) {
 				var loc = xhr.responseJSON['location'];

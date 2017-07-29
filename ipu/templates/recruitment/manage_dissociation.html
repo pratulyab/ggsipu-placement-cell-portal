@@ -124,10 +124,12 @@
 {% endblock tabs_content %}
 {% block scripts %}
 	<script type="text/javascript" src="{% static 'recruitment/manage_dissociation.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			Dissociation.init();
+			Mobile.init();
 		});
 	</script>
 {% endblock %}

@@ -1,16 +1,19 @@
 {% load staticfiles %}
 {% load material_form %}
-<div class="col s12 accept-req-card" style="border: 1px solid #1c262f">
-	<h5 style="color: lightcoral" class="center-align">Disconnecting with {{ other_party }}</h5>
+<div class="col s12 teal lighten-5" style="border: 1px solid #1c262f">
+	<h5 class="flow-text center-align teal-text text-darken-4"><b>Disconnecting with {{ other_party }}</b></h5>
+	{% if request.user.type != 'CO' %}
+		<h6><b>LLPIN/CIN/Form 1 Ref. No.:</b> {{ association.company.corporate_code }}</h6>
+	{% endif %}
 	<div class="col s12 right-align">
-		<a href="{% url 'createsession' %}?ass={{ hashid }}" style="color: seagreen" class="btn-flat change-decision">change decision</a>
+		<a href="{% url 'createsession' %}?ass={{ hashid }}" class="blue lighten-4 btn-flat change-decision">change decision</a>
 	</div>
-	<ul class="right-align col s12 blue-text text-accent-1">
+	<ul class="right-align col s12 blue-text text-darken-4">
 		<li><b>Programme:</b> {{ association.programme }}</li>
 		<li><b>Streams:</b> {{ streams }}</li>
 		<li><b>Salary:</b> {{ association.salary }} LPA (Changeable)</li>
 	</ul>
-	<form method='POST' action="{% url 'decline' %}" id="decline-form">
+	<form method='POST' action="{% url 'decline' %}" id="decline-form" class="col s12">
 		{% csrf_token %}
 		{% form form=decline_form %}{% endform %}
 		<div class="row">

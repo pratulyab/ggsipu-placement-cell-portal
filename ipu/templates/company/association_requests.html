@@ -3,7 +3,7 @@
 	.req-card-main
 	{
 		background-color: #7d97ad;
-		height: 300px;
+		min-height: 300px;
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -39,15 +39,17 @@
 
 
 <div class="container">
+	<p style="font-size: 17px" class="flow-text col s12 blue-text text-darken-4 blue lighten-5 center-align"><b>Note: </b>Salary cannot be changed later on. If you wish to negotiate with the college, please decline the request and mention this reason. You can also initiate a request with your terms.</p>
 	<div class="col s8 offset-s2 request-content">
 		{% for ass in associations %}
-			<div class="col s12 card-panel req-card-main">
-				<div class="card-content white-text center" id="content">
-					<span class="card-title" id="heading">Association Request</span>
-					<p> {{ ass.obj }} </p>
-					<p id="package"> Programme: {{ ass.obj.programme }}</p>
-					<p id="package"> Streams: {{ ass.streams }}</p>
-					<p id="package"> Salary: {{ ass.obj.salary }} LPA (This can be changed later)</p>
+			<div class="col s12 card-panel teal lighten-4 center-align">
+				<span class="card-title" id="heading">Association Request</span>
+				<div class="card-content purple-text text-darken-4 left-align" id="content">
+					<p> <b>Session Type:</b> {% if ass.obj.type == 'I' %}Internship{% else %}Job{% endif %}</p>
+					<p> <b>College:</b> {{ ass.obj.college.name }}</p>
+					<p> <b>Programme:</b> {{ ass.obj.programme }}</p>
+					<p> <b>Streams:</b> {{ ass.streams }}</p>
+					<p> <b>Salary:</b> {{ ass.obj.salary }} LPA</p>
 				</div>
 	
 				<div class="card-action yellow-text">

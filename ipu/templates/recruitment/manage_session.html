@@ -148,12 +148,14 @@
 {% block scripts %}
 
 	<script type="text/javascript" src="{% static 'recruitment/manage.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
 	<script type="text/javascript" src="{% static 'download/download.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			ManageSession.init(['manage-session-students-form', 'edit-criteria-form', 'edit-session-form']);
 			Download.request();
+			Mobile.init();
 		});
 	</script>
 {% endblock scripts %}

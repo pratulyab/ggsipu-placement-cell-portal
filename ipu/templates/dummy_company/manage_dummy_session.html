@@ -136,11 +136,13 @@
 {% block scripts %}
 
 	<script type="text/javascript" src="{% static 'recruitment/manage.js' %}"></script>
+	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
 	<script type="text/javascript" src="{% static 'download/download.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			ManageSession.init(['manage-dsession-students-form', 'edit-dcriteria-form', 'edit-dsession-form']);
+			Mobile.init();
 			Download.request();
 		});
 	</script>

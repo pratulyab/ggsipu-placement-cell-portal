@@ -167,7 +167,7 @@ class AssociationForm(forms.ModelForm):
 		names, hashids = list(), list()
 		names.append('---------'); hashids.append('') # default
 		for q in queryset:
-			names.append(q.name) # COLLEGE, COMPANY, PROGRAMME, STREAM use 'name'
+			names.append(q.name if not hasattr(q, 'corporate_code') else ("%s [%s]" % (q.name, q.corporate_code))) # COLLEGE, COMPANY, PROGRAMME, STREAM use 'name'
 			hashids.append(getattr(settings, hashid_name).encode(q.pk))
 		return zip(hashids, names)
 	
@@ -562,7 +562,7 @@ class DissociationForm(forms.ModelForm):
 		names, hashids = list(), list()
 		names.append('---------'); hashids.append('') # default
 		for q in queryset:
-			names.append(q.name) # COLLEGE, COMPANY, PROGRAMME, STREAM use 'name'
+			names.append(q.name if not hasattr(q, 'corporate_code') else ("%s [%s]" % (q.name, q.corporate_code))) # COLLEGE, COMPANY, PROGRAMME, STREAM use 'name'
 			hashids.append(getattr(settings, hashid_name).encode(q.pk))
 		return zip(hashids, names)
 	

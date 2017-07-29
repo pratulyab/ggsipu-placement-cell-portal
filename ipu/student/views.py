@@ -42,7 +42,8 @@ def student_login(request):
 		if not user.is_active:
 			from datetime import datetime
 			user_hashid = ''
-			if ((datetime.utcnow() - user.last_login.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
+			timestamp = user.last_login or user.date_joined
+			if ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
 				user_hashid = settings.HASHID_CUSTOM_USER.encode(user.pk)
 			return JsonResponse(data={'success': True, 'render': render_to_string('account/inactive.html', {'user': user, 'user_hashid': user_hashid})})
 		auth_login(request, user)
@@ -63,7 +64,7 @@ def student_signup(request):
 		user = authenticate(username=f.cleaned_data['username'], password=f.cleaned_data['password2'])
 #		auth_login(request, user)
 		send_activation_email_task.delay(user.pk, get_current_site(request).domain)
-		context = {'email': user.email, 'profile_creation': request.build_absolute_uri(reverse(settings.PROFILE_CREATION_URL['S']))}
+		context = {'user': user, 'email': user.email, 'profile_creation': request.build_absolute_uri(reverse(settings.PROFILE_CREATION_URL['S']))}
 		html = render(request, 'account/post_signup.html', context).content.decode('utf-8')
 		return JsonResponse(data = {'success': True, 'render': html})
 	else:
@@ -507,6 +508,10 @@ def companies_in_my_college(request, **kwargs):
 		data = sorted(data, key=lambda x: x['date'])
 		context['off'] = data
 		render_data['internships'] = render(request, 'student/companies_in_my_college.html', context).content.decode('utf-8')
+		if not any(enrolled_jobs) and not any(enrolled_djobs) and not any(unenrolled_jobs) and not any(unenrolled_djobs):
+			render_data['jobs_empty'] = True
+		if not any(enrolled_internships) and not any(enrolled_dinternships) and not any(unenrolled_internships) and not any(unenrolled_dinternships):
+			render_data['internships_empty'] = True
 		return JsonResponse(status=200, data=render_data)
 ##		else:
 ##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})

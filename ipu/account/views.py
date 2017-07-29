@@ -88,7 +88,8 @@ def login(request):
 		if not user.is_active:
 			from datetime import datetime
 			user_hashid = ''
-			if ((datetime.utcnow() - user.last_login.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
+			timestamp = user.last_login or user.date_joined
+			if ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
 				user_hashid = settings.HASHID_CUSTOM_USER.encode(user.pk)
 			return JsonResponse(data={'success': True, 'render': loader.render_to_string('account/inactive.html', {'user': user,'user_hashid': user_hashid})})
 		auth_login(request, user)
@@ -128,7 +129,7 @@ def activate(request, user_hashid='', token=''):
 		user.is_active = True
 		user.save()
 	except:
-		return render(request, 'account/500.html')
+		return render(request, 'account/400.html')
 	return render(request, 'account/activation_success.html')
 
 @require_GET
@@ -338,6 +339,8 @@ def sms_callback(request):
 @login_required
 @require_GET
 def view_profile(request, username):
+	# FIXME: Add this functionality
+	raise Http404
 	if not request.is_ajax() or not CustomUser.objects.filter(username=username).exists():
 		print('-----------')
 		print('Received hit at view_profile')

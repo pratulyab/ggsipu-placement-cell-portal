@@ -156,6 +156,7 @@ var Request = (function() {
 		e.preventDefault();
 		var li = $(this),
 			$content_div = $(li.children('a').first().attr('href'));
+		li.off('click');
 		$.ajax({
 			url: li.data('url'),
 			type: 'GET',
@@ -220,8 +221,11 @@ var Request = (function() {
 
 	return {
 		init: function(){
+			// For initializing
 			$("#request").on('click', getRequests);
 			$("#myrequest").on('click', getRequests);
+			$("#request").on('reload', getRequests);
+			$("#myrequest").on('reload', getRequests);
 		}
 	};
 })();

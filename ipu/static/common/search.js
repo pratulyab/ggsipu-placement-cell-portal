@@ -72,12 +72,13 @@ var Search = (function() {
 			var results = data['result'];
 			for (var i=0; i<results.length; i++){
 				var item = results[i];
-				var li = $('<li class="search-item"/>');
-				var a = $('<a>' + item['name'] + '</a>');
-				a.attr('href', item['url']);
-				a.on('mouseenter', displayProfile);
-				a.css('color','#02b3e4');
-				li.append(a);
+				var li = $('<li class="search-item flow-text white-text"/>');
+//				var a = $('<a>' + item['name'] + '</a>');
+//				a.attr('href', item['url']);
+//				a.on('mouseenter', displayProfile);
+//				a.css('color','#02b3e4');
+//				li.append(a);
+				li.text(item['name']);
 				ul.append(li);
 			}
 		}

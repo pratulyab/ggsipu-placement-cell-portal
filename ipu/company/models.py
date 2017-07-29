@@ -17,10 +17,13 @@ class Company(models.Model):
 	website = models.URLField(_('Company website'), blank=True)
 	photo = models.ImageField(_('Photo'), upload_to=get_hashed_filename, blank=True)
 	def __str__(self):
-		return "%s [%s]" % (self.name, self.corporate_code)
+		return "%s" % self.name
 
 	def get_absolute_url(self):
 		return "/user/%s/" % self.profile.username
+
+	def display_name(self):
+		return "{} [{}]".format(self.name, self.corporate_code)
 
 	class Meta:
 		verbose_name_plural = _("Companies")

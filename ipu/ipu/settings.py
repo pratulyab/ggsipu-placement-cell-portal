@@ -186,18 +186,18 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'noreply@placements.ggsipu.ac.in'
+DEFAULT_FROM_EMAIL = 'no-reply@placements.ggsipu.ac.in'
 
 # SMS
 TWOFACTOR_API_KEY = '31cce076-19ed-11e7-9462-00163ef91450'
 
 # FILE UPLOAD CONSTRAINTS
 FILE_CONTENT_TYPE = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-FILE_MAX_SIZE = 2*1024*1024 #2MB
+FILE_MAX_SIZE = 200*1024 #200KB
 
 # IMAGE UPLOAD CONSTRAINTS
 IMAGE_CONTENT_TYPE = ['image/jpeg', 'image/png']
-IMAGE_MAX_SIZE = 1*1024*1024 #1MB
+IMAGE_MAX_SIZE = 200*1024 #200KB
 
 # HASHIDS
 HASHID_ASSOCIATION = hashids.Hashids(salt="Sammelan", min_length=10)
@@ -243,5 +243,5 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 1 * (60 * 60 * 24)
 
 # # # 
-DISALLOWED_USERNAMES = ['account', 'notification', 'student', 'faculty', 'company', 'college', 'dcompany', 'recruitment', 'stats']
+DISALLOWED_USERNAMES = ['account', 'notification', 'student', 'faculty', 'company', 'college', 'dcompany', 'recruitment', 'stats', 'download']
 DISALLOWED_EMAIL_DOMAINS = ['mailinator', 'discard.email', 'thraml', 'mintemail', 'mailcatch']
