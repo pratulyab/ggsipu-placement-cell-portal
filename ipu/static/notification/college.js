@@ -47,7 +47,7 @@ var Notification = (function() {
                 removePreloader();  
             },
     		success : function(data, status, xhr){
-				handleMultipleJquery();
+				//handleMultipleJquery();
            		$("#notify-students-div").html(data); 
                 $('#select_streams-form').on('submit' , getStreamsSelected);	
                 
@@ -86,7 +86,7 @@ var Notification = (function() {
                 removePreloader();  
             },
             success : function(data , status , xhr){
-				handleMultipleJquery();
+				//handleMultipleJquery();
                 $('#notify-students-div').html(data);
                 $('#id_sms_message_container').hide();
                 $("#id_subject").attr('length' , '256');
@@ -105,6 +105,8 @@ var Notification = (function() {
                     if ($(this).is(':checked')) {
                         removeError($('#id_sms_message'));
                         $('#id_sms_message_container').show();
+                        $('#id_sms_message').attr('data-length' , '160');
+                        $('#id_sms_message').characterCounter();
                   } else {
                         $('#id_sms_message_container').hide();
                   }
@@ -212,7 +214,7 @@ var Notification = (function() {
                 });
             }
             if(student_list.length === 0){
-                addErrors(select_students , "Please select at least 1 Student.")
+                addErrors(select_students , "Please select at least 1 Student. If you can't see any students then make sure that you have select the Years of the Stream properly.")
                 sphr_create_notification = true;
                 return;
             }
@@ -233,7 +235,7 @@ var Notification = (function() {
                         'if_email' : if_email,
                     },
                     beforeSend: function() {
-                    showPreloader();
+                        showPreloader();
                     },
                     complete: function() {
                         removePreloader();  
@@ -241,8 +243,22 @@ var Notification = (function() {
                     success : function(data , status , xhr){
                         //handleMultipleJquery();
                         $('#your-notifications').trigger('click');
-                        alert("Successful ! " + data + " students are notified");
-
+                        swal({
+                            title: "Success!",
+                            text: data + " Students are Notified.",
+                            type: "success",
+                            confirmButtonColor: "green",
+                            closeOnConfirm: true,
+                        });
+                    },
+                    error: function(data , status , xhr){
+                        swal({
+                            title: "Error!",
+                            text: data.responseJSON.errors,
+                            type: "error",
+                            confirmButtonColor: "#DD6B55",
+                            closeOnConfirm: true,
+                        });
                     }
                 });
             }
@@ -300,6 +316,7 @@ function removeError(field){
                 showPreloader();
             },
             complete: function() {
+                $('#notifications_badge').hide();
                 removePreloader();  
             },
             success : function(data, status, xhr){
@@ -311,7 +328,6 @@ function removeError(field){
     }
 
     function populateDiv(data) {
-        console.log(data);
         var raw_html = '';  
         var icon = '';
         if(data.length === 0){

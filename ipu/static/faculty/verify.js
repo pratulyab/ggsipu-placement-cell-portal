@@ -183,7 +183,6 @@ var VerifyStu = (function() {
 							swal('Success', data.message ? data.message : "Changes have been saved", 'success');
 						},
 						error: function(xhr, status, error) {
-							console.log(xhr.responseJSON);
 							if (xhr.responseJSON && xhr.responseJSON['errors']){
 								addErrors(xhr.responseJSON['errors'], '#'+form.attr('id'), xhr.responseJSON['prefix']);
 							}
@@ -221,7 +220,6 @@ var VerifyStu = (function() {
 				swal('Success', data.message ? data.message : "Changes have been saved", 'success');
 			},
 			error: function(xhr, status, error) {
-				console.log(xhr.responseJSON);
 				if (xhr.responseJSON && xhr.responseJSON['errors']){
 					addErrors(xhr.responseJSON['errors'], '#'+form.attr('id'), xhr.responseJSON['prefix']);
 				}

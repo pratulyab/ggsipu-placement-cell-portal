@@ -74,7 +74,6 @@
 					text: data.success,
 					type: "success",
 					confirmButtonColor: "green",
-					confirmButtonText: "Okay",
 					closeOnConfirm: true,
 				});
 			},
@@ -84,7 +83,6 @@
 					text: data.responseJSON.errors,
 					type: "warning",
 					confirmButtonColor: "#DD6B55",
-					confirmButtonText: "Okay",
 					closeOnConfirm: true,
 				});
 			}

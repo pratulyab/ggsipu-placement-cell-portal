@@ -2,8 +2,6 @@
 <html>
 {% load staticfiles %}
 {% load material_form %}
-<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
-{% include 'material/includes/material_js.html' %}
 
 <head>
     <title>Title</title>
@@ -17,7 +15,7 @@
         <button type="submit" id="getstudents" data-id="false" class="btn waves-effect waves-light-right">Proceed</button>
     </form>
     
-
+<script>$('#select_streams-form').find('select').material_select();</script>
 
 </body>
 </html>

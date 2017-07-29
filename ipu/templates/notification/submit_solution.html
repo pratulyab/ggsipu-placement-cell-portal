@@ -1,7 +1,5 @@
 {% load staticfiles %}
 {% load material_form %}
-<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
-{% include 'material/includes/material_js.html' %}
 
 <div class="col s12">
 	<div class="card">
@@ -42,3 +40,5 @@
 	    </div>
 	</div>
 </div>
+
+<script>$('#submit-solution-form').find('select').material_select();</script>
