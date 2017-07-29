@@ -38,6 +38,8 @@ class CompanyCreationForm(forms.ModelForm):
 		model = Company
 		fields = ['name', 'corporate_code', 'details', 'website', 'photo']
 		help_texts = {
+			'name': _('Please fill in company name as authorized by the Ministry of Corporate Affairs (MCA).'),
+			'corporate_code': _('This is required only once during registration process.'),
 			'photo': _('Please upload image in either jpeg or png format, < %sMB' % str(settings.IMAGE_MAX_SIZE/(1024*1024))),
 		}
 

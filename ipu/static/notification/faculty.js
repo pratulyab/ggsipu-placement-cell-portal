@@ -462,7 +462,7 @@ function removeError(field){
                 '<span class="title">' + data[i].actor + '</span>' + '<p>' + data[i].message + '</p>' + '</li>';
         }
         $('#your-notifications-div-ul').html(raw_html);
-
+		Download.serve();
 
     }
 

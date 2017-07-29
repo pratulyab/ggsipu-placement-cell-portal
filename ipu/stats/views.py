@@ -23,7 +23,7 @@ def stats(request):
 					data.append({'html': year, 'value': year})
 				return JsonResponse(status=200, data={'years': data})
 			except:
-				return JsonResponse(status=400, data={'errors': 'Invalid choice'})
+				return JsonResponse(status=400, data={'errors': 'Please choose a valid college.'})
 		elif request.GET.get('stats', '') == 'true':
 			college_pk = request.GET.get('college', None)
 			year = request.GET.get('year', None)
@@ -58,7 +58,7 @@ def stats(request):
 			# # #
 			return JsonResponse(status=200, data={'table': table, 'graph': graph})
 		else:
-			return JsonResponse(status=400, data={'errors': 'Invalid choices'})
+			return JsonResponse(status=400, data={'errors': 'Please choose from the options.'})
 	else:
 		context = {'stats_form': StatsForm()}
 	return render(request, 'stats/stats.html', context)

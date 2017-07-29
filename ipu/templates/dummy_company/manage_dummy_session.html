@@ -48,7 +48,8 @@
 					<p><a href="{% if dcompany.website %}{{ dcompany.website }}{% else %}#!{% endif %}">Website</a></p>
 				</div>
 				<div class="card-action">
-					<a href="{% url 'dexcel' dsess_hashid %}" class="excel">Download Excel  <i class="fa fa-file-excel-o"></i></a>
+					<a href="{% url 'dexcel' dsess_hashid %}" class="excel">Download Excel  <i class="fa fa-file-excel-o fa-2x"></i></a>
+					<a href="{% url 'dl_dresume' dsess_hashid %}" class="resume">Download Resumes  <i class="fa fa-file-archive-o fa-2x"></i></a>
 				</div>
 				<div class="card-reveal">
 					<span class="card-title grey-text text-darken-4">{{ dcompany.name | title }}<i class="fa fa-times right"></i></span>
@@ -135,10 +136,12 @@
 {% block scripts %}
 
 	<script type="text/javascript" src="{% static 'recruitment/manage.js' %}"></script>
+	<script type="text/javascript" src="{% static 'download/download.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			ManageSession.init(['manage-dsession-students-form', 'edit-dcriteria-form', 'edit-dsession-form']);
+			Download.request();
 		});
 	</script>
 {% endblock scripts %}

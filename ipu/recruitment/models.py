@@ -113,7 +113,7 @@ class PlacementSession(models.Model):
 	updated_on = models.DateTimeField(auto_now=True)
 
 	def __str__(self):
-		return self.association.company.__str__() + ' placement session in ' + self.association.college.__str__()
+		return self.association.company.__str__() + ' placement session at ' + self.association.college.__str__()
 
 class Dissociation(models.Model):
 	''' Block '''
@@ -146,6 +146,8 @@ def validating_students(sender, **kwargs):
 				student = Student.objects.get(pk=student)
 				if student.college != session.association.college:
 					raise IntegrityError(_('Student %s doesn\'t belong to this college, thus cannot be added to the session.'))
+				if not session.association.streams.filter(pk=student.stream.pk).exists():
+					raise IntegrityError(_('Student %s doesn\'t belong to this programme, thus cannot be added to the session.'))
 
 @receiver(m2m_changed, sender=PlacementSession.students.through)
 def notify_college_student_list_changed(sender, **kwargs):

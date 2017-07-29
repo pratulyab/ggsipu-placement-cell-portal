@@ -42,7 +42,8 @@
 						<p><a href="{{ association.company.get_absolute_url }}">Company Profile</a></p>
 					</div>
 					<div class="card-action">
-						<a href="{% url 'excel' sess_hashid %}" class="excel">Download Excel  <i class="fa fa-file-excel-o"></i></a>
+						<a href="{% url 'excel' sess_hashid %}" class="excel">Download Excel  <i class="fa fa-file-excel-o fa-2x"></i></a>
+						<a href="{% url 'dl_resume' sess_hashid %}" class="resume">Download Resumes  <i class="fa fa-file-archive-o fa-2x"></i></a>
 					</div>
 					<div class="card-reveal">
 						<span class="card-title grey-text text-darken-4">{{ association.company }}<i class="fa fa-times right"></i></span>
@@ -58,7 +59,8 @@
 						<p><a href="{{ association.college.get_absolute_url }}">College Profile</a></p>
 					</div>
 					<div class="card-action">
-						<a href="{% url 'excel' sess_hashid %}" class="excel">Download Excel  <i class="fa fa-file-excel-o"></i></a>
+						<a href="{% url 'excel' sess_hashid %}" class="excel">Download Excel  <i class="fa fa-file-excel-o fa-2x"></i></a>
+						<a href="{% url 'dl_resume' sess_hashid %}" class="resume">Download Resumes  <i class="fa fa-file-archive-o fa-2x"></i></a>
 					</div>
 					<div class="card-reveal">
 						<span class="card-title grey-text text-darken-4">{{ association.college }}<i class="fa fa-times right"></i></span>
@@ -146,10 +148,12 @@
 {% block scripts %}
 
 	<script type="text/javascript" src="{% static 'recruitment/manage.js' %}"></script>
+	<script type="text/javascript" src="{% static 'download/download.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
 			ManageSession.init(['manage-session-students-form', 'edit-criteria-form', 'edit-session-form']);
+			Download.request();
 		});
 	</script>
 {% endblock scripts %}

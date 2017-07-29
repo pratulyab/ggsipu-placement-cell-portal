@@ -87,7 +87,7 @@ def create_student(request, **kwargs):
 		coll = College.objects.get(code=coll).pk
 		strm = Stream.objects.get(code=strm).pk
 		if request.method == 'GET':
-			f = StudentCreationForm(profile=user_profile, coll=coll, strm=strm)
+			f = StudentCreationForm(profile=user_profile, coll=coll, strm=strm, year=year)
 			try:
 				student = request.user.student
 				return redirect(settings.HOME_URL['S'])
@@ -98,7 +98,7 @@ def create_student(request, **kwargs):
 			POST['college'] = coll
 			POST['stream'] = strm
 			POST['programme'] = Stream.objects.get(pk=strm).programme.pk
-			f = StudentCreationForm(POST, request.FILES, profile=user_profile, coll=coll, strm=strm)
+			f = StudentCreationForm(POST, request.FILES, profile=user_profile, coll=coll, strm=strm, year=year)
 			if f.is_valid():
 				student = f.save()
 				return redirect(settings.HOME_URL['S'])

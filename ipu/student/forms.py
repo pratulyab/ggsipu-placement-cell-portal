@@ -134,6 +134,7 @@ class StudentCreationForm(forms.ModelForm):
 		self.user_profile = kwargs.pop('profile', None)
 		self.coll = kwargs.pop('coll', None)
 		self.strm = kwargs.pop('strm', None)
+		self.year = kwargs.pop('year', None)
 		super(StudentCreationForm, self).__init__(*args, **kwargs)
 		self.fields['phone_number'].required = False
 		self.initial['college'] = self.coll
@@ -142,6 +143,8 @@ class StudentCreationForm(forms.ModelForm):
 		self.fields['college'].widget.attrs['disabled'] = 'disabled'
 		self.fields['stream'].widget.attrs['disabled'] = 'disabled'
 		self.fields['programme'].widget.attrs['disabled'] = 'disabled'
+		from datetime import date
+		self.initial['current_year'] = ('' if self.year is None else (date.today().year - int('20'+self.year) + 1))
 
 	def clean_college(self):
 		college = self.cleaned_data.get('college', None)

@@ -163,9 +163,10 @@ def edit_session(request, sess_hashid, **kwargs):
 		session = f.save(commit=False)
 		session.last_modified_by = 'CO' if user_type == 'CO' else 'C'
 		session.save()
-		if 'salary' in f.changed_data:
+		if 'desc' in f.changed_data:
 			association = session.association
-			association.salary = f.cleaned_data['salary']
+#			association.salary = f.cleaned_data['salary']
+			association.desc = f.cleaned_data['desc']
 			association.save()
 	# Notifying the other party
 		actor, target = (profile, session.association.college) if user_type == 'CO' else (profile, session.association.company)

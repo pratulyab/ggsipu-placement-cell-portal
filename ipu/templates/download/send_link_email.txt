@@ -1,0 +1,11 @@
+Hey {{ user.username }}!
+
+		Your requested resumes for {{ description }} is available to be downloaded at {{ link }}.
+
+		Note: You need to be logged in to be able to download. Also, make sure not to close the browser until the download is complete.
+
+
+Thanks
+Development & Maintenance Team
+Training & Placement Cell
+Guru Gobind Singh Indraprastha University

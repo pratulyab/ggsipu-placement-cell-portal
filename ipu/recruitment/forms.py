@@ -27,7 +27,7 @@ class AssociationForm(forms.ModelForm):
 		self.profile = kwargs.pop('profile')
 		self.who = self.profile.__class__.__name__
 		super(AssociationForm, self).__init__(*args, **kwargs)
-		self.fields['desc'].widget.attrs['placeholder'] = 'Description'
+		self.fields['desc'].widget.attrs['placeholder'] = 'Description. If you require to share some attachements, kindly upload them on storage provider website, eg. Google Docs, and paste the link here.'
 		self.fields['salary'].help_text = 'Zero is a valid number. Salary can be changed later.'
 		if self.who == 'College':
 			del self.fields['college']
@@ -293,16 +293,25 @@ class EditSessionForm(forms.ModelForm):
 		'ended': 'whether the session has ended',
 		'application_deadline': 'Application Deadline',
 		'status': 'Status',
-		'salary': 'Salary Offered'
+		'salary': 'Salary Offered',
+		'desc': 'Placement Details'
 	}
+	layout = Layout(
+			Row(Span6('application_deadline')), #Span6('salary')),
+			Row(Span8('status'), Span4('ended')),
+			Row('desc')
+		)
 
 	def __init__(self, *args, **kwargs):
 		super(EditSessionForm, self).__init__(*args, **kwargs)
 		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.instance.pk)
 		self.initial['salary'] = self.instance.association.salary
+		self.fields['desc'].widget.attrs['placeholder'] = 'Description. If you require to share some attachements, kindly upload them on storage provider website, eg. Google Docs, and paste the link here.'
+		self.initial['desc'] = self.instance.association.desc
 	
 	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
-	salary = forms.DecimalField(max_digits=4, decimal_places=2, min_value=Decimal('0'), help_text=_('The other party will be notified about the changes made.'))
+	desc = forms.CharField(label='Placement Details',widget=forms.Textarea, required=False)
+#	salary = forms.DecimalField(max_digits=4, decimal_places=2, min_value=Decimal('0'), help_text=_('The other party will be notified about the changes made.'))
 	
 	def clean_application_deadline(self):
 		date = self.cleaned_data['application_deadline']

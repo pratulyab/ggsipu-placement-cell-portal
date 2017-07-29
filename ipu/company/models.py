@@ -11,13 +11,13 @@ from utils import get_hashed_filename
 class Company(models.Model):
 	profile = models.OneToOneField(CustomUser, related_name="company")
 
-	name = models.CharField(_('Company name'), blank=False, unique=True, max_length=255)
-	corporate_code = models.CharField(_('Company registration code'), unique=True, blank=False, validators=[], max_length=11)
+	name = models.CharField(_('Company / LLP name (As authorized by MCA)'), blank=False, unique=True, max_length=255)
+	corporate_code = models.CharField(_('LLPIN/CIN/Form 1 Ref. No.'), unique=True, blank=False, validators=[], max_length=64)
 	details = models.TextField(_('Details'), blank=True)
 	website = models.URLField(_('Company website'), blank=True)
 	photo = models.ImageField(_('Photo'), upload_to=get_hashed_filename, blank=True)
 	def __str__(self):
-		return self.name
+		return "%s [%s]" % (self.name, self.corporate_code)
 
 	def get_absolute_url(self):
 		return "/user/%s/" % self.profile.username

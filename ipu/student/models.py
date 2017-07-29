@@ -167,6 +167,9 @@ class Student(models.Model):
 	def get_full_name(self):
 		return (self.firstname + " " + self.lastname).title()
 
+	def get_year(self):
+		return '20' + (self.profile.username[-2:])
+
 	def __str__(self):
 		return self.get_full_name()
 	

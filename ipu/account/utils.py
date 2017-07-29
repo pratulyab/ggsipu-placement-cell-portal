@@ -33,7 +33,7 @@ def render_profile_creation(request, user_type):
 			raise Http404(_('Enrollment number should be 11 digits long'))
 		coll = College.objects.get(code=coll).pk
 		strm = Stream.objects.get(code=strm).pk
-		return render(request, 'student/create.html', {'student_creation_form': StudentCreationForm(profile=user_profile, coll=coll, strm=strm)})
+		return render(request, 'student/create.html', {'student_creation_form': StudentCreationForm(profile=user_profile, coll=coll, strm=strm, year=year)})
 	else:
 		return render(request, 'company/create.html', {'company_creation_form': CompanyCreationForm()})
 

@@ -323,10 +323,10 @@ function removeError(field){
         for(var i = 0 ; i < data.length ; i++){
             icon = ( (data[i].read === true) ? '<i class="material-icons circle blue">done_all</i>' : '<i class="material-icons circle red">fiber_new</i>');
             raw_html += '<li class="collection-item avatar">' + icon + 
-                '<span class="title">' + data[i].actor + '</span>' + '<p><b>'+ data[i].subject +'</b><p>' + data[i].message + '</p></p>' + '</li>';
+                '<span class="title">' + data[i].actor + '</span>' /*+ '<p><b>'+ data[i].subject +'</b></p>'*/ + '<p>' + data[i].message + '</p>' + '</li>';
         }
         $('#your-notifications-div-ul').html(raw_html);
-
+		Download.serve();
 
     }    
     function viewNotifications(e) {

@@ -123,6 +123,7 @@
 		<form method="POST" action={% url 'associate' %} id="associate-form" class="col s12 m8 offset-m2">
 			{% csrf_token %}
 			{% form form=association_form%}{% endform %}
+			<p class="col s12 red-text text-darken-4 red lighten-5"><b>Note: </b>Before associating with a company, we urge you to check the company's authenticity by searching for its name on the <a target="_blank" href="http://mca.gov.in/mcafoportal/showCheckCompanyName.do">Ministry of Corporate Affairs website</a> and matching the correct LLPIN/CIN/Form 1 Ref. No.<br>If you find any company to be fradulent, please block it and report it.<br>(You can access these facilities by clicking on <i class="material-icons">menu</i> on the top right corner.)</p>
 			<div class="col s8 offset-s2">
 				<button type="submit" class="btn btn-waves" style="width: 100%">Associate</button>
 			</div>
@@ -244,6 +245,7 @@
 	<script type="text/javascript" src="{% static 'recruitment/associate.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
+	<script type="text/javascript" src="{% static 'download/download.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {

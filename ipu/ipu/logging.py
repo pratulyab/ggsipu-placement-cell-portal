@@ -54,7 +54,7 @@ LOGGING = {
 }
 
 def add_apps_config(log_file_path):
-	apps = ['student', 'faculty', 'college', 'company', 'recruitment', 'notification', 'account', 'dummy']
+	apps = ['student', 'faculty', 'college', 'company', 'recruitment', 'notification', 'account', 'dummy', 'download']
 	for app in apps:
 		handler = {
 			'level': 'INFO',

@@ -66,6 +66,7 @@ INSTALLED_APPS = [
 	'account',
 	'college',
 	'company',
+	'download',
 	'dummy_company',
 	'faculty',
 	'notification',
