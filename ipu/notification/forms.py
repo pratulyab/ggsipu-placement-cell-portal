@@ -53,7 +53,7 @@ class CreateNotificationForm(forms.Form):
 					Fieldset('Select Students' , Row(Span9('students') , Fieldset('', 'if_all'))),
 					Fieldset('Message' ,Row('subject') , Row('message')),
 					Fieldset('' ,  Row(Span3('if_email') , Span3('if_sms'))),
-					Row('sms_message'))
+					Row(Span10('sms_message')))
 
 	options = (
 		(None , None),
@@ -65,14 +65,13 @@ class CreateNotificationForm(forms.Form):
 	message = forms.CharField(widget=forms.Textarea)
 	if_email = forms.BooleanField(label = "Send E-Mail" , widget = forms.CheckboxInput())
 	if_sms = forms.BooleanField(label = "Send SMS" , widget = forms.CheckboxInput())
-	sms_message = forms.CharField(label = "Write SMS" , max_length = 128 , required = False)
+	sms_message = forms.CharField(label = "Write SMS" , max_length = 128 , required = False , widget=forms.Textarea)
 
 	class Meta:
 		help_texts = {
 			'message' : _("Message for the students."),
 			'if_all' : _('All')
 		}
-
 '''
 
 class CreateNotificationForm(forms.Form):	
@@ -138,7 +137,7 @@ class IssueForm(forms.ModelForm):
 		form_instance.actor = self.user
 		form_instance.college = self.college
 		form_instance.save()
-
+		return form_instance
 
 
 	class Meta:
@@ -166,6 +165,7 @@ class IssueReplyForm(forms.ModelForm):
 		form_instance.solved_by = self.faculty.get_full_name()
 		form_instance.solver_username = self.faculty.profile.username
 		form_instance.save()
+		return form_instance
 
 	if_email = forms.BooleanField(label = "Send E-Mail" , widget = forms.CheckboxInput() , initial = False ,  required = False)
 	class Meta:
@@ -231,6 +231,7 @@ class ReportBugForm(forms.ModelForm):
 		if self.user.is_authenticated():
 			form_instance.reported_by = self.user
 		form_instance.save()
+		return form_instance
 
 	class Meta:
 		model = Report

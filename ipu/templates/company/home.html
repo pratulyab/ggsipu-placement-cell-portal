@@ -104,6 +104,7 @@
 	<li class="tab col s3"><a class="active" href="#associate">Associate With Colleges</a></li>
 	<li id = "request" class="tab col s2" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
 	<li id = "myrequest" class="tab col s2" data-url="/recruitment/myrequests/"><a href="#myrequests">My Requests</a></li>
+	<li id = "notification" class="tab col s2"><a url="{% url 'get_notifications' %}" id="notification-anchor" href="#notifications">Notification</a></li>
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 	<li id="session" class="tab col s2"><a href="#sessions_div">Sessions</a></li>
 {% endblock %}
@@ -120,6 +121,14 @@
 	</div>
 	<div id="requests" class="col s12"></div>
 	<div id="myrequests" class="col s12"></div>
+	<div id="notifications">
+		<h4 class="col s12 m10 offset-m1 flow-text center-align"><b>Your Notifications</b></h4>
+		<div id="your-notifications-div" class="col s12 m8 offset-m2">			
+			<ul id="your-notifications-div-ul" class="collection">
+				<li class="collection-item avatar"><i class="material-icons circle">report_problem</i><span class="title">None</span><p>Please click on the Notification Tab Button.</p></li>
+				</ul>
+		</div>
+	</div>
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
 			<div class="row">
@@ -196,6 +205,7 @@
 	<script type="text/javascript" src="{% static 'recruitment/associate.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
 	<script type="text/javascript" src="{% static 'download/download.js' %}"></script>
+	<script type="text/javascript" src="{% static 'notification/company.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
@@ -205,6 +215,7 @@
 			Associate.init(['associate-form']);
 			Request.init();
 			Mobile.init();
+			Notification.init();
 		});
 
 	</script>

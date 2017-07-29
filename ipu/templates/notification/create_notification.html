@@ -1,7 +1,6 @@
 {% load staticfiles %}
 {% load material_form %}
-<script src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
-{% include 'material/includes/material_js.html' %}
+
 
     <form method = 'POST' id = "create_notification-form" students="{% url 'select_years' %}" action="{% url 'create_notification' %}">
         {% csrf_token %}
@@ -9,4 +8,4 @@
     	
     	<button type = 'input' id = "notifyall" data-id="false" class="btn waves-effect waves-light-right">Notify All</button>
     </form>
-
+<script>$('#create_notification-form').find('select').material_select();</script>

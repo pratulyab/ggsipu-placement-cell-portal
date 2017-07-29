@@ -69,10 +69,6 @@ var Notification = (function() {
 		var message = $('#id_message');
 		fieldEvaluator(subject , 32);
 		fieldEvaluator(message , 2044);
-		if(grecaptcha.getResponse().length === 0){
-			alert("Error in human verification. Please reload.");
-			return;
-		}
 		if((fieldEvaluator(subject , 32) &&
 		fieldEvaluator(message , 2044))){
 			$.ajax({
@@ -92,13 +88,24 @@ var Notification = (function() {
 	            },
 				success : function(data , status , xhr){
 					document.getElementById('view-issues').click();
-					alert("Successful! A faculty will get back to you soon.");
+					swal({
+						title: "Success!",
+						text: "Successful! A faculty will get back to you soon.",
+						type: "success",
+						confirmButtonColor: "green",
+						closeOnConfirm: true,
+					});
 				},
-				error: function(error){
-					alert(data.errors)
+				error: function(data , status , xhr){
+					swal({
+					title: "Error!",
+					text: data.responseJSON.errors,
+					type: "warning",
+					confirmButtonColor: "#DD6B55",
+					closeOnConfirm: true,
+				});
 				},
 			});
-			 $("#submit_issue-form").unbind('submit');
 		}	
 	}
 
@@ -230,6 +237,7 @@ function fieldEvaluator(input_field , max_length){
    				showPreloader();
             },
             complete: function() {
+            	$('#notifications_badge').hide();
             	removePreloader();	
             },
             success : function(data, status, xhr){

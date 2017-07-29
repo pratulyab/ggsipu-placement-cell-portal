@@ -9,6 +9,7 @@ from .forms import SelectStreamsForm , CreateNotificationForm , IssueForm , Issu
 from .models import NotificationData , Notification , Issue , IssueReply
 from account.models import CustomUser
 from account.decorators import check_recaptcha
+from account.tasks import send_mass_mail_task , send_mass_sms_task
 from faculty.models import Faculty
 from student.models import Student
 from college.models import College , Stream
@@ -23,13 +24,15 @@ import logging
 
 notificationLogger = logging.getLogger('notification')
 
-#notificationLogger.info('%s sent sms to %s' % (faculty.username, ','.join(student_username))
-
+#notificationLogger.info('%s created a notification for %s' % (faculty.username, ','.join(list_student_usernames))
+#send_mass_mail_task.delay(Subject, message, [reciever_pks])
 #from recruitment.forms import SessionInfoForm
+#def send_mass_sms_task(actor_pk, message, reciever_list;phone number, template_name='')
+
 
 # Create your views here.
-@require_http_methods(['GET','POST'])
 @login_required
+@require_http_methods(['GET','POST'])
 def select_streams(request):
 	if request.user.type == 'F' or request.user.type == 'C':
 		if request.method == 'GET':
@@ -76,8 +79,8 @@ def select_streams(request):
 		raise PermissionDenied
 
 
-@require_http_methods(['POST'])
 @login_required
+@require_http_methods(['POST'])
 def select_years(request):
 	if request.user.type == 'C' or request.user.type == 'F':
 		if request.user.type == 'F':
@@ -112,32 +115,62 @@ def select_years(request):
 	else:
 		raise PermissionDenied
 
-@require_http_methods(['GET','POST'])
 @login_required
+@require_http_methods(['GET','POST'])
 def create_notification(request):
 	if request.user.type == 'C' or request.user.type == 'F':
 		if request.method == 'POST':
 			if request.user.type == 'F':
 				college_object = request.user.faculty.college
+				faculty_object = request.user.faculty
 			else:
 				college_object = request.user.college 
 			students_selected = request.POST.getlist('student_list[]')
+			if not any(students_selected):
+				return JsonResponse(status = 400 , data = {'errors' : 'Please select at least 1 Student. Check if Select Year field is not blank.'})
 			subject = request.POST.get('subject')
+			if '\n' in subject or len(subject) < 1:
+				return JsonResponse(status = 400 , data = {'errors' : 'Please enter the Subject Properly.'})
 			message = request.POST.get('message')
-			if_sms = request.POST.get('if_sms')
-			if_email = request.POST.get('if_email')
-			sms_message = request.POST.get('sms_message')		
+			if_sms = js_to_django_boolean(request.POST.get('if_sms'))
+			if_email = js_to_django_boolean(request.POST.get('if_email'))
+			if if_email:
+				if len(subject) < 5:
+					return JsonResponse(status = 400 , data = {'errors' : 'For E-Mails to be sent, please make sure the subject has at least 5 characters.'})
+			sms_message = request.POST.get('sms_message')
+			if if_sms:
+				if len(sms_message) < 30 or len(sms_message) > 160:
+					return JsonResponse(status = 400 , data = {'errors' : 'Please keep the length of SMS Message between 30 and 160 Characters.'})		
 			college_customuser_object = college_object.profile
 			college_students_queryset = college_object.students.all()
 			if not field_length_test(subject , 256):
 				return JsonResponse(status = 400 , data = {"error" : "Length Exceeded."})
 			student_objects = college_students_queryset.filter(profile__username__in = students_selected)
+			student_enrolls = querysets_to_values(student_objects.values('profile__username') , 'profile__username')
+			student_phone_numbers = querysets_to_values(student_objects.values('phone_number') , 'phone_number')
+			student_pks = querysets_to_values(student_objects.values('profile__pk') , 'profile__pk')
+			if if_email:
+				send_mass_mail_task.delay(subject , message , student_pks)
+				if request.user.type == 'F':
+					notificationLogger.info('%s sent E-Mail to %s' % (faculty_object, student_enrolls))
+				else:
+					notificationLogger.info('%s sent E-Mail to %s' % (college_object, student_enrolls))
+			if if_sms:
+				send_mass_sms_task.delay(college_object.pk , sms_message , student_phone_numbers , template_name='')
+				if request.user.type == 'F':
+					notificationLogger.info('%s sent SMS Message to %s' % (faculty_object, student_enrolls))
+				else:
+					notificationLogger.info('%s sent SMS Message to %s' % (college_object, student_enrolls))
 			notification_data_object = NotificationData.objects.create(subject = subject , message = message , sms_message = sms_message)
-			notification_data_object.save()
+			if request.user.type == 'F':
+				notificationLogger.info('%s created a notification for %s' % (faculty_object, student_enrolls))
+			else:
+				notificationLogger.info('%s created a notification for %s' % (college_object, student_enrolls))
 			for student_object in student_objects:
 				student_customeuser_object = student_object.profile
 				notification_object = Notification.objects.create(actor = college_customuser_object, target = student_customeuser_object , notification_data = notification_data_object)
 				notification_object.save()
+
 
 			return HttpResponse(len(students_selected))
 		else:
@@ -168,9 +201,8 @@ def truncated_notifications(request):
 		data_list.append(data_dict)
 	return JsonResponse(data_list , safe = False)
 
-
-@require_http_methods(['GET','POST'])
 @login_required
+@require_http_methods(['GET','POST'])
 def get_notifications(request):
 	user = request.user
 	data_list = list()
@@ -226,10 +258,11 @@ def submit_issue(request):
 			form_object = IssueForm(request.POST , user = request.user.student , college = request.user.student.college)
 			if request.recaptcha_is_valid:
 				if form_object.is_valid():
-					form_object.save()
+					issue = form_object.save()
+					notificationLogger.info('%s created an ISSUE %d' % (request.user.username , issue.pk))
 					return HttpResponse(status = 201)
 				else:
-					return JsonResponse(status = 400 , data = {'erros' : 'There is an error in your form. Please fill it again.'})
+					return JsonResponse(status = 400 , data = {'erros' : form_object._errors})
 			else:
 				return JsonResponse(status = 403 , data = {'errors' : 'reCAPTCHA authorization failed. Please try again.'} , safe = False)
 	else:
@@ -241,7 +274,7 @@ def submit_issue(request):
 def display_issue(request):
 	if request.user.type == 'F':
 		college = request.user.faculty.college
-		issue_object_queryset = Issue.objects.filter(college = college).order_by('-marked' , 'solved_by' , '-creation_time')
+		issue_object_queryset = Issue.objects.filter(college = college).filter(issue_reply__isnull = True).order_by('-marked' , '-creation_time')
 		data_list = list()
 		hashids = Hashids("ALonePinkSpiderInYellowWoods")
 		for issue_object in issue_object_queryset:
@@ -264,8 +297,9 @@ def display_issue(request):
 		raise PermissionDenied
 
 
-@login_required
+
 @require_GET
+@login_required
 def mark_issue(request):
 	if request.user.type == 'F':
 		identifier = request.GET.get('identifier' , None)
@@ -288,9 +322,8 @@ def mark_issue(request):
 		raise PermissionDenied
 
 
-
-@require_http_methods(['GET','POST'])
 @login_required
+@require_http_methods(['GET','POST'])
 def solve_issue(request):
 	if request.user.type == 'F':
 		if request.method == 'GET':
@@ -315,6 +348,7 @@ def solve_issue(request):
 			return HttpResponse(raw_html)
 		if request.method == 'POST':
 			identifier = request.POST.get('identifier' , None)
+			if_email = js_to_django_boolean(request.POST.get('if_email'))
 			if not identifier:
 				raise Http404
 			hashids = Hashids("ALonePinkSpiderInYellowWoods")
@@ -330,12 +364,14 @@ def solve_issue(request):
 				notification_message = "Your issue with subject : " + issue_object.subject + " has been solved."
 				notification_object = Notification.objects.create(actor = request.user, target = issue_object.actor.profile, message = notification_message )
 				notification_object.save()
-				issue_object.solved_by = request.user.faculty
+				issue_object.solved_by = request.user.faculty.get_full_name()
 				issue_object.save()
-
+				if if_email:
+					send_mass_mail_task.delay('Reply for your Issue' , issue_object.issue_reply.reply , issue_object.actor.pk)
+					notificationLogger.info('%s solved an issue; issue pk %d' % (request.user.username, issue_object.pk))
 				return HttpResponse(status = 201)
 			else:
-				raise Http404
+				return JsonResponse(status = 400 , data = {'errors' : form_object._errors})
 
 	else:
 		raise PermissionDenied
@@ -392,8 +428,8 @@ def display_solution(request):
 	else:
 		raise PermissionDenied
 
-@check_recaptcha
 @require_http_methods(['GET','POST'])
+@check_recaptcha
 def report(request):
 	if request.method == 'GET':
 		form_object = ReportBugForm()
@@ -404,13 +440,14 @@ def report(request):
 			return JsonResponse(status = 400 , data={'errors' : 'reCAPTCHA authorization failed. Please try again.'})
 		form_object = ReportBugForm(request.POST , user = request.user)
 		if form_object.is_valid():
-			form_object.save()
+			report = form_object.save()
+			notificationLogger.info('%s created a report; pk  %d' % (request.user.username , report.pk))
 			return JsonResponse(status = 201 , data = {'success' : 'Thanks for your feedback.'})
 		else:
 			return JsonResponse(status = 400 , data = {'errors' : 'Seems to be a problem with your form. Please fill it again.'})
 
-@check_recaptcha
 @require_http_methods(['GET' , 'POST'])
+@check_recaptcha
 def anonymous_report(request):
 	if request.method == 'GET':
 		form_object = ReportBugForm()
@@ -519,3 +556,17 @@ def clean_string(message , length = 20):
 			message = "No Details Available"
 	return message
 
+
+def querysets_to_values(queryset , key):
+	result_list = list()
+	for modal_instance in queryset:
+		result_list.append(modal_instance[key])
+	return result_list
+
+def js_to_django_boolean(input):
+    if input.lower() == 'false':
+        return False
+    elif input.lower() == 'true':
+        return True
+    else:
+        return False
