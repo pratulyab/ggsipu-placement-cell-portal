@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import update_last_login
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
@@ -140,7 +141,7 @@ def resend_activation_email(request, user_hashid):
 		timestamp = user.last_login or user.date_joined
 		if not user.is_active and not user.is_disabled and ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
 			send_activation_email_task.delay(user.pk, get_current_site(request).domain)
-			user.save() # To update last_login
+			update_last_login(None, user)
 			return render(request, 'account/post_signup.html', {'user': user})
 	except:
 		raise Http404('Page Not Found')
