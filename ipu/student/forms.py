@@ -123,7 +123,7 @@ class StudentCreationForm(forms.ModelForm):
 			Row(Span3('gender'), Span4('dob'), Span5('phone_number')),
 			Row(Span6('photo'))
 		),
-		Fieldset('Educational Details', 
+		Fieldset('Education Details', 
 			Row('college'),
 			Row(Span6('programme'), Span6('stream')),
 			Row(Span6('current_year'), Span6('is_sub_back')),
@@ -218,7 +218,7 @@ class StudentEditForm(forms.ModelForm):
 			Row(Span3('gender'), Span4('dob'), Span5('phone_number')),
 			Row(Span6('photo'))
 		),
-		Fieldset('Educational Details', 
+		Fieldset('Education Details', 
 			Row('college'),
 			Row(Span6('programme'), Span6('stream')),
 			Row(Span6('current_year'), Span6('is_sub_back')),
