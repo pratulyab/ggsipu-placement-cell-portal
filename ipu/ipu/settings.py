@@ -37,6 +37,7 @@ if socket.gethostname() == 'usict-tnp':
 	SESSION_COOKIE_SECURE = True
 	CSRF_COOKIE_SECURE = True
 	USE_HTTPS = True # Self defined boolean
+	MEDIA_ROOT = '/var/www/ipu/media/'
 	
 else:
 	DEBUG = True
@@ -47,6 +48,7 @@ else:
 	EMAIL_HOST_PASSWORD = 'Whit3Label' # 100 emails / day
 	GOOGLE_RECAPTCHA_SECRET_KEY = '6Lf15yUUAAAAAAqiR-42Dd97yqAUqdab0jW3KK4M'
 	GOOGLE_RECAPTCHA_SITE_KEY = "6Lf15yUUAAAAAI1ju9iGXNQQQFKhIQU41J5ccaDC"
+	MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # LOGGING CONFIGURATION
 LOGGING_CONFIG = None
@@ -167,9 +169,7 @@ GOOGLE_RECAPTCHA_VERIFICATION_URL = 'https://www.google.com/recaptcha/api/siteve
 # urls.W001 warns against use of '$' in regex of admin; used to override .com/admin lookup in /username url
 SILENCED_SYSTEM_CHECKS = ["urls.W001",]
 
-#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/var/www/ipu/media/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
