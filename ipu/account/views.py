@@ -137,7 +137,8 @@ def resend_activation_email(request, user_hashid):
 	try:
 		user = get_object_or_404(CustomUser, pk=settings.HASHID_CUSTOM_USER.decode(user_hashid)[0])
 		from datetime import datetime
-		if not user.is_active and not user.is_disabled and ((datetime.utcnow() - user.last_login.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
+		timestamp = user.last_login or user.date_joined
+		if not user.is_active and not user.is_disabled and ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
 			send_activation_email_task.delay(user.pk, get_current_site(request).domain)
 			return render(request, 'account/post_signup.html', {'user': user})
 	finally:

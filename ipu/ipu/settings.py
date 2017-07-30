@@ -36,6 +36,7 @@ if socket.gethostname() == 'usict-tnp':
 	# SSL
 	SESSION_COOKIE_SECURE = True
 	CSRF_COOKIE_SECURE = True
+	SECURE_SSL_REDIRECT = True
 	USE_HTTPS = True # Self defined boolean
 	MEDIA_ROOT = '/var/www/ipu/media/'
 	
