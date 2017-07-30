@@ -90,7 +90,7 @@ def login(request):
 			from datetime import datetime
 			user_hashid = ''
 			timestamp = user.last_login or user.date_joined
-			if ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
+			if ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 300): # 5 min
 				user_hashid = settings.HASHID_CUSTOM_USER.encode(user.pk)
 			return JsonResponse(data={'success': True, 'render': loader.render_to_string('account/inactive.html', {'user': user,'user_hashid': user_hashid})})
 		auth_login(request, user)
@@ -139,10 +139,11 @@ def resend_activation_email(request, user_hashid):
 		user = get_object_or_404(CustomUser, pk=settings.HASHID_CUSTOM_USER.decode(user_hashid)[0])
 		from datetime import datetime
 		timestamp = user.last_login or user.date_joined
-		if not user.is_active and not user.is_disabled and ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
+		if not user.is_active and not user.is_disabled and ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 300): # 5 min
 			send_activation_email_task.delay(user.pk, get_current_site(request).domain)
 			update_last_login(None, user)
-			return render(request, 'account/post_signup.html', {'user': user})
+			return render(request, 'account/post_signup.html', {'user': user, 'resent': True})
+		return render(request, 'account/post_signup.html', {'user': user})
 	except:
 		raise Http404('Page Not Found')
 

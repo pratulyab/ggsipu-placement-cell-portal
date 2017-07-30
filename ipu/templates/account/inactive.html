@@ -10,10 +10,14 @@
 	<div class="container blue-text">
 		<div class="row">
 			<div class="col s12 flow-text">
-				<h4 class="red-text text-lighten-3 center"> Your account is inactive <i class="fa fa-frown-o"></i> </h4>
+				{% if resent %}
+					<h4 class="red-text text-lighten-3 center"> Activation Email Resent! <i class="fa fa-smile-o"></i> </h4>
+				{% else %}
+					<h4 class="red-text text-lighten-3 center"> Your account is inactive <i class="fa fa-frown-o"></i> </h4>
+				{% endif %}
 				<p class="teal-text text-lighten-2 center"> An account activation email had been sent to your registered email address <b class="blue-grey-text text-lighten-3">{{ user.email }}</b>.<br>Please follow the instructions as indicated in the email message.</p>
 				<br>
-				<p class="blue-text text-lighten-3 center"><b>Note: </b>If you did <b>not</b> receive an email, please make sure that you entered the correct email address while registering, and check your spam folder.{% if not user_hashid %}<br>To be able to <b>resend</b> activation email, login <b>after 30 min</b> from now.{% endif %}</p>
+				<p class="blue-text text-lighten-3 center"><b>Note: </b>If you did <b>not</b> receive an email, please make sure that you entered the correct email address while registering, and check your spam folder.{% if user_hashid %}<br>{% else %}<br>To be able to <b>resend</b> activation email, login <b>after 5 min</b> from now.{% endif %}</p>
 			</div>
 		</div>
 		<div class="row">

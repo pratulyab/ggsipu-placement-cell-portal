@@ -43,7 +43,7 @@ def student_login(request):
 			from datetime import datetime
 			user_hashid = ''
 			timestamp = user.last_login or user.date_joined
-			if ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
+			if ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 300): # 5 min
 				user_hashid = settings.HASHID_CUSTOM_USER.encode(user.pk)
 			return JsonResponse(data={'success': True, 'render': render_to_string('account/inactive.html', {'user': user, 'user_hashid': user_hashid})})
 		auth_login(request, user)
