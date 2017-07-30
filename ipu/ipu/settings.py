@@ -167,8 +167,9 @@ GOOGLE_RECAPTCHA_VERIFICATION_URL = 'https://www.google.com/recaptcha/api/siteve
 # urls.W001 warns against use of '$' in regex of admin; used to override .com/admin lookup in /username url
 SILENCED_SYSTEM_CHECKS = ["urls.W001",]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+MEDIA_ROOT = '/var/www/ipu/media/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
