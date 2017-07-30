@@ -27,8 +27,8 @@ class AssociationForm(forms.ModelForm):
 		self.profile = kwargs.pop('profile')
 		self.who = self.profile.__class__.__name__
 		super(AssociationForm, self).__init__(*args, **kwargs)
-		self.fields['desc'].widget.attrs['placeholder'] = 'Description. If you require to share some attachements, kindly upload them on storage provider website, eg. Google Docs, and paste the link here.'
-		self.fields['salary'].help_text = 'Zero is a valid number. Salary can be changed later.'
+		self.fields['desc'].widget.attrs['placeholder'] = 'Description about the placement. If you want to share some attachments, please contact the respective college.'
+		self.fields['salary'].help_text = 'This cannot be changed later. Please be wary of what you enter.'
 		if self.who == 'College':
 			del self.fields['college']
 #			company_queryset = Company.objects.exclude(pk__in = [d.company.pk for d in self.profile.dissociations.filter(duration__gte=datetime.date.today())])
@@ -306,7 +306,7 @@ class EditSessionForm(forms.ModelForm):
 		super(EditSessionForm, self).__init__(*args, **kwargs)
 		self.initial['token'] = settings.HASHID_PLACEMENTSESSION.encode(self.instance.pk)
 		self.initial['salary'] = self.instance.association.salary
-		self.fields['desc'].widget.attrs['placeholder'] = 'Description. If you require to share some attachements, kindly upload them on storage provider website, eg. Google Docs, and paste the link here.'
+		self.fields['desc'].widget.attrs['placeholder'] = 'Description about the placement. If you want to share some attachments, please contact the respective college.'
 		self.initial['desc'] = self.instance.association.desc
 	
 	token = forms.CharField(widget=forms.HiddenInput(attrs={'name': 'token', 'readonly': True}))
