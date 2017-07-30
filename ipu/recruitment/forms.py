@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
+from account.tasks import send_mass_mail_task
 from college.models import College, Programme, Stream
 from company.models import Company
 from notification.models import Notification
@@ -349,6 +350,7 @@ class EditSessionForm(forms.ModelForm):
 		student_usernames = ','.join([s['profile__username'] for s in students.values('profile__username')])
 		for student in students:
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
+		send_mass_mail_task.delay("Congratulations!", message, [s['profile__pk'] for s in students.values('profile__pk')])
 		# Log
 		recruitmentLogger.info('%s - Students selected %s - [S: %d]' % (actor.username, student_usernames, self.instance.pk))
 		# # #
@@ -388,10 +390,10 @@ class ManageSessionStudentsForm(forms.ModelForm):
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
 		
 		# send mass email
-		# association = self.instance.association
-		# subject = '%s session with %s % ('Internship if association.type == 'I' else 'Job', self.association.company.name)'
-		#
-		# send_mass_mail_task.delay(subject, message, disqualified)
+		association = self.instance.association
+		subject = '%s session with %s' % ('Internship' if association.type == 'I' else 'Job', self.association.company.name)
+		
+		send_mass_mail_task.delay(subject, message, disqualified_pks)
 
 		# Log
 		recruitmentLogger.info('%s - Students disqualified %s - [S: %d]' % (actor.username, student_disq_usernames, self.instance.pk))
