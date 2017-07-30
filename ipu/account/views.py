@@ -142,8 +142,8 @@ def resend_activation_email(request, user_hashid):
 		if not user.is_active and not user.is_disabled and ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 300): # 5 min
 			send_activation_email_task.delay(user.pk, get_current_site(request).domain)
 			update_last_login(None, user)
-			return render(request, 'account/post_signup.html', {'user': user, 'resent': True})
-		return render(request, 'account/post_signup.html', {'user': user})
+			return render(request, 'account/inactive.html', {'user': user, 'resent': True})
+		return render(request, 'account/inactive.html', {'user': user})
 	except:
 		raise Http404('Page Not Found')
 
