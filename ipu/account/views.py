@@ -140,8 +140,9 @@ def resend_activation_email(request, user_hashid):
 		timestamp = user.last_login or user.date_joined
 		if not user.is_active and not user.is_disabled and ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 1200): # 20 min
 			send_activation_email_task.delay(user.pk, get_current_site(request).domain)
+			user.save() # To update last_login
 			return render(request, 'account/post_signup.html', {'user': user})
-	finally:
+	except:
 		raise Http404('Page Not Found')
 
 @require_http_methods(['GET','POST'])
