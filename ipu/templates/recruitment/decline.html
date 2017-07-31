@@ -1,6 +1,6 @@
 {% load staticfiles %}
 {% load material_form %}
-<div class="col s12 teal lighten-5" style="border: 1px solid #1c262f">
+<div class="col s12 m10 offset-m1 teal lighten-5" style="border: 1px solid #1c262f">
 	<h5 class="flow-text center-align teal-text text-darken-4"><b>Disconnecting with {{ other_party }}</b></h5>
 	{% if request.user.type != 'CO' %}
 		<h6><b>LLPIN/CIN/Form 1 Ref. No.:</b> {{ association.company.corporate_code }}</h6>

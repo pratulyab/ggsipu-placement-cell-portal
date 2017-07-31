@@ -156,7 +156,7 @@ var Request = (function() {
 		e.preventDefault();
 		var li = $(this),
 			$content_div = $(li.children('a').first().attr('href'));
-		li.off('click');
+		li.off('click', getRequests);
 		$.ajax({
 			url: li.data('url'),
 			type: 'GET',
@@ -226,6 +226,11 @@ var Request = (function() {
 			$("#myrequest").on('click', getRequests);
 			$("#request").on('reload', getRequests);
 			$("#myrequest").on('reload', getRequests);
+			// mobile
+			$("#m-request").on('click', getRequests);
+			$("#m-myrequest").on('click', getRequests);
+			$("#m-request").on('reload', getRequests);
+			$("#m-myrequest").on('reload', getRequests);
 		}
 	};
 })();

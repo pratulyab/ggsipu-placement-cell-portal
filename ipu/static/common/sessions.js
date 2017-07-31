@@ -105,7 +105,7 @@ var Session = (function() {
 			return;
 		}
 		var li = $(this);
-		li.off('click');
+		li.off('click', getSessions);
 		var div = $('#sessions_div');
 		inProcess['sess'] = true;
 		$.ajax({
@@ -190,6 +190,10 @@ var Session = (function() {
 			var li = $('#session');
 			li.on('click', getSessions);
 			li.on('reload', getSessions);
+			// Mobile
+			$('#m-session').on('click', getSessions);
+			$('#m-session').on('reload', getSessions);
+			//
 			$('.session-filter-form').on('submit', filterSessions);
 		}
 	};

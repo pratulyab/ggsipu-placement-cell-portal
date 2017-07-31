@@ -358,7 +358,9 @@
 					closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
 					draggable: true,
 			});
-				Utils.init({'fab': true});
+			Utils.init({'fab': true});
+			if (is_mobile_view)
+				$('#fixed-action-button').find('a')[0].click() // Closing
 });
 		
 		// Mapping dropdown links to tabs

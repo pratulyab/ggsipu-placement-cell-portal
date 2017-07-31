@@ -69,20 +69,20 @@
 {% block side_nav_links %}
     <li data-main_div="#associate"><a class="waves-effect" href="#!" style=""><i class="fa fa-building" aria-hidden="true"></i>
           Associate Colleges</a></li>
-    <li data-main_div="#requests"><a class="waves-effect" href="#!"><i class="fa fa-envelope" aria-hidden="true"></i> 
-          Association Requests</a></li>      
-    <li data-main_div="#myrequests"><a class="waves-effect" href="#!"><i class="fa fa-envelope" aria-hidden="true"></i> 
-          Association Requests</a></li>      
-    <li data-main_div="#notifications"><a class="waves-effect" href="#!"><i class="fa fa-bell" aria-hidden="true"></i>Notifications</a></li>     
-    <li data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
-            Sessions</a></li>
+    <li id="m-request" data-main_div="#requests" data-url="/college/association_requests/"><a class="waves-effect" href="#requests"><i class="fa fa-envelope" aria-hidden="true"></i> 
+          Association Requests</a></li>
+    <li id="m-myrequest" data-main_div="#myrequests" data-url="/recruitment/myrequests/"><a class="waves-effect" href="#myrequests"><i class="fa fa-envelope" aria-hidden="true"></i> 
+          My Requests</a></li>
+ 
+    <li id="m-notification" data-main_div="#notifications"><a url="{% url 'get_notifications' %}" class="waves-effect" href="#!"><i class="fa fa-bell" aria-hidden="true"></i>Notifications</a></li>     
+    <li id="m-session" data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>Sessions</a></li>
     
     <li class="no-padding">
         <ul class="collapsible collapsible-accordion">
           <li data-main_div="#settings" class="expandable">
             <a class="collapsible-header"><i class="fa fa-cog" aria-hidden="true"></i>
             Settings</a>
-            <div class="collapsible-body">
+			<div class="collapsible-body" style="padding: 0 !important;">
               <ul>
                 <li class="child-li" data-child_div="#account-settings"><a href="#!"><i class="fa fa-sliders" aria-hidden="true"></i>
                     Account Settings</a></li>
@@ -101,17 +101,17 @@
 
 
 {% block tabs%}
-	<li class="tab col s3"><a class="active" href="#associate">Associate With Colleges</a></li>
+	<li class="tab col s2"><a style="font-size: 12px !important;" class="active" href="#associate">Associate With Colleges</a></li>
 	<li id = "request" class="tab col s2" data-url="/college/association_requests/"><a href="#requests">Association Requests</a></li>
 	<li id = "myrequest" class="tab col s2" data-url="/recruitment/myrequests/"><a href="#myrequests">My Requests</a></li>
 	<li id = "notification" class="tab col s2"><a url="{% url 'get_notifications' %}" id="notification-anchor" href="#notifications">Notification</a></li>
-	<li class="tab col s2"><a href="#settings">Settings</a></li>
 	<li id="session" class="tab col s2"><a href="#sessions_div">Sessions</a></li>
+	<li class="tab col s2"><a href="#settings">Settings</a></li>
 {% endblock %}
 
 {% block tabs_content %}
 	<div id="associate" class="col s12">
-		<form method="POST" action={% url 'associate' %} id="associate-form" class="col s8 offset-s2">
+		<form method="POST" action={% url 'associate' %} id="associate-form" class="col s12 m8 offset-m2">
 			{% csrf_token %}
 			{% form form=association_form%}{% endform %}
 			<div class="col s8 offset-s2">

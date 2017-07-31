@@ -357,6 +357,9 @@ function removeError(field){
             document.getElementById('create-notifications').addEventListener('click', generateNewForm);
             document.getElementById('notification').addEventListener('click' , viewNotifications);
 			document.getElementById('your-notifications').addEventListener('click' , viewNotifications);
+			// mobile
+            document.getElementById('m-create-notifications').addEventListener('click', generateNewForm);
+			document.getElementById('m-your-notifications').addEventListener('click' , viewNotifications);
 		}
 	}
 

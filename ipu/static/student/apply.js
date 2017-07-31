@@ -156,6 +156,7 @@ var Apply = (function() {
 	return {
 		init: function() {
 			$('#apply').on('reload', getOpportunities);
+			$('#m-apply').on('reload', getOpportunities); // mobile
 			$('#apply').trigger('reload');
 			
 		}

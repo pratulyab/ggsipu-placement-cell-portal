@@ -1,8 +1,13 @@
 {% load staticfiles %}
 <div class="col s12">
-	<div id="filter-preloader" class="col s6 offset-s2"></div>
-	<div class="col s2 offset-s2">
-		<a href="#" data-activates="session-filter-forms-out" class="session-filter-forms-sideNav btn">Filter&nbsp;<i class="fa fa-filter fa-3x"></i></a>
+	<div class="row hide-on-small-only">
+		<div id="filter-preloader" class="col s6 offset-s2"></div>
+		<div class="col s2 offset-s2">
+			<a href="#" data-activates="session-filter-forms-out" class="session-filter-forms-sideNav btn">Filter&nbsp;<i class="fa fa-filter fa-3x"></i></a>
+		</div>
+	</div>
+	<div class="row hide-on-med-and-up">
+		<a href="#" data-activates="session-filter-forms-out" class="session-filter-forms-sideNav btn right">Filter&nbsp;<i class="fa fa-filter fa-3x"></i></a>
 	</div>
 </div>
 <div id="all-sessions" class="col s12 m9 l10">

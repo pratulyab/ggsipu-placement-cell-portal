@@ -1,13 +1,18 @@
 {% load staticfiles %}
 {% if sessions %}
 <div class="col s12">
-	<div id="filter-preloader" class="col s6 offset-s2"></div>
-	<div class="col s2 offset-s2">
-		<a href="#" data-activates="session-filter-forms-out" class="session-filter-forms-sideNav btn">Filter&nbsp;<i class="fa fa-filter fa-3x"></i></a>
+	<div class="row hide-on-small-only">
+		<div id="filter-preloader" class="col s6 offset-s2"></div>
+		<div class="col s2 offset-s2">
+			<a href="#" data-activates="session-filter-forms-out" class="session-filter-forms-sideNav btn">Filter&nbsp;<i class="fa fa-filter fa-3x"></i></a>
+		</div>
+	</div>
+	<div class="row hide-on-med-and-up">
+		<a href="#" data-activates="session-filter-forms-out" class="session-filter-forms-sideNav btn right">Filter&nbsp;<i class="fa fa-filter fa-3x"></i></a>
 	</div>
 </div>
 
-<ul class="collection col s8 offset-s2">
+<ul class="collection col s12 m10 offset-m1 l8 offset-l2">
 	{% for session in sessions %}
 		<li class="collection-item avatar" data-sess="{{ session.sess_hashid }}">
 			{% if session.photo %}
@@ -35,6 +40,7 @@
 	{% if filtering %}
 		<b><h1 class="center flow-text teal-text text-accent-4">No sessions found that match the filtering conditions.</h1></b>
 	{% else %}
+		<p class="blue lighten-5 flow-text blue-text text-darken-4 center-align">All your Internship or Job placement sessions/drives, that you create with <b>colleges</b> will be displayed here.</p>
 		<b><h1 class="center flow-text teal-text text-accent-4">You are currently not enrolled in any sessions.</h1></b>
 	{% endif %}
 {% endif %}

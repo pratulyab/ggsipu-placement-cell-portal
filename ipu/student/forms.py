@@ -370,8 +370,8 @@ class TechProfileForm(forms.ModelForm):
 		model = TechProfile
 		fields = ['github', 'bitbucket', 'codechef', 'codeforces', 'spoj']
 		help_texts = {
-			'github': _('Please provide the URL of public profile'),
-			'bitbucket': _('Please provide the URL of public profile'),
+			'github': _('Please provide the URL of public profile, if applicable'),
+			'bitbucket': _('Please provide the URL of public profile, if applicable'),
 		}
 
 class FileUploadForm(forms.ModelForm):
