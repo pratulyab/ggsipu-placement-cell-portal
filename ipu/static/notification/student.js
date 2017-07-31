@@ -4,12 +4,12 @@ var Notification = (function() {
 	function handleMultipleJquery(){
 		$('a').unbind('click');
 		document.getElementById('help').removeEventListener('click', generateNewHelpForm); // to prevent multiple fires because of reloading of jquery in the rendered template.
-		document.getElementById('view-issues').removeEventListener('click', generateIssueList); 
+		!is_mobile_view ? document.getElementById('view-issues').removeEventListener('click', generateIssueList) : document.getElementById('m-view-issues').removeEventListener('click', generateIssueList);
 		$('#dropdown3').on('click', function(e){e.stopPropagation();});
 		$('.dropdown-button').on('click', function(e){e.preventDefault()});
 		$('nav .brand-logo').on('click', function(e){location.href='';});
 		document.getElementById('help').addEventListener('click', generateNewHelpForm);//Re-Binds help button in vertical tab.
-        document.getElementById('view-issues').addEventListener('click' , generateIssueList);
+        !is_mobile_view ? document.getElementById('view-issues').addEventListener('click' , generateIssueList) : document.getElementById('m-view-issues').addEventListener('click' , generateIssueList);
         $('#notification').on('click' , function(e){$('#your-notifications').trigger('click');});//Handles the maine notification tab button.
         $('#dropdown1 a').each(function(i, a){
 			var el = $(a);
@@ -87,7 +87,7 @@ var Notification = (function() {
 	            	removePreloader();	
 	            },
 				success : function(data , status , xhr){
-					document.getElementById('view-issues').click();
+					!is_mobile_view ? document.getElementById('view-issues').click() : document.getElementById('m-view-issues').click();
 					swal({
 						title: "Success!",
 						text: "Successful! A faculty will get back to you soon.",
@@ -139,7 +139,7 @@ function fieldEvaluator(input_field , max_length){
 	function generateIssueList(e){
 		e.preventDefault();
 		$('#view-issues-div').html('<ul id = "view-issues-div-ul" class="collection"></ul>');
-		var url = $('#view-issues').attr('url');
+		var url = !is_mobile_view ? $('#view-issues').attr('url') : $('#m-view-issues').attr('url');
 		$.ajax({
 			url : url,
 			type : 'GET',

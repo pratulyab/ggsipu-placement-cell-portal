@@ -4,11 +4,11 @@
 {% block title %}Manage Faculty{% endblock %}
 {% block pagetitle %}Manage Faculty{% endblock %}
 {% block menu_icon_dropdown %}
-                <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
-                <li class="divider"></li>
+	{% if request.user.type == 'C' %}
                 <li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
                 <li class="divider"></li>
                 <li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Companies</a></li>
+	{% endif %}
 {% endblock %}
 
 {% block head %}
@@ -56,30 +56,28 @@
 {% endblock %}
 
 {% block side_nav_links %}
-	<li><a class="waves-effect" href="#!"><i class="fa fa-home" aria-hidden="true"></i>
-            Home</a></li>
-    <li><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>
-          Create Dummy Company</a></li>
-    <li><a class="waves-effect" href="#!"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-          Edit Dummy Company</a></li>      
-    <li><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i> 
-          Create Dummy Session</a></li>
-    <li><a class="waves-effect" href="#!"><i class="fa fa-pencil" aria-hidden="true"></i>
-	Edit Criteria</a></li>     
-    <li><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
-            Dummy Sessions</a></li>
+    <li data-main_div="#view-faculty-div"><a class="waves-effect" href="#!" style="">View All Faculty</a></li>
+    <li data-main_div="#add-faculty-div"><a class="waves-effect" href="#!" style="">Add New Faculty</a></li>
+    <li data-main_div="#faculty-perms-div"><a class="waves-effect" href="#!" style="">Edit Faculty Permissions</a></li>
+	<li><div class="divider"></div></li>
+	{% if user.type == 'C' %}
+		<li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+		<li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Companies</a></li>
+		<li><div class="divider"></div></li>
+	{% endif %}
          
 {% endblock %}
 
 {% block tabs %}
 	<li class="tab col s4"><a class="active" href="#view-faculty-div">View Faculty</a></li>
-	<li class="tab col s4"><a href="#add-faculty-div">Add Faculty</a></li>
+	<li class="tab col s4"><a href="#add-faculty-div">Add New Faculty</a></li>
 	<li class="tab col s4"><a href="#faculty-perms-div">Edit Faculty Permissions</a></li>
 {% endblock tabs %}
 
 {% block tabs_content %}
 <!--                                     -->
 <div id="view-faculty-div" class="col s12 m10 offset-m1">
+	<h4 class="center" style="color: goldenrod;">All Faculties Created</h4>
 	<ul class="collection">
 		{% csrf_token %}
 		{% for f in faculties %}
@@ -147,6 +145,7 @@
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
+			Search.init();
 			Settings.init(['create-faculty-form']);
 			ManageFaculty.init();
 			Mobile.init();

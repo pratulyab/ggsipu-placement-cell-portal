@@ -3,6 +3,91 @@
 {% load material_form %}
 {% block title %}Manage Placement Session{% endblock %}
 {% block pagetitle %}Manage Placement Session{% endblock %}
+
+
+{% block user_photo2 %}
+	{% if request.user.type == 'C' %}
+		{% if association.college.photo %}
+			<img src="{{ association.college.photo.url }}" class="circle" height="30" width="30" id="img-corner">
+		{% else %}
+			<img src="{% static 'images/college.png' %}" class="circle" height="30" width="30" id="img-corner">
+		{% endif %}
+	{% elif request.user.type == 'F' %}
+		{% if request.user.faculty.photo %}
+			<img src="{{ request.user.faculty.photo.url }}" class="circle" height="30" width="30" id="img-corner">
+		{% else %}
+			<img src="{% static 'images/college.png' %}" class="circle" height="30" width="30" id="img-corner">
+		{% endif %}
+	{% else %}
+		{% if association.company.photo %}
+			<img src="{{ association.company.photo.url }}" class="circle" height="30" width="30" id="img-corner">
+		{% else %}
+			<img src="{% static 'images/company.png' %}" class="circle" height="30" width="30" id="img-corner">
+		{% endif %}
+	{% endif %}
+{% endblock %}
+
+{% block user_name_card_s %}
+	{{ user.get_short_name }}
+{% endblock %}
+
+{% block user_email_id_s %}
+	{{ user.profile.email }}
+{% endblock %}
+
+{% block user_photo_s %}
+	{% if request.user.type == 'C' %}
+		{% if association.college.photo %}
+			<img src="{{ association.college.photo.url }}" class="circle" height="90" width="90">
+		{% else %}
+			<img src="{% static 'images/college.png' %}" class="circle" height="90" width="90">
+		{% endif %}
+	{% elif request.user.type == 'F' %}
+		{% if request.user.faculty.photo %}
+			<img src="{{ request.user.faculty.photo.url }}" class="circle" height="90" width="90">
+		{% else %}
+			<img src="{% static 'images/college.png' %}" class="circle" height="90" width="90">
+		{% endif %}
+	{% else %}
+		{% if association.company.photo %}
+			<img src="{{ association.company.photo.url }}" class="circle" height="90" width="90">
+		{% else %}
+			<img src="{% static 'images/company.png' %}" class="circle" height="90" width="90">
+		{% endif %}
+	{% endif %}
+{% endblock %}
+
+{% block user_photo %}
+	{% if request.user.type == 'C' %}
+		{% if association.college.photo %}
+			<img src="{{ association.college.photo.url }}" class="circle" height="64" width="64">
+		{% else %}
+			<img src="{% static 'images/college.png' %}" class="circle" height="64" width="64">
+		{% endif %}
+	{% elif request.user.type == 'F' %}
+		{% if request.user.faculty.photo %}
+			<img src="{{ request.user.faculty.photo.url }}" class="circle" height="64" width="64">
+		{% else %}
+			<img src="{% static 'images/college.png' %}" class="circle" height="64" width="64">
+		{% endif %}
+	{% else %}
+		{% if association.company.photo %}
+			<img src="{{ association.company.photo.url }}" class="circle" height="64" width="64">
+		{% else %}
+			<img src="{% static 'images/company.png' %}" class="circle" height="64" width="64">
+		{% endif %}
+	{% endif %}
+{% endblock %}
+
+{% block user_name_card %}
+	{{ user.get_short_name }}
+{% endblock %}
+
+{% block user_email_id %}
+	{{ user.profile.email }}
+{% endblock %}
+
+
 {% block menu_icon_dropdown %}
 	{% if user.type == 'C' %}
                 <li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
@@ -11,21 +96,50 @@
                 <li class="divider"></li>
                 <li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Companies</a></li>
 	{% elif user.type == 'F' %}
-		<!-- Check perms and add -->
+    	{% if perms.recruitment.handle_placement %}
+			<li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+    		<li class="divider"></li>
+		{% endif %}
 	{% else %}
-                <li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Colleges</a></li>
-                <li class="divider"></li>
+         	<li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Colleges</a></li>
+            <li class="divider"></li>
 	{% endif %}
 {% endblock %}
 {% block head %}
 	<link rel="stylesheet" type="text/css" href="{% static 'sweetalert/dist/sweetalert.css' %}">
 {% endblock head %}
 
+
+{% block side_nav_links %}
+    <li data-main_div="#session-details"><a class="waves-effect" href="#!" style="">Session Details</a></li>
+    <li data-main_div="#session-students"><a class="waves-effect" href="#!" style="">Manage Session Students</a></li>
+    <li data-main_div="#edit-criteria"><a class="waves-effect" href="#!" style="">Edit Selection Criteria</a></li>
+    <li data-main_div="#edit-session"><a class="waves-effect" href="#!" style="">Edit Session Details</a></li>
+	<li><div class="divider"></div></li>
+	{% if user.type == 'C' %}
+		<li><a href="{% url 'manage_faculty' %}" >Manage Faculty</a></li>
+		<li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+		<li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Companies</a></li>
+	{% elif user.type == 'F' %}
+    	{% if perms.recruitment.handle_placement %}
+			<li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+			<li><div class="divider"></div></li>
+		{% endif %}
+	{% else %}
+         	<li><a href="{% url 'manage_dissociation' %}" >Block/Unblock Colleges</a></li>
+			<li><div class="divider"></div></li>
+	{% endif %}
+	<li><div class="divider"></div></li>
+
+{% endblock %}
+
+
+
 {% block tabs %}
 	<li class="tab col s2"><a class="active" href="#session-details">Details</a></li>
-	<li class="tab col s2"><a class="" href="#session-students">Manage Session Students</a></li>
-	<li class="tab col s2"><a class="" href="#edit-criteria">Edit Selection Criteria</a></li>
-	<li id="dsessions" class="tab col s2"><a class="" href="#edit-session">Edit Session</a></li>
+	<li class="tab col s3"><a class="" href="#session-students">Manage Session Students</a></li>
+	<li class="tab col s3"><a class="" href="#edit-criteria">Edit Selection Criteria</a></li>
+	<li id="dsessions" class="tab col s3"><a class="" href="#edit-session">Edit Session Details</a></li>
 {% endblock tabs %}
 {% block tabs_content %}
 <!--                    -->
@@ -147,12 +261,14 @@
 {% endblock tabs_content %}
 {% block scripts %}
 
+	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
 	<script type="text/javascript" src="{% static 'recruitment/manage.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
 	<script type="text/javascript" src="{% static 'download/download.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
+			Search.init();
 			ManageSession.init(['manage-session-students-form', 'edit-criteria-form', 'edit-session-form']);
 			Download.request();
 			Mobile.init();

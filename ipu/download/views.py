@@ -106,7 +106,7 @@ def handle_resume_downloads(request, students_queryset, description):
 	if user_requests.exists() and user_requests.first().requested_on and (datetime.utcnow() - user_requests.first().requested_on.replace(tzinfo=None)).total_seconds() < 300:
 		# Limiting the request issuing because of server limitations
 		return JsonResponse(status=400, data={'error': 'You are required to wait at least 10min before issuing a new download request.\
-														We apologize for any inconvenience caused.'})
+														Thanks for cooperating with us.'})
 	dl_request = None
 	for ur in DLRequest.objects.all():
 		if not ur.is_different(students_queryset):

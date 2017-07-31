@@ -75,6 +75,8 @@ var Notification = (function() {
 	return {
 		init: function() {
             document.getElementById('notification').addEventListener('click' , viewNotifications);
+			// mobile
+            document.getElementById('m-notification').addEventListener('click' , viewNotifications);
 		}
 	}
 

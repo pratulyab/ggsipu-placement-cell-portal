@@ -352,6 +352,9 @@ var DSession = (function() {
 			//
 			var li = $('#dsessions');
 			li.on('click', getSessions);
+
+			// mobile
+			$('#m-dsessions').on('click', getSessions);
 			//
 			var choose_form_id = '#choose-dummy-company-form';
 			var choose_form = $(choose_form_id);

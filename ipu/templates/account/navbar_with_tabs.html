@@ -186,10 +186,10 @@
                     <h6 class="center hide-on-large-only" style="font-size: 10px;padding: 0px;margin: 1px;margin-top: 1px;position: absolute;top: 40px;left: 15%;width: 70%;right: 15%">Guru Gobind Singh Indraprastha University</h6>
 					<a class="brand-logo center hide-on-med-and-down" style="color:lightcoral;font-weight:800;">{% block pagetitle %}{% endblock %}</a>
                     <ul class="right">
-                    <li class="hide-on-small-only">
-                    <a style="height: 64px;" href="{{ request.user.get_home_url }}"><i class="fa fa-2x fa-home" aria-hidden="true"></i></a>
+                    <li>
+                    	<a href="{{ request.user.get_home_url }}"><i class="fa fa-2x fa-home" aria-hidden="true"></i></a>
                     </li>
-                   	<li><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
+                   	<li class="hide-on-small-only"><a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='flex';document.getElementById('fade').style.display='flex'"><i class="material-icons">search</i></a>
                   	</li>
                     <!--Older notification button
                   	<li class="hide-on-med-and-down">
@@ -235,9 +235,11 @@
       <a href="#!name"><span class="white-text name">{% block user_name_card %}{% endblock %}</span></a>
       <a href="#!email"><span class="white-text email">{% block user_email_id %}{% endblock %}</span></a>
     </div></li>
-    {% block side_nav_links %}
-    {% endblock %}
+	<ul id="sideNav-tabs">
+	    {% block side_nav_links %}
+    	{% endblock %}
       <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i>Logout</a></li>
+	</ul>
   </ul>
 
 <!--sidebar ends-->
@@ -344,6 +346,8 @@
 					draggable: true,
                     });
 				Utils.init({'fab': true});
+				if (is_mobile_view)
+					$('#fixed-action-button').find('a')[0].click() // Closing
       			});
 		
 		// Mapping dropdown links to tabs

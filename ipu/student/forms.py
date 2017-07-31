@@ -136,7 +136,7 @@ class StudentCreationForm(forms.ModelForm):
 		self.strm = kwargs.pop('strm', None)
 		self.year = kwargs.pop('year', None)
 		super(StudentCreationForm, self).__init__(*args, **kwargs)
-		self.fields['phone_number'].required = False
+		self.fields['phone_number'].required = True
 		self.initial['college'] = self.coll
 		self.initial['stream'] = self.strm
 		self.initial['programme'] = Stream.objects.get(pk=self.strm).programme.pk

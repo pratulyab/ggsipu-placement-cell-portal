@@ -35,8 +35,10 @@
 {% endblock %}
 
 {% block menu_icon_dropdown %}
-	<li><a href="#">Manage dummy company</a></li>
+    {% if perms.recruitment.handle_placement %}
+	<li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
     <li class="divider"></li>
+	{% endif %}
     <li><a href="#">Report</a></li>
 {% endblock %}
 
@@ -71,25 +73,32 @@
     {% endif %}
 
     {% if perms.recruitment.handle_placement %}
-	<li data-main_div="#tab2"><a class="waves-effect" href="#!"><i class="fa fa-building" aria-hidden="true"></i>
-          College Associations</a></li>
-    <li data-main_div="#requests"><a class="waves-effect" href="#!"><i class="fa fa-envelope" aria-hidden="true"></i> 
-          Association Requests</a></li>
-	{% endif %}
-
-	{% if perms.recruitment.handle_placement %}
-	<li data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>
-            Sessions</a></li>
+    <li id="m-request" data-main_div="#requests" data-url="/college/association_requests/"><a class="waves-effect" href="#requests"><i class="fa fa-envelope" aria-hidden="true"></i>Association Requests</a></li>
+    <li id="m-session" data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>Sessions</a></li>
 	{% endif %}  
-    {% if perms.notification.manage_notification %}        
-    <li data-main_div="#notifications"><a class="waves-effect" href="#!"><i class="fa fa-bell" aria-hidden="true"></i>Notifications</a></li>
+    {% if perms.notification.manage_notification %}
+ 
+	<li class="no-padding">
+		<ul class="collapsible collapsible-accordion">
+			<li data-main_div="#notifications" class="expandable">	
+				<a class="collapsible-header"><i class="fa fa-bell" aria-hidden="true"></i>Notifications {% if badge %}<span class="new badge">{{ badge }}</span>{% endif %}</a>
+				<div class="collapsible-body" style="padding: 0 !important;">
+					<ul>
+						<li class="child-li" data-child_div="#your-notifications-div"><a id="m-your-notifications" detail-url="{% url 'notification_detail' %}" href="#!"><i></i>Your Notifications</a></li>
+						<li class="child-li" data-child_div="#notify-students-div"><a id="m-create-notifications" href="#!"><i></i>Notify Students</a></li>
+						<li class="child-li" data-child_div="#view-issues-div"><a id="m-view-issues" href="#!" markurl="{% url 'mark' %}" url="{%url 'view_issue' %}"><i></i>Address Issues</a></li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+	</li>
     {% endif %}
+
     <li class="no-padding">
         <ul class="collapsible collapsible-accordion">
           <li data-main_div="#settings" class="expandable">
-            <a class="collapsible-header"><i class="fa fa-cog" aria-hidden="true"></i>
-            Settings</a>
-            <div class="collapsible-body">
+            <a class="collapsible-header"><i class="fa fa-cog" aria-hidden="true"></i>Settings</a>
+            <div class="collapsible-body" style="padding: 0 !important">
               <ul>
                 <li class="child-li" data-child_div="#account-settings"><a href="#!"><i class="fa fa-sliders" aria-hidden="true"></i>
                     Account Settings</a></li>
@@ -102,6 +111,12 @@
           </li>
         </ul>
       </li>
+    {% if perms.recruitment.handle_placement %}
+	<li><div class="divider"></div></li>
+	<li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+	{% endif %}
+	<li><a href="#">Report Admin</a></li>
+	<li><div class="divider"></div></li>
 {% endblock %}
 
 {% block tabs %}
@@ -115,10 +130,10 @@
 	{% if perms.notification.manage_notification %}
 	<li id = "notification" class="tab col s2" url="{% url 'select_streams' %}"><a id="notification-anchor" href="#notifications">Notification</a></li>
 	{% endif %}
-	<li class="tab col s2"><a href="#settings">Settings</a></li>
 	{% if perms.recruitment.handle_placement %}
 		<li id="session" class="tab col s2"><a href="#sessions_div">Sessions</a></li>
 	{% endif %}
+	<li class="tab col s2"><a href="#settings">Settings</a></li>
 {% endblock %}
 
 
@@ -330,6 +345,10 @@
 			VerifyStu.init();
 			Request.init();
 			Mobile.init();
+			if (is_mobile_view) {
+				// Warn faculty to use desktop to verify students
+				$('#enroll-form').html($('<p class="flow-text blue lighten-5 blue-text text-darken-4 center-align">Please login using a desktop to verify students.</p>'));
+			}
 		});
 	</script>
 {% endblock scripts %}

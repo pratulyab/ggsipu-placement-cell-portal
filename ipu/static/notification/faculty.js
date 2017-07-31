@@ -296,7 +296,7 @@ function removeError(field){
 	function getIssuesList(e) {
 		e.preventDefault();
 		$('#view-issues-div').html('<ul id = "view-issues-div-ul" class="collection"></ul>');
-		var url = $('#view-issues').attr('url')
+		var url = !is_mobile_view ? $('#view-issues').attr('url') : $('#m-view-issues').attr('url');
 		$.ajax({
 			url:url,
 			type : 'GET',
@@ -365,7 +365,7 @@ function removeError(field){
 		
 	}
     function markIssueImportant(identifier){
-        var url = $('#view-issues').attr('markurl');
+        var url = !is_mobile_view ? $('#view-issues').attr('markurl') : $('#m-view-issues').attr('markurl');
         $.ajax({
             url : url,
             type : 'GET',
@@ -379,7 +379,7 @@ function removeError(field){
                 removePreloader();  
             },
             success : function(data , status , xhr){
-                document.getElementById('view-issues').click();
+                !is_mobile_view ? document.getElementById('view-issues').click() : document.getElementById('m-view-issues').click();
             }
         });
 
@@ -435,7 +435,7 @@ function removeError(field){
                     removePreloader();  
                 },
                 success : function(data , status , xhr){
-                    document.getElementById('view-issues').click();
+                    !is_mobile_view ? document.getElementById('view-issues').click() : document.getElementById('m-view-issues').click();;
                     swal({
                         title: "Success!",
                         text: "Successful! Your response has been submitted.",
@@ -521,6 +521,10 @@ function removeError(field){
             document.getElementById('notification').addEventListener('click' , viewNotifications);
 			document.getElementById('your-notifications').addEventListener('click' , viewNotifications);
 			document.getElementById('view-issues').addEventListener('click' , getIssuesList);
+			// mobile
+            document.getElementById('m-create-notifications').addEventListener('click', generateNewForm);
+			document.getElementById('m-your-notifications').addEventListener('click' , viewNotifications);
+			document.getElementById('m-view-issues').addEventListener('click' , getIssuesList);
 		}
 	}
 

@@ -143,7 +143,7 @@ class SocialProfileForm(forms.ModelForm):
 			'linkedin' : 'LinkedIN',
 			'google': 'Google Plus',
 		}
-		help_texts = {field: 'Please provide the URL of public profile' for field in fields}
+		help_texts = {field: 'Please provide the URL of public profile, if applicable' for field in fields}
 
 class AccountForm(forms.ModelForm):
 	current_password = forms.CharField(label=_('Current Password'), widget=forms.PasswordInput(attrs={'placeholder': _('Enter Current Password')}), required=False)
