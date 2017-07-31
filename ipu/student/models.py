@@ -9,7 +9,7 @@ from college.models import (College, Programme, Stream)
 from urllib.parse import urlparse
 
 from decimal import Decimal
-from utils import get_hashed_filename
+from utils import get_hashed_photo_name, get_hashed_resume_name
 
 # Create your models here.
 
@@ -115,7 +115,7 @@ class Student(models.Model):
 	)
 	gender = models.CharField(_('Gender'), choices=GENDER_CHOICES, max_length=1, default=GENDER_CHOICES[0][0])
 	dob = models.DateField(_('Date Of Birth'), null=True, blank=False)
-	photo = models.ImageField(_('Photo'),upload_to=get_hashed_filename, blank=True)
+	photo = models.ImageField(_('Photo'),upload_to=get_hashed_photo_name, blank=True)
 	phone_number = models.CharField(_('Mobile Number'), max_length=10, help_text='Enter 10 Digit IN Mobile Number', 
 			validators=[validators.RegexValidator(
 				regex = r'^[7-9]\d{9}$',
@@ -148,7 +148,7 @@ class Student(models.Model):
 
 # Placement Specific
 	SALARY_CHOICES = tuple( ( (i, "%s and above" % i) for i in range(2,14,2) ) )
-	resume = models.FileField(_('Resume'), upload_to=get_hashed_filename, blank=True)
+	resume = models.FileField(_('Resume'), upload_to=get_hashed_resume_name, blank=True)
 	is_intern = models.BooleanField(_('Currently Intern'), default=False)
 	is_placed = models.BooleanField(_('Currently Placed'), default=False)
 	is_barred = models.BooleanField(_('Bar the student from applying to companies'), default=False, help_text="This will prevent the student from applying to companies for jobs as well as for internships.")
@@ -196,9 +196,9 @@ class TechProfile(models.Model):
 	student = models.OneToOneField(Student, related_name="tech")
 	github = models.URLField(blank=True)
 	bitbucket = models.URLField(blank=True)
-	codechef = models.CharField(max_length=14, blank=True, help_text='Please provide your Codechef username.', validators=[validators.RegexValidator(r'^[a-z]{1}[a-z0-9_]{3,13}$')])
-	codeforces = models.CharField(max_length=24, blank=True, help_text='Please provide your Codeforces username.')
-	spoj = models.CharField(max_length=14, blank=True, help_text='Please provide your SPOJ username.')
+	codechef = models.CharField(max_length=14, blank=True, help_text='Please provide your Codechef username, if applicable.', validators=[validators.RegexValidator(r'^[a-z]{1}[a-z0-9_]{3,13}$')])
+	codeforces = models.CharField(max_length=24, blank=True, help_text='Please provide your Codeforces username, if applicable.')
+	spoj = models.CharField(max_length=14, blank=True, help_text='Please provide your SPOJ username, if applicable.')
 #	coding = models.TextField(_('Miscellaneous Coding Platform Links'), help_text="Eg. Hacker Earth", blank=True)
 
 	def clean(self, *args, **kwargs):
