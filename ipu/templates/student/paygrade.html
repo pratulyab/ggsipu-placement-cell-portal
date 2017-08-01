@@ -1,9 +1,8 @@
 {% load staticfiles %}
 {% load material_form %}
-<script type="text/javascript" src="{% static 'material/js/jquery-2.2.0.js' %}"></script>
-<script type="text/javascript" src="{% static 'material/js/materialize.js' %}"></script>
 {% if success_msg %}<div class="card green accent-1 center success"><p>{{ success_msg }}</p></div>{% endif %}
-<form method="POST" action="{% url 'paygrade' %}" id='paygrade-form'>
+<form method="POST" class="col s12 m8 offset-m2" action="{% url 'paygrade' %}" id='paygrade-form'>
+	<h5 class="col s12 m8 offset-m2 flow-text center-align">Minimum Salary Expected</h5>
 	{% csrf_token %}
 	{% form form=paygrade_form %}{% endform %}
 	<div class="row">
@@ -16,5 +15,6 @@
 <script>
 	$(document).ready(function() {
 		Paygrade.init();
+		$('#paygrade-form').find('select').material_select();
 	});
 </script>
