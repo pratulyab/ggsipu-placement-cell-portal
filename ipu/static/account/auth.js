@@ -120,6 +120,14 @@ var Auth = (function() {
 				input.setAttribute('name', name.replace(prefix, ''));
 			}
 		}
+		var textareas = $(form_id + ' textarea');
+		for (var i=0; i<textareas.length; i++){
+			var textarea = textareas[i];
+			var name = textarea.getAttribute('name');
+			if (typeof name !== typeof undefined && name !== false){
+				textarea.setAttribute('name', name.replace(prefix, ''));
+			}
+		}
 	}
 	
 	function login(e) {

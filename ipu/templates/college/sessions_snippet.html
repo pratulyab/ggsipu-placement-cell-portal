@@ -7,15 +7,11 @@
 					<img src="{{ session.photo.url }}" alt="Recruiter" class="circle" />
 				{% endif %}
 				<span class="title blue-text text-accent-2"><b>{{ session.company }}</b> for {{ session.type|title }} </span>
-				<p>
-					<b>Salary: </b>{{ session.salary }}
-					<br>
-					<p>
-						<b>Streams: </b>{{ session.streams }}
-					</p>
-					<br>
-						<b><span class="orange-text text-darken-2">{{ session.students }}</span></b> student{{ session.students|pluralize }} in the session
-				</p>
+				<p><b>Salary: </b>{{ session.salary }}</p>
+				<p><b>Programme: </b>{{ session.programme }}</p>
+				<p><b>Streams: </b>{{ session.streams }}</p>
+				<p><b>Years: </b>{{ session.years }}</p>
+				<p>	<b><span class="orange-text text-darken-2">{{ session.students }}</span></b> student{{ session.students|pluralize }} in the session</p>
 				<span class="secondary-content">
 					<a href="{% url 'manage_session' session.sess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>
 					<a href="{% url 'notify_session' session.sess_hashid %}" class="envelope"><i class="fa fa-2x fa-envelope"></i></a>
@@ -34,7 +30,7 @@
 </div>
 
 <script>
-	$('#sessions').find('.fa-cogs').tooltip({tooltip: 'Settings', delay: 0});
-	$('#sessions').find('.fa-envelope').tooltip({tooltip: 'Notify', delay: 0});
-	$('#sessions').find('.fa-file-excel-o').tooltip({tooltip: 'Excel', delay: 0});
+	$('#sessions_div').find('.fa-cogs').tooltip({tooltip: 'Settings', delay: 0});
+	$('#sessions_div').find('.fa-envelope').tooltip({tooltip: 'Notify', delay: 0});
+	$('#sessions_div').find('.fa-file-excel-o').tooltip({tooltip: 'Excel', delay: 0});
 </script>

@@ -29,7 +29,7 @@ class Association(models.Model):
 	streams = models.ManyToManyField(Stream, help_text='Choose particular stream(s).', related_name="associations")
 	type = models.CharField(_('Type'), max_length=1, choices=PLACEMENT_TYPE, default=PLACEMENT_TYPE[1][0])
 	salary = models.DecimalField(_('Salary (Lakhs P.A.)'), max_digits=4, decimal_places=2, default=0, validators=[MinValueValidator(Decimal('0'))], 
-		help_text=_("Salary to be offered in LPA."),
+		help_text=_("Salary to be offered in LPA. If it's an internship, leave this as 0, and mention salary in placement details."),
 	)
 	desc = models.TextField(_('Placement details you\'d want to mention'), blank=True)
 	initiator = models.CharField(_('Who initiated it'), max_length=2, choices=SOURCE, default=SOURCE[0][0])
@@ -44,9 +44,10 @@ class Association(models.Model):
 class SelectionCriteria(models.Model):
 	SCHOOL_PERCENTAGE_CHOICES = tuple((("%s" % i, "%s and above" % i) for i in ['60','70','75','80','85','90','95']))
 	COLLEGE_PERCENTAGE_CHOICES = tuple((("%s" % i, "%s and above" % i) for i in ['50','60','65','70','75','80','85']))
-	years = models.CharField(_('Which year students may apply'), max_length=11, blank=True, help_text="Eg. 1,2,3 (Without spaces anywhere)(In increasing order)", 
+	years = models.CharField(_('Which year students may apply'), max_length=30, blank=True, help_text="Eg. 1,2,3 (Without spaces anywhere)(In increasing order)", 
 			validators = [RegexValidator(r'^([1-6](,[1-6])*)?$')]
 		)
+		# UPDATE: Changing length to 30. Desperate times, need desperate measures.
 		# MAX: 1,2,3,4,5,6(w/o spaces)
 		# regex is valid for empty string as well
 	is_sub_back = models.BooleanField(_('Are student with any subject back(s) allowed'), default=False)

@@ -9,7 +9,7 @@
 				{% with e.assoc as enrolled %}
 					<div class="card sticky-action">
 						<div class="card-image waves-effect waves-block waves-light">
-							{% if enrolled.company.photo %}
+							{% if enrolled.company.photo and 0 %}
 								<img class="activator" height=250 width=250 src="{{ enrolled.company.photo.url }}" />
 							{% else %}
 								<img class="activator" height=250 width=250 src="#" style="background-color:{% cycle 'lightcoral' 'seagreen' 'goldenrod' 'cornflowerblue' %}" />
@@ -28,16 +28,15 @@
 						</div>
 						<div class="card-reveal">
 							<span class="card-title grey-text text-darken-4"><b>Details</b><i class="material-icons right">close</i></span>
-							<p>Programme: {{ enrolled.programme.name }}</p>
-							<p>
-								Streams: 
+							<p><b>Programme:</b> {{ enrolled.programme.name }}</p>
+							<p><b>Streams:</b>
 								{% for stream in enrolled.streams.all %}
 									{{ stream.name }}, 
 								{% endfor %}
 							</p>
-							<p>{{ enrolled.desc }}</p>
-							<p> Company Details: {{ enrolled.company.details }} </p>
-							<p> Website: <a target="_blank" href="{{ enrolled.company.website }}">{{ enrolled.company.website }}</a></p>
+							<p><b>Description:</b> {{ enrolled.desc }}</p>
+							<p><b>Company Details:</b> {{ enrolled.company.details }} </p>
+							<p><b>Website:</b> <a target="_blank" href="{{ enrolled.company.website }}">{{ enrolled.company.website }}</a></p>
 							{% with enrolled.company.profile.social as social %}
 								<ul>
 									<li></li>
@@ -58,7 +57,7 @@
 				{% with u.assoc as unenrolled %}
 					<div class="card sticky-action">
 						<div class="card-image waves-effect waves-block waves-light">
-							{% if unenrolled.company.photo %}
+							{% if unenrolled.company.photo and 0 %}
 								<img class="activator" height=250 width=250 src="{{ unenrolled.company.photo.url }}" />
 							{% else %}
 								<img class="activator" height=250 width=250 src="#" style="background-color:{% cycle 'cornflowerblue' 'goldenrod' 'lightcoral' 'seagreen' %}" />
@@ -77,16 +76,15 @@
 						</div>
 						<div class="card-reveal">
 							<span class="card-title grey-text text-darken-4"><b>Details</b><i class="material-icons right">close</i></span>
-							<p>Programme: {{ unenrolled.programme.name }}</p>
-							<p>
-								Streams: 
+							<p><b>Programme:</b> {{ unenrolled.programme.name }}</p>
+							<p><b>Streams:</b> 
 								{% for stream in unenrolled.streams.all %}
 									{{ stream.name }}
 								{% endfor %}
 							</p>
-							<p>{{ unenrolled.desc }}</p>
-							<p> Company Details: {{ unenrolled.company.details }} </p>
-							<p> Website: <a target="_blank" href="{{ enrolled.company.website }}">{{ enrolled.company.website }}</a></p>
+							<p><b>Description:</b> {{ unenrolled.desc }}</p>
+							<p><b>Company Details:</b> {{ unenrolled.company.details }} </p>
+							<p><b>Website:</b> <a target="_blank" href="{{ unenrolled.company.website }}">{{ unenrolled.company.website }}</a></p>
 							{% with unenrolled.company.profile.social as social %}
 								<ul>
 									<li></li>
@@ -100,4 +98,3 @@
 		{% endfor %}
 	</div>
 </div>
-<!--<script type="text/javascript" src="{% static 'material/js/materialize.js' %}"></script>-->

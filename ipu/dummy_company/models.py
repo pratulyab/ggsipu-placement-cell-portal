@@ -34,7 +34,7 @@ class DummySession(models.Model):
 	programme = models.ForeignKey(Programme, related_name="dummy_sessions")
 	streams = models.ManyToManyField(Stream, help_text='Choose particular stream(s).', related_name="dummy_sessions")
 	type = models.CharField(_('Type'), max_length=1, choices=PLACEMENT_TYPE, default=PLACEMENT_TYPE[1][0])
-	salary = models.DecimalField(_('Salary (Lakhs P.A.)'), max_digits=4, decimal_places=2, default=0, validators=[MinValueValidator(Decimal('0'))], help_text=_("Salary to be offered in LPA."))
+	salary = models.DecimalField(_('Salary (Lakhs P.A.)'), max_digits=4, decimal_places=2, default=0, validators=[MinValueValidator(Decimal('0'))], help_text=_("Salary to be offered in LPA. If it's an internship, leave this as 0, and mention salary in placement details."))
 	desc = models.TextField(_('Placement details you\'d want to mention'), blank=True)
 
 	students = models.ManyToManyField(Student, related_name="dummy_sessions", blank=True)
