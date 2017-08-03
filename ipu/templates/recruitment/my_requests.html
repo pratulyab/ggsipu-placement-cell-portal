@@ -9,14 +9,8 @@
 						<img src="{{ pending.photo.url }}" alt="Photo" class="circle" />
 					{% endif %}
 					<span class="title">{{ pending.who }} for {{ pending.type|title }} </span>
-					<p>
-						{{ pending.salary }}
-						<br>
-						<p>
-							{{ pending.streams }}
-						</p>
-						<br>
-					</p>
+					<p>	{{ pending.salary }}</p><br>
+					<p>{{ pending.programme }} - {{ pending.streams }}</p><br>
 					<p><b>Created On:</b> {{ pending.created_on }}</p>
 					<p><b>Pending Since:</b> {{ pending.created_on|timesince }}</p>
 					<span class="secondary-content">
@@ -38,14 +32,8 @@
 						<img src="{{ declined.photo.url }}" alt="Photo" class="circle" />
 					{% endif %}
 					<span class="title">{{ declined.who }} for {{ declined.type|title }} </span>
-					<p>
-						{{ declined.salary }}
-						<br>
-						<p>
-							{{ declined.streams }}
-						</p>
-						<br>
-					</p>
+					<p>{{ declined.salary }}</p><br>
+					<p>{{ declined.programme }} - {{ declined.streams }}</p><br>
 					<p><b>Decline Reason: </b>{{ declined.decline_message }}</p>
 					<p><b>Created On:</b> {{ declined.created_on }}</p>
 					<p><b>Time Elapsed:</b> {{ declined.created_on|timesince }}</p>

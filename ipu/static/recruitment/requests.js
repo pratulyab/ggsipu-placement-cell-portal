@@ -76,7 +76,12 @@ var Request = (function() {
 						text: data.message,
 						type: 'success',
 						allowEscapeKey: false,
-						}, function() {	(window.location.href = data.location ? data.location : '');}
+						}, function() {
+							if (xhr.responseJSON && xhr.responseJSON['location'])
+								window.location.href = xhr.responseJSON['location'];
+							else
+								$('#fixed-action-button').find('.reload-btn').trigger('click');
+						}
 					);
 				} else {
 					swal('Success!', data.message, 'success');
@@ -94,7 +99,12 @@ var Request = (function() {
 						text: message,
 						type: 'error',
 						allowEscapeKey: false,
-					}, function(){window.location.href = (xhr.responseJSON['location'] ? xhr.responseJSON['location'] : '')});
+					}, function(){
+						if (xhr.responseJSON && xhr.responseJSON['location'])
+							window.location.href = xhr.responseJSON['location'];
+						else
+							$('#fixed-action-button').find('.reload-btn').trigger('click');
+					});
 				else
 					swal('Error!', message, 'error');
 				
@@ -207,7 +217,7 @@ var Request = (function() {
 							text: "The request has been deleted.",
 							type: "success",
 							allowEscapeKey: false,
-							},function(){window.location.href = '';}
+							},function(){$('#fixed-action-button').find('.reload-btn').trigger('click');}
 						);
 					},
 					error: function(xhr, status, error){

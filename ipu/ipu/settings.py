@@ -247,3 +247,6 @@ SESSION_COOKIE_AGE = 1 * (60 * 60 * 24)
 # # # 
 DISALLOWED_USERNAMES = ['account', 'notification', 'student', 'faculty', 'company', 'college', 'dcompany', 'recruitment', 'stats', 'download']
 DISALLOWED_EMAIL_DOMAINS = ['mailinator', 'discard.email', 'thraml', 'mintemail', 'mailcatch']
+
+# Default 3 days for password reset link is a potential time bomb for users.
+PASSWORD_RESET_TIMEOUT_DAYS = 1

@@ -327,7 +327,7 @@ def create_session(request, **kwargs):
 				# # #
 				message = '%s session has been created successfully. To manage the session, move to "Sessions" tab.'\
 						  % (dict(Association.PLACEMENT_TYPE)[association.type])
-				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[type]), 'refresh': True, 'message': message})
+				return JsonResponse(status=200, data={'refresh': True, 'message': message})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 	
@@ -360,6 +360,8 @@ def mysessions(request):
 				data['type'] = "Internship" if assoc.type == 'I' else "Job"
 				data['photo'] = assoc.company.photo
 				data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
+				data['programme'] = assoc.programme
+				data['years'] = assoc.session.selection_criteria.years
 				data['students'] = s.students.count()
 #				data['is_dummy'] = False
 				sessions_list.append(data)
@@ -371,6 +373,8 @@ def mysessions(request):
 				data['company'] = ds.dummy_company.name.title()
 				data['type'] = "Internship" if ds.type == 'I' else "Job"
 				data['streams'] = ', '.join([s.name.title() for s in ds.streams.all()])
+				data['programme'] = ds.programme
+				data['years'] = ds.selection_criteria.years
 				data['students'] = ds.students.count()
 #				data['is_dummy'] = True
 				dsessions_list.append(data)
@@ -393,6 +397,8 @@ def mysessions(request):
 				data['type'] = "Internship" if assoc.type == 'I' else "Job"
 				data['photo'] = assoc.college.photo
 				data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
+				data['programme'] = assoc.programme
+				data['years'] = assoc.session.selection_criteria.years
 				data['students'] = s.students.count()
 				sessions_list.append(data)
 			html = render(request, 'company/mysessions.html', {'sessions': sessions_list}).content.decode('utf-8')
@@ -431,6 +437,8 @@ def mysessions(request):
 				data['type'] = "Internship" if assoc.type == 'I' else "Job"
 				data['photo'] = assoc.company.photo
 				data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
+				data['programme'] = assoc.programme
+				data['years'] = assoc.session.selection_criteria.years
 				data['students'] = s.students.count()
 #				data['is_dummy'] = False
 				sessions_list.append(data)
@@ -442,6 +450,8 @@ def mysessions(request):
 				data['dcompany'] = ds.dummy_company.name.title()
 				data['type'] = "Internship" if ds.type == 'I' else "Job"
 				data['streams'] = ', '.join([s.name.title() for s in ds.streams.all()])
+				data['programme'] = ds.programme
+				data['years'] = ds.selection_criteria.years
 				data['students'] = ds.students.count()
 #				data['is_dummy'] = True
 				dsessions_list.append(data)
@@ -495,7 +505,7 @@ def decline(request, **kwargs):
 				recruitmentLogger.info(message)
 				# # #
 				message = 'You declined the request.\nIf you wish to stop receiving requests from this user, you can block them.\n Click info to know more.'
-				return JsonResponse(status=200, data={'location': reverse(settings.HOME_URL[request.user.type]), 'refresh': True, 'message': message})
+				return JsonResponse(status=200, data={'refresh': True, 'message': message})
 			else:
 				return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'message': 'Please correct the errors as indicated in the form.'})
 	
@@ -523,6 +533,7 @@ def view_my_requests(request, profile, user_type):
 			data['salary'] = "%d LPA" % association.salary
 			data['type'] = "Internship" if association.type == 'I' else "Job"
 			data['photo'] = association.company.photo if association.initiator=='C' else association.college.photo
+			data['programme'] = association.programme
 			data['streams'] = ', '.join([s.name.title() for s in association.streams.all()])
 			data['created_on'] = association.created_on
 			my_requests['pending'].append(data)
@@ -533,6 +544,7 @@ def view_my_requests(request, profile, user_type):
 			data['salary'] = "%d LPA" % association.salary
 			data['type'] = "Internship" if association.type == 'I' else "Job"
 			data['photo'] = association.company.photo if association.initiator=='C' else association.college.photo
+			data['programme'] = association.programme
 			data['streams'] = ', '.join([s.name.title() for s in association.streams.all()])
 			data['created_on'] = association.created_on
 			data['decline_message'] = association.decline_message

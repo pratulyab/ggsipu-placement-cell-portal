@@ -429,12 +429,12 @@ def companies_in_my_college(request, **kwargs):
 		if student.is_barred:
 			return JsonResponse(status=200, data={'barred': 'Sorry, you have been barred by your college. You cannot view/apply to various job and internship opportunities.'})
 		# Recruitment
-		associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(salary__gte=student.salary_expected).filter(session__application_deadline__gte=datetime.date.today())
+		associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(session__application_deadline__gte=datetime.date.today())
 		associations = associations.order_by('session__application_deadline')
-		placement_sessions_assoc = [a['association'] for a in student.sessions.filter( Q(application_deadline__lt=datetime.date.today()) | Q(ended=True)).values('association')]
-		associations = associations.exclude(pk__in=placement_sessions_assoc)
+		placement_sessions_assoc_pk = [a['association__pk'] for a in student.sessions.filter( Q(application_deadline__lt=datetime.date.today()) | Q(ended=True)).values('association__pk')]
+		associations = associations.exclude(pk__in=placement_sessions_assoc_pk)
 		# Dummy
-		dsessions = DummySession.objects.filter(dummy_company__college=student.college, streams__pk__in=[student.stream.pk]).filter(salary__gte=student.salary_expected).filter(application_deadline__gte=datetime.date.today())
+		dsessions = DummySession.objects.filter(dummy_company__college=student.college, streams__pk__in=[student.stream.pk]).filter(application_deadline__gte=datetime.date.today())
 		dsessions = dsessions.order_by('application_deadline')
 		dsessions = dsessions.exclude(pk__in=[ds.pk for ds in student.dummy_sessions.filter(Q(application_deadline__lt=datetime.date.today()) | Q(ended=True))])
 		# Eligibility
@@ -452,19 +452,19 @@ def companies_in_my_college(request, **kwargs):
 		associations = associations.filter(pk__in=only_eligible_assoc)
 		'''
 		# Actual
-		jobs = associations.filter(type='J')
+		jobs = associations.filter(type='J').filter(salary__gte=student.salary_expected) # Filtering acc. to min_salary
 		enrolled_jobs = jobs.filter(session__students__pk__in = [student.pk])
-		unenrolled_jobs = jobs.exclude(pk__in = enrolled_jobs.values('pk'))
-		internships = associations.filter(type='I')
+		unenrolled_jobs = jobs.exclude(pk__in = [j['pk'] for j in enrolled_jobs.values('pk')])
+		internships = associations.filter(type='I') # Not filtering acc. to min_salary because salary=0 for I
 		enrolled_internships = internships.filter(session__students__pk__in = [student.pk])
-		unenrolled_internships = internships.exclude(pk__in = enrolled_internships.values('pk'))
+		unenrolled_internships = internships.exclude(pk__in = [i['pk'] for i in enrolled_internships.values('pk')])
 		# Dummy
-		djobs = dsessions.filter(type='J')
+		djobs = dsessions.filter(type='J').filter(salary__gte=student.salary_expected)
 		enrolled_djobs = djobs.filter(students__pk__in = [student.pk])
-		unenrolled_djobs = djobs.exclude(pk__in = enrolled_djobs.values('pk'))
+		unenrolled_djobs = djobs.exclude(pk__in = [dj['pk'] for dj in enrolled_djobs.values('pk')])
 		dinternships = dsessions.filter(type='I')
 		enrolled_dinternships = dinternships.filter(students__pk__in = [student.pk])
-		unenrolled_dinternships = dinternships.exclude(pk__in = enrolled_dinternships.values('pk'))
+		unenrolled_dinternships = dinternships.exclude(pk__in = [di['pk'] for di in enrolled_dinternships.values('pk')])
 		# # #
 		render_data = {}; context = {}
 		context['datecomp'] = datetime.date.today() + datetime.timedelta(1)
@@ -541,13 +541,14 @@ def apply_to_company(request, sess, **kwargs): # handling withdrawl as well
 		eligibility = criterion.check_eligibility(student)
 		if eligibility is None:
 			return JsonResponse(status=400, data={'error': 'You need to fill the qualifications form before applying.'})
-		message = 'Please get your %s verified by the placement cell faculty first.'
-		if not student.qualifications.is_verified or not student.qualifications.verified_by: # Qualifications.DoesNotExist has been taken care of by 'eligibility is None' condition
+		message = 'Please get your %s verified/updated by the placement cell faculty.'
+#		if not student.qualifications.is_verified or not student.qualifications.verified_by: # Qualifications.DoesNotExist has been taken care of by 'eligibility is None' condition
+		if not student.is_verified or not student.verified_by:
 			message = message % 'qualifications'
 			return JsonResponse(status=400, data={'error': message})
-		elif not student.is_verified or not student.verified_by:
-			message = message % 'profile'
-			return JsonResponse(status=400, data={'error': message})
+#		elif not student.is_verified or not student.verified_by:
+#			message = message % 'profile'
+#			return JsonResponse(status=400, data={'error': message})
 		if eligibility == False:
 			return JsonResponse(status=400, data={'error': 'Sorry, you are not eligible for this %s.' % ('job' if association.type == 'J' else 'internship')})
 		"""

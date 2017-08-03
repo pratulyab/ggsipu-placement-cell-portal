@@ -81,6 +81,7 @@ var Session = (function() {
 						},
 						function() {
 							window.location.href = '';
+							// is_mobile_view ? $('m-session').trigger('reload') : $('session').trigger('reload');
 					});
 					inProcess['nss'] = false;
 				},

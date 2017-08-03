@@ -34,6 +34,8 @@ def download_resume(request, sess_hashid, user_type, profile, **kwargs):
 				return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 			session = PlacementSession.objects.get(association__college=profile.college, pk=session_id)
 			description = " session by " + session.association.company.name
+		if session.ended:
+			return JsonResponse(status=403, data={'error': 'Sorry, permission denied. The session has ended.'})
 		description = ("Internship" if session.association.type == 'I' else "Job") + description
 		return handle_resume_downloads(request, session.students.all(), description)
 	except Exception as e:
@@ -53,6 +55,8 @@ def download_resume_dummy(request, dsess_hashid, user_type, profile, **kwargs):
 	try:
 		dsession_id = settings.HASHID_DUMMY_SESSION.decode(dsess_hashid)[0]
 		dsession = DummySession.objects.get(dummy_company__college=college, pk=dsession_id)
+		if dsession.ended:
+			return JsonResponse(status=403, data={'error': 'Sorry, permission denied. The session has ended.'})
 		description = ("Internship" if dsession.type == 'I' else "Job") + " session by " + dsession.dummy_company.name
 		return handle_resume_downloads(request, dsession.students.all(), description)
 	except:
@@ -77,6 +81,10 @@ def serve_zipped_file(request, user_hashid, uuid):
 			else:
 				raise PermissionDenied
 		user_request = dl_request.requests.get(requester=request.user)
+		
+		if user_request.requested_on and (datetime.utcnow() - user_request.requested_on.replace(tzinfo=None)).days > 3:
+			return JsonResponse(status=400, data={'error': 'The download link has expired.'})
+
 		if user_request.downloaded_on and (datetime.utcnow() - user_request.downloaded_on.replace(tzinfo=None)).total_seconds() < 300:# and user_request.downloaded:
 			# User has already downloaded it once. Requesting for another creation within 5min only.
 			if is_ajax:
@@ -122,7 +130,7 @@ def handle_resume_downloads(request, students_queryset, description):
 				# User has already downloaded it once. Requesting for another creation within 20min only.
 				return JsonResponse(status=400, data={'error': 'You have already downloaded the requested data. You must wait at least 20 min from your last download.'})
 			else:
-				# Update requested_on
+				# Update requested_on on successful download grant
 				user_request.requested_on = datetime.now()
 				user_request.save()
 		handle_resume_dl_task.delay(dl_request.students, request.user.pk, dl_request.pk, link, description)
@@ -133,6 +141,6 @@ def handle_resume_downloads(request, students_queryset, description):
 		students = ','.join(s['profile__username'] for s in students_queryset.values('profile__username').order_by('profile__username'))
 		dlr = DLRequest.objects.create(batch=batch, students=students)
 		# Create new Requester. This user is asking for this, for the first time.
-		Requester.objects.create(requester=request.user, requested=dlr)
+		Requester.objects.create(requester=request.user, requested=dlr, requested_on=datetime.now())
 		handle_resume_dl_task.delay(students, request.user.pk, dlr.pk, link, description)
 	return JsonResponse(status=200, data={'message': 'Compressed files successfully'})
