@@ -20,6 +20,7 @@ from dummy_company.forms import DummySessionFilterForm
 from faculty.forms import FacultySignupForm, FacultyProfileForm, EnrollmentForm, EditGroupsForm, ChooseFacultyForm, VerifyStudentProfileForm
 from faculty.models import Faculty
 from notification.models import Notification
+from notification.forms import NotifySessionStudentsForm
 from recruitment.forms import SessionFilterForm
 from student.models import Qualification, Student
 from student.forms import QualificationForm, ScoreMarksheetForm, CGPAMarksheetForm, ScoreForm, QualForm
@@ -110,6 +111,7 @@ def faculty_home(request, **kwargs):
 	context['edit_account_form'] = AccountForm(instance=user)
 	context['edit_faculty_form'] = FacultyProfileForm(instance=faculty)
 	context['enrollment_form'] = EnrollmentForm(faculty=faculty)
+	context['notify_session_students_form'] = NotifySessionStudentsForm()
 	context['session_filter_form'] = SessionFilterForm(profile=faculty.college)
 	context['dsession_filter_form'] = DummySessionFilterForm(college=faculty.college)
 	try:
