@@ -180,7 +180,15 @@ var VerifyStu = (function() {
 							removePreloader();
 						},
 						success: function(data, status, xhr) {
-							swal('Success', data.message ? data.message : "Changes have been saved", 'success');
+							swal({
+								title: 'Verified!',
+								text: (data.message ? data.message : "Student has been successfully verified."),
+								type: 'success',
+								allowEscapeKey: false,
+								allowOutsideClick: false,
+								},
+								reset_verification_forms
+							);
 						},
 						error: function(xhr, status, error) {
 							if (xhr.responseJSON && xhr.responseJSON['errors']){

@@ -34,8 +34,8 @@
 									{{ stream.name }}, 
 								{% endfor %}
 							</p>
-							<p><b>Description:</b> {{ enrolled.desc }}</p>
-							<p><b>Company Details:</b> {{ enrolled.company.details }} </p>
+							<p><b>Description:</b> {{ enrolled.desc|linebreaksbr }}</p>
+							<p><b>Company Details:</b> {{ enrolled.company.details|linebreaksbr }} </p>
 							<p><b>Website:</b> <a target="_blank" href="{{ enrolled.company.website }}">{{ enrolled.company.website }}</a></p>
 							{% with enrolled.company.profile.social as social %}
 								<ul>
@@ -79,11 +79,11 @@
 							<p><b>Programme:</b> {{ unenrolled.programme.name }}</p>
 							<p><b>Streams:</b> 
 								{% for stream in unenrolled.streams.all %}
-									{{ stream.name }}
+									{{ stream.name }},
 								{% endfor %}
 							</p>
-							<p><b>Description:</b> {{ unenrolled.desc }}</p>
-							<p><b>Company Details:</b> {{ unenrolled.company.details }} </p>
+							<p><b>Description:</b> {{ unenrolled.desc|linebreaksbr }}</p>
+							<p><b>Company Details:</b> {{ unenrolled.company.details|linebreaksbr }} </p>
 							<p><b>Website:</b> <a target="_blank" href="{{ unenrolled.company.website }}">{{ unenrolled.company.website }}</a></p>
 							{% with unenrolled.company.profile.social as social %}
 								<ul>

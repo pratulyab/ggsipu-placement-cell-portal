@@ -182,7 +182,10 @@ def create_dummy_session(request, **kwargs):
 			criterion, created = SelectionCriteria.objects.get_or_create(years=data['years'], is_sub_back=data['is_sub_back'], tenth=data['tenth'], twelfth=data['twelfth'], graduation=data['graduation'], post_graduation=data['post_graduation'], doctorate=data['doctorate'])
 			dsession = f.save(commit=False)
 			dsession.selection_criteria = criterion
-			dsession.save()
+			try:
+				dsession.save()
+			except:
+				return JsonResponse(status=400, data={'error': 'Please ensure that there are no unsupported characters in the details.'})
 			try:
 				f.save_m2m()
 			except IntegrityError as error:
@@ -361,7 +364,10 @@ def edit_dummy_session(request, dsess_hashid, user_type, profile, **kwargs):
 		return JsonResponse(status=400, data={'error': 'Sorry, you can\'t make this request.'})
 	f = EditDummySessionForm(request.POST, instance=dsession)
 	if f.is_valid():
-		f.save()
+		try:
+			f.save()
+		except:
+			return JsonResponse(status=400, data={'error': 'Please ensure that there are no unsupported characters in the details.'})
 		message = 'Session Details have been updated successfully.'
 		if f.should_notify_students():
 			try:

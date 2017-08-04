@@ -336,7 +336,7 @@ def edit_qualifications(request, **kwargs):
 #				context = {'qual_form': f, 'success_msg': 'Student profile has been updated successfully!'}
 #				form_html = render(request, 'faculty/verify_qual_form.html', context).content.decode('utf-8')
 #				return HttpResponse(form_html)
-				return JsonResponse(status=200, data={'message': 'Student has been verified.\nTo verify another student, go to "Get Student".'})
+				return JsonResponse(status=200, data={'message': 'Student has been verified successfully.'})
 			return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'error': 'Please correct the errors as indicated in the form.'})
 ##		else:
 ##			return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})

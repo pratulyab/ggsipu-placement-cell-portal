@@ -58,6 +58,8 @@ def associate(request, **kwargs):
 			# # #
 		except (ValidationError, IntegrityError) as error:
 			return JsonResponse(status=400, data={'error': error.__str__(), 'message': 'Please correct the errors as indicated in the form.'})
+		except:
+			return JsonResponse(status=400, data={'error': 'Please ensure that there are no unsupported characters in the details.'})
 		return JsonResponse(status=200, data={
 				'message': 'Request sent!\nIf you wish to delete the request for any reasons, go to "My Requests" tab and delete the request.',
 				'refresh': True
@@ -167,7 +169,10 @@ def edit_session(request, sess_hashid, **kwargs):
 			association = session.association
 #			association.salary = f.cleaned_data['salary']
 			association.desc = f.cleaned_data['desc']
-			association.save()
+			try:
+				association.save()
+			except:
+				return JsonResponse(status=400, data={'error': 'Please ensure that there are no unsupported characters in the details.'})
 	# Notifying the other party
 		actor, target = (profile, session.association.college) if user_type == 'CO' else (profile, session.association.company)
 		link = "%s://%s" % (('https' if settings.USE_HTTPS else 'http'), str(get_current_site(request)) + reverse('manage_session', kwargs={'sess_hashid': sess_hashid}))
