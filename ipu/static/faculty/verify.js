@@ -285,7 +285,9 @@ var VerifyStu = (function() {
 				});
 				$('i.left-right').tooltip();
 //				console.log($('body').find('ul'));
-
+				if (data['verified']) {
+					$('#profile-div').prepend('<h4 class="teal-text center-align">(Verified)</h4>');
+				}
 				// Trigerring next tab
 				tabs[1].click()
 			},

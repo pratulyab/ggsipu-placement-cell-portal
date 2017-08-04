@@ -188,7 +188,7 @@ def get_enrollment_number(request, profile, user_type):
 			klass_hashid = settings.HASHID_KLASS.encode(12)
 			twelfth_form = render(request, 'faculty/verify_scores.html',{'board_form': twelfth_form, 'scores': scores, 'hashid':klass_hashid}).content.decode('utf-8')
 # # # # # # # # # #
-			return JsonResponse(status=200, data={'tenth': tenth_form, 'twelfth': twelfth_form, 'profile': profile_form, 'grad': grad_form})
+			return JsonResponse(status=200, data={'tenth': tenth_form, 'twelfth': twelfth_form, 'profile': profile_form, 'grad': grad_form, 'verified': bool(student.is_verified and student.verified_by)})
 #			return HttpResponse(profile_form+"<<<>>>"+qual_form)
 		else:
 			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})

@@ -14,6 +14,9 @@
 	{% if c.doctorate %}
 		<p>Doctorate Percentage: <b>{{ c.doctorate }}%</b></p>
 	{% endif %}
+	{% if not c.tenth and not c.twelfth and not c.graduation and not c.post_graduation and not c.doctorate %}
+		<br><p>There are <b>no</b> percentage restrictions.</p>
+	{% endif %}
 	{% if c.years %}
 		<p>Students of year(s) <b>{{ c.years }}</b> can appear</p>
 	{% endif %}
