@@ -760,7 +760,7 @@ def notify_session(request, sess_hashid, user_type, profile):
 		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
 	f = NotifySessionStudentsForm(request.POST)
 	if f.is_valid():
-		f.notify_all(students=session.students.all())
+		f.notify_all(students=session.students.all() , actor = profile.profile)
 		return JsonResponse(status=200, data={'success_msg': 'Done.'})
 	return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
 

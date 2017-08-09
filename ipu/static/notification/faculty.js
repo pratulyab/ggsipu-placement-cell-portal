@@ -95,7 +95,7 @@ var Notification = (function() {
                     if ($(this).is(':checked')) {
                         removeError($('#id_sms_message'));
                         $('#id_sms_message_container').show();
-                        $('#id_sms_message').attr('data-length' , '160');
+                        $('#id_sms_message').attr('data-length' , '155');
                         $('#id_sms_message').characterCounter();
                   } else {
                         $('#id_sms_message_container').hide();

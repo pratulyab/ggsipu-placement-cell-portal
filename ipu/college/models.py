@@ -60,12 +60,7 @@ class College(models.Model):
 		return "%s (%s)" % (self.name.title(), self.code)
 
 	def get_short_name(self):
-		output = ""
-		inp = self.name.replace("Of","",1)
-		inp = inp.replace("And","",1)
-		for i in inp.upper().split():
-			output += i[0]	
-		return output	
+		return (''.join([word[0] for word in self.name.split() if word.istitle()]))	
 
 	def get_absolute_url(self):
 		return "/user/%s/" % self.profile.username

@@ -1,8 +1,13 @@
 from django import forms
-from notification.models import Issue , IssueReply , Report
+from notification.models import Issue , IssueReply , Report , Notification , NotificationData
 from django.utils.translation import ugettext_lazy as _
-
+from account.tasks import send_mass_mail_task
 from material import *
+import logging
+
+notificationLogger = logging.getLogger('notification')
+
+
 
 class SelectStreamsForm(forms.Form):
 	def __init__(self, *args , **kwargs):
@@ -65,7 +70,7 @@ class CreateNotificationForm(forms.Form):
 	message = forms.CharField(widget=forms.Textarea)
 	if_email = forms.BooleanField(label = "Send E-Mail" , widget = forms.CheckboxInput())
 	if_sms = forms.BooleanField(label = "Send SMS" , widget = forms.CheckboxInput())
-	sms_message = forms.CharField(label = "Write SMS" , max_length = 128 , required = False , widget=forms.Textarea)
+	sms_message = forms.CharField(label = "Write SMS" , max_length = 155 , required = False , widget=forms.Textarea)
 
 	class Meta:
 		help_texts = {
@@ -193,7 +198,7 @@ class NotifySessionStudentsForm(forms.Form):
 	message = forms.CharField(widget=forms.Textarea, required=True)
 	notification = forms.BooleanField(label="Send Notification" , widget=forms.CheckboxInput(), required=False)
 	mail = forms.BooleanField(label="Send e-mail" , widget=forms.CheckboxInput(), required=False)
-	sms = forms.BooleanField(label="Send SMS" , widget=forms.CheckboxInput(), required=False)
+	#sms = forms.BooleanField(label="Send SMS" , widget=forms.CheckboxInput(), required=False)
 
 	def clean_subject(self):
 		subject = self.cleaned_data['subject']
@@ -208,17 +213,34 @@ class NotifySessionStudentsForm(forms.Form):
 			raise forms.ValidationError(_('You must choose at least one of the delivery methods'))
 		return self.cleaned_data
 
-	def notify_all(self, students):
-		if self.cleaned_data['sms']:
-			# Add SMS task
-			pass
+	def notify_all(self, students , actor):
 		if self.cleaned_data['mail']:
-			# Add mass_mail task
-			pass
-		if self.cleaned_data['notification']:
-			# Create Notification
-			pass
+			student_pks = querysets_to_values(students.values('profile__pk') , 'profile__pk')
+			student_enrolls = querysets_to_values(students.values('profile__username') , 'profile__username')
+			subject = self.cleaned_data.get('subject' , None)
+			message = self.cleaned_data.get('message' , None)
+			send_mass_mail_task.delay(subject , message , student_pks)
+			notificationLogger.info('Session E-Mail sent to %s' % (student_enrolls))
+			return
 
+		if self.cleaned_data['notification']:
+			subject = self.cleaned_data.get('subject' , None)
+			message = self.cleaned_data.get('message' , None)
+			student_enrolls = querysets_to_values(students.values('profile__username') , 'profile__username')
+			notification_data_object = NotificationData.objects.create(subject = subject , message = message)
+			notificationLogger.info('Session notification created for %s' % (student_enrolls))
+			for student in students:
+				student_customeuser_object = student.profile
+				notification_object = Notification.objects.create(actor = actor, target = student_customeuser_object , notification_data = notification_data_object)
+				notification_object.save()
+			return
+
+
+	def querysets_to_values(queryset , key):
+		result_list = list()
+		for modal_instance in queryset:
+			result_list.append(modal_instance[key])
+		return result_list
 #choice = forms.ModelChoiceField(queryset=MyChoices.Objects.all())
 
 class ReportBugForm(forms.ModelForm):

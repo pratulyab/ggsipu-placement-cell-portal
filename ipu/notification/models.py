@@ -9,7 +9,7 @@ from college.models import College
 class NotificationData(models.Model):
 	message = models.TextField(_("Message"), max_length = 4096 , blank = True)
 	subject = models.CharField(_('Subject') , max_length = 256 , blank = False)
-	sms_message = models.CharField(_('SMS Message') , max_length = 128 , blank = True, null = True)
+	sms_message = models.CharField(_('SMS Message') , max_length = 159 , blank = True, null = True)
 	def __str__(self):
 		return self.subject + "at : " + self.creation_time
 

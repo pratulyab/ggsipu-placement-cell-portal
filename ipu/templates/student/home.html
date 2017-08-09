@@ -114,7 +114,7 @@
 				<a class="collapsible-header"><i class="fa fa-bell" aria-hidden="true"></i>Notifications{% if badge %}<span class="new badge">{{ badge }}</span>{% endif %}</a>
 				<div class="collapsible-body" style="padding: 0 !important;">
 					<ul>
-						<li class="child-li" data-child_div="#your-notifications-div"><a id="m-your-notifications" detail-url="{% url 'notification_detail' %}" href="#!"><i></i>Your Notifications</a></li>
+						<li class="child-li" data-child_div="#your-notifications-div"><a id="m-your-notifications" href="#!"><i></i>Your Notifications</a></li>
 						<li class="child-li" data-child_div="#help-div"><a id="m-help" href="#!"><i></i>Report an Issue</a></li>
 						<li class="child-li" data-child_div="#view-issues-div"><a id="m-view-issues" url="{% url 'view_solution_list' %}" href="#!"><i></i>Your Issues</a></li>
 					</ul>
@@ -169,13 +169,13 @@
 			<div class="row">
 				<div class="col s3">
 					<ul class="tabs">
-						<li class="tab col s12"><a id = "your-notifications" class="active" href="#your-notifications-div" detail-url = "{% url 'notification_detail' %}">Your Notifications</a></li>
+						<li class="tab col s12"><a id = "your-notifications" class="active" href="#your-notifications-div">Your Notifications</a></li>
 						<li class="tab col s12"><a id = "help" href="#help-div">Report an Issue</a></li>
 						<li class="tab col s12"><a id = "view-issues" href="#view-issues-div" url="{% url 'view_solution_list' %}">Your Issues</a></li>
 					</ul>
 				</div>
 				<div class=" col s8 offset-s1">
-					<div id="your-notifications-div" class="col s12">
+					<div id="your-notifications-div" class="col s12" detail-url="{% url 'notification_detail' %}">
 					<p class="info" style="display: none;">Information sent to you by college is displayed here. Interact with college officials.</p>
 							<ul id = "your-notifications-div-ul" class="collection">
 								<li class="collection-item avatar"><i class="material-icons circle">report_problem</i><span class="title">None</span><p>Please check your Internet Connection. We'll get back to you soon.</p></li>
@@ -295,7 +295,7 @@
 	<script type="text/javascript" src="{% static 'common/sessions.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
 	<script type="text/javascript" src="{% static 'student/update.js' %}"></script>
-	<script type="text/javascript" src="{% static 'notification/student.js' %}"></script>
+	<script type="text/javascript" src="{% static 'notification/student.js' %}?ver=1"></script>
 	<script type="text/javascript" src="{% static 'student/apply.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>

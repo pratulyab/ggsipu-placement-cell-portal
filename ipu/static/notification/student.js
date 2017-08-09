@@ -284,7 +284,7 @@ function fieldEvaluator(input_field , max_length){
     	}
     }
     function viewNotificationDetails(identifier){
-    	var url = $('#your-notifications').attr('detail-url');
+    	var url = $('#your-notifications-div').attr('detail-url');
     	$.ajax({
     		url : url,
     		type : 'GET',
