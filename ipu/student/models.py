@@ -179,6 +179,9 @@ class Student(models.Model):
 	def is_not_interested(self):
 		return not bool(sessions_applied_to.count() or dsessions_applied_to.count()) # Whether the student ever applied for an opportunity
 
+	class Meta:
+		ordering = ('profile__username',)
+
 class Qualification(models.Model):
 	student = models.OneToOneField(Student, related_name="qualifications")
 	tenth = models.DecimalField(_('Xth Percentage'), max_digits=4, decimal_places=2, validators=[validators.MinValueValidator(Decimal('33'))], default=Decimal(33))

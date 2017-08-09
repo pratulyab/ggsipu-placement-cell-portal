@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, InternalError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -184,7 +184,7 @@ def create_dummy_session(request, **kwargs):
 			dsession.selection_criteria = criterion
 			try:
 				dsession.save()
-			except:
+			except InternalError:
 				return JsonResponse(status=400, data={'error': 'Please ensure that there are no unsupported characters in the details.'})
 			try:
 				f.save_m2m()
@@ -366,7 +366,7 @@ def edit_dummy_session(request, dsess_hashid, user_type, profile, **kwargs):
 	if f.is_valid():
 		try:
 			f.save()
-		except:
+		except InternalError:
 			return JsonResponse(status=400, data={'error': 'Please ensure that there are no unsupported characters in the details.'})
 		message = 'Session Details have been updated successfully.'
 		if f.should_notify_students():

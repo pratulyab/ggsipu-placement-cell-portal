@@ -4,7 +4,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.db.utils import IntegrityError
+from django.db.utils import IntegrityError, InternalError
 from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
@@ -58,7 +58,7 @@ def associate(request, **kwargs):
 			# # #
 		except (ValidationError, IntegrityError) as error:
 			return JsonResponse(status=400, data={'error': error.__str__(), 'message': 'Please correct the errors as indicated in the form.'})
-		except:
+		except InternalError:
 			return JsonResponse(status=400, data={'error': 'Please ensure that there are no unsupported characters in the details.'})
 		return JsonResponse(status=200, data={
 				'message': 'Request sent!\nIf you wish to delete the request for any reasons, go to "My Requests" tab and delete the request.',
@@ -171,7 +171,7 @@ def edit_session(request, sess_hashid, **kwargs):
 			association.desc = f.cleaned_data['desc']
 			try:
 				association.save()
-			except:
+			except InternalError:
 				return JsonResponse(status=400, data={'error': 'Please ensure that there are no unsupported characters in the details.'})
 	# Notifying the other party
 		actor, target = (profile, session.association.college) if user_type == 'CO' else (profile, session.association.company)
@@ -353,37 +353,38 @@ def mysessions(request):
 				return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['S'])})
 			sessions = student.sessions.all()
 			dsessions = student.dummy_sessions.all()
-			sessions_list = []
-			dsessions_list = []
+			all_sessions_list = []
 			for s in sessions:
 				assoc = s.association
 				data = {}
 				data['sessobj'] = s
 				data['sessid'] = settings.HASHID_PLACEMENTSESSION.encode(s.pk)
 				data['salary'] = "%d LPA" % assoc.salary
-				data['company'] = assoc.company.name.title()
+				data['company'] = assoc.company.name.title() if assoc.company.name.islower() else assoc.company.name
 				data['type'] = "Internship" if assoc.type == 'I' else "Job"
 				data['photo'] = assoc.company.photo
 				data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
 				data['programme'] = assoc.programme
 				data['years'] = assoc.session.selection_criteria.years
 				data['students'] = s.students.count()
-#				data['is_dummy'] = False
-				sessions_list.append(data)
+				data['status'] = s.status
+				data['is_dummy'] = False
+				all_sessions_list.append(data)
 			for ds in dsessions:
 				data = {}
 				data['dsessobj'] = ds
 				data['dsessid'] = settings.HASHID_DUMMY_SESSION.encode(ds.pk)
 				data['salary'] = "%d LPA" % ds.salary
-				data['company'] = ds.dummy_company.name.title()
+				data['company'] = ds.dummy_company.name.title() if ds.dummy_company.name.islower() else ds.dummy_company.name
 				data['type'] = "Internship" if ds.type == 'I' else "Job"
 				data['streams'] = ', '.join([s.name.title() for s in ds.streams.all()])
 				data['programme'] = ds.programme
 				data['years'] = ds.selection_criteria.years
 				data['students'] = ds.students.count()
-#				data['is_dummy'] = True
-				dsessions_list.append(data)
-			html = render(request, 'student/mysessions.html', {'sessions': sessions_list}).content.decode('utf-8')
+				data['status'] = ds.status
+				data['is_dummy'] = True
+				all_sessions_list.append(data)
+			html = render(request, 'student/mysessions.html', {'sessions': all_sessions_list}).content.decode('utf-8')
 		elif type == 'CO':
 			try:
 				company = user.company
