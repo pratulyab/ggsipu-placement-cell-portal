@@ -758,6 +758,8 @@ def notify_session(request, sess_hashid, user_type, profile):
 			session = PlacementSession.objects.get(association__college=profile, pk=session_pk)
 	except:
 		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+	if not session.students.exists():
+		return JsonResponse(status=400, data={'error': 'There are no students in the session.'})
 	f = NotifySessionStudentsForm(request.POST)
 	if f.is_valid():
 		f.notify_all(students=session.students.all() , actor = profile.profile)

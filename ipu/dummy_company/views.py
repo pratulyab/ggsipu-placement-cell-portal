@@ -393,6 +393,8 @@ def notify_dsession(request, dsess_hashid, user_type, profile):
 		dsession = DummySession.objects.get(dummy_company__college=profile, pk=dsession_pk)
 	except:
 		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
+	if not dsession.students.exists():
+		return JsonResponse(status=400, data={'error': 'There are no students in the session.'})
 	f = NotifySessionStudentsForm(request.POST)
 	if f.is_valid():
 		f.notify_all(students=dsession.students.all() , actor = profile.profile)

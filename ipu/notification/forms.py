@@ -187,7 +187,7 @@ class NotifySessionStudentsForm(forms.Form):
 	layout = Layout(
 			Row('subject'),
 			Row('message'),
-			Fieldset('Choose at least one', Span4('notification'), Span4('mail'), Span4('sms')),
+			Fieldset('Choose at least one', Span6('notification'), Span6('mail')),#, Span4('sms')),
 		)
 	
 	def __init__(self, *args, **kwargs):
@@ -208,35 +208,33 @@ class NotifySessionStudentsForm(forms.Form):
 
 	def clean(self):
 		data = self.cleaned_data
-		notification, mail, sms = data.get('notification', False), data.get('mail', False), data.get('sms', False)
-		if not (notification or mail or sms):
+#		notification, mail, sms = data.get('notification', False), data.get('mail', False), data.get('sms', False)
+		notification, mail = data.get('notification', False), data.get('mail', False)
+		if not (notification or mail):# or sms):
 			raise forms.ValidationError(_('You must choose at least one of the delivery methods'))
 		return self.cleaned_data
 
 	def notify_all(self, students , actor):
-		if self.cleaned_data['mail']:
-			student_pks = querysets_to_values(students.values('profile__pk') , 'profile__pk')
-			student_enrolls = querysets_to_values(students.values('profile__username') , 'profile__username')
+		if self.cleaned_data.get('mail'):
+			student_pks = self.querysets_to_values(students.values('profile__pk') , 'profile__pk')
+			student_enrolls = self.querysets_to_values(students.values('profile__username') , 'profile__username')
 			subject = self.cleaned_data.get('subject' , None)
 			message = self.cleaned_data.get('message' , None)
 			send_mass_mail_task.delay(subject , message , student_pks)
 			notificationLogger.info('Session E-Mail sent to %s' % (student_enrolls))
-			return
 
-		if self.cleaned_data['notification']:
+		if self.cleaned_data.get('notification'):
 			subject = self.cleaned_data.get('subject' , None)
 			message = self.cleaned_data.get('message' , None)
-			student_enrolls = querysets_to_values(students.values('profile__username') , 'profile__username')
+			student_enrolls = self.querysets_to_values(students.values('profile__username') , 'profile__username')
 			notification_data_object = NotificationData.objects.create(subject = subject , message = message)
-			notificationLogger.info('Session notification created for %s' % (student_enrolls))
 			for student in students:
 				student_customeuser_object = student.profile
-				notification_object = Notification.objects.create(actor = actor, target = student_customeuser_object , notification_data = notification_data_object)
-				notification_object.save()
-			return
+				Notification.objects.create(actor = actor, target = student_customeuser_object , notification_data = notification_data_object)
+			notificationLogger.info('Session notification created for %s' % (student_enrolls))
 
 
-	def querysets_to_values(queryset , key):
+	def querysets_to_values(self, queryset , key):
 		result_list = list()
 		for modal_instance in queryset:
 			result_list.append(modal_instance[key])

@@ -49,13 +49,14 @@ var Session = (function() {
 			url = $envelope.attr('href'),
 			form = $lightbox.find('#notify-session-students-form');
 		$lightbox.css('display', 'flex');
+		form.off('submit'); // IMP; same form
+		clearErrors('#' + form.attr('id'));
 		form.on('submit', function(e){
 			e.preventDefault();
 			if (inProcess['nss'])
 				return;
 			form = $(form);
 			var form_id = '#'+form.attr('id');
-			clearErrors(form_id)
 			var form_data = new FormData($(this)[0]);
 			inProcess['nss'] = true;
 			$.ajax({
@@ -80,14 +81,20 @@ var Session = (function() {
 							allowEscapeKey: false,
 						},
 						function() {
-							window.location.href = '';
-							// is_mobile_view ? $('m-session').trigger('reload') : $('session').trigger('reload');
+							$lightbox.find('.fa-times').parent().click();
+							if (data['refresh']) {
+								if (data['location'])
+									window.location.href = data['location'];
+								else
+									is_mobile_view ? $('m-session').trigger('reload') : $('session').trigger('reload');
+							}
 					});
 					inProcess['nss'] = false;
 				},
 				error: function(xhr, status, error){
 					if (xhr.responseJSON['error']){
-						$(form).parent().prepend($('<small class="error">'+xhr.responseJSON['error']+'</small>'))
+						swal('Error!', xhr.responseJSON['error'], 'error');
+						$(form).parent().prepend($('<small class="red-text error">'+xhr.responseJSON['error']+'</small>'))
 					}
 					var form_errors = xhr.responseJSON['errors'];
 					addErrorsToForm(form_errors, form_id);
