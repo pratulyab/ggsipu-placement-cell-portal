@@ -421,6 +421,8 @@ def filter_dsessions(request, user_type, profile):
 			data['salary'] = "%d LPA" % ds.salary
 			data['dcompany'] = ds.dummy_company.name.title()
 			data['type'] = "Internship" if ds.type == 'I' else "Job"
+			data['programme'] = ds.programme
+			data['years'] = ds.selection_criteria.years
 			data['streams'] = ', '.join([s.name.title() for s in ds.streams.all()])
 			data['students'] = ds.students.count()
 			dsessions_list.append(data)

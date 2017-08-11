@@ -429,12 +429,12 @@ def companies_in_my_college(request, **kwargs):
 		if student.is_barred:
 			return JsonResponse(status=200, data={'barred': 'Sorry, you have been barred by your college. You cannot view/apply to various job and internship opportunities.'})
 		# Recruitment
-		associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(session__application_deadline__gte=datetime.date.today())
+		associations = Association.objects.filter(college=student.college, approved=True, streams__pk__in=[student.stream.pk]).filter(~Q(session=None)).filter(session__application_deadline__gte=datetime.date.today()).filter(session__selection_criteria__years__contains=student.current_year)
 		associations = associations.order_by('session__application_deadline')
 		placement_sessions_assoc_pk = [a['association__pk'] for a in student.sessions.filter( Q(application_deadline__lt=datetime.date.today()) | Q(ended=True)).values('association__pk')]
 		associations = associations.exclude(pk__in=placement_sessions_assoc_pk)
 		# Dummy
-		dsessions = DummySession.objects.filter(dummy_company__college=student.college, streams__pk__in=[student.stream.pk]).filter(application_deadline__gte=datetime.date.today())
+		dsessions = DummySession.objects.filter(dummy_company__college=student.college, streams__pk__in=[student.stream.pk]).filter(application_deadline__gte=datetime.date.today()).filter(selection_criteria__years__contains=student.current_year)
 		dsessions = dsessions.order_by('application_deadline')
 		dsessions = dsessions.exclude(pk__in=[ds.pk for ds in student.dummy_sessions.filter(Q(application_deadline__lt=datetime.date.today()) | Q(ended=True))])
 		# Eligibility

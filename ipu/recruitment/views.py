@@ -789,6 +789,8 @@ def filter_sessions(request, user_type, profile):
 			data['type'] = "Internship" if assoc.type == 'I' else "Job"
 			data['photo'] = assoc.company.photo
 			data['streams'] = ', '.join([s.name.title() for s in assoc.streams.all()])
+			data['programme'] = assoc.programme
+			data['years'] = assoc.session.selection_criteria.years
 			data['students'] = s.students.count()
 			sessions_list.append(data)
 		if user_type == 'CO':

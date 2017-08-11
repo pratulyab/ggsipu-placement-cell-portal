@@ -182,6 +182,7 @@ var Session = (function() {
 				if (!$div.length)
 					$div = $('#sessions_div');
 				$div.html(data['html']);
+				$div.find('a.envelope').on('click', notifySessionStudents);
 				Materialize.toast($('<span class="flow-text green-text" />').html('Filtered successfully!').css('fontWeight', 'bold'), 5000);
 				inProcess[semaphore] = false;
 			},
