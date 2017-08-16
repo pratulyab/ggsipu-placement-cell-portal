@@ -216,6 +216,8 @@ def dummy_excel(request, dsess, **kwargs):
 		return redirect(reverse(settings.PROFILE_CREATION_URL[user_type]))
 	college = requester['profile']
 	if user_type == 'F':
+		if not request.user.groups.filter(name__in=['Placement Handler', 'Notifications Manager']):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		college = college.college
 	try:
 		dsession_id = settings.HASHID_DUMMY_SESSION.decode(dsess)[0]
@@ -387,6 +389,8 @@ def edit_dummy_session(request, dsess_hashid, user_type, profile, **kwargs):
 @require_POST
 def notify_dsession(request, dsess_hashid, user_type, profile):
 	if user_type == 'F':
+		if not request.user.groups.filter(name__in=['Placement Handler', 'Notifications Manager']):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		profile = profile.college
 	try:
 		dsession_pk = settings.HASHID_DUMMY_SESSION.decode(dsess_hashid)[0]
@@ -407,7 +411,7 @@ def notify_dsession(request, dsess_hashid, user_type, profile):
 @require_POST
 def filter_dsessions(request, user_type, profile):
 	if user_type == 'F':
-		if not request.user.groups.filter(name='Placement Handler'):
+		if not request.user.groups.filter(name__in=['Placement Handler', 'Notifications Manager']):
 			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		profile = profile.college
 	f = DummySessionFilterForm(request.POST, college=profile)

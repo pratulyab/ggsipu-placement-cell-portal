@@ -91,8 +91,10 @@
     {% endif %}
 
     {% if perms.recruitment.handle_placement %}
-    <li id="m-request" data-main_div="#requests" data-url="/college/association_requests/"><a class="waves-effect" href="#requests"><i class="fa fa-envelope" aria-hidden="true"></i>Association Requests</a></li>
-    <li id="m-session" data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>Sessions</a></li>
+	    <li id="m-request" data-main_div="#requests" data-url="/college/association_requests/"><a class="waves-effect" href="#requests"><i class="fa fa-envelope" aria-hidden="true"></i>Association Requests</a></li>
+	{% endif %}
+	{% if perms.recruitment.handle_placement or perms.notification.manage_notification %}
+    	<li id="m-session" data-main_div="#sessions_div"><a class="waves-effect" href="#!"><i class="fa fa-clock-o" aria-hidden="true"></i>College Sessions</a></li>
 	{% endif %}  
     {% if perms.notification.manage_notification %}
  
@@ -148,8 +150,8 @@
 	{% if perms.notification.manage_notification %}
 	<li id = "notification" class="tab col s2" url="{% url 'select_streams' %}"><a id="notification-anchor" href="#notifications">Notification</a></li>
 	{% endif %}
-	{% if perms.recruitment.handle_placement %}
-		<li id="session" class="tab col s2"><a href="#sessions_div">Sessions</a></li>
+	{% if perms.recruitment.handle_placement or perms.notification.manage_notification %}
+		<li id="session" class="tab col s2"><a href="#sessions_div">College Sessions</a></li>
 	{% endif %}
 	<li class="tab col s2"><a href="#settings">Settings</a></li>
 {% endblock %}
@@ -290,7 +292,7 @@
 			</div>
 		</div>
 	</div>
-{% if perms.recruitment.handle_placement %}
+{% if perms.recruitment.handle_placement or perms.notification.manage_notification %}
 	<div id="sessions_div" class="col s12"></div>
 {% endif %}
 
@@ -300,7 +302,7 @@
 	{% endif %}
 {% endif %}
 
-{% if perms.recruitment.handle_placement %}
+{% if perms.recruitment.handle_placement or perms.notification.manage_notification %}
 <!-- Session Filter Forms' SideNav -->
 <ul id="session-filter-forms-out" class="side-nav">
 	<li>
@@ -346,7 +348,7 @@
 
 {% block scripts %}
 	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
-	<script type="text/javascript" src="{% static 'common/sessions.js' %}?ver=2"></script>
+	<script type="text/javascript" src="{% static 'common/sessions.js' %}?ver=3"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
 	<script type="text/javascript" src="{% static 'notification/faculty.js' %}?ver=1"></script>
 	<script type="text/javascript" src="{% static 'faculty/verify.js' %}?ver=2"></script>

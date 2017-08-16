@@ -58,6 +58,7 @@ var Session = (function() {
 			form = $(form);
 			var form_id = '#'+form.attr('id');
 			var form_data = new FormData($(this)[0]);
+			clearErrors(form_id);
 			inProcess['nss'] = true;
 			$.ajax({
 				url: url,

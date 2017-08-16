@@ -10,7 +10,9 @@
 				<p><b>Years: </b>{{ dsession.years }}</p>
 				<p><b><span class="orange-text text-darken-2">{{ dsession.students }}</span></b> student{{ dsession.students|pluralize }} in the session</p>
 				<span class="secondary-content">
-					<a href="{% url 'manage_dsession' dsession.dsess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>
+					{% if request.user.type == 'C' or request.user.type == 'F' and perms.recruitment.handle_placement %}
+						<a href="{% url 'manage_dsession' dsession.dsess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>
+					{% endif %}
 					<a href="{% url 'notify_dsession' dsession.dsess_hashid %}" class="envelope"><i class="fa fa-2x fa-envelope"></i></a>
 					<a href="{% url 'dexcel' dsession.dsess_hashid %}" class="excel"><i class="fa fa-2x fa-file-excel-o"></i></a>
 				</span>

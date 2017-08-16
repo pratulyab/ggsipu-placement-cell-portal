@@ -420,7 +420,7 @@ def mysessions(request):
 					verdict = True
 				if verdict:
 					return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['F'])})
-				if not request.user.groups.filter(name='Placement Handler'):
+				if not request.user.groups.filter(name__in=['Placement Handler', 'Notifications Manager']):
 					return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 				college = faculty.college
 			elif type == 'C':
@@ -688,7 +688,7 @@ def view_association_requests(request, **kwargs):
 		elif user_type == 'F':
 			if not request.user.groups.filter(name='Placement Handler'):
 				return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
-			associations = associations.filter( Q(college=profile.college) & Q(approved=None) )
+			associations = associations.filter( Q(college=profile.college) & Q(approved=None) & Q(initiator='CO') )
 		else:
 			associations = associations.filter( Q(company=profile) & Q(approved=None) )
 		associations_list = []
@@ -723,7 +723,7 @@ def generate_excel(request, sess, **kwargs):
 		elif user_type == 'C':
 			session = PlacementSession.objects.get(association__college=profile, pk=session_id)
 		else:
-			if not request.user.groups.filter(name='Placement Handler'):
+			if not request.user.groups.filter(name__in=['Placement Handler', 'Notifications Manager']):
 				return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 			session = PlacementSession.objects.get(association__college=profile.college, pk=session_id)
 	except: #To account for both KeyError as well as PlacementSession.DoesNotExist
@@ -746,7 +746,7 @@ def generate_excel(request, sess, **kwargs):
 @require_POST
 def notify_session(request, sess_hashid, user_type, profile):
 	if user_type == 'F':
-		if not request.user.groups.filter(name='Placement Handler'):
+		if not request.user.groups.filter(name__in=['Placement Handler', 'Notifications Manager']):
 			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		profile = profile.college
 	try:
@@ -772,7 +772,7 @@ def notify_session(request, sess_hashid, user_type, profile):
 @require_POST
 def filter_sessions(request, user_type, profile):
 	if user_type == 'F':
-		if not request.user.groups.filter(name='Placement Handler'):
+		if not request.user.groups.filter(name__in=['Placement Handler', 'Notifications Manager']):
 			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 		profile = profile.college
 	f = SessionFilterForm(request.POST, profile=profile)
