@@ -21,12 +21,19 @@
 					<p><b>Programme: </b>{{ session.programme }}</p>
 					<p><b>Streams: </b>{{ session.streams }}</p>
 					<p><b>Years: </b>{{ session.years }}</p><br>
-					{% with session.sessobj.association as association %}
-						<p><b>Description:</b> {{ association.desc|linebreaksbr }}</p>
-						<p><b>Company Details:</b> {{ association.company.details|linebreaksbr }} </p>
-						<p><b>Website:</b> <a target="_blank" href="{{ association.company.website }}">{{ association.company.website }}</a></p>
-					{% endwith %}
-					{% include 'recruitment/criteria.html' with criterion=session.selection_criteria %}
+					{% if not session.is_dummy %}
+						{% with session.sessobj.association as association %}
+							<p><b>Description:</b> {{ association.desc|linebreaksbr }}</p>
+							<p><b>Company Details:</b> {{ association.company.details|linebreaksbr }} </p>
+							<p><b>Website:</b> <a target="_blank" href="{{ association.company.website }}">{{ association.company.website }}</a></p>
+						{% endwith %}
+						{% include 'recruitment/criteria.html' with criterion=session.selection_criteria %}
+					{% else %}
+							<p><b>Description:</b> {{ session.dsessobj.desc|linebreaksbr }}</p>
+							<p><b>Company Details:</b> {{ session.dsessobj.dummy_company.details|linebreaksbr }} </p>
+							<p><b>Website:</b> <a target="_blank" href="{{ session.dsessobj.dummy_company.website }}">{{ session.dsessobj.dummy_company.website }}</a></p>
+						{% include 'recruitment/criteria.html' with criterion=session.dsessobj.selection_criteria %}
+					{% endif %}
 				</div>
 			</div>
 	{% endfor %}
