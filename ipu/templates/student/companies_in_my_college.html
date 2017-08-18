@@ -18,7 +18,7 @@
 						<div class="card-content">
 							<span class="card-title activator grey-text text-darken-4">
 								<b>{{ enrolled.company.name|title }}</b>
-								<i class="material-icons right">more_vert</i>
+								<i class="fa fa-info-circle right" aria-hidden="true"></i>
 							</span>
 							<h6>{{ htmlid|slice:":-1"|title }} offering <b>&#8377;{{ enrolled.salary }} LPA</b></h6>
 							<p><b class="timeleft">{{ e.date|timeuntil }}</b> left to withdraw application</p>
@@ -68,7 +68,7 @@
 						<div class="card-content">
 							<span class="card-title activator grey-text text-darken-4">
 								<b>{{ unenrolled.company.name|title }}</b>
-								<i class="material-icons right">more_vert</i>
+								<i class="fa fa-info-circle right" aria-hidden="true"></i>
 							</span>
 							<h6>{{ htmlid|slice:":-1"|title }} offering <b>&#8377;{{ unenrolled.salary }} LPA</b></h6>
 							<p><b>{{ u.date|timeuntil }}</b> left to apply</p>

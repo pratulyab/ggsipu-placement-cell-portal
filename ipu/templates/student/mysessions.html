@@ -2,18 +2,33 @@
 {% if sessions %}
 <ul class="collection">
 	{% for session in sessions %}
-		<li class="collection-item avatar">
-			{% if not session.is_dummy and session.photo %}
-				<img src="{{ session.photo.url }}" alt="Recruiter" class="circle" />
-			{% endif %}
-			<span class="title blue-text text-accent-2"><b>{{ session.company }}</b> for {{ session.type|title }}</span>
-			<p><b>Salary: </b>{{ session.salary }}</p>
-			<p><b>Programme: </b>{{ session.programme }}</p>
-			<p><b>Streams: </b>{{ session.streams }}</p>
-			<p><b>Years: </b>{{ session.years }}</p><br>
-			<p><b>Status: </b>{{ sessobj.status }}</p>
-			<p><b><span class="orange-text text-darken-2">{{ session.students }}</b> student{{ session.students|pluralize }} in the session</p>
-		</li>
+			<div class="card col s12 m6">
+				<div class="card-image waves-effect waves-block waves-light">
+					<img class="activator" height=250 width=250 src="" style="background-color:{% cycle '#e1f5fe' '#e0f2f1' '#fce4ec' '#f3e5f5' %}" />
+				</div>
+				<div class="card-content">
+					<span class="card-title activator grey-text text-darken-4"><b>{{ session.company }}</b> for {{ session.type|title }}
+						<i class="fa fa-info-circle right" aria-hidden="true"></i>
+					</span>
+					<p><b>Salary: </b>{% if session.salary != '0 LPA' %}{{ session.salary }}{% else %}Read Description{% endif %}</p>
+					<p><b>Status: </b>{{ sessobj.status }}</p>
+					<p><b>Enrollments: </b><b><span class="orange-text text-darken-2">{{ session.students }}</b> student{{ session.students|pluralize }}</p>
+				</div>
+				<div class="card-reveal">
+					<span class="card-title grey-text text-darken-4"><b>{{ session.company }}</b> for {{ session.type|title }}
+						<i class="material-icons right">close</i>
+					</span>
+					<p><b>Programme: </b>{{ session.programme }}</p>
+					<p><b>Streams: </b>{{ session.streams }}</p>
+					<p><b>Years: </b>{{ session.years }}</p><br>
+					{% with session.sessobj.association as association %}
+						<p><b>Description:</b> {{ association.desc|linebreaksbr }}</p>
+						<p><b>Company Details:</b> {{ association.company.details|linebreaksbr }} </p>
+						<p><b>Website:</b> <a target="_blank" href="{{ association.company.website }}">{{ association.company.website }}</a></p>
+					{% endwith %}
+					{% include 'recruitment/criteria.html' with criterion=session.selection_criteria %}
+				</div>
+			</div>
 	{% endfor %}
 </ul>
 {% else %}
