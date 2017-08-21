@@ -124,7 +124,7 @@ def activate(request, user_hashid='', token=''):
 		return render(request, 'account/activation_failure.html')
 	
 	if user.is_active:
-		return redirect('login')
+		return redirect('auth')
 
 	try:
 		user.is_active = True
