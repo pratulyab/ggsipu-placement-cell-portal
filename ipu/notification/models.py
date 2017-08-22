@@ -70,7 +70,7 @@ class Report(models.Model):
 	creation_time = models.DateTimeField(auto_now=False, auto_now_add=True, null = False)
 
 	def __str__(self):
-		return ("%s [%s]" % (dict(self.REPORT_TYPE)[self.type], self.reported_by.profile.username if self.reported_by else "Anon"))
+		return ("%s [%s]" % (dict(self.REPORT_TYPE)[self.type], self.reported_by.username if self.reported_by else "Anon"))
 
 
 
