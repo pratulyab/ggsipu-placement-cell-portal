@@ -3,6 +3,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.utils.translation import ugettext_lazy as _
+from account.tasks import send_mass_mail_task
 from college.models import College, Programme, Stream
 from company.models import Company
 from dummy_company.models import DummyCompany, DummySession
@@ -273,6 +274,7 @@ class EditDummySessionForm(forms.ModelForm):
 		student_usernames = ','.join([s['profile__username'] for s in students.values('profile__username')])
 		for student in students:
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
+		send_mass_mail_task.delay("Congratulations!", message, [s['profile__pk'] for s in students.values('profile__pk')])
 		# Log
 		dummyLogger.info('%s - Students selected %s - [DS: %d]' % (actor.username, student_usernames, self.instance.pk))
 		# # #
