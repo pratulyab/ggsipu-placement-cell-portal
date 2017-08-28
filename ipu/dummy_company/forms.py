@@ -196,7 +196,7 @@ class ManageDummySessionStudentsForm(forms.ModelForm):
 		self.choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 		kwargs.update(initial={'students': [c[0] for i,c in enumerate(self.choices) if i]})
 		super(ManageDummySessionStudentsForm, self).__init__(*args, **kwargs)
-		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('CAUTION: Students can only be removed from the list. Removed students will be notified.'))
+		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('CAUTION: Students can only be removed from the list. Removed students will be notified.'), required=False)
 		self.fields['students'].choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 		self.initial['token'] = settings.HASHID_DUMMY_SESSION.encode(self.instance.pk)
 	
@@ -216,9 +216,9 @@ class ManageDummySessionStudentsForm(forms.ModelForm):
 		for student in disqualified:
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
 		# send mass email
-		# subject = '%s session with %s % ('Internship if self.instance.type == 'I' else 'Job', self.instance.company.name)'
-		#
-		# send_mass_mail_task.delay(subject, message, disqualified)
+		subject = '%s session with %s' % ('Internship' if self.instance.type == 'I' else 'Job', self.instance.dummy_company.name)
+		
+		send_mass_mail_task.delay(subject, message, disqualified)
 		# LOG
 		dummyLogger.info('%s - Students disqualified %s - [DS: %d]' % (actor.username, student_disq_usernames, self.instance.pk))
 		# # #
@@ -228,7 +228,7 @@ class ManageDummySessionStudentsForm(forms.ModelForm):
 		names, hashids = list(), list()
 		names.append('---------'); hashids.append('') # default
 		for q in queryset:
-			names.append(q.profile.username) # for STUDENT
+			names.append("%s (%s)" % (q.get_full_name(), q.profile.username)) # for STUDENT
 			hashids.append(getattr(settings, hashid_name).encode(q.pk))
 		return zip(hashids, names)
 	

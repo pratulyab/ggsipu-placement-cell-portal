@@ -366,7 +366,7 @@ class ManageSessionStudentsForm(forms.ModelForm):
 		self.choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 		kwargs.update(initial={'students': [c[0] for i,c in enumerate(self.choices) if i]})
 		super(ManageSessionStudentsForm, self).__init__(*args, **kwargs)
-		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('CAUTION: Students can only be removed from the list. Removed students will be notified.'))
+		self.fields['students'] = ModelMultipleHashidChoiceField(self.students_queryset, 'HASHID_STUDENT', help_text=_('CAUTION: Students can only be removed from the list. Removed students will be notified.'), required=False)
 		self.fields['students'].choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 #		self.fields['students'].initial = (settings.HASHID_STUDENT.encode(s.pk) for s in self.students_queryset)
 #		Why wouldn't this work? Passing initial to MMHC's super isn't working either
@@ -391,7 +391,7 @@ class ManageSessionStudentsForm(forms.ModelForm):
 		
 		# send mass email
 		association = self.instance.association
-		subject = '%s session with %s' % ('Internship' if association.type == 'I' else 'Job', self.association.company.name)
+		subject = '%s session with %s' % ('Internship' if association.type == 'I' else 'Job', association.company.name)
 		
 		send_mass_mail_task.delay(subject, message, disqualified_pks)
 
@@ -404,7 +404,7 @@ class ManageSessionStudentsForm(forms.ModelForm):
 		names, hashids = list(), list()
 		names.append('---------'); hashids.append('') # default
 		for q in queryset:
-			names.append(q.profile.username) # for STUDENT
+			names.append("%s (%s)" % (q.get_full_name(), q.profile.username)) # for STUDENT
 			hashids.append(getattr(settings, hashid_name).encode(q.pk))
 		return zip(hashids, names)
 	
