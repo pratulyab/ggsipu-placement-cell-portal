@@ -219,7 +219,7 @@ class ManageDummySessionStudentsForm(forms.ModelForm):
 		# send mass email
 		subject = '%s session with %s' % ('Internship' if self.instance.type == 'I' else 'Job', self.instance.dummy_company.name)
 		
-		send_mass_mail_task.delay(subject, message, disqualified)
+		send_mass_mail_task.delay(subject, message, disqualified_pks)
 		# LOG
 		dummyLogger.info('%s - Students disqualified %s - [DS: %d]' % (actor.username, student_disq_usernames, self.instance.pk))
 		# # #
@@ -264,6 +264,8 @@ class EditDummySessionForm(forms.ModelForm):
 		return False
 
 	def notify_selected_students(self, actor):
+		if not self.instance.students.exists():
+			return
 		dsession = self.instance
 		message = "Congratulations! "
 		if dsession.type == 'J':
@@ -342,11 +344,12 @@ class DummySessionFilterForm(forms.Form):
 	def get_filtered_dsessions(self):
 		dcompany = self.cleaned_data.get('dummy_company', None)
 		type =  self.cleaned_data.get('type', '')
-		dsessions = DummySession.objects.all()
+		dsessions = DummySession.objects.filter(dummy_company__college=self.college)
 		if type:
 			dsessions = dsessions.filter(type=type)
 		if dcompany:
 			dsessions = dsessions.filter(dummy_company__pk__in=[c.pk for c in dcompany])
+		dsessions = dsessions.filter(ended=self.cleaned_data.get('ended', False))
 		return dsessions
 			
 	@staticmethod

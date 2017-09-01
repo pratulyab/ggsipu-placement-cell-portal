@@ -11,6 +11,7 @@
 				<p><b>Programme: </b>{{ session.programme }}</p>
 				<p><b>Streams: </b>{{ session.streams }}</p>
 				<p><b>Years: </b>{{ session.years }}</p>
+				<p><b>Ended: </b>{{ session.sessobj.ended|yesno:"Yes,No,Maybe" }}
 				<p>	<b><span class="orange-text text-darken-2">{{ session.students }}</span></b> student{{ session.students|pluralize }} in the session</p>
 				<span class="secondary-content">
 					{% if request.user.type == 'C' or request.user.type == 'F' and perms.recruitment.handle_placement %}

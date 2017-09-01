@@ -23,6 +23,7 @@
 			<p><b>Programme: </b>{{ session.programme }}</p>
 			<p><b>Streams: </b>{{ session.streams }}</p>
 			<p><b>Years: </b>{{ session.years }}</p>
+			<p><b>Ended: </b>{{ session.sessobj.ended|yesno:"Yes,No,Maybe" }}
 			<p><b><span class="orange-text text-darken-2">{{ session.students }}</span></b> student{{ session.students|pluralize }} in the session</p>
 			<span class="secondary-content">
 				<a href="{% url 'manage_session' session.sess_hashid %}"><i class="fa fa-2x fa-cogs"></i></a>
