@@ -21,11 +21,14 @@ from faculty.forms import VerifyStudentProfileForm
 from notification.models import Notification
 from student.forms import StudentLoginForm, StudentSignupForm, StudentCreationForm, StudentEditForm, QualificationForm, TechProfileForm, FileUploadForm, PaygradeForm, ScoreForm, ScoreMarksheetForm, CGPAMarksheetForm, QualForm
 from recruitment.models import Association, PlacementSession
+from recruitment.utils import get_master_excel_structure
 from student.models import Student, TechProfile, Qualification, SchoolMarksheet, Score
 from . import scrape
 
 import os, re, datetime, logging
+import openpyxl as excel, time
 from bs4 import BeautifulSoup
+from hashids import Hashids
 
 facultyLogger = logging.getLogger('faculty')
 studentLogger = logging.getLogger('student')
@@ -831,3 +834,22 @@ def update_score(request, score_hashid, profile, **kwargs):
 #			return JsonResponse(status=400, data={'errors': dict(score_form.errors.items())})
 #	q = QualificationForm(request.POST)
 #	return JsonResponse(status=200, data={})
+
+
+# Download Master Excel
+@require_http_methods(['GET','POST'])
+@login_required
+@require_user_types(['F','C','S'])
+def download_master_excel(request, user_type, profile, **kwargs):
+	if user_type == 'F':
+		if not request.user.groups.filter(name__in=['Placement Handler', 'Notifications Manager']):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
+	if user_type == 'C':
+		college = profile
+	else:
+		college = profile.college
+	workbook = get_master_excel_structure(college, college.students.all())
+	response = HttpResponse(content=excel.writer.excel.save_virtual_workbook(workbook), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+	response['Content-Disposition'] = 'attachment; filename=master_%s.xlsx' % Hashids(salt="AbhiKaSamay").encode(round(time.time()))
+	return response
+
