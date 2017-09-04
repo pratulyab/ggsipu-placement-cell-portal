@@ -57,6 +57,10 @@
 	<li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
     <li class="divider"></li>
 	{% endif %}
+	{% if perms.recruitment.handle_placement or perms.notification.manage_notification %}
+	<li><a class="x-master" href="{% url 'master_excel' %}">Download Master Excel</a></li>
+    <li class="divider"></li>
+	{% endif %}
     <li><a href="#">Report Admin</a></li>
 {% endblock %}
 
@@ -134,6 +138,10 @@
     {% if perms.recruitment.handle_placement %}
 	<li><div class="divider"></div></li>
 	<li><a href="{% url 'manage_dcompany' %}" >Manage Dummy Company</a></li>
+	{% endif %}
+	{% if perms.recruitment.handle_placement or perms.notification.manage_notification %}
+	<li><a class="x-master" href="{% url 'master_excel' %}">Download Master Excel</li>
+    <li class="divider"></li>
 	{% endif %}
 	<li data-main_div="#!"><a href="#">Report Admin</a></li>
 	<li><div class="divider"></div></li>
@@ -354,7 +362,7 @@
 	<script type="text/javascript" src="{% static 'faculty/verify.js' %}?ver=2"></script>
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
-	<script type="text/javascript" src="{% static 'download/download.js' %}"></script>
+	<script type="text/javascript" src="{% static 'download/download.js' %}?ver=1"></script>
 	<script src="{% static 'sweetalert/dist/sweetalert.min.js' %}"></script>
 	<script>
 		$(document).ready(function() {
@@ -369,6 +377,7 @@
 				// Warn faculty to use desktop to verify students
 				$('#enroll-form').html($('<p class="flow-text blue lighten-5 blue-text text-darken-4 center-align">Please login using a desktop to verify students.</p>'));
 			}
+			Download.master(); // XM
 		});
 	</script>
 {% endblock scripts %}

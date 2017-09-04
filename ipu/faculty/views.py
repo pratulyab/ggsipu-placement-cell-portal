@@ -22,12 +22,16 @@ from faculty.models import Faculty
 from notification.models import Notification
 from notification.forms import NotifySessionStudentsForm
 from recruitment.forms import SessionFilterForm
+from recruitment.utils import get_master_excel_structure
 from student.models import Qualification, Student
 from student.forms import QualificationForm, ScoreMarksheetForm, CGPAMarksheetForm, ScoreForm, QualForm
 import re
+import logging
+import openpyxl as excel, time
+from hashids import Hashids
 
 # Create your views here.
-import logging
+
 collegeLogger = logging.getLogger('college')
 facultyLogger = logging.getLogger('faculty')
 
@@ -313,4 +317,19 @@ def verify_board(request, klass_hashid, user_type, profile, **kwargs):
 	else:
 		return JsonResponse(status=400, data={'errors': dict(f.errors.items()), 'error': 'Please correct the errors as indicated in the form', 'prefix':f.prefix+'-'})
 
+
+
+# Download Master Excel
+@require_http_methods(['GET','POST'])
+@login_required
+@require_user_types(['F'])
+def download_master_excel(request, profile, **kwargs):
+	if not request.user.groups.filter(name__in=['Placement Handler', 'Notifications Manager']):
+			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
+	college = profile.college
+	workbook = get_master_excel_structure(college, college.students.all())
+	response = HttpResponse(content=excel.writer.excel.save_virtual_workbook(workbook), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+	facultyLogger.warning("[%s] - [%s] - Downloaded Master Excel for %d students" % (college.code, profile.profile.username, college.students.count()))
+	response['Content-Disposition'] = 'attachment; filename=master_%s.xlsx' % Hashids(salt="AbhiKaSamay").encode(round(time.time()))
+	return response
 

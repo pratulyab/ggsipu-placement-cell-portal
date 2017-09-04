@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from .views import faculty_signup, edit_create_faculty, faculty_home, get_enrollment_number, delete_faculty, edit_perms, manage, verify_cgpa, verify_board
+from .views import faculty_signup, edit_create_faculty, faculty_home, get_enrollment_number, delete_faculty, edit_perms, manage, verify_cgpa, verify_board, download_master_excel
 urlpatterns = [
 	url(r'^home/$', faculty_home, name='faculty_home'),
 	url(r'^profile/$', edit_create_faculty, name='edit_create_faculty'),
@@ -10,4 +10,5 @@ urlpatterns = [
 	url(r'manage/$', manage, name='manage_faculty'),
 	url(r'^verify_cgpa/(?P<klass_hashid>\w{10,})/$', verify_cgpa, name='verify_cgpa'), # klass_hashid not required; <LAZINESS -.-'>
 	url(r'^verify_board/(?P<klass_hashid>\w{10,})/$', verify_board, name='verify_board'),
+	url(r'^download_master_excel/$', download_master_excel, name='master_excel'),
 ]

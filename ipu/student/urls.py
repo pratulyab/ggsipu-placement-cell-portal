@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from .views import create_student, student_home, edit_student, student_login, student_signup, edit_qualifications, delete_student, tech_profile, upload_file, paygrade, coder, companies_in_my_college, apply_to_company, qualifications, update_score, download_master_excel
+from .views import create_student, student_home, edit_student, student_login, student_signup, edit_qualifications, delete_student, tech_profile, upload_file, paygrade, coder, companies_in_my_college, apply_to_company, qualifications, update_score
 from dummy_company.views import apply_to_dummy_company
 
 urlpatterns = [
@@ -19,5 +19,4 @@ urlpatterns = [
 	url(r'^applyd/(?P<dsess>\w{9,})/$', apply_to_dummy_company, name='applyd'),
 	url(r'^qualifications/$', qualifications, name='qual'),
 	url(r'^update_score/(?P<score_hashid>\w{11,})/$', update_score, name='update_score'),
-	url(r'^download_master_excel/$', download_master_excel, name='master_excel'),
 ]

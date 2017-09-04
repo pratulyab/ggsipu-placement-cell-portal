@@ -77,12 +77,61 @@ var Download = (function() {
 
 	}
 
+	function download_master(e) {
+		e.preventDefault();
+		var $a = $(this),
+			url = $a.attr('href');
+		swal({
+			title: "Proceed?",
+			text: "You are about to download all the students' data. This is a highly sensitive data, please make sure that you are in a safe environment. Your action will be logged.",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#DD6B55",
+			confirmButtonText: "Proceed",
+			closeOnConfirm: false,
+			showLoaderOnConfirm: true,
+			allowEscapeKey: false,
+			allowOutsideClick: false,
+			},
+			function(){
+				$.ajax({
+					url: url,
+					type: 'GET',
+					data: {},
+					processData: true,
+					success: function(data, status, xhr){
+						swal({
+							title: "Success!",
+							text: "The data is being processed and will be downloaded. Please don't close the browser until the downloading completes.",
+							type: "success",
+							allowEscapeKey: true,
+							allowOutsideClick: true,
+							confirmButtonText: "Ok"
+						},
+							function(){window.location=url});
+					},
+					error: function(xhr, status, error){
+						if (xhr.status >= 400 && xhr.status < 500) {
+							var error_msg = xhr.responseJSON['error'] ? xhr.responseJSON['error'] : "Error Occurred.";
+							swal("Error!", error_msg, "error");
+						} else if (xhr.status > 500) {
+							swal("Oops..", "Sorry, an unexpected error occurred. Please try again after sometime.", "error");
+						}
+					}
+				});
+			});
+
+	}
+
 	return {
 		request: function() {
 			$('.resume').on('click', download_resume);
 		},
 		serve: function() {
 			$('.resume-dl').on('click', serve_resume);
+		},
+		master: function() {
+			$('.x-master').on('click', download_master);
 		}
 	}
 })();

@@ -60,14 +60,19 @@ def get_master_excel_structure(college, students_queryset): # All students' data
 	worksheet['A3'] = date.today().strftime("Students' data as of %d %b, %Y") # Date
 	worksheet.freeze_panes = 'A5'
 	
-	#S.No. | Enrollment No. | First Name | Last Name | Gender | Email | Prog | Stream | Year | Tenth | Twelfth | Graduation | Post Grad | Doctorate | Verified
-	#| Back(s) | Phone Number | DoB
+	# S.No. | Enrollment No. | First Name | Last Name | Gender | Email | Programme | Stream | Year
+	# | Tenth CGPA | Tenth CC | Tenth Board | Tenth %
+	# | Twelfth Board | Twelfth %
+	# | Graduation | Post Grad | Doctorate
+	# | Verified | Back(s) | Min. Salary Expected
+	# | Phone Number | DoB         -- Not serving these because of privacy stipulation
+
 	worksheet['A4'] = 'S.No.'; worksheet['B4'] = 'Enrollment No.'; worksheet['C4'] = 'First Name'; worksheet['D4'] = 'Last Name';
 	worksheet['E4'] = 'Gender'; worksheet['F4'] = 'Email'; worksheet['G4'] = 'Programme'; worksheet['H4'] = 'Stream'; worksheet['I4'] = 'Year';
 	worksheet['J4'] = '10th CGPA'; worksheet['K4'] = '10th Conversion Factor'; worksheet['L4'] = '10th Board'; worksheet['M4'] = '10th %';
 	worksheet['N4'] = '12th Board'; worksheet['O4'] = '12th %'; worksheet['P4'] = 'Graduation'; worksheet['Q4'] = 'Post Graduation';
 	worksheet['R4'] = 'Doctorate'; worksheet['S4'] = 'Verified'; worksheet['T4'] = 'Back(s)'; worksheet['U4'] = 'Min. Salary Expected';
-	worksheet['V4'] = 'Phone Number'; worksheet['W4'] = 'Date of Birth';
+#	worksheet['V4'] = 'Phone Number'; worksheet['W4'] = 'Date of Birth';
 	
 	bold = excel.styles.Font(bold=True)
 	for i in range(1,24):
@@ -84,7 +89,7 @@ def get_master_excel_structure(college, students_queryset): # All students' data
 		worksheet.cell(row=row, column=5).value = GENDER[student.gender].__str__()
 		worksheet.cell(row=row, column=6).value = student.profile.email
 
-		worksheet.cell(row=row, column=7).value = student.programme.name.title()
+		worksheet.cell(row=row, column=7).value = student.programme.name
 		worksheet.cell(row=row, column=8).value = student.stream.name.title()
 		worksheet.cell(row=row, column=9).value = student.current_year
 		
@@ -102,8 +107,8 @@ def get_master_excel_structure(college, students_queryset): # All students' data
 		worksheet.cell(row=row, column=19).value = "Yes" if (student.is_verified and student.verified_by) else "No"
 		worksheet.cell(row=row, column=20).value = "Yes" if student.is_sub_back else "No"
 		worksheet.cell(row=row, column=21).value = ("%d LPA" % student.salary_expected) if student.salary_expected else "--"
-		worksheet.cell(row=row, column=22).value = student.phone_number
-		worksheet.cell(row=row, column=23).value = student.dob.__str__()
+#		worksheet.cell(row=row, column=22).value = student.phone_number
+#		worksheet.cell(row=row, column=23).value = student.dob.__str__()
 	
 	to_letter = excel.cell.get_column_letter
 	for col in [1,5,9,19,20,23]:
