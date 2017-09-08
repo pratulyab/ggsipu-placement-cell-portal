@@ -395,7 +395,7 @@ class ManageSessionStudentsForm(forms.ModelForm):
 		association = self.instance.association
 		subject = '%s session with %s' % ('Internship' if association.type == 'I' else 'Job', association.company.name)
 		
-		send_mass_mail_task.delay(subject, message, disqualified_pks)
+		send_mass_mail_task.delay(subject, message, list(disqualified_pks))
 
 		# Log
 		recruitmentLogger.info('%s - Students disqualified %s - [S: %d]' % (actor.username, student_disq_usernames, self.instance.pk))
