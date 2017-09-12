@@ -429,8 +429,8 @@ def mysessions(request):
 				except College.DoesNotExist:
 					return JsonResponse(status=400, data={'location': reverse(settings.PROFILE_CREATION_URL['C'])})
 			associations = Association.objects.filter(college=college, approved=True).values('pk')
-			sessions = PlacementSession.objects.filter(association__pk__in = associations)
-			dsessions = DummySession.objects.filter(dummy_company__college=college)
+			sessions = PlacementSession.objects.filter(association__pk__in = associations, ended=False)
+			dsessions = DummySession.objects.filter(dummy_company__college=college, ended=False)
 			sessions_list = []
 			dsessions_list = []
 			for s in sessions:
