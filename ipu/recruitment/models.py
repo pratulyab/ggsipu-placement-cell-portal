@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 from django.db.utils import IntegrityError
+from django.template.loader import render_to_string
 from college.models import College, Programme, Stream
 from company.models import Company
 from notification.models import Notification
@@ -163,12 +164,17 @@ def notify_college_student_list_changed(sender, **kwargs):
 			message = 'Job'
 		else:
 			message = 'Internship'
-		message = message + ' Session: %s - {%s}\t' % (association.programme.__str__(), ', '.join([s.name.title() for s in association.streams.all()]) )
-		usernames = '\n'.join([Student.objects.get(pk=s).profile.username for s in students])
+		message = message + ' Session: %s - {%s}<br>' % (association.programme.__str__(), ', '.join([s.name.title() for s in association.streams.all()]) )
+#		usernames = '\n'.join([Student.objects.get(pk=s).profile.username for s in students])
 		if action == 'post_add':
-			message = '%d student%s added to the session\n%s' % (len(students), '' if len(students)==1 else 's', usernames)
+#			message = '%d student%s added to the session\n%s' % (len(students), '' if len(students)==1 else 's', usernames)
+			message += '%d student%s added to the session.<br> Total enrollments = %d.<br>' % \
+				(len(students), '' if len(students)==1 else 's', session.students.count())
 		else:
-			message = '%d student%s removed from the session\n%s' % (len(students), '' if len(students)==1 else 's', usernames)
+#			message = '%d student%s removed from the session\n%s' % (len(students), '' if len(students)==1 else 's', usernames)
+			message += '%d student%s removed from the session.<br> %d student%s left in the session.<br>' % \
+					  (len(students), '' if len(students)==1 else 's', session.students.count(), '' if session.students.count()==1 else 's')
+		message += 'To view the complete list, move to "Sessions" tab and download this session\'s excel sheet.'
 		actor = association.college if session.last_modified_by == 'C' else association.company
 		target = association.company if session.last_modified_by == 'C' else association.college
 		# Creating notification
@@ -225,6 +231,28 @@ def new_request_notification(sender, **kwargs):
 	type = dict(Association.PLACEMENT_TYPE)[association.type]
 	message = '%s sent you an association request. To view the request, hop on to "Association Requests" tab.' % (actor.name.title())
 	Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
+
+'''
+@receiver(post_save, sender=PlacementSession)
+def notify_students_about_new_posting(sender, **kwargs):
+	if not kwargs.get('created'):
+		return
+	session = kwargs.get('instance')
+	association = session.association
+	subject = "New %s by %s" % (dict(Association.PLACEMENT_TYPE)[association.type], association.company.name)
+	message = render_to_string('recruitment/new_posting.txt', {'association': association, 'company': company, 'session': session})
+	student_pks = []
+	customuser_pks = []
+	for stream in association.streams.all():
+		student_pks += [s['pk'] for s in stream.students.values('pk')]
+		customuser_pks += [u['profile__pk'] for u in stream.students.values('profile__pk')]
+	students = Student.objects.filter(pk__in=student_pks)
+	notification_data = NotificationData.objects.create(message=message, subject=subject)
+	college = association.college
+	for student in students:
+		Notification.objects.create(notification_data=notification_data, actor=college.profile, target=student.profile)
+	send_mass_mail_task.delay(subject, message, customuser_pks)
+'''
 	
 # # # # # # # #
 # This validation offers a drawback to the required scheme.
