@@ -162,7 +162,7 @@
 					</ul>
 				</div>
 				<div class=" col s8 offset-s1">
-					<div id="your-notifications-div" class="col s12">
+					<div id="your-notifications-div" class="col s12" detail-url="{% url 'notification_detail' %}">
 						
 							  <ul id = "your-notifications-div-ul" class="collection">
 							   
@@ -172,9 +172,22 @@
 					</div>
 					<div id="notify-students-div" class="col s12">
 					</div>
-					</div>
 				</div>
 			</div>
+		</div>
+		<div id="notification-detail-modal" class="modal modal-fixed-footer">
+    		<div class="modal-content">
+     	 		<h4 id="notification-modal-heading">Error</h4>
+      			<p id="notification-modal-text">Please check the Internet connection and then reload.</p>
+    		</div>
+    		<div class="modal-footer">
+    			<div class="col s4"><p id='notification-modal-date'>Please Reload</p></div>
+      			<div class="col s8 right-align"><a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Ok</a></div>
+    		</div>
+  		</div>
+  		<button id="notification-detail-modal-trigger" data-target="notification-detail-modal" style="display: none;"></button>
+		</div>
+
 		</div>
 	
 	<!-- -->
@@ -276,6 +289,7 @@
 			Associate.init(['associate-form']);
 			Request.init();
 			Mobile.init();
+			$('#notification-detail-modal').modal();
 		});
 	</script>
 {% endblock scripts %}

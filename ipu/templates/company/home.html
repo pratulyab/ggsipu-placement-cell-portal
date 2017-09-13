@@ -126,11 +126,24 @@
 	<div id="myrequests" class="col s12"></div>
 	<div id="notifications">
 		<h4 class="col s12 m10 offset-m1 flow-text center-align"><b>Your Notifications</b></h4>
-		<div id="your-notifications-div" class="col s12 m8 offset-m2">			
+		<div id="your-notifications-div" class="col s12 m8 offset-m2" detail-url="{% url 'notification_detail' %}">			
 			<ul id="your-notifications-div-ul" class="collection">
 				<li class="collection-item avatar"><i class="material-icons circle">report_problem</i><span class="title">None</span><p>Please click on the Notification Tab Button.</p></li>
 				</ul>
 		</div>
+		<div id="notification-detail-modal" class="modal modal-fixed-footer">
+    		<div class="modal-content">
+     	 		<h4 id="notification-modal-heading">Error</h4>
+      			<p id="notification-modal-text">Please check the Internet connection and then reload.</p>
+    		</div>
+    		<div class="modal-footer">
+    			<div class="col s4"><p id='notification-modal-date'>Please Reload</p></div>
+      			<div class="col s8 right-align"><a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Ok</a></div>
+    		</div>
+  		</div>
+  		<button id="notification-detail-modal-trigger" data-target="notification-detail-modal" style="display: none;"></button>
+		</div>
+
 	</div>
 	<div id="settings" class="col s12">
 		<div class="vertical-tabs">
@@ -219,6 +232,7 @@
 			Request.init();
 			Mobile.init();
 			Notification.init();
+			$('#notification-detail-modal').modal();
 		});
 
 	</script>

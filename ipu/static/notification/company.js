@@ -28,7 +28,7 @@ var Notification = (function() {
 //==============================================================================//
 //============Below are functions to get a faculty's notifications.=============//
     function getNotifications() {
-        var url = $('#notification-anchor').attr('url');
+        var url = $('#notification_button').attr('href');
         $.ajax({
             url : url,
             type : 'GET',
@@ -37,17 +37,22 @@ var Notification = (function() {
                 showPreloader();
             },
             complete: function() {
+                $('#notifications_badge').hide();
                 removePreloader();  
             },
             success : function(data, status, xhr){
-                populateDiv(data);                
+                populateNotificationDiv(data);
+                
             }
-        });       
+        });
+        
     }
-
-    function populateDiv(data) {
+    function populateNotificationDiv(data) {
         var raw_html = '';  
         var icon = '';
+        var reply_anchor = '';
+        var subject = ''; // Handles subject for notification and message for ping.
+        var anchor_space = 'col s12';
         if(data.length === 0){
             icon = '<i class="material-icons circle">report_problem</i>' 
             raw_html = '<li class="collection-item avatar">' + icon + '<span class="title">' + 'None' + '</span>' + '<p>' + 'No notifications found.' + '</p>' + '</li>';
@@ -55,13 +60,52 @@ var Notification = (function() {
             return;
         }                   
         for(var i = 0 ; i < data.length ; i++){
+            if(!data[i].if_ping){
+                reply_anchor = '<div class="col s3 itemBox center-align"><a href="" identifier='+ data[i].identifier +'><i class="material-icons ">reply</i><div class="caption">View Details</div></a></div>';
+                subject = data[i].subject;
+                anchor_space = 'col s9';
+            }
+            else{
+                reply_anchor = '';
+                subject = data[i].message
+            }
             icon = ( (data[i].read === true) ? '<i class="material-icons circle blue">done_all</i>' : '<i class="material-icons circle red">fiber_new</i>');
-            raw_html += '<li class="collection-item avatar">' + icon + 
-                '<span class="title">' + data[i].actor + '</span>' + '<p>' + data[i].message + '</p>' + '</li>';
-        }
+            raw_html += '<li class="collection-item avatar">' + icon +
+                '<div class="row" style="margin-bottom : 0%"><div class="' + anchor_space + '"><span class="title">' + data[i].actor + "</span>" +
+                '<p>' + subject + '</p></div>' + reply_anchor +'</div></li>';
         $('#your-notifications-div-ul').html(raw_html);
+        //An unknown dependency. I've got no clue what is it. Please put a relevant comment.
         Download.serve();
+        $('#your-notifications-div-ul').find('a').on('click' , function(e) {
+            e.preventDefault();
+            var param = '';
+            param = $(this).attr('identifier');
 
+            viewNotificationDetails(param);
+            });
+        }
+    }
+    function viewNotificationDetails(identifier){
+        var url = $('#your-notifications-div').attr('detail-url');
+        $.ajax({
+            url : url,
+            type : 'GET',
+            data : {
+                'identifier' : identifier,
+            },
+            beforeSend: function() {
+                showPreloader();
+            },
+            complete: function() {
+                removePreloader();  
+            },
+            success : function(data , status , xhr){
+                $('#notification-modal-heading').html(data.subject);
+                $('#notification-modal-text').html(data.message);
+                $('#notification-modal-date').html(data.date);      
+                document.getElementById('notification-detail-modal-trigger').click();
+            }
+        });
     }
 
     
