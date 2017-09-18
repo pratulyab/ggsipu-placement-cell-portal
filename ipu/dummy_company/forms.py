@@ -218,8 +218,10 @@ class ManageDummySessionStudentsForm(forms.ModelForm):
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
 		# send mass email
 		subject = '%s session with %s' % ('Internship' if self.instance.type == 'I' else 'Job', self.instance.dummy_company.name)
-		
-		send_mass_mail_task.delay(subject, message, list(disqualified_pks))
+
+		disqualified_user_pks = [u['profile__pk'] for u in disqualified.values('profile__pk')]
+		send_mass_mail_task.delay(subject, message, disqualified_user_pks)
+#		send_mass_mail_task.delay(subject, message, list(disqualified_pks))
 		# LOG
 		dummyLogger.info('%s - Students disqualified %s - [DS: %d]' % (actor.username, student_disq_usernames, self.instance.pk))
 		# # #
