@@ -103,6 +103,16 @@ def validating_students(sender, **kwargs):
 					raise IntegrityError(_('Student %s doesn\'t belong to this college, thus cannot be added to the session.'%(student.profile.username)))
 
 
+@receiver(post_save, sender=DummySession)
+def add_created_flag(sender, **kwargs):
+	dsession = kwargs.get('instance')
+	# Adding attribute 'created' to the object so that the creation can be traced in m2m_changed.
+	# This object is the one that is passed as 'instance' in m2m_changed.
+	# Since emails are to be sent only when dsession is newly created, and not everytime when m2m is changed, therefore adding this boolean flag.
+	# Note that this attribute is added only to the Python instance/object and not saved in the DB.
+	# Elegant solution, aye?
+	dsession.created = kwargs.get('created')
+
 # m2m_changed instead of post_save because M2Ms are added after instance is saved.
 @receiver(m2m_changed, sender=DummySession.streams.through)
 def notify_students_about_new_posting(sender, **kwargs):
@@ -110,7 +120,8 @@ def notify_students_about_new_posting(sender, **kwargs):
 	action = kwargs.get('action')
 	reverse = kwargs.get('reverse')
 
-	if action == 'post_add' and not reverse:
+#	print('Created: ', getattr(dsession, 'created', None))
+	if action == 'post_add' and not reverse and (hasattr(dsession, 'created') and dsession.created):
 #		streams = Stream.objects.filter(pk__in=kwargs.get('pk_set'))
 		subject = "New %s Posting - %s" % (dict(DummySession.PLACEMENT_TYPE)[dsession.type], dsession.dummy_company.name)
 		message = render_to_string('dummy_company/new_posting.txt', {'dcompany': dsession.dummy_company, 'dsession': dsession, 'deadline':dsession.application_deadline + datetime.timedelta(1)})
