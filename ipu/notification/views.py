@@ -118,18 +118,28 @@ def select_years(request):
 @login_required
 @require_http_methods(['GET','POST'])
 def create_notification(request):
+	'''
+	The view is too localized for different users. Sometime in the future, it would be wise to make things generic.
+	Also, being a fledgling in django once, I was reluctant on using ModelForms. BIG MISTAKE.
+	'''
 	if request.user.type == 'C' or request.user.type == 'F':
 		if request.method == 'POST':
 			if request.user.type == 'F':
 				college_object = request.user.faculty.college
 				faculty_object = request.user.faculty
+				sender_name = faculty_object.firstname
+				#getting all the peer faculties except the initiator.
+				faculties = college_object.faculties.all().exclude(pk = faculty_object.pk)
 			else:
 				college_object = request.user.college 
+				sender_name = 'TPO'
+				#getting all the faculties.
+				faculties = college_object.faculties.all()
 			students_selected = request.POST.getlist('student_list[]')
 			if not any(students_selected):
 				return JsonResponse(status = 400 , data = {'errors' : 'Please select at least 1 Student. Check if Select Year field is not blank.'})
 			subject = request.POST.get('subject')
-			if '\n' in subject or len(subject) < 1:
+			if '\n' in subject or len(subject) < 1 or len(subject) > 255:
 				return JsonResponse(status = 400 , data = {'errors' : 'Please enter the Subject Properly.'})
 			message = request.POST.get('message')
 			if_sms = js_to_django_boolean(request.POST.get('if_sms'))
@@ -148,6 +158,7 @@ def create_notification(request):
 			student_objects = college_students_queryset.filter(profile__username__in = students_selected)
 			student_enrolls = querysets_to_values(student_objects.values('profile__username') , 'profile__username')
 			student_phone_numbers = querysets_to_values(student_objects.values('phone_number') , 'phone_number')
+			#following statement is getting customuser-pks.
 			student_pks = querysets_to_values(student_objects.values('profile__pk') , 'profile__pk')
 			if if_email:
 				send_mass_mail_task.delay(subject , message , student_pks)
@@ -171,14 +182,32 @@ def create_notification(request):
 				notification_object = Notification.objects.create(actor = college_customuser_object, target = student_customeuser_object , notification_data = notification_data_object)
 				notification_object.save()
 			
-			#sending it to all the faculties as well. 5th October, 2017
-			faculties = college_object.faculties.all()
+			#sending(cc) it to all the faculties as well.
+			faculty_pks = querysets_to_values(faculties.values('profile__pk') , 'profile__pk')
+			cc_added_subject = add_cc(subject , 255 , sender_name)
+			cc_added_sms = add_cc(sms_message , 160 , sender_name)
+			cc_notification_data_object = NotificationData.objects.create(subject = cc_added_subject , message = message , sms_message = cc_added_sms)
 			for faculty in faculties:
 				faculty_customuser_object = faculty.profile
-				notification_object = Notification.objects.create(actor = college_customuser_object, target = faculty_customuser_object , notification_data = notification_data_object)
+				notification_object = Notification.objects.create(actor = college_customuser_object, target = faculty_customuser_object , notification_data = cc_notification_data_object)
 				notification_object.save()
-				notificationLogger.info('Winded up faculty. Done all notifications. Bye.') 
+			if request.user.type == 'F':
+				faculty_customuser_object = faculty_object.profile
+				notification_object = Notification.objects.create(actor = faculty_customuser_object, target = college_customuser_object , notification_data = cc_notification_data_object)
+				notification_object.save()
+				#add email of college admin to send email if faculty initiated notification.
+				faculty_pks.append(college_object.profile.pk)
+			#sending mail and sms to faculties
+			if if_email:
+				send_mass_mail_task.delay(cc_added_subject , message , faculty_pks)
+				notificationLogger.info('sent CC-Email to faculties')
+			if if_sms:
+				faculty_phone_numbers = querysets_to_values(faculties.values('phone_number') , 'phone_number')
+				#leaving 1st parameter in the below function as is.
+				send_mass_sms_task.delay(college_object.pk , cc_added_sms , faculty_phone_numbers , template_name='')
+				notificationLogger.info('sent CC-SMS Message to faculties')
 			
+			notificationLogger.info('Winded up faculty. Done all notifications. Bye.') 	
 			return HttpResponse(len(students_selected))
 		else:
 			raise PermissionDenied
@@ -562,6 +591,14 @@ def clean_string(message , length = 20):
 		if len(message) < 1:
 			message = "No Details Available"
 	return message
+
+def add_cc(message , length , sender):
+	cc_string = 'CC (By ' + sender + ') '
+	if len(message) + 18 < length:
+		return cc_string + message
+	else:
+		result = cc_string + message
+		return result[:length]
 
 
 def querysets_to_values(queryset , key):

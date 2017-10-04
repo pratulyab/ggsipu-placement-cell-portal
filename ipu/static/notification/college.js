@@ -205,7 +205,7 @@ var Notification = (function() {
             var if_sms = $('#id_if_sms').prop('checked');
             fieldEvaluator(subject , 256)
             if(if_sms){
-                fieldEvaluator(sms_message , 128);
+                fieldEvaluator(sms_message , 155);
             }
             if(if_all === true){
                 student_list.length = 0;
@@ -379,7 +379,6 @@ function removeError(field){
                 removePreloader();  
             },
             success : function(data , status , xhr){
-                console.log(data);
                 $('#notification-modal-heading').html(data.subject);
                 $('#notification-modal-text').html(data.message);
                 $('#notification-modal-date').html(data.date);      

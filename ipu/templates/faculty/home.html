@@ -248,7 +248,7 @@
 					</ul>
 				</div>
 				<div class=" col s8 offset-s1">
-					<div id="your-notifications-div" class="col s12">
+					<div id="your-notifications-div" class="col s12" detail-url="{% url 'notification_detail' %}">
 							  <ul id = "your-notifications-div-ul" class="collection">
 							  OOPS!! Please Reload.
 							  </ul>
@@ -262,6 +262,19 @@
 				</div>
 			</div>
 		</div>
+		<!-- Detail Model -->
+		<div id="notification-detail-modal" class="modal modal-fixed-footer">
+    		<div class="modal-content">
+     	 		<h4 id="notification-modal-heading">Error</h4>
+      			<p id="notification-modal-text">Please check the Internet connection and then reload.</p>
+    		</div>
+    		<div class="modal-footer">
+    			<div class="col s4"><p id='notification-modal-date'>Please Reload</p></div>
+      			<div class="col s8 right-align"><a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Ok</a></div>
+    		</div>
+  		</div>
+  		<button id="notification-detail-modal-trigger" data-target="notification-detail-modal" style="display: none;"></button>
+		<!-- Detail Model Ends-->
 	</div>
 {% endif %}
 	<div id="settings" class="col s12">
@@ -358,7 +371,7 @@
 	<script type="text/javascript" src="{% static 'common/search.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/sessions.js' %}?ver=3"></script>
 	<script type="text/javascript" src="{% static 'common/settings.js' %}"></script>
-	<script type="text/javascript" src="{% static 'notification/faculty.js' %}?ver=1"></script>
+	<script type="text/javascript" src="{% static 'notification/faculty.js' %}?ver=2"></script>
 	<script type="text/javascript" src="{% static 'faculty/verify.js' %}?ver=2"></script>
 	<script type="text/javascript" src="{% static 'recruitment/requests.js' %}"></script>
 	<script type="text/javascript" src="{% static 'common/mobile.js' %}"></script>
@@ -373,6 +386,7 @@
 			VerifyStu.init();
 			Request.init();
 			Mobile.init();
+			$('#notification-detail-modal').modal();
 			if (is_mobile_view) {
 				// Warn faculty to use desktop to verify students
 				$('#enroll-form').html($('<p class="flow-text blue lighten-5 blue-text text-darken-4 center-align">Please login using a desktop to verify students.</p>'));
