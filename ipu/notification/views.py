@@ -170,8 +170,15 @@ def create_notification(request):
 				student_customeuser_object = student_object.profile
 				notification_object = Notification.objects.create(actor = college_customuser_object, target = student_customeuser_object , notification_data = notification_data_object)
 				notification_object.save()
-
-
+			
+			#sending it to all the faculties as well. 5th October, 2017
+			faculties = college_object.faculties.all()
+			for faculty in faculties:
+				faculty_customuser_object = faculty.profile
+				notification_object = Notification.objects.create(actor = college_customuser_object, target = faculty_customuser_object , notification_data = notification_data_object)
+				notification_object.save()
+				notificationLogger.info('Winded up faculty. Done all notifications. Bye.') 
+			
 			return HttpResponse(len(students_selected))
 		else:
 			raise PermissionDenied
