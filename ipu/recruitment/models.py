@@ -4,13 +4,15 @@ from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 from django.db.utils import IntegrityError
 from django.template.loader import render_to_string
+from account.tasks import send_mass_mail_task
 from college.models import College, Programme, Stream
 from company.models import Company
-from notification.models import Notification
+from notification.models import Notification, NotificationData
 from student.models import Student, Qualification
 from django.utils.translation import ugettext_lazy as _
 
 from decimal import Decimal
+import datetime
 
 # Create your models here.
 
@@ -41,6 +43,9 @@ class Association(models.Model):
 
 	def __str__(self):
 		return self.company.name + " for placement in " + self.college.name
+
+	def get_streams(self):
+		return ", ".join([s['name'] for s in self.streams.values('name')])
 
 class SelectionCriteria(models.Model):
 	SCHOOL_PERCENTAGE_CHOICES = tuple((("%s" % i, "%s and above" % i) for i in ['60','70','75','80','85','90','95']))
@@ -203,8 +208,8 @@ def request_accepted_notification(sender, **kwargs):
 @receiver(post_save, sender=Association)
 def declined_request_notification(sender, **kwargs):
 	association = kwargs.get('instance')
-	print('Created: ', kwargs.get('created'))
-	print(association.approved)
+#	print('Created: ', kwargs.get('created'))
+#	print(association.approved)
 	if not kwargs.get('created') and association.approved == False: # Declined a pre-created association
 		if association.initiator == 'C':
 			actor = association.company
@@ -232,27 +237,29 @@ def new_request_notification(sender, **kwargs):
 	message = '%s sent you an association request. To view the request, hop on to "Association Requests" tab.' % (actor.name.title())
 	Notification.objects.create(actor=actor.profile, target=target.profile, message=message)
 
-'''
+
 @receiver(post_save, sender=PlacementSession)
 def notify_students_about_new_posting(sender, **kwargs):
 	if not kwargs.get('created'):
 		return
 	session = kwargs.get('instance')
 	association = session.association
-	subject = "New %s by %s" % (dict(Association.PLACEMENT_TYPE)[association.type], association.company.name)
-	message = render_to_string('recruitment/new_posting.txt', {'association': association, 'company': company, 'session': session})
+	subject = "New %s Posting - %s" % (dict(Association.PLACEMENT_TYPE)[association.type], association.company.name)
+	message = render_to_string('recruitment/new_posting.txt', {'association': association, 'company': association.company, 'session': session, 'deadline':session.application_deadline + datetime.timedelta(1)})
 	student_pks = []
 	customuser_pks = []
+	years = session.selection_criteria.years.split(',')
 	for stream in association.streams.all():
-		student_pks += [s['pk'] for s in stream.students.values('pk')]
-		customuser_pks += [u['profile__pk'] for u in stream.students.values('profile__pk')]
-	students = Student.objects.filter(pk__in=student_pks)
-	notification_data = NotificationData.objects.create(message=message, subject=subject)
-	college = association.college
-	for student in students:
-		Notification.objects.create(notification_data=notification_data, actor=college.profile, target=student.profile)
+		students = stream.students.filter(current_year__in=years)
+		student_pks += [s['pk'] for s in students.values('pk')]
+		customuser_pks += [u['profile__pk'] for u in students.values('profile__pk')]
+#	students = Student.objects.filter(pk__in=student_pks)
+#	notification_data = NotificationData.objects.create(message=message, subject=subject)
+#	college = association.college
+#	for student in students:
+#		Notification.objects.create(notification_data=notification_data, actor=college.profile, target=student.profile)
 	send_mass_mail_task.delay(subject, message, customuser_pks)
-'''
+
 	
 # # # # # # # #
 # This validation offers a drawback to the required scheme.

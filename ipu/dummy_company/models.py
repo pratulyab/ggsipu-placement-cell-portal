@@ -3,12 +3,15 @@ from django.db import models
 from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 from django.db.utils import IntegrityError
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
+from account.tasks import send_mass_mail_task
 from college.models import College, Programme, Stream
 from company.models import Company
 from recruitment.models import SelectionCriteria
 from student.models import Student
 from decimal import Decimal
+import datetime
 
 # Create your models here.
 
@@ -60,6 +63,9 @@ class DummySession(models.Model):
 	def __str__(self):
 		return self.dummy_company.__str__() + ' placement session in ' + self.dummy_company.college.__str__()
 
+	def get_streams(self):
+		return ", ".join([s['name'] for s in self.streams.values('name')])
+
 '''
 @receiver(m2m_changed, sender=DummySession.streams.through)
 def verify_assoc_stream_uniqueness(sender, **kwargs):
@@ -95,3 +101,31 @@ def validating_students(sender, **kwargs):
 				student = Student.objects.get(pk=student)
 				if student.college != college:
 					raise IntegrityError(_('Student %s doesn\'t belong to this college, thus cannot be added to the session.'%(student.profile.username)))
+
+
+# m2m_changed instead of post_save because M2Ms are added after instance is saved.
+@receiver(m2m_changed, sender=DummySession.streams.through)
+def notify_students_about_new_posting(sender, **kwargs):
+	dsession = kwargs.get('instance')
+	action = kwargs.get('action')
+	reverse = kwargs.get('reverse')
+
+	if action == 'post_add' and not reverse:
+#		streams = Stream.objects.filter(pk__in=kwargs.get('pk_set'))
+		subject = "New %s Posting - %s" % (dict(DummySession.PLACEMENT_TYPE)[dsession.type], dsession.dummy_company.name)
+		message = render_to_string('dummy_company/new_posting.txt', {'dcompany': dsession.dummy_company, 'dsession': dsession, 'deadline':dsession.application_deadline + datetime.timedelta(1)})
+		student_pks = []
+		customuser_pks = []
+		years = dsession.selection_criteria.years.split(',')
+		for stream in dsession.streams.all():
+			students = stream.students.filter(current_year__in=years)
+			student_pks += [s['pk'] for s in students.values('pk')]
+			customuser_pks += [u['profile__pk'] for u in students.values('profile__pk')]
+#		students = Student.objects.filter(pk__in=student_pks)
+#		notification_data = NotificationData.objects.create(message=message, subject=subject) IMPORT ME
+#		college = association.college
+#		for student in students:
+#			Notification.objects.create(notification_data=notification_data, actor=college.profile, target=student.profile)
+		send_mass_mail_task.delay(subject, message, customuser_pks)
+
+

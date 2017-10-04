@@ -1,0 +1,34 @@
+Dear students,
+There is a new {% if association.type == 'J' %}Job{% else %}Internship{% endif %} posting by {{ company.name }}.
+The details are as follow:
+
+*	 Salary:  {{ association.salary }} LPA
+*	 Programme: {{ association.programme.name }}
+*	 Streams:  {{ association.get_streams }}
+*	 Years: {{ session.selection_criteria.years }}
+
+*	 Application Deadline: {{ session.application_deadline|date:"D d M Y" }}
+*	 Ends in: {{ deadline|timeuntil }}
+
+	{% if association.desc %}
+*	 Job Description:- {{ association.desc|striptags }}
+	{% endif %}
+
+	{% if company.details %}
+*	 Company Details:- {{ company.details }}
+	{% endif %}
+	{% if company.website %}
+	 
+*	 Company Website: {{ company.website }}
+	{% endif %}
+
+
+Make sure to apply/withdraw before the application deadline ends.
+
+
+
+  Thanks
+
+  Development & Maintenance Team
+  Training & Placement Cell
+  GGSIP University
