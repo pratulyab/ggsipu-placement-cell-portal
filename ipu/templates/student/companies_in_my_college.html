@@ -12,7 +12,7 @@
 							{% if enrolled.company.photo and 0 %}
 								<img class="activator" height=250 width=250 src="{{ enrolled.company.photo.url }}" />
 							{% else %}
-								<img class="activator" height=250 width=250 src="#" style="background-color:{% cycle 'lightcoral' 'seagreen' 'goldenrod' 'cornflowerblue' %}" />
+								<img class="activator" height=250 width=250 src="#" style="background-color:{% cycle 'lightcoral' 'goldenrod' 'cornflowerblue' %}" />
 							{% endif %}
 						</div>
 						<div class="card-content">
@@ -62,7 +62,7 @@
 							{% if unenrolled.company.photo and 0 %}
 								<img class="activator" height=250 width=250 src="{{ unenrolled.company.photo.url }}" />
 							{% else %}
-								<img class="activator" height=250 width=250 src="#" style="background-color:{% cycle 'cornflowerblue' 'goldenrod' 'lightcoral' 'seagreen' %}" />
+								<img class="activator" height=250 width=250 src="#" style="background-color:{% cycle 'cornflowerblue' 'goldenrod' 'lightcoral' %}" />
 							{% endif %}
 						</div>
 						<div class="card-content">
