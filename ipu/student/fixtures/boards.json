@@ -1,0 +1,466 @@
+[
+{
+    "model": "student.examinationboard",
+    "pk": 1,
+    "fields": {
+        "name": "Aligarh Muslim University",
+        "abbreviation": "AMU"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 2,
+    "fields": {
+        "name": "Board of Higher Secondary Education Delhi",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 3,
+    "fields": {
+        "name": "Andhra Pradesh Board of Secondary Education",
+        "abbreviation": "BSEAP"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 4,
+    "fields": {
+        "name": "Gwalior Board of Education",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 5,
+    "fields": {
+        "name": "Shivam Board of Secondary Education",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 6,
+    "fields": {
+        "name": "Andhra Pradesh Open School Society",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 7,
+    "fields": {
+        "name": "Assam Board of Secondary Education",
+        "abbreviation": "SEBA"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 8,
+    "fields": {
+        "name": "Assam Higher Secondary Education Council",
+        "abbreviation": "AHSEC"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 9,
+    "fields": {
+        "name": "Assam State Open School",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 10,
+    "fields": {
+        "name": "Bihar Board of Open Schooling & Examinations",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 11,
+    "fields": {
+        "name": "Bihar School Examination Board",
+        "abbreviation": "BSEB"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 12,
+    "fields": {
+        "name": "Uttar Pradesh Board of Secondary Education",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 13,
+    "fields": {
+        "name": "Madhya Pradesh Board of Secondary Education (Madhya Bharat Gwalior)",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 14,
+    "fields": {
+        "name": "Madhya Pradesh Board of Secondary Education",
+        "abbreviation": "MPBSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 15,
+    "fields": {
+        "name": "Madhya Pradesh State Open School",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 16,
+    "fields": {
+        "name": "Rajasthan Board of Secondary Education",
+        "abbreviation": "BSER"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 17,
+    "fields": {
+        "name": "Rajasthan State Open School",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 18,
+    "fields": {
+        "name": "Chhattisgarh Board of Secondary Education",
+        "abbreviation": "CGBSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 19,
+    "fields": {
+        "name": "Central Board of Education (Ajmer & New Delhi)",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 20,
+    "fields": {
+        "name": "Central Board of Secondary Education",
+        "abbreviation": "CBSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 21,
+    "fields": {
+        "name": "Council for the Indian School Certificate Examinations",
+        "abbreviation": "CISCE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 22,
+    "fields": {
+        "name": "Goa Board of Secondary & Higher Secondary Education",
+        "abbreviation": "GBSHSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 23,
+    "fields": {
+        "name": "Gujarat Secondary Education Board",
+        "abbreviation": "GSEB"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 24,
+    "fields": {
+        "name": "Gujarat State Open School",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 25,
+    "fields": {
+        "name": "Haryana Board of School Education",
+        "abbreviation": "HBSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 26,
+    "fields": {
+        "name": "Haryana State Open School",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 27,
+    "fields": {
+        "name": "Himachal Pradesh Board of School Education",
+        "abbreviation": "HPBOSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 28,
+    "fields": {
+        "name": "Himachal Pradesh State Open School",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 29,
+    "fields": {
+        "name": "Jharkhand Academic Council",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 30,
+    "fields": {
+        "name": "Jammu and Kashmir State Board of School Education",
+        "abbreviation": "JKSBSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 31,
+    "fields": {
+        "name": "Jammu and Kashmir State Open School",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 32,
+    "fields": {
+        "name": "Karnataka Secondary Education Examination Board",
+        "abbreviation": "KSEEB"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 33,
+    "fields": {
+        "name": "Karnataka State Open School",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 34,
+    "fields": {
+        "name": "Kerala Higher Secondary Examination Board",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 35,
+    "fields": {
+        "name": "Kerala State Open School",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 36,
+    "fields": {
+        "name": "Maharashtra State Board of Secondary and Higher Secondary Education",
+        "abbreviation": "MSBSHSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 37,
+    "fields": {
+        "name": "Meghalaya Board of School Education",
+        "abbreviation": "MBOSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 38,
+    "fields": {
+        "name": "Mizoram Board of School Education",
+        "abbreviation": "MBSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 39,
+    "fields": {
+        "name": "Nagaland Board of School Education",
+        "abbreviation": "NBSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 40,
+    "fields": {
+        "name": "National Institute of Open Schooling",
+        "abbreviation": "NIOS"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 41,
+    "fields": {
+        "name": "Orissa Board of Secondary Education",
+        "abbreviation": "BSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 42,
+    "fields": {
+        "name": "Orissa Council of Higher Secondary Education",
+        "abbreviation": "CHSE (O)"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 43,
+    "fields": {
+        "name": "Punjab School Education Board",
+        "abbreviation": "P.S.E.B."
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 44,
+    "fields": {
+        "name": "Tamil Nadu Board of Secondary Education",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 45,
+    "fields": {
+        "name": "Tripura Board of Secondary Education",
+        "abbreviation": "TBSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 46,
+    "fields": {
+        "name": "Telangana Board of Intermediate Education",
+        "abbreviation": "TSBIE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 47,
+    "fields": {
+        "name": "Telangana Board of Secondary Education",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 48,
+    "fields": {
+        "name": "Uttarakhand Board of School Education",
+        "abbreviation": "UBSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 49,
+    "fields": {
+        "name": "West Bengal Board of Madrasah Education",
+        "abbreviation": "WBBME"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 50,
+    "fields": {
+        "name": "West Bengal Board of Primary Education",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 51,
+    "fields": {
+        "name": "West Bengal Board of Secondary Education",
+        "abbreviation": "WBBSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 52,
+    "fields": {
+        "name": "West Bengal Council of Higher Secondary Education",
+        "abbreviation": "WBCHSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 53,
+    "fields": {
+        "name": "West Bengal Council of Rabindra Open Schooling",
+        "abbreviation": ""
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 54,
+    "fields": {
+        "name": "West Bengal State Council of Vocational Education and Training",
+        "abbreviation": "WBSCT&VE&SD"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 55,
+    "fields": {
+        "name": "International Baccalaureate",
+        "abbreviation": "IB"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 56,
+    "fields": {
+        "name": "International General Certificate of Secondary Education (University of Cambridge)",
+        "abbreviation": "IGCSE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 57,
+    "fields": {
+        "name": "Cambridge International Examinations (University of Cambridge)",
+        "abbreviation": "CIE"
+    }
+},
+{
+    "model": "student.examinationboard",
+    "pk": 58,
+    "fields": {
+        "name": "Northwest Accreditation Commission",
+        "abbreviation": "NWAC"
+    }
+}
+]

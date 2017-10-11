@@ -185,7 +185,7 @@ def create_notification(request):
 			#sending(cc) it to all the faculties as well.
 			faculty_pks = querysets_to_values(faculties.values('profile__pk') , 'profile__pk')
 			cc_added_subject = add_cc(subject , 255 , sender_name)
-			cc_added_sms = add_cc(sms_message , 160 , sender_name)
+			cc_added_sms = add_cc(sms_message , 159 , sender_name)
 			cc_notification_data_object = NotificationData.objects.create(subject = cc_added_subject , message = message , sms_message = cc_added_sms)
 			for faculty in faculties:
 				faculty_customuser_object = faculty.profile
