@@ -250,3 +250,6 @@ DISALLOWED_EMAIL_DOMAINS = ['mailinator', 'discard.email', 'thraml', 'mintemail'
 
 # Default 3 days for password reset link is a potential time bomb for users.
 PASSWORD_RESET_TIMEOUT_DAYS = 1
+
+# Blocking mass mail activity because of limitation on emails (100/day)
+LIMIT_EMAIL = True

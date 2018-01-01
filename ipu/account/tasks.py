@@ -111,6 +111,12 @@ def send_forgot_password_email_task(user_pk, domain, unsuccessful_email_pk=None)
 @task(name='send_mass_mail_task')
 def send_mass_mail_task(subject, message, user_pks_list, unsuccessful_email_pk=None):
 # # # # #
+	# Email Limitations
+	if settings.LIMIT_EMAIL:
+		logger.warning("Exited; EMAIL LIMIT; %s emails requested" % str(len(user_pks_list)))
+		return
+	# # #
+
 	users = CustomUser.objects.filter(pk__in=user_pks_list)
 	if not users:
 		return
