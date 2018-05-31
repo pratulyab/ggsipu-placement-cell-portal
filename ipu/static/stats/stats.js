@@ -20,7 +20,7 @@ var Stats = (function() {
 	function getYears() {
 		dataDiv.empty();
 		var college_field = statsForm.find('#id_college'),
-			year_field = statsForm.find('#id_year');
+			year_field = statsForm.find('#id_academic_year');
 		$.ajax({
 			url: statsForm.attr('action'),
 			type: statsForm.attr('method'),
@@ -52,7 +52,7 @@ var Stats = (function() {
 
 	function getStats() {
 		var college_field = statsForm.find('#id_college'),
-			year_field = statsForm.find('#id_year');
+			year_field = statsForm.find('#id_academic_year');
 		$.ajax({
 			url: statsForm.attr('action'),
 			type: statsForm.attr('method'),

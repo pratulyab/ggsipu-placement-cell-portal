@@ -25,7 +25,7 @@ class College(models.Model):
 
 class YearRecord(models.Model):
 	college = models.ForeignKey(College, related_name="records")
-	year = models.CharField(max_length=4)
+	academic_year = models.CharField(max_length=7) # 2017-18
 	jobs_placement_percentage = models.DecimalField('Percentage Placed for Jobs',\
 			max_digits=5, decimal_places=2, default=0,\
 			validators=[MinValueValidator(Decimal('0')), MaxValueValidator(Decimal('100'))])
@@ -37,16 +37,16 @@ class YearRecord(models.Model):
 	students_participated_internships = models.PositiveSmallIntegerField(default=0)
 	companies = models.ManyToManyField(Company, through='Placement', related_name="records", blank=True)
 
-# sum([p['total_offers'] for p in College.objects.get(code='CCC').records.get(year='XXXX').placements.filter(type='J').values('total_offers')])
+# sum([p['total_offers'] for p in College.objects.get(code='CCC').records.get(academic_year='XXXX').placements.filter(type='J').values('total_offers')])
 	students_selected_jobs = models.PositiveSmallIntegerField(default=0)
-#sum([p['total_offers'] for p in College.objects.get(code='CCC').records.get(year='XXXX').placements.filter(type='I').values('total_offers')])
+#sum([p['total_offers'] for p in College.objects.get(code='CCC').records.get(academic_year='XXXX').placements.filter(type='I').values('total_offers')])
 	students_selected_internships = models.PositiveSmallIntegerField(default=0)
 
 	def __str__(self):
-		return "%s [%s]" % (self.college.__str__(), self.year)
+		return "%s [%s]" % (self.college.__str__(), self.academic_year)
 
 	class Meta:
-		unique_together = ['college', 'year']
+		unique_together = ['college', 'academic_year']
 
 class Placement(models.Model):
 	PLACEMENT_TYPE = (

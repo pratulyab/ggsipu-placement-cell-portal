@@ -5,8 +5,8 @@ class StatsForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
 		super(StatsForm, self).__init__(*args, **kwargs)
 		self.fields['college'].widget.choices = self.get_fullname_choices()
-		self.fields['year'] = forms.ChoiceField(choices=(('', '----------'),))
-		self.fields['year'].widget.attrs['disabled'] = True
+		self.fields['academic_year'] = forms.ChoiceField(choices=(('', '----------'),))
+		self.fields['academic_year'].widget.attrs['disabled'] = True
 
 	def get_fullname_choices(self):
 		names, values = list(), list()
@@ -20,4 +20,4 @@ class StatsForm(forms.ModelForm):
 	
 	class Meta:
 		model = YearRecord
-		fields = ['college', 'year']
+		fields = ['college', 'academic_year']

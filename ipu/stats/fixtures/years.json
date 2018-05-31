@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
         "college": 1,
-        "year": "2015",
+        "academic_year": "2014-15",
         "jobs_placement_percentage": "95.40",
         "internships_placement_percentage": "68.33",
         "students_participated_jobs": 0,
@@ -18,7 +18,7 @@
     "pk": 2,
     "fields": {
         "college": 1,
-        "year": "2016",
+        "academic_year": "2015-16",
         "jobs_placement_percentage": "0.00",
         "internships_placement_percentage": "0.00",
         "students_participated_jobs": 0,

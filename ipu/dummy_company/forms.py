@@ -32,6 +32,9 @@ class CreateDummyCompanyForm(forms.ModelForm):
 	class Meta:
 		model = DummyCompany
 		fields = ['name', 'website', 'details']
+		help_texts = {
+			'name': _("Please consider writing full names and not just abbreviations."),
+		}
 
 class ChooseDummyCompanyForm(forms.Form):
 	dummy_company = forms.ModelChoiceField(label="Dummy Company", queryset=None , widget=forms.Select(), help_text=_("Choose Dummy Company To Edit"))

@@ -19,6 +19,7 @@ from notification.forms import NotifySessionStudentsForm
 from notification.models import Notification
 from recruitment.forms import AssociationForm, EditSessionForm, DissociationForm, CreateSessionCriteriaForm, EditCriteriaForm, ManageSessionStudentsForm, SessionFilterForm, DeclineForm
 from recruitment.models import Association, PlacementSession, Dissociation, SelectionCriteria
+from recruitment.tasks import dump_stats_record_task
 from recruitment.utils import get_excel_structure
 from student.models import Student, Programme, Stream
 
@@ -180,6 +181,7 @@ def edit_session(request, sess_hashid, **kwargs):
 	########
 		message = 'Placement Session has been updated successfully.'
 		if f.should_notify_students():
+			dump_stats_record_task.delay(session.pk, is_dummy=False)
 			try:
 				f.notify_selected_students(actor=profile.profile)
 			except:

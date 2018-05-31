@@ -17,7 +17,7 @@ def stats(request):
 		if request.GET.get('years', '') == 'true':
 			try:
 				college = College.objects.prefetch_related('records').get(pk=request.GET.get('college', None))
-				years = [c['year'] for c in college.records.values('year')]
+				years = [c['academic_year'] for c in college.records.values('academic_year')]
 				data = []
 				for year in years:
 					data.append({'html': year, 'value': year})
@@ -33,13 +33,13 @@ def stats(request):
 			# Table
 			headings = ['Company', 'Type', 'Total Offerings', 'Salary (LPA)']
 			college = College.objects.prefetch_related('records').get(pk=college_pk)
-			record = college.records.get(year=year)
+			record = college.records.get(academic_year=year)
 			placements = record.placements.order_by('-salary').all()
 			entries = []
 			for each in placements:
 				company = each.company.name
 				type = dict(Placement.PLACEMENT_TYPE)[each.type]
-				offered = each.total_offers if each.total_offers else 'Result Awaited'
+				offered = each.total_offers #if each.total_offers else 'Result Awaited'
 				salary = each.salary_comment if each.salary_comment else each.salary
 				entries.append([company, type, offered, salary])
 			context = {'headings': headings, 'entries': entries}

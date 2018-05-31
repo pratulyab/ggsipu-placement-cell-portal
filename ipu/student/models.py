@@ -177,7 +177,7 @@ class Student(models.Model):
 		return "/user/%s/" % self.profile.username
 
 	def is_not_interested(self):
-		return not bool(sessions_applied_to.count() or dsessions_applied_to.count()) # Whether the student ever applied for an opportunity
+		return not bool(self.sessions_applied_to.count() or self.dsessions_applied_to.count()) # Whether the student ever applied for an opportunity
 
 	class Meta:
 		ordering = ('profile__username',)

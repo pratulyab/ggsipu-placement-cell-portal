@@ -17,6 +17,7 @@ from dummy_company.models import DummyCompany, DummySession
 from faculty.models import Faculty
 from notification.forms import NotifySessionStudentsForm
 from recruitment.models import SelectionCriteria
+from recruitment.tasks import dump_stats_record_task
 from recruitment.utils import get_excel_structure
 from student.models import Student, Programme, Stream
 
@@ -372,6 +373,7 @@ def edit_dummy_session(request, dsess_hashid, user_type, profile, **kwargs):
 			return JsonResponse(status=400, data={'error': 'Please ensure that there are no unsupported characters in the details.'})
 		message = 'Session Details have been updated successfully.'
 		if f.should_notify_students():
+			dump_stats_record_task.delay(dsession_pk, is_dummy=True)
 			try:
 				f.notify_selected_students(actor=profile.profile)
 			except:
