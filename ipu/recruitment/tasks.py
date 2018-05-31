@@ -55,8 +55,13 @@ def dump_stats_record_task(pk, is_dummy):
 	 
 		stats_college = SCollege.objects.get_or_create(code=college.code, defaults={'name': college.name.title()})[0]
 		stats_company = SCompany.objects.get_or_create(name=company.name.title(), defaults={'website': company.website})[0]
-		year_record = SYear.objects.get_or_create(academic_year=get_academic_year(drive_date), college=stats_college)[0]
-		placement = SPlacement.objects.get_or_create(record=year_record, company=stats_company, type=type, salary=salary, total_offers=offers)[0]
+		year_record = SYear.objects.get_or_create(academic_year = get_academic_year(drive_date), college=stats_college)[0]
+		placement, created = SPlacement.objects.get_or_create(record=year_record, company=stats_company, type=type, salary=salary)
+		if created:
+			placement.total_offers = offers
+		else:
+			placement.total_offers += offers
+		placement.save()
 	
 	except Exception as e:
 		logger.error(str(e))
