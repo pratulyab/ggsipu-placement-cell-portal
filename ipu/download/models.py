@@ -33,7 +33,7 @@ class DLRequest(models.Model):
 
 	def get_students(self):
 		students = self.students.split(',')
-		return Student.objects.filter(profile__username__in=students)
+		return Student.studying.filter(profile__username__in=students) # Only current students
 
 	def is_different(self, student_queryset):
 		''' Boolean to check if there is difference between currently Zipped and a student_queryset '''

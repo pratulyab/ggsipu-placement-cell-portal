@@ -340,7 +340,7 @@ class EditSessionForm(forms.ModelForm):
 		return False
 
 	def notify_selected_students(self, actor):
-		if not self.instance.students.exists():
+		if not self.instance.students.exists(): # Not using 'studying' manager because college may select students in a session after they've graduated.
 			return
 		association = self.instance.association
 		message = "Congratulations! "
@@ -348,7 +348,7 @@ class EditSessionForm(forms.ModelForm):
 			message += "You have been placed at %s. " % (association.company.name.title())
 		else:
 			message += "You have grabbed the internship at %s. " % (association.company.name.title())
-		students = self.instance.students.all()
+		students = self.instance.students.all() # Not using 'studying' manager
 		student_usernames = ','.join([s['profile__username'] for s in students.values('profile__username')])
 		for student in students:
 			Notification.objects.create(actor=actor, target=student.profile, message=message)
@@ -364,7 +364,7 @@ class EditSessionForm(forms.ModelForm):
 
 class ManageSessionStudentsForm(forms.ModelForm):
 	def __init__(self, *args, **kwargs):
-		self.students_queryset = kwargs.get('instance').students.all()
+		self.students_queryset = kwargs.get('instance').students.all() # Not using 'studying' manager because graduated students need to be shown when an archived session is opened
 		self.choices = self.get_zipped_choices(self.students_queryset, 'HASHID_STUDENT')
 		kwargs.update(initial={'students': [c[0] for i,c in enumerate(self.choices) if i]})
 		super(ManageSessionStudentsForm, self).__init__(*args, **kwargs)
@@ -382,6 +382,7 @@ class ManageSessionStudentsForm(forms.ModelForm):
 		original_students_pks = [s.pk for s in self.students_queryset]
 		disqualified_pks = set(original_students_pks).difference(set(shortlisted_pks))
 #		disqualified = self.students_queryset.exclude(pk__in=shortlisted_pks) Somehow this isn't working __-__
+		# Haven't used 'studying' manager because college may remove students from session after they've graduated
 		disqualified = Student.objects.filter(pk__in=disqualified_pks)
 		self.disqualified = disqualified
 		student_disq_usernames = ','.join([s['profile__username'] for s in disqualified.values('profile__username')])

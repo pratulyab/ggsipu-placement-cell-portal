@@ -293,6 +293,9 @@ var VerifyStu = (function() {
 				});
 				$('i.left-right').tooltip();
 //				console.log($('body').find('ul'));
+				if (data['graduated']) {
+					$('#profile-div').prepend('<h6 class="blue-text center-align">This student has graduated. Contact admin if it is required to change student\'s graduation status.</h6>');
+				}
 				if (data['verified']) {
 					$('#profile-div').prepend('<h4 class="teal-text center-align">(Verified)</h4>');
 				}

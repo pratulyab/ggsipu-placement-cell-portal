@@ -34,7 +34,7 @@ ZIP_FOLDER = os.path.join(settings.MEDIA_ROOT, 'compressed')
 def handle_resume_dl_task(students, requester_pk, dl_request_pk, link, description):
 	''' Zip resumes and notify requester '''
 	students_q = students.replace(' ', '').split(',')
-	students_q = Student.objects.filter(profile__username__in=students_q)
+	students_q = Student.studying.filter(profile__username__in=students_q) # Only current students
 	try:
 		requester = CustomUser.objects.get(pk=requester_pk)
 		dl_request = DLRequest.objects.get(pk=dl_request_pk)

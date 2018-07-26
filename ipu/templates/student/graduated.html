@@ -1,0 +1,19 @@
+{% extends 'account/nav-landing.html' %}
+{% load staticfiles %}
+{% block title %}Alumni{% endblock title %}
+{% block head %}
+	{{ block.super }}
+	<link type="text/css" rel="stylesheet" href="{% static 'account/post_signup.css'%}"  media="screen,projection"/>
+{% endblock %}
+{% block content %}
+	<div class="container blue-text">
+		<div class="row">
+			<div class="col s12 flow-text">
+				<h4 class="red-text text-lighten-3 center"> Congratulations on graduating! <i class="fa fa-smile-o"></i> <br>You are now an alumnus.</h4>
+				<p class="teal-text text-lighten-2 center"> We are currently in the process of building an alumni network.<br>You'll be notified once it is created, in order for you to regain access to the portal. </p>
+				<br>
+				<p class="blue-text text-lighten-3 center"><b>Note: </b>If you did <b>not</b> graduate from your college, and/or are still pursuing courses with the same enrollment number, then contact your college's placement cell faculty to change your graduation status.</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}

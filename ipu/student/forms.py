@@ -144,7 +144,12 @@ class StudentCreationForm(forms.ModelForm):
 		self.fields['stream'].widget.attrs['disabled'] = 'disabled'
 		self.fields['programme'].widget.attrs['disabled'] = 'disabled'
 		from datetime import date
-		self.initial['current_year'] = ('' if self.year is None else (date.today().year - int('20'+self.year) + 1))
+#		self.initial['current_year'] = ('' if self.year is None else (date.today().year - int('20'+self.year) + 1))
+		today = date.today()
+		year = today.year - int('20'+self.year)
+		if today.month >= 7:
+			year += 1 # Student is signing up in new academic year (July onwards)
+		self.initial['current_year'] = ('' if self.year is None else year)
 
 	def clean_college(self):
 		college = self.cleaned_data.get('college', None)

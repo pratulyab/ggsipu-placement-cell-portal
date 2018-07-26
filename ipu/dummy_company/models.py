@@ -98,7 +98,7 @@ def validating_students(sender, **kwargs):
 			students = kwargs.get('pk_set')
 			college = dsession.dummy_company.college
 			for student in students:
-				student = Student.objects.get(pk=student)
+				student = Student.studying.get(pk=student) # Only currently studying students can be added to a session
 				if student.college != college:
 					raise IntegrityError(_('Student %s doesn\'t belong to this college, thus cannot be added to the session.'%(student.profile.username)))
 
@@ -129,10 +129,10 @@ def notify_students_about_new_posting(sender, **kwargs):
 		customuser_pks = []
 		years = dsession.selection_criteria.years.split(',')
 		for stream in dsession.streams.all():
-			students = stream.students.filter(current_year__in=years)
+			students = stream.students(manager='studying').filter(current_year__in=years) # Only currently studying students should be notified about new posting
 			student_pks += [s['pk'] for s in students.values('pk')]
 			customuser_pks += [u['profile__pk'] for u in students.values('profile__pk')]
-#		students = Student.objects.filter(pk__in=student_pks)
+#		students = Student.studying.filter(pk__in=student_pks)
 #		notification_data = NotificationData.objects.create(message=message, subject=subject) IMPORT ME
 #		college = association.college
 #		for student in students:

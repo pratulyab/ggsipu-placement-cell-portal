@@ -46,6 +46,8 @@ def student_login(request):
 			if ((datetime.utcnow() - timestamp.replace(tzinfo=None)).total_seconds() > 300): # 5 min
 				user_hashid = settings.HASHID_CUSTOM_USER.encode(user.pk)
 			return JsonResponse(data={'success': True, 'render': render_to_string('account/inactive.html', {'user': user, 'user_hashid': user_hashid})})
+		if Student.objects.filter(profile__username=user.username, has_graduated=True).exists():
+			return JsonResponse(data={'success': True, 'render': render_to_string('student/graduated.html', {'user': user})})
 		auth_login(request, user)
 		return JsonResponse(data = {'success': True, 'location': get_relevant_reversed_url(request)})
 	else:
@@ -399,7 +401,7 @@ def coder(request):
 	try:
 		platform = request.GET.get('platform').strip().lower()
 		username = request.GET.get('username').strip()
-		username = getattr(Student.objects.get(profile__username=username).tech,platform)
+		username = getattr(Student.studying.get(profile__username=username).tech,platform) # Only current student
 		data = {}
 		result = getattr(scrape, platform)(username)
 		for k,v in result.items():
@@ -588,7 +590,7 @@ def apply_to_company(request, sess, **kwargs): # handling withdrawl as well
 # ----+----=----+----=----+----=----+----=----+----=----+---- #
 def get_student_public_profile(user, requester_type):
 	try:
-		student = Student.objects.get(id=user.student.id)
+		student = Student.studying.get(id=user.student.id) # Only current student
 	except Student.DoesNotExist:
 		return '<div class="valign-wrapper"><p class="valign">Student hasn\'t created his/her profile. Stay tuned!</p></div>'
 
@@ -788,7 +790,7 @@ def update_score(request, score_hashid, profile, **kwargs):
 	except:
 		return JsonResponse(status=400, data={'error': 'Invalid score'})
 	try:
-		student = Student.objects.get(profile__username = request.session['enrollmentno'])
+		student = Student.objects.get(profile__username = request.session['enrollmentno']) # Not using 'studying' manager because faculty may need to change details of graduated student
 		if student.college != profile.college:
 			return JsonResponse(status=403, data={'error': 'Permission Denied. You can verify students of your college only.'})
 	except KeyError:

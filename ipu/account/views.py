@@ -273,7 +273,7 @@ def search(request):
 	result = []
 	space_separated_query = query.split(' ')
 	first = ' '.join(space_separated_query[:-1]) if len(space_separated_query)-1 else space_separated_query[0]
-	students = Student.objects.filter( Q(firstname__istartswith=first) | Q(lastname__istartswith=space_separated_query[-1]) )
+	students = Student.studying.filter( Q(firstname__istartswith=first) | Q(lastname__istartswith=space_separated_query[-1]) ) # Only current students
 	if user_type == 'CO':
 		associated_colleges = list({a.college for a in Association.objects.filter(company=profile, approved=True)})
 		students = students.filter(college__in = associated_colleges)

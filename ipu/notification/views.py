@@ -102,7 +102,8 @@ def select_years(request):
 				stream_object = Stream.objects.get(code = stream)
 			except:
 				return JsonResponse(status = 400 , data = {"error" : "Please select the stream again."})
-			student_objects = college.students.filter(stream = stream_object , current_year__in = years_selected[idx]).values('profile' , 'profile__username' )
+			# Only currently studying students should be shown
+			student_objects = college.students(manager='studying').filter(stream = stream_object , current_year__in = years_selected[idx]).values('profile' , 'profile__username' )
 			students_of_streams.append(student_objects)
 		
 		students_of_streams = list(itertools.chain.from_iterable(students_of_streams))
@@ -152,7 +153,7 @@ def create_notification(request):
 				if len(sms_message) < 30 or len(sms_message) > 160:
 					return JsonResponse(status = 400 , data = {'errors' : 'Please keep the length of SMS Message between 30 and 160 Characters.'})		
 			college_customuser_object = college_object.profile
-			college_students_queryset = college_object.students.all()
+			college_students_queryset = college_object.students(manager='studying').all() # Only currently studying students
 			if not field_length_test(subject , 256):
 				return JsonResponse(status = 400 , data = {"error" : "Length Exceeded."})
 			student_objects = college_students_queryset.filter(profile__username__in = students_selected)

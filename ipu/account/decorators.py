@@ -38,6 +38,9 @@ def require_user_types(user_types_list):
 #						return redirect(url)
 						return render_profile_creation(request, user_type)
 				profile = requester['profile']
+#				if user_type == 'S' and profile.has_graduated:
+					# Logout
+					# Redirect to auth
 				return func(request, user_type=user_type, profile=profile, *args, **kwargs)
 			if request.is_ajax():
 				return JsonResponse(status=400, data={'location': get_relevant_reversed_url(request)})

@@ -227,7 +227,7 @@ def dummy_excel(request, dsess, **kwargs):
 		return JsonResponse(status=400, data={'error': 'Invalid Request.'})
 	title = dict(DummySession.PLACEMENT_TYPE)[dsession.type].__str__() + " opportunity by " + dsession.dummy_company.name.upper()
 	streams_title = dsession.programme.name + ' - ' + ', '.join(["%s (%s)" % (s.name, s.code) for s in dsession.streams.all()])
-	students_queryset = dsession.students.all()
+	students_queryset = dsession.students.all() # Not using 'studying' manager because otherwise graduated students' data won't be available for download for an archived session
 	workbook = get_excel_structure(title, streams_title, students_queryset)
 	response = HttpResponse(content=excel.writer.excel.save_virtual_workbook(workbook), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 	response['Content-Disposition'] = 'attachment; filename=dummy_session_%s.xlsx' % Hashids(salt="AbhiKaSamay").encode(round(time.time()))
@@ -294,7 +294,7 @@ def my_dummy_sessions(request, **kwargs):
 		data['dcompany'] = ds.dummy_company.name.title()
 		data['type'] = "Internship" if ds.type == 'I' else "Job"
 		data['streams'] = ', '.join([s.name.title() for s in ds.streams.all()])
-		data['students'] = ds.students.count()
+		data['students'] = ds.students.count() # Don't Use 'studying'
 		dsessions_list.append(data)
 	html = render(request, 'dummy_company/dummy_sessions.html', {'dsessions': dsessions_list}).content.decode('utf-8')
 	return JsonResponse(status=200, data={'html': html})

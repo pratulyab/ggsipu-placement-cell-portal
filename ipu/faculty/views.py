@@ -192,7 +192,7 @@ def get_enrollment_number(request, profile, user_type):
 			klass_hashid = settings.HASHID_KLASS.encode(12)
 			twelfth_form = render(request, 'faculty/verify_scores.html',{'board_form': twelfth_form, 'scores': scores, 'hashid':klass_hashid}).content.decode('utf-8')
 # # # # # # # # # #
-			return JsonResponse(status=200, data={'tenth': tenth_form, 'twelfth': twelfth_form, 'profile': profile_form, 'grad': grad_form, 'verified': bool(student.is_verified and student.verified_by)})
+			return JsonResponse(status=200, data={'tenth': tenth_form, 'twelfth': twelfth_form, 'profile': profile_form, 'grad': grad_form, 'verified': bool(student.is_verified and student.verified_by), 'graduated': student.has_graduated})
 #			return HttpResponse(profile_form+"<<<>>>"+qual_form)
 		else:
 			return JsonResponse(status=400, data={'errors': dict(f.errors.items())})
@@ -265,7 +265,7 @@ def verify_cgpa(request, klass_hashid, user_type, profile, **kwargs):
 	except:
 		return JsonResponse(status=400, data={'error': 'Invalid request'})
 	try:
-		student = Student.objects.get(profile__username=request.session['enrollmentno'])
+		student = Student.objects.get(profile__username=request.session['enrollmentno']) # Not using 'studying' manager because faculty may view profile of graduated studs
 		marksheet = student.marksheet
 		cgpa_marksheet = marksheet.cgpa_marksheet
 		if not cgpa_marksheet:
@@ -299,7 +299,7 @@ def verify_board(request, klass_hashid, user_type, profile, **kwargs):
 	except:
 		return JsonResponse(status=400, data={'error': 'Invalid request'})
 	try:
-		student = Student.objects.get(profile__username=request.session['enrollmentno'])
+		student = Student.objects.get(profile__username=request.session['enrollmentno']) # Not using 'studying' manager
 		marksheet = getattr(student.marksheet, 'marksheet_%s'%klass)
 		if not marksheet:
 			return JsonResponse(status=400, data={'error': 'Student hasn\'t added %sth marksheet' % klass})
@@ -327,9 +327,9 @@ def download_master_excel(request, profile, **kwargs):
 	if not request.user.groups.filter(name__in=['Placement Handler', 'Notifications Manager']):
 			return JsonResponse(status=403, data={'error': 'Permission Denied. You are not authorized to handle college\'s placements.'})
 	college = profile.college
-	workbook = get_master_excel_structure(college, college.students.all())
+	workbook = get_master_excel_structure(college, college.students(manager='studying').all()) # Only current students
 	response = HttpResponse(content=excel.writer.excel.save_virtual_workbook(workbook), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-	facultyLogger.warning("[%s] - [%s] - Downloaded Master Excel for %d students" % (college.code, profile.profile.username, college.students.count()))
+	facultyLogger.warning("[%s] - [%s] - Downloaded Master Excel for %d students" % (college.code, profile.profile.username, college.students(manager='studying').count())) # Only current students
 	response['Content-Disposition'] = 'attachment; filename=master_%s.xlsx' % Hashids(salt="AbhiKaSamay").encode(round(time.time()))
 	return response
 

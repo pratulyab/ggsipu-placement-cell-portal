@@ -150,7 +150,7 @@ def validating_students(sender, **kwargs):
 		# Validating if the admin adds incorrectly
 			students = kwargs.get('pk_set', None)
 			for student in students:
-				student = Student.objects.get(pk=student)
+				student = Student.studying.get(pk=student) # Only currently studying students can be addded to a session
 				if student.college != session.association.college:
 					raise IntegrityError(_('Student %s doesn\'t belong to this college, thus cannot be added to the session.'))
 				if not session.association.streams.filter(pk=student.stream.pk).exists():
@@ -170,7 +170,7 @@ def notify_college_student_list_changed(sender, **kwargs):
 		else:
 			message = 'Internship'
 		message = message + ' Session: %s - {%s}<br>' % (association.programme.__str__(), ', '.join([s.name.title() for s in association.streams.all()]) )
-#		usernames = '\n'.join([Student.objects.get(pk=s).profile.username for s in students])
+#		usernames = '\n'.join([Student.objects.get(pk=s).profile.username for s in students]) # Haven't used 'studying' manager because list could be changed after students have graduated
 		if action == 'post_add':
 #			message = '%d student%s added to the session\n%s' % (len(students), '' if len(students)==1 else 's', usernames)
 			message += '%d student%s added to the session.<br> Total enrollments = %d.<br>' % \
@@ -250,10 +250,10 @@ def notify_students_about_new_posting(sender, **kwargs):
 	customuser_pks = []
 	years = session.selection_criteria.years.split(',')
 	for stream in association.streams.all():
-		students = stream.students.filter(current_year__in=years)
+		students = stream.students(manager='studying').filter(current_year__in=years) # Only currently studying students should be notified about new posting
 		student_pks += [s['pk'] for s in students.values('pk')]
 		customuser_pks += [u['profile__pk'] for u in students.values('profile__pk')]
-#	students = Student.objects.filter(pk__in=student_pks)
+#	students = Student.studying.filter(pk__in=student_pks)
 #	notification_data = NotificationData.objects.create(message=message, subject=subject)
 #	college = association.college
 #	for student in students:

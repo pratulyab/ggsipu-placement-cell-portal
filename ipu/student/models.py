@@ -101,6 +101,22 @@ class SchoolMarksheet(models.Model):
 
 ####################################################################################
 
+class CurrentStudentsManager(models.Manager):
+	"""
+		All placement related activities are intended only for students currently still studying.
+	"""
+	def get_queryset(self):
+		return super().get_queryset().filter(has_graduated=False)
+
+class AlumniManager(models.Manager):
+	"""
+		After students graduate, has_graduated is changed to True. That is, their profile is not\
+		dumped to Alumni (as of now). Thus, all alumni related functionalities should call\
+		Student.alumni.x
+	"""
+	def get_queryset(self):
+		return super().get_queryset().filter(has_graduated=True)
+
 class Student(models.Model):
 	
 # General Details
@@ -160,6 +176,11 @@ class Student(models.Model):
 
 	### School (10 and 12th) marksheet ###
 	marksheet = models.OneToOneField(SchoolMarksheet, null=True, blank=True)
+	has_graduated = models.BooleanField(default=False) # Change this to True for students who've graduated
+
+	def is_alumnus(self):
+		""" Return True is the student has graduated """
+		return self.has_graduated
 
 	def get_enrollment_no(self):
 		return self.profile.username
@@ -179,8 +200,36 @@ class Student(models.Model):
 	def is_not_interested(self):
 		return not bool(self.sessions_applied_to.count() or self.dsessions_applied_to.count()) # Whether the student ever applied for an opportunity
 
+	def is_in_final_year(self):
+
+		if self.has_graduated:
+			return None
+		
+		# Special Case
+		# Programme: B.Tech./M.Tech. Dual Degree
+		# The programme offers 6 years in total.
+		# This programme has optional M.Tech. choice after B.Tech. completion
+		# That is, 4 (B.Tech.) + 2 (M.Tech.[optional])
+		# Thus, it is required to separately check whether students enrolled in this programme
+		# are in intermediate final year.
+		# Checking for specific stream codes
+		# TODO: Add stream codes in the list if such anamoly is found
+
+		exceptional_streams = {'015': ['4'], '032': ['4'], '128': ['4']} # {'stream_codes': [possible_intermediate_final_years]}
+
+		if self.stream.code in exceptional_streams and self.current_year in exceptional_streams[self.stream.code]:
+			return True
+		if int(self.current_year) == int(programme.years):
+			return True
+		elif int(self.current_year) < int(programme.years):
+			return False
+
 	class Meta:
 		ordering = ('profile__username',)
+
+	objects = models.Manager()
+	studying = CurrentStudentsManager()
+	alumni = AlumniManager()
 
 class Qualification(models.Model):
 	student = models.OneToOneField(Student, related_name="qualifications")
