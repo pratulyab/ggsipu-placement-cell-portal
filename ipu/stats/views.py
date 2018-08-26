@@ -39,7 +39,7 @@ def stats(request):
 			for each in placements:
 				company = each.company.name
 				type = dict(Placement.PLACEMENT_TYPE)[each.type]
-				offered = each.total_offers #if each.total_offers else 'Result Awaited'
+				offered = each.total_offers or '---' #if each.total_offers else 'Result Awaited'
 				salary = each.salary_comment if each.salary_comment else ('Training' if not each.salary and type.lower().startswith('i') else each.salary)
 				entries.append([company, type, offered, salary])
 			context = {'headings': headings, 'entries': entries}
