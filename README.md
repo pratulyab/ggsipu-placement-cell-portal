@@ -1,5 +1,7 @@
 ## Web Portal for the Placement Cell of GGSIP University
 
+- Live @ https://placements.ggsipu.ac.in
+
 - I undertook this project independently for my major project along with 2 other classmates. (check collabs)
 - This portal was developed with the vision to serve as a unified platform to manage and streamline the placement activities at the GGSIP University, with which there are over 120 colleges associated.
 - The project is no longer used or maintained (due to a major change in the upper management of the university).
